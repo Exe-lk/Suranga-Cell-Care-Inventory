@@ -16,34 +16,11 @@ interface ICommonUpcomingEventsProps {
     isFluid?: boolean;
 }
 
-interface Employee {
-    document: string;
-    documentname: string;
-    imageurl: string;
-    streetAddress2: string;
-    name: string;
-    email: string;
-    type: string;
-    designation: string;
-    balance: number;
-    streetAddress: string;
-    city: string;
-    salary: number
-    stateFull: string;
-    zip: string;
-    password: string;
-    NIC: string;
-    birthday: moment.Moment;
-    accountNumber: string;
-    bankName: string;
-    membershipDate: moment.Moment;
-    _id: string;
-    role: string;
-}
+
 const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
 
     const router = useRouter();
-    const [user, setUser] = useState<Employee>();
+  
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 
@@ -74,19 +51,7 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
                                         />}
 
                                 </div>
-                                <div className='col-lg'>
-                                    <div className='row g-2'>
-                                        <p className="fs-1">{user?.name}</p>
-
-                                        <p className='lead text-muted'>
-                                           <b> {user?.role}</b><br />
-                                            {user?.email}<br/>
-                                            <small>{user?.streetAddress},{user?.streetAddress2}, {user?.city}</small>
-                                        </p>
-
-
-                                    </div>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
