@@ -29,7 +29,94 @@ export const summaryPageTopMenu = {
 		subMenu: null,
 	},
 };
-
+export const stockAccPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'stock-keeper-acc/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	brand: {
+		id: 'dashboard',
+		text: 'Brand Management',
+		path: 'stock-keeper-acc/brand-management',
+		icon: 'BrandingWatermark',
+		subMenu: null,
+	},
+	Category: {
+		id: 'dashboard',
+		text: 'Category',
+		path: 'stock-keeper-acc/category-management',
+		icon: 'Category',
+		subMenu: null,
+	},
+	model: {
+		id: 'dashboard',
+		text: 'Mdel Management',
+		path: 'stock-keeper-acc/model-management',
+		icon: 'ChangeHistory',
+		subMenu: null,
+	},
+	item: {
+		id: 'dashboard',
+		text: 'Item Management',
+		path: 'stock-keeper-acc/item-management',
+		icon: 'DevicesOther',
+		subMenu: null,
+	},
+	stock: {
+		id: 'dashboard',
+		text: 'Stock Management',
+		path: 'stock-keeper-acc/stock-management',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
+export const stockElePagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'stock-keeper-elec/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	brand: {
+		id: 'dashboard',
+		text: 'Brand Management',
+		path: 'stock-keeper-elec/brand-management',
+		icon: 'BrandingWatermark',
+		subMenu: null,
+	},
+	Category: {
+		id: 'dashboard',
+		text: 'Category',
+		path: 'stock-keeper-elec/category-management',
+		icon: 'Category',
+		subMenu: null,
+	},
+	model: {
+		id: 'dashboard',
+		text: 'Mdel Management',
+		path: 'stock-keeper-elec/model-management',
+		icon: 'ChangeHistory',
+		subMenu: null,
+	},
+	item: {
+		id: 'dashboard',
+		text: 'Item Management',
+		path: 'stock-keeper-elec/item-management',
+		icon: 'DevicesOther',
+		subMenu: null,
+	},
+	stock: {
+		id: 'dashboard',
+		text: 'Stock Management',
+		path: 'stock-keeper-elec/stock-management',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
 export const addminPagesMenu = {
 	dashboard: {
 		id: 'dashboard',

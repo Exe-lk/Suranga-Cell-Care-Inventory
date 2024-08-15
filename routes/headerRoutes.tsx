@@ -12,7 +12,7 @@ const headers = [
 	
 
 	{
-		path: `/admin/*`,
+		path: `/*`,
 		element: <AdminHeader />,
 	},
 
