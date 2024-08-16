@@ -10,7 +10,8 @@ import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-
+import Select from '../bootstrap/forms/Select';
+import Option from '../bootstrap/Option';
 
 
 
@@ -72,6 +73,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.stockout) {
 				errors.stockout = 'Required';
 			}
+            if (!values.stockout) {
+				errors.stockout = 'Required';
+			}
 			return errors;
 		},
 		// Inside the onSubmit handler of StockAddModal component
@@ -79,6 +83,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 		onSubmit: async (values) => {
 			try {
+				// Check if stock exists
 				
 			} catch (error) {
 				console.error('Error updating stock:', error);
@@ -102,6 +107,24 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+                <FormGroup id='Type' label='Destination' className='col-md-6'>
+					
+                    <Select
+                        ariaLabel='Default select example'
+                    
+                        onChange={formik.handleChange}
+                        value={formik.values.stockout}
+                        onBlur={formik.handleBlur}
+                        isValid={formik.isValid}
+                        isTouched={formik.touched.stockout}
+                        invalidFeedback={formik.errors.stockout}>
+                        {/* <Option value={'Admin'}>Admin</Option> */}
+                        <Option value={'Stock keeper'}>Dealer</Option>
+                        <Option value={'Data entry operator'}>Technician</Option>
+                       <Option value={'Accountant'}>Branch</Option>
+                        <Option value={'Cashier'}>Return to supplier</Option> 
+                    </Select>
+                </FormGroup>
 					<FormGroup id='stockout' label=' Quantity' className='col-md-6'>
 						<Input
 						type='number'
@@ -114,7 +137,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-						
+					
                     <FormGroup id='stockout' label='Date' className='col-md-6'>
 						<Input
 						type='date'
@@ -127,6 +150,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					
                 </div>
             </ModalBody>
 			<ModalFooter className='px-4 pb-4'>

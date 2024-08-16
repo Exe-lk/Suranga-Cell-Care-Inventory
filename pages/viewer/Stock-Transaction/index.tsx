@@ -13,30 +13,28 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import ItemAddModal from '../../../components/custom/ItemAddModal';
-import ItemEditModal from '../../../components/custom/ItemEditModal';
-import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
-import { firestore } from '../../../firebaseConfig';
-import StockAddModal from '../../../components/custom/StockAddModal';
-import StockOutModal from '../../../components/custom/StockOutElecModal';
+import StockAddModal from '../../../components/custom/ItemAddModal';
+import StockEditModal from '../../../components/custom/StockEditModal';
+
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
+import StockDeleteModal from '../../../components/custom/StockDeleteModal';
+
 import Swal from 'sweetalert2';
-import ItemDeleteModal from '../../../components/custom/ItemDeleteModal';
+import FormGroup from '../../../components/bootstrap/forms/FormGroup';
+import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
-    const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false); // State for add modal status
-	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
 	const [id1, setId1] = useState<string>('12356'); // State for new item ID
-	const [status, setStatus] = useState(true);
 
-	// Function to handle deletion of an item
+	// State for managing data fetching status
+	// Fetch data from Firestore for items
 	const handleClickDelete = async () => {
 		try {
 			const result = await Swal.fire({
@@ -55,7 +53,6 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete employee.', 'error');
 		}
 	};
-	// Return the JSX for rendering the page
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -88,19 +85,29 @@ const Index: NextPage = () => {
 						</DropdownToggle>
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
-								<div className='row g-3'></div>
+								<div className='row g-3'>
+									<FormGroup label='Category type' className='col-12'>
+										<ChecksGroup>
+											<Checks
+												key='check'
+												id='check'
+												label='Outgoing'
+												name='check'
+												value='check'></Checks>
+											<Checks
+												key='check'
+												id='check'
+												label='Return'
+												name='check'
+												value='check'></Checks>
+										</ChecksGroup>
+									</FormGroup>
+								</div>
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-					<SubheaderSeparator />
+
 					{/* Button to open  New Item modal */}
-					<Button
-						icon='AddCircleOutline'
-						color='success'
-						isLight
-						onClick={() => setAddModalStatus(true)}>
-						New Item
-					</Button>
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
@@ -110,74 +117,82 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Manage Items
+									Transactions{' '}
 								</div>
-								<Button icon='UploadFile' color='warning'>
+								<Button
+									icon='UploadFile'
+									color='warning'
+									onClick={() => setAddModalStatus(true)}>
 									Export
 								</Button>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-bordered border-primary table-hover text-center'>
+								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
-											<th>Model No</th>
+											<th>Code</th>
 											<th>Name</th>
-											<th>Price</th>
-											<th>Description</th>
+											<th>Date</th>
+											<th>Type</th>
 											<th>Quentity</th>
-											<th>Reorder Level</th>
-											<th>Stock In</th>
-											<th>Stock Out</th>
-											<th>Update</th>
-											<th>Delete</th>
-
-											{/* <th><Button icon='PersonAdd' color='primary' isLight onClick={() => setAddModalStatus(true)}>
-                        New Item
-                      </Button></th> */}
+											<th></th>
+											
+											
+											
 										</tr>
 									</thead>
 
 									<tbody>
-										<tr>
-											<td>SK006</td>
-											<td>Handfree</td>
-											<td>400</td>
-											<td>AUX port</td>
-											<td>50</td>
-											<td>10</td>
-											<td>
-												<Button
-													icon='CallReceived'
-													tag='a'
-													color='success'
-													onClick={() =>
-														setAddstockModalStatus(true)
-													}></Button>
-											</td>
-											<td>
-												<Button
-													icon='CallMissedOutgoing'
-													tag='a'
-													color='warning'
-													onClick={() =>
-														setEditstockModalStatus(true)
-													}></Button>
-											</td>
+										<tr className='text-success'>
+											<td className='text-warning'>15368</td>
+											<td className='text-warning'>Pen drive</td>
+											<td className='text-warning'>2024/08/09</td>
+											<td className='text-warning'>Stock Out</td>
+											<td className='text-warning'>260</td>
+										
+										
+											
+
 											<td>
 												<Button
 													icon='Edit'
 													tag='a'
 													color='info'
-													onClick={() =>
-														setEditModalStatus(true)
-													}></Button>
-											</td>
-											<td>
+													onClick={() => setEditModalStatus(true)}>
+													Edit
+												</Button>
 												<Button
 													className='m-2'
 													icon='Delete'
 													color='danger'
-													onClick={() => handleClickDelete()}></Button>
+													onClick={() => handleClickDelete()}
+													>
+													Delete
+												</Button>
+											</td>
+										</tr>
+										<tr>
+											<td className='text-success'>15368</td>
+											<td className='text-success'>Handfree</td>
+											<td className='text-success'>2024/08/09</td>
+											<td className='text-success'>Stock In</td>
+											<td className='text-success'>260</td>
+										
+											<td>
+											<Button
+													icon='Edit'
+													tag='a'
+													color='info'
+													onClick={() => setEditModalStatus(true)}>
+													Edit
+												</Button>
+												<Button
+													className='m-2'
+													icon='Delete'
+													color='danger'
+													onClick={() => handleClickDelete()}>
+													Delete
+												</Button>
 											</td>
 										</tr>
 									</tbody>
@@ -193,12 +208,10 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
-			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
-            <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id1} />
-			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} />
-			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			<StockAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
+			<StockDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 
+			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

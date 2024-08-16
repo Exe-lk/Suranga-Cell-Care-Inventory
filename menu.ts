@@ -116,6 +116,66 @@ export const stockElePagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
+	Stockkeeper: {
+		id: 'stock keeper',
+		text: 'Stock Keeper',
+		path: 'stock-keeper-elec/Technician-management',
+		icon: 'Person',
+
+	},
+}
+export const BillKeeperPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'bill-keeper/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	bill: {
+		id: 'dashboard',
+		text: 'Bill management',
+		path: 'bill-keeper/bill-management',
+		icon: 'MenuBook',
+		subMenu: null,
+	},
+}
+export const ViewPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'viewer/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	stock: {
+		id: 'stock',
+		text: 'Stock Management',
+		path: 'viewer/Stock-Transaction',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	technician: {
+		id: 'stock',
+		text: 'Technician Work',
+		path: 'viewer/technician-work',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	Phone: {
+		id: 'stock',
+		text: 'Sold Phone',
+		path: 'viewer/sold-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	Repaired: {
+		id: 'stock',
+		text: 'Repaired Phone',
+		path: 'viewer/rapaired-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
 }
 export const addminPagesMenu = {
 	dashboard: {
@@ -136,6 +196,13 @@ export const addminPagesMenu = {
 		id: 'stock keeper',
 		text: 'Stock Keeper',
 		path: 'admin/stock-keeper',
+		icon: 'Person',
+
+	},
+	Supplierr: {
+		id: 'supplier',
+		text: 'Supplier ',
+		path: 'admin/supplier-management',
 		icon: 'Person',
 
 	},

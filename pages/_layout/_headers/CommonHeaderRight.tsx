@@ -29,42 +29,33 @@ import Avatar from '../../../components/Avatar';
 import UserImage2 from '../../../assets/img/wanna/wanna1.png';
 
 import axios from 'axios';
-
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { firestore } from '../../../firebaseConfig';
 
 interface ICommonHeaderRightProps {
 	beforeChildren?: ReactNode;
 	afterChildren?: ReactNode;
 }
+
 const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterChildren }) => {
 	const router = useRouter();
 	const { darkModeStatus, setDarkModeStatus } = useDarkMode();
-
 	const { fullScreenStatus, setFullScreenStatus } = useContext(ThemeContext);
-	const [user, setUser] = useState<any>();
+
 	const styledBtn: IButtonProps = {
 		color: darkModeStatus ? 'dark' : 'light',
 		hoverShadow: 'default',
 		isLight: !darkModeStatus,
 		size: 'lg',
 	};
+	const [offcanvasStatus, setOffcanvasStatus] = useState(false);
 
-
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-
-	
-
-	const handleClickEdit = () => {
-		setEditModalStatus(true);
-
-	};
-
+	//get stock count
 
 	return (
-
 		<HeaderRight>
 			<div className='row g-3'>
 				{beforeChildren}
-
 
 				{/* Dark Mode */}
 				<div className='col-auto mt-4'>
@@ -96,40 +87,33 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 						/>
 					</Popovers>
 				</div>
-				<div className='col-auto'>
-					<Button aria-label='Toggle dark mode' onClick={handleClickEdit}>
-						<div className='col d-flex align-items-center' >
-						
-							{user?.imageurl ? (
-								<img src={user.imageurl} className='me-3' alt={user.name} style={{ width: '50px', height: '50px', borderRadius: '50%' }} />
-							) : (
-								<div className='me-3'>
-								<Avatar src={UserImage2} size={48} color='primary' />
-							</div>
-							)}
-							<div>
-								<div className='fw-bold fs-6 mb-0'>{user?.name}</div>
-								<div className='text-muted'>
-									<small>{user?.role}</small>
-								</div>
-							</div>
-						</div>
-					</Button>
-					
+				<div className='col-auto mt-4'>
+					<Button
+						{...styledBtn}
+						icon='Notifications'
+						onClick={() => setOffcanvasStatus(true)}
+						aria-label='Notifications'
+					/>
 				</div>
-
-
-
 
 				{afterChildren}
 			</div>
-
-
+			<OffCanvas
+				id='notificationCanvas'
+				titleId='offcanvasExampleLabel'
+				placement='end'
+				isOpen={offcanvasStatus}
+				setOpen={setOffcanvasStatus}>
+				<OffCanvasHeader setOpen={setOffcanvasStatus}>
+					<OffCanvasTitle id='offcanvasExampleLabel'>Notifications</OffCanvasTitle>
+				</OffCanvasHeader>
+				<OffCanvasBody>
+					<Alert icon='Inventory2' isLight color='warning' className='flex-nowrap'>
+						Pen Drives stock quantity is less than 05. Manage your stock.
+					</Alert>
+				</OffCanvasBody>
+			</OffCanvas>
 		</HeaderRight>
-
-
-
-
 	);
 };
 CommonHeaderRight.propTypes = {
