@@ -176,10 +176,17 @@ export const ViewPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
-	Repaired: {
+	coustomer: {
 		id: 'stock',
-		text: 'Repaired Phone',
-		path: 'viewer/rapaired-phone',
+		text: 'Coustomers',
+		path: 'viewer/coustomer',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	supplier: {
+		id: 'stock',
+		text: 'Suppliers',
+		path: 'viewer/supplier',
 		icon: 'AutoStories',
 		subMenu: null,
 	},
