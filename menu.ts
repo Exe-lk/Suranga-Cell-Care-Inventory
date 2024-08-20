@@ -73,6 +73,22 @@ export const stockAccPagesMenu = {
 		subMenu: null,
 	},
 }
+export const CashierPagesMenu = {
+	bill: {
+		id: 'bill',
+		text: 'Boll',
+		path: 'cashier/bill',
+		icon: 'Description',
+		subMenu: null,
+	},
+	Repaired: {
+		id: 'stock',
+		text: 'Repaired Phone',
+		path: 'cashier/rapaired-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
 export const stockElePagesMenu = {
 	dashboard: {
 		id: 'dashboard',
