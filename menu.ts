@@ -118,7 +118,7 @@ export const stockElePagesMenu = {
 	},
 	Stockkeeper: {
 		id: 'stock keeper',
-		text: 'Stock Keeper',
+		text: 'Technician Management',
 		path: 'stock-keeper-elec/Technician-management',
 		icon: 'Person',
 
@@ -137,6 +137,13 @@ export const BillKeeperPagesMenu = {
 		text: 'Bill management',
 		path: 'bill-keeper/bill-management',
 		icon: 'MenuBook',
+		subMenu: null,
+	},
+	Repaired: {
+		id: 'stock',
+		text: 'Repaired Phone',
+		path: 'bill-keeper/rapaired-phone',
+		icon: 'AutoStories',
 		subMenu: null,
 	},
 }
@@ -187,7 +194,7 @@ export const addminPagesMenu = {
 	},
 	Stocktype: {
 		id: 'stock',
-		text: 'Stock Type',
+		text: 'Stock Keeper Type',
 		path: 'admin/stock-type',
 		icon: 'Store',
 
