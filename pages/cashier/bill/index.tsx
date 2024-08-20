@@ -5,7 +5,7 @@ import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import { addDoc, collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
-import 'react-simple-keyboard/build/css/index.css';
+
 import Swal from 'sweetalert2';
 import Additem from '../../../components/add-item';
 import Edit from '../../../components/edit-item';

@@ -6,15 +6,9 @@ import Card, { CardActions, CardBody, CardHeader, CardLabel, CardTitle } from '.
 import classNames from 'classnames';
 import useDarkMode from '../hooks/useDarkMode';
 import { getFirstLetter, priceFormat } from '../helpers/helpers';
-// import Keyboard from 'react-simple-keyboard';
-// import 'react-simple-keyboard/build/css/index.css';
+
 import Input from './bootstrap/forms/Input';
-import { isatty } from 'tty';
-import FormGroup from './bootstrap/forms/FormGroup';
-import Label from './bootstrap/forms/Label';
-import Checks, { ChecksGroup } from './bootstrap/forms/Checks';
-import Carousel from './bootstrap/Carousel';
-import CarouselSlide from './bootstrap/CarouselSlide';
+
 
 // Define TypeScript interfaces for Category and Item
 interface Category {
