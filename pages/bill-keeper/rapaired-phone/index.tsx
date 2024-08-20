@@ -22,7 +22,9 @@ import StockDeleteModal from '../../../components/custom/StockDeleteModal';
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-
+import Select from '../../../components/bootstrap/forms/Select';
+import Option from '../../../components/bootstrap/Option';
+import { useFormik } from 'formik';
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
@@ -53,6 +55,40 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete employee.', 'error');
 		}
 	};
+	const formik = useFormik({
+        initialValues: {
+			
+            name: '',
+            type: '',
+           
+            password: '',
+            mobile: '',
+           
+        },
+		validate: (values) => {
+			const errors: {
+				cid?: string;
+                type?: string;
+				
+				name?: string;
+				
+                password?: string;
+				mobile?: string;
+              
+			} = {};
+           
+          
+			return errors;
+		},
+		onSubmit: async (values) => {
+			try {
+				
+			} catch (error) {
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred during file upload. Please try again later.');
+			}
+        },
+	});
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -117,7 +153,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Transactions{' '}
+									Repaired Phone
 								</div>
 								<Button
 									icon='UploadFile'
@@ -130,57 +166,98 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
-											<th>Code</th>
-											<th>Name</th>
+											<th>Technician</th>
+											<th>Description</th>
+											<th>Model</th>
 											<th>Date</th>
-											<th>Type</th>
-											<th>Quentity</th>
-											
-											
-											
-											
+											<th>Status</th>
+											<th>Change Status</th>
 										</tr>
 									</thead>
 
 									<tbody>
 										<tr className='text-success'>
-											<td className='text-warning'>15368</td>
-											<td className='text-warning'>Pen drive</td>
+											<td className='text-warning'>Kalpa</td>
+											<td className='text-warning'>Display Change</td>
+											<td className='text-warning'>A50s</td>
 											<td className='text-warning'>2024/08/09</td>
-											<td className='text-warning'>Stock Out</td>
-											<td className='text-warning'>260</td>
-										
-										
-											
-
-											
+											<td className='text-warning'>Ongoing</td>
+											<td>
+												<FormGroup
+													id='type'
+													
+													onChange={formik.handleChange}
+													className='col-md-6'>
+													<Select
+														ariaLabel='Default select example'
+														onBlur={formik.handleBlur}
+														isValid={formik.isValid}
+														isTouched={formik.touched.type}
+														invalidFeedback={formik.errors.type}>
+													
+														<Option value={'Stock keeper'}>
+															Waiting
+														</Option>
+														<Option value={'Data entry operator'}>
+															Ongoing
+														</Option>
+														{/* <Option value={'Data entry operator'}>
+															completed
+														</Option> */}
+														{/* <Option value={'Data entry operator'}>
+															hand ower
+														</Option>
+														 */}
+													
+													</Select>
+												</FormGroup>
+											</td>
 										</tr>
 										<tr>
-											<td className='text-success'>15368</td>
-											<td className='text-success'>Handfree</td>
+											<td className='text-success'>Kalpa</td>
+											<td className='text-success'>Display Change</td>
+											<td className='text-success'>A50s</td>
 											<td className='text-success'>2024/08/09</td>
-											<td className='text-success'>Stock In</td>
-											<td className='text-success'>260</td>
-										
-											
+											<td className='text-success'>Completed</td>
+											<td><FormGroup
+													id='type'
+													
+													onChange={formik.handleChange}
+													className='col-md-6'>
+													<Select
+													
+														ariaLabel='Default select example'
+														onBlur={formik.handleBlur}
+														isValid={formik.isValid}
+														isTouched={formik.touched.type}
+														invalidFeedback={formik.errors.type}
+														disabled
+														>
+													
+														<Option value={'Stock keeper'}>
+															Waiting
+														</Option>
+														<Option value={'Data entry operator'}>
+															Ongoing
+														</Option>
+														{/* <Option value={'Data entry operator'}>
+															completed
+														</Option> */}
+														{/* <Option value={'Data entry operator'}>
+															hand ower
+														</Option>
+														 */}
+													
+													</Select>
+												</FormGroup></td>
 										</tr>
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-									
-								)}>
-								Recycle Bin</Button> 
 							</CardBody>
 						</Card>
 					</div>
 				</div>
 			</Page>
-			<StockAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
-			<StockDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-
-			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };
