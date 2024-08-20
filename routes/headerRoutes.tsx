@@ -12,7 +12,27 @@ const headers = [
 	
 
 	{
-		path: `/*`,
+		path: `/bill-keeper/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/admin/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/cashier/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/stock-keeper-elec/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/stock-keeper-acc/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/viewer/*`,
 		element: <AdminHeader />,
 	},
 
