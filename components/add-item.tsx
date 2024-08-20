@@ -6,8 +6,8 @@ import Card, { CardActions, CardBody, CardHeader, CardLabel, CardTitle } from '.
 import classNames from 'classnames';
 import useDarkMode from '../hooks/useDarkMode';
 import { getFirstLetter, priceFormat } from '../helpers/helpers';
-import Keyboard from 'react-simple-keyboard';
-import 'react-simple-keyboard/build/css/index.css';
+// import Keyboard from 'react-simple-keyboard';
+// import 'react-simple-keyboard/build/css/index.css';
 import Input from './bootstrap/forms/Input';
 import { isatty } from 'tty';
 import FormGroup from './bootstrap/forms/FormGroup';
@@ -357,7 +357,7 @@ const Index: React.FC<KeyboardProps> = ({
 
 			</div>
 			<div>
-				<Card className='mt-4' style={{ height: '40vh' }}>
+				<Card className='mt-4' style={{ height: '75vh' }}>
 					<CardHeader>
 						<CardLabel>
 							<CardTitle>Item</CardTitle>
@@ -439,15 +439,15 @@ const Index: React.FC<KeyboardProps> = ({
 					</CardBody>
 				</Card>
 				<div>
-					<Input
+					{/* <Input
 						id='keyboardinput'
 						className='form-control mb-4 p-2'
 						value={input}
 						placeholder='Tap on the virtual keyboard to start'
 						onChange={onChangeInput}
 						ref={inputRef}
-					/>
-					<Keyboard
+					/> */}
+					{/* <Keyboard
 						className='keyboard w-100 bg-dark text-light'
 						keyboardRef={(r:any) => (keyboard.current = r)}
 						layoutName={layout}
@@ -456,7 +456,7 @@ const Index: React.FC<KeyboardProps> = ({
 						layout={{
 							default: ['1 2 3', '4 5 6', '7 8 9', '0 {bksp}'],
 						}}
-					/>
+					/> */}
 					<style>
 						{`
             .hg-button {
