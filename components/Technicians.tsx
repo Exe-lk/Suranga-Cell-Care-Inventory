@@ -14,8 +14,8 @@ const TypeAnalatisk = () => {
 	const [columnBasic1] = useState<IChartOptions>({
 		series: [
 			{
-				name: 'return',
-				data: [44, 55, 57, 56, 61,56,89,56,45,],
+				name: 'Technicians',
+				data: [44, 55, 57, 56, ],
 			},
 			// {
 			// 	name: 'restore',
@@ -48,7 +48,7 @@ const TypeAnalatisk = () => {
 				colors: ['transparent'],
 			},
 			xaxis: {
-				categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+				categories: ['Technicians A', 'Technicians B', 'Technicians C', 'Technicians D'],
 			},
 			yaxis: {
 				title: {
@@ -73,7 +73,7 @@ const TypeAnalatisk = () => {
 				<CardHeader>
 					<CardLabel icon='BarChart'>
 						<CardTitle>
-						Transaction History
+						Technicians Work History
 						</CardTitle>
 						<CardSubTitle>Analytics</CardSubTitle>
 					</CardLabel>
