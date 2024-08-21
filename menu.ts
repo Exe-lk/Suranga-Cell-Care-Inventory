@@ -175,14 +175,14 @@ export const ViewPagesMenu = {
 		id: 'stock',
 		text: 'Stock Management',
 		path: 'viewer/Stock-Transaction',
-		icon: 'AutoStories',
+		icon: 'AmpStories',
 		subMenu: null,
 	},
 	technician: {
 		id: 'stock',
 		text: 'Technician Work',
 		path: 'viewer/technician-work',
-		icon: 'AutoStories',
+		icon: 'PermContactCalendar',
 		subMenu: null,
 	},
 	Phone: {
@@ -196,14 +196,14 @@ export const ViewPagesMenu = {
 		id: 'stock',
 		text: 'Coustomers',
 		path: 'viewer/coustomer',
-		icon: 'AutoStories',
+		icon: 'Person',
 		subMenu: null,
 	},
 	supplier: {
 		id: 'stock',
 		text: 'Suppliers',
 		path: 'viewer/supplier',
-		icon: 'AutoStories',
+		icon: 'SupervisedUserCircle',
 		subMenu: null,
 	},
 }
