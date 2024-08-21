@@ -48,11 +48,11 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const position = [
-		{ position: 'Admin' },
-		{ position: 'Stock keeper' },
-		{ position: 'Accountant' },
-		{ position: 'Cashier' },
-		{ position: 'Data entry operator' },
+		// { position: 'Admin' },
+		{ position: 'Stock keeper A' },
+		{ position: 'Stock keeper E' },
+		// { position: 'Cashier' },
+		// { position: 'Data entry operator' },
 	];
 	//get user data from database
 	useEffect(() => {
@@ -136,7 +136,7 @@ const Index: NextPage = () => {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
+									<FormGroup label='Stock keeper type' className='col-12'>
 										<ChecksGroup>
 											{position.map((category, index) => (
 												<Checks
@@ -202,7 +202,7 @@ const Index: NextPage = () => {
 									<tbody>
 										<tr>
 											<td>Kalpa Chamathkara</td>
-											<td>electronics</td>
+											<td>Stock Keeper E</td>
 											
 											<td>0772369745</td>
 											<td>
@@ -229,7 +229,7 @@ const Index: NextPage = () => {
 										</tr>
 										<tr>
 											<td>Ravidu Idamalgoda</td>
-											<td>Accessories</td>
+											<td>Stock Keeper E</td>
 											
 											<td>0772369745</td>
 											<td>

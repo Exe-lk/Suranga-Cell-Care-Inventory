@@ -45,11 +45,11 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id=''>{'New Stock Type'}</ModalTitle>
+				<ModalTitle id=''>{'New Stock Keeper Type'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='name' label='Stock Type Name' className='col-md-6'>
+					<FormGroup id='name' label='Stock Keeper Type' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

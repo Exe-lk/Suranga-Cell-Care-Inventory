@@ -106,15 +106,15 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
-											<th>Stock name</th>
+											<th>Stock Keeper Aype</th>
 											<th>Description</th>
 											<th></th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr>
-											<td>S series</td>
-											<td>China </td>
+											<td>Stock Keeper A</td>
+											<td>Accessories </td>
 											
 											<td>
 												<Button
@@ -134,8 +134,8 @@ const Index: NextPage = () => {
 											</td>
 										</tr>
 										<tr>
-											<td>M Series</td>
-											<td>Samsung</td>
+											<td>Stock Keeper E</td>
+											<td>Accessories</td>
 											<td>
 												<Button
 													icon='Edit'

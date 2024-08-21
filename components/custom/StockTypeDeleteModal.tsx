@@ -47,7 +47,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 				<table className='table table-bordered border-primary table-modern table-hover text-center'>
 					<thead>
 						<tr>
-							<th>Stock Type Name</th>
+							<th>Stock Keeper Type Name</th>
                             <th>Description</th>
 							<th>
 								<Button
@@ -65,8 +65,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 					</thead>
 					<tbody>
 						<tr>
-							<td>Samsung M01</td>
-                            <td>M01</td>
+							<td>Stock Keeper A</td>
+                            <td>Accessories</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
 									Restore
@@ -81,8 +81,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 							</td>
 						</tr>
 						<tr>
-							<td>Samsung</td>
-                            <td>A50s</td>
+							<td>Stock Keeper A</td>
+                            <td>Accessories</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
 									Restore
