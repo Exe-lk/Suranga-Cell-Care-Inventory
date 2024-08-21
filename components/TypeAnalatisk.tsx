@@ -14,15 +14,15 @@ const TypeAnalatisk = () => {
 	const [columnBasic1] = useState<IChartOptions>({
 		series: [
 			{
-				name: 'return',
+				name: 'Model',
 				data: [44, 55, 57, 56, 61,56,89,56,45,],
 			},
 			{
-				name: 'restore',
+				name: 'Category',
 				data: [76, 85, 101, 98, 87,56,89,45,78],
 			},
 			{
-				name: 'stock out',
+				name: 'Brand',
 				data: [35, 41, 36, 26, 45,25,36,98,56,],
 			},
 		],
@@ -73,7 +73,7 @@ const TypeAnalatisk = () => {
 				<CardHeader>
 					<CardLabel icon='BarChart'>
 						<CardTitle>
-						Transaction History
+						Model Category & Brand
 						</CardTitle>
 						<CardSubTitle>Analytics</CardSubTitle>
 					</CardLabel>

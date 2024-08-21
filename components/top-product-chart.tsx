@@ -18,7 +18,7 @@ const PieBasic = () => {
 				width: 380,
 				type: 'pie',
 			},
-			labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+			labels: ['Stock keeper A', 'Stock keeper B', 'Stock keeper C', 'Stock keeper D', 'Stock keeper E'],
 			responsive: [
 				{
 					breakpoint: 480,
@@ -40,7 +40,7 @@ const PieBasic = () => {
 				<CardHeader>
 					<CardLabel icon='PieChart'>
 						<CardTitle>
-							LOT <small>analytics</small>
+							Stock Keeper <small>analytics</small>
 						</CardTitle>
 						{/* <CardSubTitle>Chart</CardSubTitle> */}
 					</CardLabel>

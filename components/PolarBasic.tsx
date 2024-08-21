@@ -44,13 +44,11 @@ const PolarBasic = () => {
 				<CardHeader>
 					<CardLabel icon='TrackChanges'>
 						<CardTitle>
-							type <small>polarArea</small>
+						Status Distribution of Phone Repairs
 						</CardTitle>
 						<CardSubTitle>Chart</CardSubTitle>
 					</CardLabel>
-					<CardActions>
-						<CommonStoryBtn to='/story/extra-chart-polar--polar-basic' />
-					</CardActions>
+					
 				</CardHeader>
 				<CardBody>
 					<Chart

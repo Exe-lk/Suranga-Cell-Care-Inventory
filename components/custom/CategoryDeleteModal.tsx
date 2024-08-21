@@ -64,7 +64,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					</thead>
 					<tbody>
 						<tr>
-							<td>ABC</td>
+							<td>Battery</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
 									Restore
@@ -79,7 +79,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							</td>
 						</tr>
 						<tr>
-							<td>ABC</td>
+							<td>Display</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
 									Restore
