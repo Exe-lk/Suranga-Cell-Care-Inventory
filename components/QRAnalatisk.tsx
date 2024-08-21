@@ -12,13 +12,13 @@ import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
 
 const PieBasic = () => {
 	const [state] = useState<IChartOptions>({
-		series: [44, 55, 13, 43, 22],
+		series: [44, 55],
 		options: {
 			chart: {
 				width: 380,
 				type: 'pie',
 			},
-			labels: ['Team A', 'Team B', 'Team C', 'Team D', 'Team E'],
+			labels: [' Successful', 'Failed',],
 			responsive: [
 				{
 					breakpoint: 480,
@@ -40,7 +40,7 @@ const PieBasic = () => {
 				<CardHeader>
 					<CardLabel icon='PieChart'>
 						<CardTitle>
-							LOT <small>analytics</small>
+						Successful vs Failed barcode scans.<small>analytics</small>
 						</CardTitle>
 						{/* <CardSubTitle>Chart</CardSubTitle> */}
 					</CardLabel>
