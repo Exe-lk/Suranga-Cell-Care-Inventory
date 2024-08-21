@@ -13,8 +13,8 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import ItemAddModal from '../../../components/custom/ItemAddModal';
-import ItemEditModal from '../../../components/custom/ItemEditModal';
+import ItemAddModal from '../../../components/custom/ItemAddEleModal';
+import ItemEditModal from '../../../components/custom/ItemEditEleModal';
 import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import StockAddModal from '../../../components/custom/StockAddModal';
@@ -140,7 +140,7 @@ const Index: NextPage = () => {
 									<tbody>
 										<tr>
 											<td>SK006</td>
-											<td>Handfree</td>
+											<td>Display</td>
 											<td>400</td>
 											<td>AUX port</td>
 											<td>50</td>

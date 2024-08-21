@@ -119,7 +119,7 @@ const Index: NextPage = () => {
 									</thead>
 									<tbody>
 										<tr>
-											<td>Main</td>
+											<td>Display</td>
 											
 											<td>
 												<Button
@@ -139,7 +139,7 @@ const Index: NextPage = () => {
 											</td>
 										</tr>
 										<tr>
-											<td>Embroider</td>
+											<td>Batteries</td>
 											
 											<td>
 												<Button

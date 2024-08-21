@@ -142,7 +142,7 @@ const Index: NextPage = () => {
 									<tbody>
 										<tr className='text-success'>
 											<td className='text-warning'>15368</td>
-											<td className='text-warning'>Pen drive</td>
+											<td className='text-warning'>Display</td>
 											<td className='text-warning'>2024/08/09</td>
 											<td className='text-warning'>Stock Out</td>
 											<td className='text-warning'>260</td>
@@ -170,7 +170,7 @@ const Index: NextPage = () => {
 										</tr>
 										<tr>
 											<td className='text-success'>15368</td>
-											<td className='text-success'>Handfree</td>
+											<td className='text-success'>Touch Pad</td>
 											<td className='text-success'>2024/08/09</td>
 											<td className='text-success'>Stock In</td>
 											<td className='text-success'>260</td>
