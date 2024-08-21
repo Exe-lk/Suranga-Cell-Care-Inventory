@@ -195,11 +195,13 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.category}
 							invalidFeedback={formik.errors.category}
 							validFeedback='Looks good!'>
-							{
-								category.map((item, index) => (
-                                    <Option value={item.categoryname}>{item.categoryname}</Option>
-								))
-							}
+
+						   <Option value="Speekers">Speeker</Option>
+						   <Option value="Speekers">Pen Drive</Option>
+						   <Option value="Speekers">Modile</Option>
+						   
+						   <Option value="Speekers">Other</Option>
+
 						</Select>
 					</FormGroup>
 					<FormGroup id='reorderlevel' label='Reorder Level' className='col-md-6'>

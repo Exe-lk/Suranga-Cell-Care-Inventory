@@ -12,13 +12,13 @@ import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
 
 const PieBasic = () => {
 	const [state] = useState<IChartOptions>({
-		series: [44, 55, 13, 43, 22],
+		series: [44, 55,],
 		options: {
 			chart: {
 				width: 380,
 				type: 'pie',
 			},
-			labels: ['Stock keeper A', 'Stock keeper B', 'Stock keeper C', 'Stock keeper D', 'Stock keeper E'],
+			labels: ['Stock Type A', 'Stock Type B'],
 			responsive: [
 				{
 					breakpoint: 480,
@@ -40,7 +40,7 @@ const PieBasic = () => {
 				<CardHeader>
 					<CardLabel icon='PieChart'>
 						<CardTitle>
-							Stock Keeper <small>analytics</small>
+							Stock Type <small>analytics</small>
 						</CardTitle>
 						{/* <CardSubTitle>Chart</CardSubTitle> */}
 					</CardLabel>
