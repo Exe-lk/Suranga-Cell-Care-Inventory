@@ -76,7 +76,7 @@ export const stockAccPagesMenu = {
 export const CashierPagesMenu = {
 	bill: {
 		id: 'bill',
-		text: 'Boll',
+		text: 'Bill',
 		path: 'cashier/bill',
 		icon: 'Description',
 		subMenu: null,

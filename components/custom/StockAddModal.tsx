@@ -166,8 +166,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='sublocation' label='ID' className='col-md-6'>
+					<FormGroup id='sublocation' label='Date' className='col-md-6'>
 						<Input
+						type='date'
 							onChange={formik.handleChange}
 							value={formik.values.sublocation}
 							onBlur={formik.handleBlur}
