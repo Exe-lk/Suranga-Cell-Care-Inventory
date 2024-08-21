@@ -74,7 +74,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='TechnicianName' label='Technician Name' className='col-md-6'>
+					<FormGroup id='TechnicianName' label='Technician No' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.TechnicianName}
@@ -142,7 +142,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							<Option value={'in progress'}>in progress</Option>
 							<Option value={'Completed)'}>Completed</Option>
 							<Option value={'Reject'}>Reject</Option>
-							<Option value={'In progress to completed'}>In progress to completed</Option>
+							<Option value={'In progress to completed'}>Handover to Cashier</Option>
 						</Select>
 					</FormGroup>
 					<FormGroup id='DateOut' label='Date out' className='col-md-6'>

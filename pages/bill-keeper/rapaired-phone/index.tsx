@@ -171,12 +171,12 @@ const Index: NextPage = () => {
 											<th>Model</th>
 											<th>Date</th>
 											<th>Status</th>
-											<th>Change Status</th>
+											
 										</tr>
 									</thead>
 
 									<tbody>
-										<tr className='text-success'>
+										{/* <tr className='text-success'>
 											<td className='text-warning'>Kalpa</td>
 											<td className='text-warning'>Display Change</td>
 											<td className='text-warning'>A50s</td>
@@ -201,55 +201,18 @@ const Index: NextPage = () => {
 														<Option value={'Data entry operator'}>
 															Ongoing
 														</Option>
-														{/* <Option value={'Data entry operator'}>
-															completed
-														</Option> */}
-														{/* <Option value={'Data entry operator'}>
-															hand ower
-														</Option>
-														 */}
-													
+														
 													</Select>
 												</FormGroup>
 											</td>
-										</tr>
+										</tr> */}
 										<tr>
 											<td className='text-success'>Kalpa</td>
 											<td className='text-success'>Display Change</td>
 											<td className='text-success'>A50s</td>
 											<td className='text-success'>2024/08/09</td>
 											<td className='text-success'>Completed</td>
-											<td><FormGroup
-													id='type'
-													
-													onChange={formik.handleChange}
-													className='col-md-6'>
-													<Select
-													
-														ariaLabel='Default select example'
-														onBlur={formik.handleBlur}
-														isValid={formik.isValid}
-														isTouched={formik.touched.type}
-														invalidFeedback={formik.errors.type}
-														disabled
-														>
-													
-														<Option value={'Stock keeper'}>
-															Waiting
-														</Option>
-														<Option value={'Data entry operator'}>
-															Ongoing
-														</Option>
-														{/* <Option value={'Data entry operator'}>
-															completed
-														</Option> */}
-														{/* <Option value={'Data entry operator'}>
-															hand ower
-														</Option>
-														 */}
-													
-													</Select>
-												</FormGroup></td>
+											
 										</tr>
 									</tbody>
 								</table>

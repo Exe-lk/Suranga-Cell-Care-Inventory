@@ -12,11 +12,11 @@ const LineWithLabel = () => {
 	const [state] = useState<IChartOptions>({
 		series: [
 			{
-				name: 'Stock Keeper',
+				name: 'Stock Out',
 				data: [28, 29, 33, 36, 32, 32, 33],
 			},
 			{
-				name: ' Production Coordinator',
+				name: 'Stock In',
 				data: [12, 11, 14, 18, 17, 13, 13],
 			},
 			// {
@@ -91,7 +91,7 @@ const LineWithLabel = () => {
 				<CardHeader>
 					<CardLabel icon='ShowChart' iconColor='warning'>
 						<CardTitle>
-							Users <small>analytics</small>
+						Stock in & Stock out  <small>analytics</small>
 						</CardTitle>
 						<CardSubTitle>Chart</CardSubTitle>
 					</CardLabel>
