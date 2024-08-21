@@ -113,11 +113,11 @@ const Index: NextPage = () => {
 									<thead>
 										<tr>
 											<th>Phone Details</th>
-                                            <th>Technician Name</th>
+                                            <th>Technician No.</th>
                                             <th>Customer Mobile Number</th>
                                             <th>Bill Number</th>
                                             <th>Phone Model</th>
-                                            <th>Repair</th>
+                                            <th>Repair Type</th>
                                             <th>Price</th>
                                             <th>Status</th>
                                             <th>Date out</th>
@@ -132,7 +132,7 @@ const Index: NextPage = () => {
                                             <td>0715699884</td>
                                             <td>R563</td>
                                             <td>A50s</td>
-                                            <td></td>
+                                            <td>Touchpad restore </td>
                                             <td>500</td>
                                             <td>In Progress</td>
                                             <td>2024/08/12</td>
