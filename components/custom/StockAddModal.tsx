@@ -72,6 +72,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			buy_price: '',
 			quentity: '',
 			status: "",
+			
 			date:formattedDate,
 			active:true
 

@@ -24,11 +24,11 @@ const headers = [
 		element: <AdminHeader />,
 	},
 	{
-		path: `/stock-keeper-elec/*`,
+		path: `/display-stock/*`,
 		element: <AdminHeader />,
 	},
 	{
-		path: `/stock-keeper-acc/*`,
+		path: `/accessory-stock/*`,
 		element: <AdminHeader />,
 	},
 	{

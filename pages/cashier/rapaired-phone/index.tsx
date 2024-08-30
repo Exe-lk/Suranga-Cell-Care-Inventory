@@ -56,38 +56,33 @@ const Index: NextPage = () => {
 		}
 	};
 	const formik = useFormik({
-        initialValues: {
-			
-            name: '',
-            type: '',
-           
-            password: '',
-            mobile: '',
-           
-        },
+		initialValues: {
+			name: '',
+			type: '',
+
+			password: '',
+			mobile: '',
+		},
 		validate: (values) => {
 			const errors: {
 				cid?: string;
-                type?: string;
-				
+				type?: string;
+
 				name?: string;
-				
-                password?: string;
+
+				password?: string;
 				mobile?: string;
-              
 			} = {};
-           
-          
+
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred during file upload. Please try again later.');
 			}
-        },
+		},
 	});
 	return (
 		<PageWrapper>
@@ -166,10 +161,13 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
-											<th>Technician</th>
+											<th>Technician ID</th>
+											<th>Bill No.</th>
 											<th>Description</th>
+											<th>IMI No.</th>
 											<th>Model</th>
 											<th>Date</th>
+											<th>Price</th>
 											<th>Status</th>
 											<th>Change Status</th>
 										</tr>
@@ -177,15 +175,17 @@ const Index: NextPage = () => {
 
 									<tbody>
 										<tr className='text-success'>
-											<td className='text-warning'>Kalpa</td>
+											<td className='text-warning'>TC256</td>
+											<td className='text-warning'>3953</td>
 											<td className='text-warning'>Display Change</td>
+											<td className='text-warning'>45698563254</td>
 											<td className='text-warning'>A50s</td>
 											<td className='text-warning'>2024/08/09</td>
+											<td className='text-warning'>6000</td>
 											<td className='text-warning'>Ongoing</td>
 											<td>
 												<FormGroup
 													id='type'
-													
 													onChange={formik.handleChange}
 													className='col-md-6'>
 													<Select
@@ -194,7 +194,6 @@ const Index: NextPage = () => {
 														isValid={formik.isValid}
 														isTouched={formik.touched.type}
 														invalidFeedback={formik.errors.type}>
-													
 														{/* <Option value={'Stock keeper'}>
 															Waiting
 														</Option>
@@ -207,33 +206,33 @@ const Index: NextPage = () => {
 														<Option value={'Data entry operator'}>
 															hand ower
 														</Option>
-														
-													
 													</Select>
 												</FormGroup>
 											</td>
 										</tr>
 										<tr>
-											<td className='text-success'>Kalpa</td>
+											<td className='text-success'>TC562</td>
+											<td className='text-success'>6585</td>
+
 											<td className='text-success'>Display Change</td>
+											<td className='text-success'>5326945395482</td>
 											<td className='text-success'>A50s</td>
 											<td className='text-success'>2024/08/09</td>
-											<td className='text-success'>Ongoing</td>
-											<td><FormGroup
+											<td className='text-success'>5600</td>
+											<td className='text-success'>Completed</td>
+											<td>
+												<FormGroup
 													id='type'
-													
 													onChange={formik.handleChange}
 													className='col-md-6'>
 													<Select
-													
 														ariaLabel='Default select example'
 														onBlur={formik.handleBlur}
 														isValid={formik.isValid}
 														isTouched={formik.touched.type}
 														invalidFeedback={formik.errors.type}
-														disabled
-														>
-{/* 													
+														disabled>
+														{/* 													
 														<Option value={'Stock keeper'}>
 															Waiting
 														</Option>
@@ -246,10 +245,9 @@ const Index: NextPage = () => {
 														<Option value={'Data entry operator'}>
 															hand ower
 														</Option>
-														
-													
 													</Select>
-												</FormGroup></td>
+												</FormGroup>
+											</td>
 										</tr>
 									</tbody>
 								</table>
