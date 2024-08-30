@@ -114,7 +114,9 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Phone Details</th>
                                             <th>Technician No.</th>
+											<th>Coustomer Name</th>
                                             <th>Customer Mobile Number</th>
+											<th>NIC</th>
                                             <th>Bill Number</th>
                                             <th>Phone Model</th>
                                             <th>Repair Type</th>
@@ -128,8 +130,10 @@ const Index: NextPage = () => {
 									<tbody>
 										<tr>
 											<td>Samsung A50s</td>
-                                            <td>Kalpa</td>
+                                            <td>TC345</td>
+											<td>kalpa</td>
                                             <td>0715699884</td>
+											<td>200133856479</td>
                                             <td>R563</td>
                                             <td>A50s</td>
                                             <td>Touchpad restore </td>

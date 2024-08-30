@@ -16,9 +16,9 @@ const asides = [
 	{ path: demoPagesMenu.signUp.path, element: null, exact: true },
 	{ path: pageLayoutTypesPagesMenu.blank.path, element: null, exact: true },
 	{ path: '/admin/*', element: <AdminAside/>, exact: true },
-	{ path: '/stock-keeper-acc/*', element: <StockeAside/>, exact: true },
+	{ path: '/accessory-stock/*', element: <StockeAside/>, exact: true },
 	{ path: '/bill-keeper/*', element: <BillKeeperAside/>, exact: true },
-	{ path: '/stock-keeper-elec/*', element: <StockeEleAside/>, exact: true },
+	{ path: '/display-stock/*', element: <StockeEleAside/>, exact: true },
 	{ path: '/viewer/*', element: <ViewAside/>, exact: true },
 	{ path: '/cashier/*', element: <CashierAsider/>, exact: true },
 

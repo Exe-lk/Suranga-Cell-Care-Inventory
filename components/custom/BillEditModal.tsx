@@ -20,7 +20,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			TechnicianName: '',
 			PnoneNo: '',
 			BillNumber: '',
-
+			name: '',
+			NIC: '',
 			Model: '',
 			repair: '',
 			Price: '',
@@ -82,6 +83,28 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isValid={formik.isValid}
 							isTouched={formik.touched.TechnicianName}
 							invalidFeedback={formik.errors.TechnicianName}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='name' label='Customer Name' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.name}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.name}
+							invalidFeedback={formik.errors.name}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='NIC' label='Customer NIC' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.NIC}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.NIC}
+							invalidFeedback={formik.errors.NIC}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -171,6 +171,9 @@ const Index: NextPage = () => {
 											<th>Model</th>
 											<th>Date</th>
 											<th>Status</th>
+											<th>Cost(Rs.)</th>
+											<th>Price(Rs.)</th>
+											<th>Profit(Rs.)</th>
 											
 										</tr>
 									</thead>
@@ -212,6 +215,9 @@ const Index: NextPage = () => {
 											<td className='text-success'>A50s</td>
 											<td className='text-success'>2024/08/09</td>
 											<td className='text-success'>Completed</td>
+											<td className='text-success'>3500</td>
+											<td className='text-success'>6500</td>
+											<td className='text-success'>3000</td>
 											
 										</tr>
 									</tbody>

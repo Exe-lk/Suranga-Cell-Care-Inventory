@@ -122,7 +122,7 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Model No</th>
 											<th>Name</th>
-											<th>Price</th>
+											<th>Cost</th>
 											<th>Description</th>
 											<th>Quentity</th>
 											<th>Reorder Level</th>
