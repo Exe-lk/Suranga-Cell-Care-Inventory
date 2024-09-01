@@ -363,6 +363,14 @@ const Index: React.FC<KeyboardProps> = ({
 						</CardActions> */}
 					</CardHeader>
 					<CardBody isScrollable>
+					<Input
+						id='keyboardinput'
+						className='form-control mb-4 p-2'
+						value={input}
+						placeholder='Tap on the virtual keyboard to start'
+						onChange={onChangeInput}
+						ref={inputRef}
+					/> 
 						<div className='row g-3'>
 							{items
 								.filter((val) => {
@@ -433,14 +441,7 @@ const Index: React.FC<KeyboardProps> = ({
 					</CardBody>
 				</Card>
 				<div>
-					{/* <Input
-						id='keyboardinput'
-						className='form-control mb-4 p-2'
-						value={input}
-						placeholder='Tap on the virtual keyboard to start'
-						onChange={onChangeInput}
-						ref={inputRef}
-					/> */}
+				
 					{/* <Keyboard
 						className='keyboard w-100 bg-dark text-light'
 						keyboardRef={(r:any) => (keyboard.current = r)}
