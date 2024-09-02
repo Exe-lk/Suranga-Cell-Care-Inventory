@@ -113,6 +113,18 @@ const Index: NextPage = () => {
 									<thead>
 										<tr>
 											<th>Phone Details</th>
+											<th>Date In</th>
+											<th>Bill Number</th>
+											<th>Phone Model</th>
+											<th>Repair Type</th>
+                                            <th>Technician No.</th>
+											<th>Customer Name</th>
+                                            <th>Customer Mobile Number</th>
+											<th>NIC</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Date out</th>
+											{/* <th>Phone Details</th>
                                             <th>Technician No.</th>
 											<th>Coustomer Name</th>
                                             <th>Customer Mobile Number</th>
@@ -122,21 +134,21 @@ const Index: NextPage = () => {
                                             <th>Repair Type</th>
                                             <th>Price</th>
                                             <th>Status</th>
-                                            <th>Date out</th>
+                                            <th>Date out</th> */}
 											
-											<th></th>
 										</tr>
 									</thead>
 									<tbody>
 										<tr>
 											<td>Samsung A50s</td>
+											<td>2024/07/12</td>
+											<td>R563</td>
+											<td>A50s</td>
+											<td>Touchpad restore </td>
                                             <td>TC345</td>
 											<td>kalpa</td>
                                             <td>0715699884</td>
 											<td>200133856479</td>
-                                            <td>R563</td>
-                                            <td>A50s</td>
-                                            <td>Touchpad restore </td>
                                             <td>500</td>
                                             <td>In Progress</td>
                                             <td>2024/08/12</td>

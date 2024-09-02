@@ -135,6 +135,7 @@ const Index: NextPage = () => {
 											<th>Date</th>
 											<th>Type</th>
 											<th>Quentity</th>
+											<th>Branch</th>
 											<th></th>
 											
 											
@@ -149,6 +150,7 @@ const Index: NextPage = () => {
 											<td className='text-warning'>2024/08/09</td>
 											<td className='text-warning'>Stock Out</td>
 											<td className='text-warning'>260</td>
+											<td className='text-warning'>Suranga Cell Care 2</td>
 										
 										
 											
@@ -177,6 +179,7 @@ const Index: NextPage = () => {
 											<td className='text-success'>2024/08/09</td>
 											<td className='text-success'>Stock In</td>
 											<td className='text-success'>260</td>
+											<td className='text-success'>Suranga Cell Care 1</td>
 										
 											<td>
 											<Button

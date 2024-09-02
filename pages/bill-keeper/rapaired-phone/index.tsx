@@ -153,7 +153,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Repaired Phone
+									Repaired Phones
 								</div>
 								<Button
 									icon='UploadFile'
@@ -166,14 +166,25 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
+											<th>Date</th>
 											<th>Technician</th>
+											<th>Bill Number</th>
+											<th>Model</th>
+											<th>Repair Type</th>
+											<th>Status</th>
+											<th>Cost(Rs.)</th>
+											<th>Price(Rs.)</th>
+											<th>IMI</th>
+											<th>Profit(Rs.)</th>
+
+											{/* <th>Technician</th>
 											<th>Description</th>
 											<th>Model</th>
 											<th>Date</th>
 											<th>Status</th>
 											<th>Cost(Rs.)</th>
 											<th>Price(Rs.)</th>
-											<th>Profit(Rs.)</th>
+											<th>Profit(Rs.)</th> */}
 											
 										</tr>
 									</thead>
@@ -210,13 +221,15 @@ const Index: NextPage = () => {
 											</td>
 										</tr> */}
 										<tr>
-											<td className='text-success'>Kalpa</td>
-											<td className='text-success'>Display Change</td>
-											<td className='text-success'>A50s</td>
 											<td className='text-success'>2024/08/09</td>
+											<td className='text-success'>Kalpa</td>
+											<td className='text-success'>R563</td>
+											<td className='text-success'>A50s</td>
+											<td className='text-success'>Display Change</td>
 											<td className='text-success'>Completed</td>
 											<td className='text-success'>3500</td>
 											<td className='text-success'>6500</td>
+											<td className='text-success'>350123451234560</td>
 											<td className='text-success'>3000</td>
 											
 										</tr>
