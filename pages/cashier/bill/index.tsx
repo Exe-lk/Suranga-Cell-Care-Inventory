@@ -69,15 +69,15 @@ function index() {
 				orderedItems.reduce(
 					(total: any, item: any) =>
 						total +
-						item.quentity * item.price +
-						((total + item.quentity * item.price) / 100) * 10,
+						item.quantity * item.price +
+						((total + item.quantity * item.price) / 100) * 10,
 					0.0,
 				) &&
 			orderedItems.reduce(
 				(total: any, item: any) =>
 					total +
-					item.quentity * item.price +
-					((total + item.quentity * item.price) / 100) * 10,
+					item.quantity * item.price +
+					((total + item.quantity * item.price) / 100) * 10,
 				0.0,
 			) > 1
 		) {
@@ -97,8 +97,8 @@ function index() {
 					const amount = orderedItems.reduce(
 						(total: any, item: any) =>
 							total +
-							item.quentity * item.price +
-							((total + item.quentity * item.price) / 100) * 10,
+							item.quantity * item.price +
+							((total + item.quantity * item.price) / 100) * 10,
 						0.0,
 					);
 					const currentDate = new Date();
@@ -337,7 +337,7 @@ function index() {
 									<strong className='fs-5'>
 										{orderedItems.reduce(
 											(total: any, item: any) =>
-												total + item.quentity * item.price,
+												total + item.quantity * item.price,
 											0,
 										)}
 										.00
@@ -356,7 +356,7 @@ function index() {
 									{orderedItems
 										.reduce(
 											(total: any, item: any) =>
-												((total + item.quentity * item.price) / 100) * 10,
+												((total + item.quantity * item.price) / 100) * 10,
 											0,
 										)
 										.toFixed(2)}
@@ -373,8 +373,8 @@ function index() {
 										.reduce(
 											(total: any, item: any) =>
 												total +
-												item.quentity * item.price +
-												((total + item.quentity * item.price) / 100) * 10,
+												item.quantity * item.price +
+												((total + item.quantity * item.price) / 100) * 10,
 											0.0,
 										)
 										.toFixed(2)}
@@ -400,8 +400,8 @@ function index() {
 											.reduce(
 												(total: any, item: any) =>
 													total +
-													item.quentity * item.price +
-													((total + item.quentity * item.price) / 100) *
+													item.quantity * item.price +
+													((total + item.quantity * item.price) / 100) *
 														10,
 												0.0,
 											)
