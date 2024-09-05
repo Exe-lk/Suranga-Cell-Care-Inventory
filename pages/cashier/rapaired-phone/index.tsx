@@ -148,7 +148,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Repaired Phone
+									Repaired Phones
 								</div>
 								<Button
 									icon='UploadFile'
@@ -161,7 +161,17 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
+											<th>Date</th>
 											<th>Technician ID</th>
+											<th>Bill No.</th>
+											<th>Phone Model</th>
+											<th>Description(Repair)</th>
+											<th>Price</th>
+											<th>IMI No.</th>
+											<th>Status</th>
+											<th>Change Status</th>
+
+											{/* <th>Technician ID</th>
 											<th>Bill No.</th>
 											<th>Description</th>
 											<th>IMI No.</th>
@@ -169,19 +179,19 @@ const Index: NextPage = () => {
 											<th>Date</th>
 											<th>Price</th>
 											<th>Status</th>
-											<th>Change Status</th>
+											<th>Change Status</th> */}
 										</tr>
 									</thead>
 
 									<tbody>
 										<tr className='text-success'>
-											<td className='text-warning'>TC256</td>
-											<td className='text-warning'>3953</td>
-											<td className='text-warning'>Display Change</td>
-											<td className='text-warning'>45698563254</td>
-											<td className='text-warning'>A50s</td>
 											<td className='text-warning'>2024/08/09</td>
+											<td className='text-warning'>TC256</td>
+											<td className='text-success'>6581</td>
+											<td className='text-warning'>A50s</td>
+											<td className='text-warning'>Display Change</td>
 											<td className='text-warning'>6000</td>
+											<td className='text-warning'>45698563254</td>
 											<td className='text-warning'>Ongoing</td>
 											<td>
 												<FormGroup
@@ -211,14 +221,13 @@ const Index: NextPage = () => {
 											</td>
 										</tr>
 										<tr>
+											<td className='text-success'>2024/08/09</td>
 											<td className='text-success'>TC562</td>
 											<td className='text-success'>6585</td>
-
-											<td className='text-success'>Display Change</td>
-											<td className='text-success'>5326945395482</td>
 											<td className='text-success'>A50s</td>
-											<td className='text-success'>2024/08/09</td>
+											<td className='text-success'>Display Change</td>
 											<td className='text-success'>5600</td>
+											<td className='text-success'>5326945395482</td>
 											<td className='text-success'>Completed</td>
 											<td>
 												<FormGroup
@@ -243,7 +252,7 @@ const Index: NextPage = () => {
 															completed
 														</Option>
 														<Option value={'Data entry operator'}>
-															hand ower
+															handower
 														</Option>
 													</Select>
 												</FormGroup>
