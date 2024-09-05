@@ -53,7 +53,7 @@ export const stockAccPagesMenu = {
 	},
 	model: {
 		id: 'dashboard',
-		text: 'Mdel Management',
+		text: 'Model Management',
 		path: 'accessory-stock/model-management',
 		icon: 'ChangeHistory',
 		subMenu: null,
@@ -113,7 +113,7 @@ export const stockElePagesMenu = {
 	},
 	model: {
 		id: 'dashboard',
-		text: 'Mdel Management',
+		text: 'Model Management',
 		path: 'display-stock/model-management',
 		icon: 'ChangeHistory',
 		subMenu: null,

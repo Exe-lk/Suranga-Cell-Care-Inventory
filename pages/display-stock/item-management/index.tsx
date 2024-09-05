@@ -127,7 +127,8 @@ const Index: NextPage = () => {
 											<th>Description</th>
 											<th>Quentity</th>
 											<th>Reorder Level</th>
-											<th>Date Out</th>
+											<th>Date Out </th>
+											<th>Technition Name</th>
 											<th>Stock In</th>
 											<th>Stock Out</th>
 											<th>Update</th>
@@ -161,6 +162,7 @@ const Index: NextPage = () => {
 											<td>50</td>
 											<td>10</td>
 											<td>2024/08/09</td>
+											<td>Achintha</td>
 											<td>
 												<Button
 													icon='CallReceived'
