@@ -10,6 +10,7 @@ const Index: NextPage = () => {
 	return (
 		<PageWrapper>
 			<Page>
+			<div className='flex-grow-1 text-right text-info'>Welcome to Display Stock</div>
 				<div className='row'>
 
 				<PieBasic />
