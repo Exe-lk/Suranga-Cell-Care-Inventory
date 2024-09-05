@@ -25,7 +25,7 @@ interface Item {
 	image: string;
 	name: string;
 	price: number;
-	quentity: number;
+	quantity: number;
 	reorderlevel: number;
 }
 // StockAddModal component definition
@@ -70,7 +70,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			sublocation: "",
 			exp: '',
 			buy_price: '',
-			quentity: '',
+			quantity: '',
 			status: "",
 			
 			date:formattedDate,
@@ -84,7 +84,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				sublocation?: string;
 				exp?: string;
 				buy_price?: string;
-				quentity?: string;
+				quantity?: string;
 				status?: string
 			} = {};
 			if (!values.buy_price) {
@@ -96,8 +96,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.location) {
 				errors.location = 'Required';
 			}
-			if (!values.quentity) {
-				errors.quentity = 'Required';
+			if (!values.quantity) {
+				errors.quantity = 'Required';
 			}
 			if (!values.status) {
 				errors.status = 'Required';
@@ -179,7 +179,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='exp' label='Quentity' className='col-md-6'>
+					<FormGroup id='exp' label='Quantity' className='col-md-6'>
 						<Input
 					
 							onChange={formik.handleChange}
@@ -188,15 +188,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='quentity' label='SuplierName' className='col-md-6'>
+					<FormGroup id='quantity' label='SuplierName' className='col-md-6'>
 						<Input
 							type='number'
 							onChange={formik.handleChange}
-							value={formik.values.quentity}
+							value={formik.values.quantity}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.quentity}
-							invalidFeedback={formik.errors.quentity}
+							isTouched={formik.touched.quantity}
+							invalidFeedback={formik.errors.quantity}
 							min={1}
 							validFeedback='Looks good!'
 						/>

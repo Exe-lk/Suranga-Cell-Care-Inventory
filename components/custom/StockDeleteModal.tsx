@@ -50,7 +50,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							<th>Name</th>
 							<th>Model No</th>
 							<th>Date</th>
-							<th>Quentity</th>
+							<th>Quantity</th>
 							<th>
 								<Button
 									icon='Delete'

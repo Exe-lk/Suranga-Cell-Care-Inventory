@@ -26,7 +26,7 @@ interface Item {
 	image: string;
 	name: string;
 	price: number;
-	quentity: number;
+	quantity: number;
 	category: string;
 	reorderlevel: number;
 }
@@ -41,7 +41,7 @@ const ItemEditModal: FC<ItemEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		name: "",
 		price: 0,
 		category: "",
-		quentity: 0,
+		quantity: 0,
 		reorderlevel: 0
     }
 	const [item, setItem] = useState<Item>(data);
@@ -135,7 +135,7 @@ const ItemEditModal: FC<ItemEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			image: "",
 			name: "",
 			price: 0,
-			quentity: 0,
+			quantity: 0,
 			reorderlevel: 0,
 			category: "",
 			modelNo:"",
@@ -147,7 +147,7 @@ const ItemEditModal: FC<ItemEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				image?: string;
 				name?: string;
 				price?: string;
-				quentity?: string;
+				quantity?: string;
 				reorderlevel?: string;
 				category?: string
 				

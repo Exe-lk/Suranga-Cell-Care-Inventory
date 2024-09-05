@@ -23,9 +23,9 @@ interface StockAddModalProps {
 }
 interface Stock {
 	cid: string;
-	quentity: string;
+	quantity: string;
     item_id: string;
-	currentquentity: string;
+	currentquantity: string;
 	stockHistory: { stockout: string; date: string }[];
 }
 
