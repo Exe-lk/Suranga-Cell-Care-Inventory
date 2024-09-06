@@ -94,9 +94,12 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			category: '',
 			image: '',
 			name: '',
-			price: '',
-			description:"",
-			modelNo:'',
+			phone: '',
+			NIC: '',
+			costprice: '',
+			sellingprice: '',
+			description: '',
+			modelNo: '',
 			quentity: 0,
 			reorderlevel: '',
 			status: true,
@@ -111,7 +114,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				image?: string;
 				name?: string;
 				price?: string;
-				quantity?: string;
+				quentity?: string;
 				reorderlevel?: string;
 				description?: string;
 				modelNo?: string;
