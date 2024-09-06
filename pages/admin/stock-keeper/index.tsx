@@ -49,8 +49,8 @@ const Index: NextPage = () => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const position = [
 		// { position: 'Admin' },
-		{ position: 'Stock keeper A' },
-		{ position: 'Stock keeper E' },
+		{ position: 'Stock keeper Accessosry' },
+		{ position: 'Stock keeper Repair' },
 		// { position: 'Cashier' },
 		// { position: 'Data entry operator' },
 	];
@@ -202,7 +202,7 @@ const Index: NextPage = () => {
 									<tbody>
 										<tr>
 											<td>Kalpa Chamathkara</td>
-											<td>Stock Keeper E</td>
+											<td>Stock Keeper Repaier</td>
 											
 											<td>0772369745</td>
 											<td>
@@ -229,7 +229,7 @@ const Index: NextPage = () => {
 										</tr>
 										<tr>
 											<td>Ravidu Idamalgoda</td>
-											<td>Stock Keeper E</td>
+											<td>Stock Keeper Repaier</td>
 											
 											<td>0772369745</td>
 											<td>
