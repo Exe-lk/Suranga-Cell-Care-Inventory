@@ -120,16 +120,31 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
+											<th>Date In</th>
 											<th>Model No</th>
-											<th>Name</th>
+											<th>Display Name</th>
 											<th>Cost</th>
 											<th>Description</th>
-											<th>Quentity</th>
+											<th>Quantity</th>
 											<th>Reorder Level</th>
+											<th>Date Out </th>
+											<th>Technition Name</th>
 											<th>Stock In</th>
 											<th>Stock Out</th>
 											<th>Update</th>
 											<th>Delete</th>
+											
+
+											{/* <th>Model No</th>
+											<th>Name</th>
+											<th>Cost</th>
+											<th>Description</th>
+											<th>Quantity</th>
+											<th>Reorder Level</th>
+											<th>Stock In</th>
+											<th>Stock Out</th>
+											<th>Update</th>
+											<th>Delete</th> */}
 
 											{/* <th><Button icon='PersonAdd' color='primary' isLight onClick={() => setAddModalStatus(true)}>
                         New Item
@@ -139,12 +154,15 @@ const Index: NextPage = () => {
 
 									<tbody>
 										<tr>
+											<td>2024/06/09</td>
 											<td>SK006</td>
 											<td>Display</td>
 											<td>400</td>
 											<td>AUX port</td>
 											<td>50</td>
 											<td>10</td>
+											<td>2024/08/09</td>
+											<td>Achintha</td>
 											<td>
 												<Button
 													icon='CallReceived'
