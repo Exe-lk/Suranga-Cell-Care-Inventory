@@ -65,7 +65,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 					</thead>
 					<tbody>
 						<tr>
-							<td>Stock Keeper A</td>
+							<td>Stock Keeper Accessory</td>
                             <td>Accessories</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
@@ -81,7 +81,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 							</td>
 						</tr>
 						<tr>
-							<td>Stock Keeper A</td>
+							<td>Stock Keeper Accessory</td>
                             <td>Accessories</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
