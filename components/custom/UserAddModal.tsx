@@ -140,7 +140,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							invalidFeedback={formik.errors.type}>
 							{/* <Option value={'Admin'}>Admin</Option> */}
 							<Option value={'Stock keeper'}>Electronics</Option>
-							<Option value={'Data entry operator'}>Accessoriesr</Option>
+							<Option value={'Data entry operator'}>Accessories</Option>
 							{/* <Option value={'Accountant'}>Accountant</Option>
 							<Option value={'Cashier'}>Cashier</Option> */}
 						</Select>

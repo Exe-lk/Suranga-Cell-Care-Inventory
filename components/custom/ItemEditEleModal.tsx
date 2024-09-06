@@ -108,6 +108,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			datein: '',
 			dateout: '',
 			storage: '',
+			boxnumber:'',
 		},
 		validate: (values) => {
 			const errors: {
@@ -155,7 +156,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Checks
 								type='radio'
 								id='brendnew'
-								label='Breand New'
+								label='Brand New'
 								name='type'
 								value='brendnew'
 								onChange={handleOptionChange}
@@ -278,6 +279,18 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='boxnumber' label='Box Number' className='col-md-6'>
+								<Input
+									type='text'
+									onChange={formik.handleChange}
+									value={formik.values.boxnumber}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.boxnumber}
+									invalidFeedback={formik.errors.boxnumber}
+									validFeedback='Looks good!'
+								/>
+					</FormGroup>
 					<FormGroup id='storage' label='Storage' className='col-md-6'>
 						<Input
 							type='text'
@@ -302,6 +315,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					
 					<FormGroup id='datein' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
@@ -352,18 +366,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									validFeedback='Looks good!'
 								/>
 							</FormGroup>
-							<FormGroup id='nic' label='NIC' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.NIC}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.NIC}
-									invalidFeedback={formik.errors.NIC}
-									validFeedback='Looks good!'
-								/>
-							</FormGroup>
+							
+							
 						</>
 					)}
 					{/* <FormGroup label='Profile Picture' className='col-md-6'>
