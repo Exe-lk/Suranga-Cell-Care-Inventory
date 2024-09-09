@@ -206,6 +206,13 @@ export const ViewPagesMenu = {
 		icon: 'SupervisedUserCircle',
 		subMenu: null,
 	},
+	dealer: {
+		id: 'stock',
+		text: 'dealers',
+		path: 'viewer/dealer',
+		icon: 'SupervisedUserCircle',
+		subMenu: null,
+	},
 }
 export const addminPagesMenu = {
 	dashboard: {
@@ -233,6 +240,13 @@ export const addminPagesMenu = {
 		id: 'supplier',
 		text: 'Supplier ',
 		path: 'admin/supplier-management',
+		icon: 'Person',
+
+	},
+	Dealer: {
+		id: 'Dealer',
+		text: 'Dealer ',
+		path: 'admin/dealer-management',
 		icon: 'Person',
 
 	},
