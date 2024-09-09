@@ -126,7 +126,7 @@ const Index: NextPage = () => {
                                             <th>Date out</th>
 											{/* <th>Phone Details</th>
                                             <th>Technician No.</th>
-											<th>Coustomer Name</th>
+											<th>Customer Name</th>
                                             <th>Customer Mobile Number</th>
 											<th>NIC</th>
                                             <th>Bill Number</th>
