@@ -194,7 +194,7 @@ export const ViewPagesMenu = {
 	},
 	coustomer: {
 		id: 'stock',
-		text: 'Coustomers',
+		text: 'Customers',
 		path: 'viewer/coustomer',
 		icon: 'Person',
 		subMenu: null,
