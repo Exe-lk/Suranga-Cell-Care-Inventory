@@ -165,7 +165,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Checks
 								type='radio'
 								id='used'
-								label='Used Phone'
+								label='Used (Second Hand)'
 								name='type'
 								value='used'
 								onChange={handleOptionChange}
