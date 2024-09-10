@@ -36,20 +36,12 @@ interface ICommonHeaderRightProps {
 	beforeChildren?: ReactNode;
 	afterChildren?: ReactNode;
 }
-interface Item {
-	cid: string;
-	category: number;
-	image: string;
-	name: string;
-	price: number;
-	quentity: number;
-	reorderlevel: number;
-}
+
 const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterChildren }) => {
 	const router = useRouter();
 	const { darkModeStatus, setDarkModeStatus } = useDarkMode();
 	const { fullScreenStatus, setFullScreenStatus } = useContext(ThemeContext);
-	const [user, setUser] = useState<any>();
+
 	const styledBtn: IButtonProps = {
 		color: darkModeStatus ? 'dark' : 'light',
 		hoverShadow: 'default',
@@ -58,10 +50,7 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 	};
 	const [offcanvasStatus, setOffcanvasStatus] = useState(false);
 
-	const [orderData, setOrdersData] = useState([]);
-	const [item, setItem] = useState<Item[]>([]);
-	const [stockData, setStockData] = useState([]);
-	const [quantityDifference, setQuantityDifference] = useState([]);
+	//get stock count
 
 	return (
 		<HeaderRight>
@@ -98,6 +87,14 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 						/>
 					</Popovers>
 				</div>
+				<div className='col-auto mt-4'>
+					<Button
+						{...styledBtn}
+						icon='Notifications'
+						onClick={() => setOffcanvasStatus(true)}
+						aria-label='Notifications'
+					/>
+				</div>
 
 				{afterChildren}
 			</div>
@@ -111,26 +108,9 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					<OffCanvasTitle id='offcanvasExampleLabel'>Notifications</OffCanvasTitle>
 				</OffCanvasHeader>
 				<OffCanvasBody>
-					{item.map((item, index) => (
-						<>
-							{quantityDifference
-								.filter((val: any) => {
-									if (val.quantity_difference < item.reorderlevel) {
-										return val;
-									}
-								})
-								.map((quentity: any, index) => (
-									<Alert
-										icon='Inventory2'
-										isLight
-										color='warning'
-										className='flex-nowrap'>
-										{item.name} stock quantity is less than {item.reorderlevel}.
-										Manage your stock.
-									</Alert>
-								))}
-						</>
-					))}
+					<Alert icon='Inventory2' isLight color='warning' className='flex-nowrap'>
+						Pen Drives stock quantity is less than 05. Manage your stock.
+					</Alert>
 				</OffCanvasBody>
 			</OffCanvas>
 		</HeaderRight>

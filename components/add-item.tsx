@@ -6,15 +6,9 @@ import Card, { CardActions, CardBody, CardHeader, CardLabel, CardTitle } from '.
 import classNames from 'classnames';
 import useDarkMode from '../hooks/useDarkMode';
 import { getFirstLetter, priceFormat } from '../helpers/helpers';
-import Keyboard from 'react-simple-keyboard';
-import 'react-simple-keyboard/build/css/index.css';
+
 import Input from './bootstrap/forms/Input';
-import { isatty } from 'tty';
-import FormGroup from './bootstrap/forms/FormGroup';
-import Label from './bootstrap/forms/Label';
-import Checks, { ChecksGroup } from './bootstrap/forms/Checks';
-import Carousel from './bootstrap/Carousel';
-import CarouselSlide from './bootstrap/CarouselSlide';
+
 
 // Define TypeScript interfaces for Category and Item
 interface Category {
@@ -28,7 +22,7 @@ interface Item {
 	image: string;
 	name: string;
 	price: number;
-	quentity: number;
+	quantity: number;
 	reorderlevel: number;
 }
 
@@ -38,6 +32,7 @@ interface KeyboardProps {
 	setOrderedItems: React.Dispatch<React.SetStateAction<Item[]>>;
 	isActive: boolean;
 	setActiveComponent: React.Dispatch<React.SetStateAction<'additem' | 'edit'>>;
+
 }
 
 const Index: React.FC<KeyboardProps> = ({
@@ -45,40 +40,48 @@ const Index: React.FC<KeyboardProps> = ({
 	setOrderedItems,
 	isActive,
 	setActiveComponent,
+
 }) => {
+
 	const cdata = [
 		{ status: true, categoryname: 'Main', cid: '0bc5HUELspDzvrUdt5u6' },
 
+
 		{ status: true, categoryname: 'Embroider', cid: 'LKcV57ThRnHtE9bxBHMb' },
+
 
 		{ status: true, categoryname: 'Painting', cid: 'La1K7XLguIsFPZN19vp4' },
 
+
 		{ categoryname: 'clothes', cid: 'NowdRVU0K7hDZiMRkksn', status: true },
 
+
 		{ categoryname: 'other', status: true, cid: 'irufyXKsbSNPk3z8ziC8' },
-	];
+
+
+	]
 	const idata = [
 		{
 			price: 1000,
-			cid: '12356',
+			cid: "12356",
 			status: true,
-			image: '',
-			quentity: 0,
-			name: 'button',
-			category: 'clothes',
-			reorderlevel: '1500',
+			image: "",
+			quantity: 0,
+			name: "A50s",
+			category: "Back cover",
+			reorderlevel: "1500"
 		},
 		{
-			category: 'clothes',
+			category: "Tempeerd",
 			status: false,
-			quentity: 0,
-			image: '',
-			cid: '12358',
+			quantity: 0,
+			image: "",
+			cid: "12358",
 			reorderlevel: 3,
-			name: 'fabric',
-			price: 10,
-		},
-	];
+			name: "11+",
+			price: 400
+		}
+	]
 	// Custom hook to manage dark mode
 	const { darkModeStatus } = useDarkMode();
 
@@ -89,8 +92,8 @@ const Index: React.FC<KeyboardProps> = ({
 	const [input, setInput] = useState<string>('');
 	const keyboard = useRef<any>(null);
 	const [showPopup, setShowPopup] = useState<boolean>(false);
-	const [popupInput, setPopupInput] = useState<any>('');
-	const [popupInput1, setPopupInput1] = useState<any>('');
+	const [popupInput, setPopupInput] = useState<any>("");
+	const [popupInput1, setPopupInput1] = useState<any>("");
 	const [selectedItem, setSelectedItem] = useState<Item | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const popupInputRef = useRef<HTMLInputElement>(null);
@@ -177,11 +180,11 @@ const Index: React.FC<KeyboardProps> = ({
 	// Handle OK button click in the popup
 	const handlePopupOk = async () => {
 		if (popupInput <= 0) {
-			return;
+			return
 		}
 		if (selectedItem) {
 			console.log(popupInput);
-			const updatedItem = { ...selectedItem, quentity: Number(popupInput) };
+			const updatedItem = { ...selectedItem, quantity: Number(popupInput) };
 			console.log(updatedItem);
 			await setOrderedItems((prevItems: any) => {
 				const itemIndex = prevItems.findIndex((item: any) => item.cid === updatedItem.cid);
@@ -193,7 +196,7 @@ const Index: React.FC<KeyboardProps> = ({
 					return [...prevItems, updatedItem];
 				}
 			});
-			setPopupInput('');
+			setPopupInput("");
 			console.log('Selected item data:', orderedItems);
 		}
 		setShowPopup(false);
@@ -282,8 +285,9 @@ const Index: React.FC<KeyboardProps> = ({
 					</Button>
 				))}
 			</div> */}
-
+		
 			<div>
+
 				{/* <Carousel
 					isHoverPause
 					isRide
@@ -335,12 +339,22 @@ const Index: React.FC<KeyboardProps> = ({
 					</CarouselSlide>
 
 				</Carousel> */}
+
+
+
+
+
+
+
+
+
+
 			</div>
 			<div>
-				<Card className='mt-4' style={{ height: '40vh' }}>
+				<Card className='mt-4' style={{ height: '75vh' }}>
 					<CardHeader>
 						<CardLabel>
-							<CardTitle>Lot</CardTitle>
+							<CardTitle>Item</CardTitle>
 						</CardLabel>
 						{/* <CardActions>
 						 <Button color='info' isLink icon='Summarize' tag='a'>
@@ -349,6 +363,14 @@ const Index: React.FC<KeyboardProps> = ({
 						</CardActions> */}
 					</CardHeader>
 					<CardBody isScrollable>
+					<Input
+						id='keyboardinput'
+						className='form-control mb-4 p-2'
+						value={input}
+						placeholder='Tap on the virtual keyboard to start'
+						onChange={onChangeInput}
+						ref={inputRef}
+					/> 
 						<div className='row g-3'>
 							{items
 								.filter((val) => {
@@ -406,11 +428,11 @@ const Index: React.FC<KeyboardProps> = ({
 											</div>
 											<div className='col-auto text-end'>
 												<div>
-													<strong>{item.cid}</strong>
+													<strong>Rs. {item.price}</strong>
 												</div>
-												{/* <div className='text-muted'>
+												<div className='text-muted'>
 													<small>{item.cid}</small>
-												</div> */}
+												</div>
 											</div>
 										</div>
 									</div>
@@ -419,27 +441,17 @@ const Index: React.FC<KeyboardProps> = ({
 					</CardBody>
 				</Card>
 				<div>
-					<Input
-						id='keyboardinput'
-						className='form-control mb-4 p-2'
-						value={input}
-						placeholder='Tap on the virtual keyboard to start'
-						onChange={onChangeInput}
-						ref={inputRef}
-					/>
-					<Keyboard
+				
+					{/* <Keyboard
 						className='keyboard w-100 bg-dark text-light'
-						keyboardRef={(r) => (keyboard.current = r)}
+						keyboardRef={(r:any) => (keyboard.current = r)}
 						layoutName={layout}
 						onChange={onChange}
 						onKeyPress={onKeyPress}
 						layout={{
 							default: ['1 2 3', '4 5 6', '7 8 9', '0 {bksp}'],
 						}}
-						display={{
-							'{bksp}': ' &#9003;'
-						}}
-					/>
+					/> */}
 					<style>
 						{`
             .hg-button {
@@ -478,11 +490,9 @@ const Index: React.FC<KeyboardProps> = ({
 			{showPopup && (
 				<div
 					className='position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black bg-opacity-50'
-					style={{ zIndex: 1050 }}>
-					<div
-						className='p-4 rounded-4  '
-						style={{ zIndex: 1051, width: 600, backgroundColor: '#1D1F27' }}>
-						<h4 className='mb-4'>Enter a Quantity(Kg)</h4>
+					style={{ zIndex: 1050, }}>
+					<div className='p-4 rounded-4  ' style={{ zIndex: 1051, width:600,backgroundColor:"#1D1F27" }}>
+						<h4 className='mb-4'>Enter a Quantity</h4>
 						<Input
 							type='number'
 							value={popupInput}
@@ -493,8 +503,64 @@ const Index: React.FC<KeyboardProps> = ({
 							className='form-control mb-4 p-2'
 							ref={popupInputRef}
 						/>
+						{/* <h6 className='mb-4'>Job ID</h6>
+						<Input
+							type='number'
+							value={popupInput1}
+							onChange={(e: any) => {
+								setPopupInput1(e.target.value);
+							}}
+							min={1}
+							className='form-control mb-4 p-2'
+							ref={popupInputRef}
+						/>
 
-						<div className='d-flex justify-content-end'>
+						<FormGroup id='membershipDate' className='col-md-6'>
+							<Label htmlFor='ChecksGroup'>Type</Label>
+							<ChecksGroup isInline
+							// isValid={formik.isValid}
+							// isTouched={formik.touched.type}
+							// invalidFeedback={formik.errors.type}
+							>
+
+								<Checks
+									type='radio'
+									key={"full-time"}
+									id={"full-time"}
+									label={"Return"}
+									name='type'
+									value={"full-time"}
+								// onChange={formik.handleChange}
+								// checked={formik.values.type}
+
+								/>
+								<Checks
+									type='radio'
+									key={"full-time"}
+									id={"full-time"}
+									label={"Restore"}
+									name='type'
+									value={"full-time"}
+								// onChange={formik.handleChange}
+								// checked={formik.values.type}
+
+								/>
+								<Checks
+
+									type='radio'
+									key={"part-time"}
+									id={"part-time"}
+									label={"stock out"}
+									name='type'
+									value={"part-time"}
+								// onChange={formik.handleChange}
+								// checked={formik.values.type}
+
+								/>
+							</ChecksGroup>
+						</FormGroup> */}
+
+						<div className='d-flex justify-content-end' >
 							<button onClick={handlePopupCancel} className='btn btn-danger me-2'>
 								Cancel
 							</button>

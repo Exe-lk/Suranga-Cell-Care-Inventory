@@ -67,87 +67,41 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			image: '',
+			
 			name: '',
-		
-			email: '',
+			type: '',
+			
 			password: '',
 			mobile: '',
-			pin_number: '',
-			NIC:"",
+			
 			status:true
 		},
 		validate: (values) => {
 			const errors: {
-				position?: string;
-				image?: string;
+				type?: string;
+				
 				name?: string;
-				email?: string;
+			
 				password?: string;
 				mobile?: string;
-				pin_number?: string;
-				NIC?:string;
+				
 			} = {};
-			
+			if (!values.type) {
+				errors.type = 'Required';
+			}
 			if (!values.name) {
 				errors.name = 'Required';
 			}
-			if (!values.email) {
-				errors.email = 'Required';
-			}
-			
+		
 			if (!values.mobile) {
 				errors.mobile = 'Required';
 			}
-			if (!values.pin_number) {
-				errors.pin_number = 'Required';
-			}
-			if (!values.NIC) {
-				errors.NIC = 'Required';
-			}
+			
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				Swal.fire({
-					title: 'Processing...',
-					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
-					allowOutsideClick: false,
-					showCancelButton: false,
-					showConfirmButton: false,
-				});
-				const imgurl: any = await handleUploadimage();
-				values.image = imgurl || '';
-				values.password=values.NIC
-				values.status=true
-				const collectionRef = collection(firestore, 'user');
-				addDoc(collectionRef, values)
-					.then(async () => {
-						try {
-							await createUserWithEmailAndPassword(auth,values.email, values.password);
-							// User registration successful
-						  } catch (err) {
-							Swal.fire('Error..!', 'user has been add befor', 'error');
-						  }
-						setIsOpen(false);
-						showNotification(
-							<span className='d-flex align-items-center'>
-								<Icon icon='Info' size='lg' className='me-1' />
-								<span>Successfully Added</span>
-							</span>,
-							'User has been added successfully',
-						);
-						Swal.fire('Added!', 'user has been add successfully.', 'success');
-						formik.resetForm()
-						setSelectedImage(null)
-					})
-					.catch((error) => {
-						console.error('Error adding document: ', error);
-						Swal.close;
-						alert(
-							'An error occurred while adding the document. Please try again later.',
-						);
-					});
+				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				Swal.close;
@@ -158,7 +112,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id=''>{'New Customer'}</ModalTitle>
+				<ModalTitle id=''>{'New Stock Keeper'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
@@ -173,18 +127,25 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='Type' label='Type' className='col-md-6'>
 					
-					<FormGroup id='email' label='Email' className='col-md-6'>
-						<Input
+						<Select
+							ariaLabel='Default select example'
+						
 							onChange={formik.handleChange}
-							value={formik.values.email}
+							value={formik.values.type}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.email}
-							invalidFeedback={formik.errors.email}
-							validFeedback='Looks good!'
-						/>
+							isTouched={formik.touched.type}
+							invalidFeedback={formik.errors.type}>
+							{/* <Option value={'Admin'}>Admin</Option> */}
+							<Option value={'Stock keeper'}>Electronics</Option>
+							<Option value={'Data entry operator'}>Accessories</Option>
+							{/* <Option value={'Accountant'}>Accountant</Option>
+							<Option value={'Cashier'}>Cashier</Option> */}
+						</Select>
 					</FormGroup>
+					
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -196,46 +157,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='NIC' label='NIC' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.NIC}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.NIC}
-							invalidFeedback={formik.errors.NIC}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='pin_number' label='PIN number' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.pin_number}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.pin_number}
-							invalidFeedback={formik.errors.pin_number}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup label='Profile Picture' className='col-md-6'>
-						<Input
-							type='file'
-							onChange={(e: any) => {
-								setImageurl(e.target.files[0]);
-								// Display the selected image
-								setSelectedImage(URL.createObjectURL(e.target.files[0]));
-							}}
-						/>
-					</FormGroup>
-					{selectedImage && (
-						<img
-							src={selectedImage}
-							className='mx-auto d-block mb-4'
-							alt='Selected Profile Picture'
-							style={{ width: '200px', height: '200px' }}
-						/>
-					)}
+					
+					
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>

@@ -1,29 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-
 import Page from '../../../layout/Page/Page';
-
-import LineWithLabel from './sells-chart';
-import LineWithLabel1 from './sock-monthly';
-
-
-import PieBasic from './/top-product-chart';
-
-
+import PieBasic from '../../../components/top-product-chart';
+import TypeAnalatisk from '../../../components/TypeAnalatisk';
 const Index: NextPage = () => {
-
+	
 	return (
 		<PageWrapper>
 			<Page>
+			<div className='flex-grow-1 text-right text-info'>Welcome to Admin Pannel</div>
 				<div className='row'>
-
 				<PieBasic />
-				<LineWithLabel />
-				<LineWithLabel1 />
-
-
+				<TypeAnalatisk/>	
 				</div>
 				
 				

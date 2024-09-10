@@ -30,33 +30,12 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		status: true,
 	};
 	const [stock, setStock] = useState<Category>(data);
-	//fetch data from database
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'category');
-				const q = query(dataCollection, where('__name__', '==', id));
-				const querySnapshot = await getDocs(q);
-				const firebaseData: any = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as Category;
-					return {
-						...data,
-						cid: doc.id,
-					};
-				});
-				await setStock(firebaseData[0]);
-				console.log('Firebase Data:', stock);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [id]);
+
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			categoryname: '',
-			product: [{ category: '', name: '' }],
+		
 		},
 		validate: (values) => {
 			const errors: {
@@ -69,47 +48,14 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		},
 		onSubmit: async (values) => {
 			try {
-				let data: any = stock;
-				const docRef = doc(firestore, 'category', id);
-				// Update the data
-				updateDoc(docRef, data)
-					.then(() => {
-						setIsOpen(false);
-						showNotification(
-							<span className='d-flex align-items-center'>
-								<Icon icon='Info' size='lg' className='me-1' />
-								<span>Successfully Added</span>
-							</span>,
-							'category has been added successfully',
-						);
-						Swal.fire('Added!', 'category has been add successfully.', 'success');
-					})
-					.catch((error) => {
-						console.error('Error adding document: ', error);
-						alert(
-							'An error occurred while adding the document. Please try again later.',
-						);
-					});
+				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
-	const addProductField = () => {
-		formik.setValues({
-			...formik.values,
-			product: [...formik.values.product, { category: '', name: '' }],
-		});
-	};
-	const removeProductField = (index: number) => {
-		const newProducts = [...formik.values.product];
-		newProducts.splice(index, 1);
-		formik.setValues({
-			...formik.values,
-			product: newProducts,
-		});
-	};
+	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -135,38 +81,10 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						/>
 					</FormGroup>
 
-					{formik.values.product.map((product, index) => (
-						<FormGroup
-							key={index}
-							id={`product-${index}`}
-							label={`Sub Category ${index + 1}`}
-							className='col-md-6'>
-							<div className='d-flex align-items-center'>
-								<Input
-									onChange={formik.handleChange}
-									value={formik.values.categoryname}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.categoryname}
-									invalidFeedback={formik.errors.categoryname}
-									validFeedback='Looks good!'
-								/>
-								<button
-									type='button'
-									onClick={() => removeProductField(index)}
-									className='btn btn-outline-danger ms-2'>
-									<Icon icon='Delete' />
-								</button>
-							</div>
-						</FormGroup>
-					))}
+					
 				</div>
-				{/* Button to add new product input field */}
-				<div className='col-md-12'>
-					<Button color='info' onClick={addProductField}>
-						Add Sub Category
-					</Button>
-				</div>
+				
+				
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				{/* Save button to submit the form */}

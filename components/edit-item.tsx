@@ -16,15 +16,13 @@ import Dropdown, {
 } from './bootstrap/Dropdown';
 import Button from './bootstrap/Button';
 import { or } from 'firebase/firestore';
-import Checks, { ChecksGroup } from './bootstrap/forms/Checks';
-import FormGroup from './bootstrap/forms/FormGroup';
 interface Item {
 	cid: string;
 	category: string;
 	image: string;
 	name: string;
 	price: number;
-	quentity: number;
+	quantity: number;
 	reorderlevel: number;
 }
 interface KeyboardProps {
@@ -46,7 +44,7 @@ const Index: React.FC<KeyboardProps>  = ({ orderedItems, setOrderedItems, isActi
 	const handleQuantityChange = (index: number, newQuantity: number) => {
 		setOrderedItems((prevItems: any) =>
 			prevItems.map((item: any, i: number) =>
-				i === index ? { ...item, quentity: newQuantity } : item,
+				i === index ? { ...item, quantity: newQuantity } : item,
 			),
 		);
 	};
@@ -80,7 +78,7 @@ const Index: React.FC<KeyboardProps>  = ({ orderedItems, setOrderedItems, isActi
 				<CardHeader borderSize={1}>
 					<CardLabel icon='AssignmentTurnedIn' iconColor='danger'>
 						<CardTitle tag='h4' className='h5'>
-							Lot Movement
+							Order Items
 						</CardTitle>
 					</CardLabel>
 				</CardHeader>
@@ -131,7 +129,7 @@ const Index: React.FC<KeyboardProps>  = ({ orderedItems, setOrderedItems, isActi
 									<div className='me-2'>
 										<Input
 											type='number'
-											value={order.quentity}
+											value={order.quantity}
 											onChange={(e: any) =>
 												handleQuantityChange(
 													index,
@@ -141,9 +139,9 @@ const Index: React.FC<KeyboardProps>  = ({ orderedItems, setOrderedItems, isActi
 											className='form-control '
 										/>
 									</div>
-									{/* <div className='me-2'>
-										<strong>{priceFormat(order.quentity * order.price)}</strong>
-									</div> */}
+									<div className='me-2'>
+										<strong>{priceFormat(order.quantity * order.price)}</strong>
+									</div>
 								</div>
 								<div className='todo-extras'>
 									<span>
@@ -153,7 +151,6 @@ const Index: React.FC<KeyboardProps>  = ({ orderedItems, setOrderedItems, isActi
 									</span>
 								</div>
 							</div>
-						
 						</Card>
 					))}
 				</CardBody>

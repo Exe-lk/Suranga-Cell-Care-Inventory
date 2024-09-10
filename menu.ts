@@ -29,7 +29,191 @@ export const summaryPageTopMenu = {
 		subMenu: null,
 	},
 };
+export const stockAccPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'accessory-stock/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	brand: {
+		id: 'dashboard',
+		text: 'Brand Management',
+		path: 'accessory-stock/brand-management',
+		icon: 'BrandingWatermark',
+		subMenu: null,
+	},
+	Category: {
+		id: 'dashboard',
+		text: 'Category',
+		path: 'accessory-stock/category-management',
+		icon: 'Category',
+		subMenu: null,
+	},
+	model: {
+		id: 'dashboard',
+		text: 'Model Management',
+		path: 'accessory-stock/model-management',
+		icon: 'ChangeHistory',
+		subMenu: null,
+	},
+	item: {
+		id: 'dashboard',
+		text: 'Item Management',
+		path: 'accessory-stock/item-management',
+		icon: 'DevicesOther',
+		subMenu: null,
+	},
+	stock: {
+		id: 'dashboard',
+		text: 'Stock Management',
+		path: 'accessory-stock/stock-management',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
+export const CashierPagesMenu = {
+	bill: {
+		id: 'bill',
+		text: 'Bill',
+		path: 'cashier/bill',
+		icon: 'Description',
+		subMenu: null,
+	},
+	Repaired: {
+		id: 'stock',
+		text: 'Repaired Phone',
+		path: 'cashier/rapaired-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
+export const stockElePagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'display-stock/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	brand: {
+		id: 'dashboard',
+		text: 'Brand Management',
+		path: 'display-stock/brand-management',
+		icon: 'BrandingWatermark',
+		subMenu: null,
+	},
+	Category: {
+		id: 'dashboard',
+		text: 'Category',
+		path: 'display-stock/category-management',
+		icon: 'Category',
+		subMenu: null,
+	},
+	model: {
+		id: 'dashboard',
+		text: 'Model Management',
+		path: 'display-stock/model-management',
+		icon: 'ChangeHistory',
+		subMenu: null,
+	},
+	item: {
+		id: 'dashboard',
+		text: 'Item Management',
+		path: 'display-stock/item-management',
+		icon: 'DevicesOther',
+		subMenu: null,
+	},
+	stock: {
+		id: 'dashboard',
+		text: 'Stock Management',
+		path: 'display-stock/stock-management',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	Stockkeeper: {
+		id: 'stock keeper',
+		text: 'Technician Management',
+		path: 'display-stock/Technician-management',
+		icon: 'Person',
 
+	},
+}
+export const BillKeeperPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'bill-keeper/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	bill: {
+		id: 'dashboard',
+		text: 'Bill management',
+		path: 'bill-keeper/bill-management',
+		icon: 'MenuBook',
+		subMenu: null,
+	},
+	Repaired: {
+		id: 'stock',
+		text: 'Repaired Phone',
+		path: 'bill-keeper/rapaired-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+}
+export const ViewPagesMenu = {
+	dashboard: {
+		id: 'dashboard',
+		text: 'Dashboard',
+		path: 'viewer/dashboard',
+		icon: 'Dashboard',
+		subMenu: null,
+	},
+	stock: {
+		id: 'stock',
+		text: 'Stock Management',
+		path: 'viewer/Stock-Transaction',
+		icon: 'AmpStories',
+		subMenu: null,
+	},
+	technician: {
+		id: 'stock',
+		text: 'Technician Work',
+		path: 'viewer/technician-work',
+		icon: 'PermContactCalendar',
+		subMenu: null,
+	},
+	Phone: {
+		id: 'stock',
+		text: 'Sold Phone',
+		path: 'viewer/sold-phone',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	coustomer: {
+		id: 'stock',
+		text: 'Customers',
+		path: 'viewer/coustomer',
+		icon: 'Person',
+		subMenu: null,
+	},
+	supplier: {
+		id: 'stock',
+		text: 'Suppliers',
+		path: 'viewer/supplier',
+		icon: 'SupervisedUserCircle',
+		subMenu: null,
+	},
+	dealer: {
+		id: 'stock',
+		text: 'dealers',
+		path: 'viewer/dealer',
+		icon: 'SupervisedUserCircle',
+		subMenu: null,
+	},
+}
 export const addminPagesMenu = {
 	dashboard: {
 		id: 'dashboard',
@@ -38,266 +222,58 @@ export const addminPagesMenu = {
 		icon: 'Dashboard',
 		subMenu: null,
 	},
+	Stocktype: {
+		id: 'stock',
+		text: 'Stock Keeper Type',
+		path: 'admin/stock-type',
+		icon: 'Store',
 
-	category: {
+	},
+	Stockkeeper: {
+		id: 'stock keeper',
+		text: 'Stock Keeper',
+		path: 'admin/stock-keeper',
+		icon: 'Person',
+
+	},
+	Supplierr: {
+		id: 'supplier',
+		text: 'Supplier ',
+		path: 'admin/supplier-management',
+		icon: 'Person',
+
+	},
+	Dealer: {
+		id: 'Dealer',
+		text: 'Dealer ',
+		path: 'admin/dealer-management',
+		icon: 'Person',
+
+	},
+	Model: {
+		id: 'model',
+		text: 'Model Management',
+		path: 'admin/model',
+		icon: 'ChangeHistory',
+
+	},
+	Category: {
 		id: 'category',
-		text: 'Category',
+		text: 'Category Management',
 		path: 'admin/category',
 		icon: 'Category',
-		subMenu: null,
+
 	},
-	lot: {
-		id: 'lot',
-		text: 'Stock Management',
-		path: 'admin/lot-management',
-		icon: 'Ballot',
-		subMenu: null,
-	},
-	seller: {
-		id: 'lot',
-		text: 'Cashier Management',
-		path: 'admin/cashier-management',
-		icon: 'SelectAll',
-		subMenu: null,
+	Brand: {
+		id: 'model',
+		text: 'Brand Management',
+		path: 'admin/brand',
+		icon: 'BrandingWatermark',
+
 	},
 	
 	
-	singlePages: {
-		id: 'singlePages',
-		text: 'Settings',
-		path: 'single-pages',
-		icon: 'Settings',
-		subMenu: {
-			boxedSingle: {
-				id: 'boxedSingle',
-				text: 'Account',
-				path: 'admin/setting/account',
-				icon: 'Groups',
-			},
-			color: {
-				id: 'fluidSingle',
-				text: 'Color',
-				path: 'admin/setting/color',
-				icon: 'ColorLens',
-			},
-			fabric: {
-				id: 'fluidSingle',
-				text: 'fabric',
-				path: 'admin/setting/fabric-type',
-				icon: 'AppSettingsAlt',
-			},
-			gsm: {
-				id: 'fluidSingle',
-				text: 'GSM',
-				path: 'admin/setting/gsm',
-				icon: 'AlignVerticalCenter',
-			},
-			knet: {
-				id: 'fluidSingle',
-				text: 'Knit type',
-				path: 'admin/setting/knit-type',
-				icon: 'AirlineSeatLegroomExtra',
-			},
-			singlePages1: {
-				id: 'singlePages',
-				text: 'Recycle Bin',
-				path: 'single-pages',
-				icon: 'DeleteSweep',
-				subMenu: {
-					
-					
-					color: {
-						id: 'fluidSingle',
-						text: 'Color',
-						path: 'admin/setting/recycle-bin/color',
-						icon: 'ColorLens',
-					},
-					fabric: {
-						id: 'fluidSingle',
-						text: 'fabric',
-						path: 'admin/setting/recycle-bin/fabric',
-						icon: 'AppSettingsAlt',
-					},
-					gsm: {
-						id: 'fluidSingle',
-						text: 'GSM',
-						path: 'admin/setting/recycle-bin/gsm',
-						icon: 'AlignVerticalCenter',
-					},
-					knet: {
-						id: 'fluidSingle',
-						text: 'Knit type',
-						path: 'admin/setting/recycle-bin/knit-type',
-						icon: 'AirlineSeatLegroomExtra',
-					},
-				},
-			},
-		},
-	},
 	
-	
-};
-
-
-
-
-
-export const stockkeeperPagesMenu = {
-	dashboard: {
-		id: 'dashboard',
-		text: 'Dashboard',
-		path: 'cashier/dashboard',
-		icon: 'Dashboard',
-		subMenu: null,
-	},
-	stockOut: {
-		id: 'stock',
-		text: 'Stock Out ',
-		path: 'cashier/stock-out-management',
-		icon: 'Article',
-		subMenu: null,
-	},
-	stockIn: {
-		id: 'Lot',
-		text: ' Stock In',
-		path: 'cashier/stock-in-management',
-		icon: 'AssignmentTurnedIn',
-		subMenu: null,
-	},
-	category: {
-		id: 'category',
-		text: 'Category',
-		path: 'cashier/category',
-		icon: 'Category',
-		subMenu: null,
-	},
-	stockout: {
-		id: 'stockout',
-		text: 'Transaction History',
-		path: 'cashier/transaction-management',
-		icon: 'CallMissedOutgoing',
-		subMenu: null,
-	},
-	
-	
-	Coustomer: {
-		id: 'lot',
-		text: 'Customer Management',
-		path: 'cashier/coustomer-management',
-		icon: 'PermIdentity',
-		subMenu: null,
-	},
-
-
-	Supplier: {
-		id: 'lot',
-		text: 'Supplier Management',
-		path: 'cashier/supplier',
-		icon: 'PermIdentity',
-		subMenu: null,
-	},
-	
-	
-	singlePages: {
-		id: 'singlePages',
-		text: 'Settings',
-		path: 'single-pages',
-		icon: 'Settings',
-		subMenu: {
-			
-			QR: {
-				id: 'category',
-				text: 'QR Code',
-				path: 'cashier/qr-code',
-				icon: 'QrCode',
-				subMenu: null,
-			},
-			
-		},
-	},
-	
-
-	
-	
-};
-
-export const supperaddminmenu = {
-	dashboard: {
-		id: 'dashboard',
-		text: 'Dashboard',
-		path: 'super-admin/dashboard',
-		icon: 'Dashboard',
-		subMenu: null,
-	},
-	user: {
-		id: 'seller',
-		text: 'User Management',
-		path: 'super-admin/user-management',
-		icon: 'Groups',
-		subMenu: null,
-	},
-	service: {
-		id: 'seller',
-		text: 'Service Management',
-		path: 'super-admin/service',
-		icon: 'Circle',
-		subMenu: null,
-	},
-};
-
-
-export const viewmenu = {
-	dashboard: {
-		id: 'dashboard',
-		text: 'Dashboard',
-		path: 'viewer/dashboard',
-		icon: 'Dashboard',
-		subMenu: null,
-	},
-	category: {
-		id: 'category',
-		text: 'Category',
-		path: 'viewer/category',
-		icon: 'Category',
-		subMenu: null,
-	},
-
-	item: {
-		id: 'item',
-		text: 'Lot History',
-		path: 'viewer/lot-history',
-		icon: 'AssignmentTurnedIn',
-		subMenu: null,
-	},
-	stockout: {
-		id: 'restore',
-		text: 'suppliers',
-		path: 'viewer/supplier-history',
-		icon: 'SupervisedUserCircle',
-		subMenu: null,
-	},
-	transaction: {
-		id: 'stockout',
-		text: 'Transaction History',
-		path: 'viewer/transaction-history',
-		icon: 'CallMissedOutgoing',
-		subMenu: null,
-	},
-	user: {
-		id: 'user',
-		text: 'Users',
-		path: 'viewer/users',
-		icon: 'SupervisedUserCircle',
-		subMenu: null,
-	},
-	action: {
-		id: 'user',
-		text: 'User Action ',
-		path: 'viewer/user-action',
-		icon: 'SupervisedUserCircle',
-		subMenu: null,
-	},
-
 };
 
 

@@ -1,16 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
-import showNotification from '../extras/showNotification';
-import Icon from '../icon/Icon';
-import FormGroup from '../bootstrap/forms/FormGroup';
-import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
-import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
-import { firestore } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-import useDarkMode from '../../hooks/useDarkMode';
 
 interface CategoryEditModalProps {
 	id: string;
@@ -43,7 +35,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete this.', 'error');
+			Swal.fire('Error', 'Failed to delete category.', 'error');
 		}
 	};
 	return (
@@ -52,22 +44,17 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-				<table className='table table-bordered border-primary table-modern table-hover'>
+				<table className='table table-bordered border-primary table-modern table-hover text-center'>
 					<thead>
 						<tr>
-							<th>Code</th>
-							<th>Color</th>
-							<th>Description</th>
-							<th>GSM</th>
-							<th>Knit Type</th>
-							<th>GRN number</th>
-
+							<th>Name</th>
+							<th>Model No</th>
 							<th>
 								<Button
 									icon='Delete'
+									onClick={handleClickDelete}
 									color='primary'
-									isLight
-									onClick={handleClickDelete}>
+									isLight>
 									Delete All
 								</Button>
 								<Button icon='Restore' className='ms-3' color='primary'>
@@ -78,35 +65,25 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					</thead>
 					<tbody>
 						<tr>
-							<td>5641</td>
-							<td>green</td>
-							<td>abc</td>
-							<td>70</td>
-							<td>123</td>
-							<td>785</td>
-
+							<td>pen drive</td>
+							<td>td563</td>
 							<td>
 								<Button icon='Restore' tag='a' color='info'>
-									{' '}
 									Restore
 								</Button>
 								<Button
 									className='m-2'
 									icon='Delete'
 									color='danger'
-									onClick={handleClickDelete}
-									// onClick={() =>
-									// 	handleClickDelete(stock.cid)
-									// }
-								>
+									onClick={handleClickDelete}>
 									Delete
 								</Button>
 							</td>
 						</tr>
+						
 					</tbody>
 				</table>
 			</ModalBody>
-			
 		</Modal>
 	);
 };

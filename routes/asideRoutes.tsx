@@ -4,18 +4,23 @@ import { demoPagesMenu, pageLayoutTypesPagesMenu } from '../menu';
 
 
 const AdminAside = dynamic(() => import('../pages/_layout/_asides/AdminAside'));
-
+const StockeAside = dynamic(() => import('../pages/_layout/_asides/StockAccAside'));
+const StockeEleAside = dynamic(() => import('../pages/_layout/_asides/StockEleAsider'));
+const BillKeeperAside = dynamic(() => import('../pages/_layout/_asides/BillKeeperAsider'));
 const ViewAside = dynamic(() => import('../pages/_layout/_asides/ViewAside'));
-const CashierAside = dynamic(() => import('../pages/_layout/_asides/CashierAsider'));
-
+const CashierAsider = dynamic(() => import('../pages/_layout/_asides/CashierAsider'));
 
 
 const asides = [
-	
+	{ path: demoPagesMenu.login.path, element: null, exact: true },
+	{ path: demoPagesMenu.signUp.path, element: null, exact: true },
+	{ path: pageLayoutTypesPagesMenu.blank.path, element: null, exact: true },
 	{ path: '/admin/*', element: <AdminAside/>, exact: true },
-
-	{ path: '/cashier/*', element: <CashierAside/>, exact: true },
+	{ path: '/accessory-stock/*', element: <StockeAside/>, exact: true },
+	{ path: '/bill-keeper/*', element: <BillKeeperAside/>, exact: true },
+	{ path: '/display-stock/*', element: <StockeEleAside/>, exact: true },
 	{ path: '/viewer/*', element: <ViewAside/>, exact: true },
+	{ path: '/cashier/*', element: <CashierAsider/>, exact: true },
 
 ];
 
