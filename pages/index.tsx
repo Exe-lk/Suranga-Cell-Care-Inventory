@@ -219,7 +219,7 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 										</div>
 										<div className='col-12'>
 											<Button
-												color='info'
+												color='warning'
 												className='w-100 py-3'
 												onClick={formik.handleSubmit}>
 												Login
