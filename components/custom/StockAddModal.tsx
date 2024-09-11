@@ -24,7 +24,7 @@ interface Item {
 	category: number;
 	image: string;
 	name: string;
-	price: number;
+	cost: number;
 	quantity: number;
 	reorderlevel: number;
 }
@@ -69,7 +69,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			location: '',
 			sublocation: "",
 			exp: '',
-			buy_price: '',
+			buy_cost: '',
 			quantity: '',
 			status: "",
 			
@@ -83,12 +83,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				location?: string;
 				sublocation?: string;
 				exp?: string;
-				buy_price?: string;
+				buy_cost?: string;
 				quantity?: string;
 				status?: string
 			} = {};
-			if (!values.buy_price) {
-				errors.buy_price = 'Required';
+			if (!values.buy_cost) {
+				errors.buy_cost = 'Required';
 			}
 			if (!values.item_id) {
 				errors.item_id = 'Required';
@@ -142,20 +142,20 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 					
 					
-					{/* <FormGroup id='buy_price' label='Model Number' className='col-md-6'>
+					{/* <FormGroup id='buy_cost' label='Model Number' className='col-md-6'>
 						<Input
 							type="number"
 							onChange={formik.handleChange}
-							value={formik.values.buy_price}
+							value={formik.values.buy_cost}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.buy_price}
-							invalidFeedback={formik.errors.buy_price}
+							isTouched={formik.touched.buy_cost}
+							invalidFeedback={formik.errors.buy_cost}
 							min={0}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup> */}
-					<FormGroup id='location' label='Price' className='col-md-6'>
+					<FormGroup id='location' label='Model Number' className='col-md-6'>
 						<Input
 							
 							onChange={formik.handleChange}
@@ -167,7 +167,43 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='sublocation' label='Date' className='col-md-6'>
+					<FormGroup id='location' label='Cost' className='col-md-6'>
+						<Input
+							
+							onChange={formik.handleChange}
+							value={formik.values.location}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.location}
+							invalidFeedback={formik.errors.location}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='location' label='Item Number' className='col-md-6'>
+						<Input
+							
+							onChange={formik.handleChange}
+							value={formik.values.location}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.location}
+							invalidFeedback={formik.errors.location}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='location' label='Reorder Level' className='col-md-6'>
+						<Input
+							
+							onChange={formik.handleChange}
+							value={formik.values.location}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.location}
+							invalidFeedback={formik.errors.location}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='sublocation' label='Date In' className='col-md-6'>
 						<Input
 						type='date'
 							onChange={formik.handleChange}
@@ -188,7 +224,46 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='quantity' label='SuplierName' className='col-md-6'>
+					<FormGroup id='quantity' label='Display Name' className='col-md-6'>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.quantity}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.quantity}
+							invalidFeedback={formik.errors.quantity}
+							min={1}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='quantity' label='Description' className='col-md-6'>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.quantity}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.quantity}
+							invalidFeedback={formik.errors.quantity}
+							min={1}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='quantity' label='Suplier Name' className='col-md-6'>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.quantity}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.quantity}
+							invalidFeedback={formik.errors.quantity}
+							min={1}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='quantity' label='Box Number' className='col-md-6'>
 						<Input
 							type='number'
 							onChange={formik.handleChange}
