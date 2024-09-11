@@ -131,6 +131,7 @@ const Index: NextPage = () => {
 											<th>Technition Name</th>
 											<th>Suppliers</th>
 											<th>Box Number</th>
+											<th>Item Number</th>
 											<th>Stock In</th>
 											<th>Stock Out</th>
 											<th>Update</th>
@@ -167,6 +168,7 @@ const Index: NextPage = () => {
 											<td>Achintha</td>
 											<td>Sakya</td>
 											<td>b123</td>
+											<td>I123</td>
 											<td>
 												<Button
 													icon='CallReceived'
