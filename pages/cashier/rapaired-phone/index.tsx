@@ -167,7 +167,7 @@ const Index: NextPage = () => {
 											<th>Phone Model</th>
 											<th>Description(Repair)</th>
 											<th>Price</th>
-											<th>IMI No.</th>
+											<th>EMI No.</th>
 											<th>Status</th>
 											<th>Change Status</th>
 
