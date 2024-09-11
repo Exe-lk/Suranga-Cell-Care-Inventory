@@ -103,7 +103,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id="">{'Stock Out'}</ModalTitle>
+				<ModalTitle id="">{'Stock Outaaaaaaa'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
@@ -207,6 +207,39 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						/>
 					</FormGroup>
 					<FormGroup id='stockout' label=' Dealer Name' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Dealer Tel Number' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Dealer Percentage' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Cost' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.stockout}
