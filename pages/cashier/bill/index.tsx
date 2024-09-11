@@ -311,11 +311,13 @@ function index() {
 						<CardBody isScrollable>
 							<div className='row mt-1 mb-0'>
 								<div className='col d-flex align-items-center'>
-									<strong className='fs-5'>Bill Details</strong>
+									<strong className='fs-5'>Suranga Cell Care</strong>
+									{/* <strong className='fs-5'>No.135/6, Kandy Road,Kadawatha</strong>
+									<strong className='fs-5'>Tel:0112928521/0779931144</strong> */}
 								</div>
 								<div className='col-auto text-end  fs-5'>#{id}</div>
 							</div>
-							<CardLabel>Customer Name</CardLabel>
+							<CardLabel>No.135/6, Kandy Road,Kadawatha</CardLabel>
 							<Input
 								ref={customerNameInputRef}
 								onChange={(e: any) => setCname(e.target.value)}
