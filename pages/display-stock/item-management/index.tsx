@@ -131,7 +131,7 @@ const Index: NextPage = () => {
 											<th>Technition Name</th>
 											<th>Suppliers</th>
 											<th>Box Number</th>
-											<th>Item Number</th>
+											<th>Display Number</th>
 											<th>Stock In</th>
 											<th>Stock Out</th>
 											<th>Update</th>
