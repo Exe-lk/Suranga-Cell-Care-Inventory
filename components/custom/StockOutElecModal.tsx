@@ -136,6 +136,18 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='stockout' label=' Item Number' className='col-md-6'>
+						<Input
+						type='number'
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 					<FormGroup id='stockout' label=' Display Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
