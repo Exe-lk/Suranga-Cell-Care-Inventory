@@ -115,7 +115,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						/>
 					</FormGroup>
 						
-                    <FormGroup id='stockout' label='Date' className='col-md-6'>
+                    <FormGroup id='stockout' label='Date Out' className='col-md-6'>
 						<Input
 						type='date'
 							onChange={formik.handleChange}
@@ -124,6 +124,74 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={formik.touched.date}
 							invalidFeedback={formik.errors.date}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Model Number' className='col-md-6'>
+						<Input
+						type='number'
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Display Number' className='col-md-6'>
+						<Input
+						type='number'
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Description' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Technition Name' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Dealer Name' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='stockout' label=' Other Branch' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.stockout}
+                            onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.stockout}
+							invalidFeedback={formik.errors.stockout}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -553,7 +553,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='boxnumber' label='Box Number' className='col-md-6'>
+					{/* <FormGroup id='boxnumber' label='Box Number' className='col-md-6'>
 								<Input
 									type='text'
 									onChange={formik.handleChange}
@@ -564,7 +564,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									invalidFeedback={formik.errors.boxnumber}
 									validFeedback='Looks good!'
 								/>
-					</FormGroup>
+					</FormGroup> */}
 					<FormGroup id='datein' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
