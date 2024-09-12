@@ -19,6 +19,7 @@ import Card, {
 } from '../../../components/bootstrap/Card';
 import Input from '../../../components/bootstrap/forms/Input';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
+import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 
 interface Category {
 	id: number;
@@ -39,20 +40,21 @@ function index() {
 		hour: '2-digit',
 		minute: '2-digit',
 	});
+	const [address, setAddress] = useState('');
 
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
 				const dataCollection = collection(firestore, 'orders');
 				const querySnapshot = await getDocs(dataCollection);
-				const firebaseData:any = querySnapshot.docs
+				const firebaseData: any = querySnapshot.docs
 					.map((doc) => {
 						const data = doc.data() as Category;
 						return {
 							...data,
 						};
 					})
-					.sort((a:any, b:any) => b.id - a.id); // Sort by id in ascending order
+					.sort((a: any, b: any) => b.id - a.id); // Sort by id in ascending order
 				setId(firebaseData[0].id + 1 || 1500);
 				console.log(firebaseData[0].id + 1);
 			} catch (error) {
@@ -134,7 +136,7 @@ function index() {
 								.then(() => {
 									Swal.fire(
 										'Added!',
-										
+
 										'bill has been add successfully.',
 										'success',
 									);
@@ -171,7 +173,7 @@ function index() {
 		} else if (event.ctrlKey && event.key.toLowerCase() === 'p') {
 			addbill();
 			event.preventDefault(); // Prevent default browser behavior
-		}else if (event.key === 'Shift') {
+		} else if (event.key === 'Shift') {
 			// Check if the focus is on the input fields
 			if (
 				document.activeElement === customerNameInputRef.current ||
@@ -228,43 +230,47 @@ function index() {
 		cid: string;
 		categoryname: string;
 	}
-		const cdata = [
-			{ status: true, categoryname: 'Modile', cid: '0bc5HUELspDzvrUdt5u6' },
+	const cdata = [
+		{ status: true, categoryname: 'Modile', cid: '0bc5HUELspDzvrUdt5u6' },
+
+		{ status: true, categoryname: 'Display', cid: 'LKcV57ThRnHtE9bxBHMb' },
+
+		{ status: true, categoryname: 'Charges', cid: 'La1K7XLguIsFPZN19vp4' },
+
+		{ categoryname: 'Battery', cid: 'NowdRVU0K7hDZiMRkksn', status: true },
+	];
+	const [category, setCategory] = useState<Category[]>(cdata);
+
+	useEffect(() => {
+		// Retrieve email from local storage
+		const email = localStorage.getItem('email');
+		console.log("email",email);
 	
+		// Switch case to set the address based on the email
+		switch (email) {
+		  case 'sakyarasadi@gmail.com':
+			setAddress('No. 524/1/A, Kandy Road, Kadawatha');
+			break;
+		  case 'achintha@gmail.com':
+			setAddress('No. 172/20, Ragama Road, Kadawatha');
+			break;
+		  case 'jayani@gmail.com':
+			setAddress('No. 135/6, Kandy Road, Kadawatha');
+			break;
+		}
+	  }, []);
 	
-			{ status: true, categoryname: 'Display', cid: 'LKcV57ThRnHtE9bxBHMb' },
-	
-	
-			{ status: true, categoryname: 'Charges', cid: 'La1K7XLguIsFPZN19vp4' },
-	
-	
-			{ categoryname: 'Battery', cid: 'NowdRVU0K7hDZiMRkksn', status: true },
-	
-	
-		
-	
-	
-		]
-		const [category, setCategory] = useState<Category[]>(cdata);
 	return (
 		<PageWrapper className=''>
 			<div>
-				
-			<div className='mt-5 ms-5'>
-							<Button
-								className='btn btn-outline-warning '
-								>
-								All
-							</Button>
-							{category.map((category, index) => (
-								<Button
-									key={index}
-									className='btn btn-outline-warning'
-									>
-									{category.categoryname}
-								</Button>
-							))}
-						</div>
+				<div className='mt-5 ms-5'>
+					<Button className='btn btn-outline-warning '>All</Button>
+					{category.map((category, index) => (
+						<Button key={index} className='btn btn-outline-warning'>
+							{category.categoryname}
+						</Button>
+					))}
+				</div>
 			</div>
 			<div className='row m-4'>
 				<div className='col-4 mb-3 mb-sm-0'>
@@ -273,7 +279,6 @@ function index() {
 						setOrderedItems={setOrderedItems}
 						isActive={activeComponent === 'additem'}
 						setActiveComponent={setActiveComponent}
-						
 					/>{' '}
 				</div>
 				<div className='col-4 '>
@@ -311,13 +316,18 @@ function index() {
 						<CardBody isScrollable>
 							<div className='row mt-1 mb-0'>
 								<div className='col d-flex align-items-center'>
-									<strong className='fs-5'>Suranga Cell Care</strong>
+									<img
+										src={bill}
+										width={350}
+										height={60}
+									/>
 									{/* <strong className='fs-5'>No.135/6, Kandy Road,Kadawatha</strong>
 									<strong className='fs-5'>Tel:0112928521/0779931144</strong> */}
 								</div>
-								<div className='col-auto text-end  fs-5'>#{id}</div>
+								{/* <div className='col-auto text-end  fs-5'>#{id}</div> */}
 							</div>
-							<CardLabel>No.135/6, Kandy Road,Kadawatha</CardLabel>
+							<br></br>
+							<CardLabel>{address}</CardLabel>
 							<Input
 								ref={customerNameInputRef}
 								onChange={(e: any) => setCname(e.target.value)}

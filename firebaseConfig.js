@@ -5,14 +5,13 @@ import { getStorage } from "firebase/storage";
 import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDDEguvQ-zLVmUSmKXDcc4Qs7G9Id1hsIM",
-  authDomain: "smarttelescope.firebaseapp.com",
-  databaseURL: "https://smarttelescope-default-rtdb.firebaseio.com",
-  projectId: "smarttelescope",
-  storageBucket: "smarttelescope.appspot.com",
-  messagingSenderId: "193247300076",
-  appId: "1:193247300076:web:585be986a4466a88f698c9",
-  measurementId: "G-GKHFRHZTJ7"
+  apiKey: "AIzaSyCapMGIpkGadmTT7rUZ8IkAB-7tpXHzIBw",
+  authDomain: "suranga-cellcare-inventory.firebaseapp.com",
+  projectId: "suranga-cellcare-inventory",
+  storageBucket: "suranga-cellcare-inventory.appspot.com",
+  messagingSenderId: "941072877710",
+  appId: "1:941072877710:web:15d94bfab9ee34513e61df",
+  measurementId: "G-SW9W05KMJM"
 };
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -22,20 +21,3 @@ const database = getDatabase(app);
 
 
 export { app, auth, firestore, storage,database };
-
-// import firebase from 'firebase/app';
-// import 'firebase/database';
-
-// const firebaseConfig = {
-//   apiKey: "AIzaSyDDEguvQ-zLVmUSmKXDcc4Qs7G9Id1hsIM",
-//   authDomain: "smarttelescope.firebaseapp.com",
-//   databaseURL: "https://smarttelescope-default-rtdb.firebaseio.com",
-//   projectId: "smarttelescope",
-//   storageBucket: "smarttelescope.appspot.com",
-//   messagingSenderId: "193247300076",
-//   appId: "1:193247300076:web:585be986a4466a88f698c9",
-//   measurementId: "G-GKHFRHZTJ7"
-// };
-// firebase.initializeApp(firebaseConfig);
-
-// export default firebase;

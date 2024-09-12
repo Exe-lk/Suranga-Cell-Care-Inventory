@@ -230,9 +230,9 @@ export const addminPagesMenu = {
 
 	},
 	Stockkeeper: {
-		id: 'stock keeper',
-		text: 'Stock Keeper',
-		path: 'admin/stock-keeper',
+		id: 'user',
+		text: 'User',
+		path: 'admin/user',
 		icon: 'Person',
 
 	},
