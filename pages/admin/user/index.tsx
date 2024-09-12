@@ -23,6 +23,7 @@ import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import SellerDeleteModal from '../../../components/custom/UserDeleteModal';
+import { useGetUsersQuery } from '../../../redux/slices/userManagementApiSlice';
 
 interface User {
 	cid: string;
@@ -55,6 +56,7 @@ const Index: NextPage = () => {
 		// { position: 'Data entry operator' },
 	];
 	//get user data from database
+	const {data : users , error , isLoading} = useGetUsersQuery(undefined);
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
