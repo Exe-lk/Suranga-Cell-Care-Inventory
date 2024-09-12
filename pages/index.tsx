@@ -24,6 +24,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, firestore } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Logo from '../components/Logo';
+
 interface ILoginHeaderProps {
 	isNewUser?: boolean;
 }
