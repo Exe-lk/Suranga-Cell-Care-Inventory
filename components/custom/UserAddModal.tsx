@@ -69,7 +69,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		initialValues: {
 			
 			name: '',
-			type: '',
+			role: '',
+			nic: '',
+			email: '',
 			
 			password: '',
 			mobile: '',
@@ -78,16 +80,18 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		validate: (values) => {
 			const errors: {
-				type?: string;
+				role?: string;
 				
 				name?: string;
+				nic?: string;
+				email?: string;
 			
 				password?: string;
 				mobile?: string;
 				
 			} = {};
-			if (!values.type) {
-				errors.type = 'Required';
+			if (!values.role) {
+				errors.role = 'Required';
 			}
 			if (!values.name) {
 				errors.name = 'Required';
@@ -96,6 +100,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.mobile) {
 				errors.mobile = 'Required';
 			}
+			if (!values.nic) {
+				errors.nic = 'Required';
+			}
+			if (!values.email) {
+				errors.email = 'Required';
+			}
+
 			
 			return errors;
 		},
@@ -112,7 +123,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id=''>{'New Stock Keeper'}</ModalTitle>
+				<ModalTitle id=''>{'New User'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
@@ -127,22 +138,23 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='Type' label='Type' className='col-md-6'>
+					<FormGroup id='role' label='Role' className='col-md-6'>
 					
 						<Select
 							ariaLabel='Default select example'
 						
 							onChange={formik.handleChange}
-							value={formik.values.type}
+							value={formik.values.role}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.type}
-							invalidFeedback={formik.errors.type}>
-							{/* <Option value={'Admin'}>Admin</Option> */}
-							<Option value={'Stock keeper'}>Electronics</Option>
-							<Option value={'Data entry operator'}>Accessories</Option>
-							{/* <Option value={'Accountant'}>Accountant</Option>
-							<Option value={'Cashier'}>Cashier</Option> */}
+							isTouched={formik.touched.role}
+							invalidFeedback={formik.errors.role}>
+							<Option>Select the role</Option>
+							<Option value={'bill keeper'}>Bill Keeper</Option>
+							<Option value={'accessosry stock keeper'}>Accessosry Stock Keeper</Option>
+							<Option value={'display stock keeper'}>Display Stock Keeper</Option>
+							<Option value={'cashier'}>Cashier</Option>
+
 						</Select>
 					</FormGroup>
 					
@@ -154,6 +166,28 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={formik.touched.mobile}
 							invalidFeedback={formik.errors.mobile}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='nic' label='NIC' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.nic}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.nic}
+							invalidFeedback={formik.errors.nic}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='email' label='Email' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.email}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.email}
+							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
