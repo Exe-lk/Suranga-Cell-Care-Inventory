@@ -51,18 +51,6 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 	const [users, setUsers] = useState<User[]>([]);
 	const { setUser } = useContext(AuthContext);
 
-	const signInUser = async (email: string, password: string) => {
-		try {
-			const userCredential = await signInWithEmailAndPassword(auth, email, password);
-			const user = userCredential.user;
-
-			return user;
-		} catch (error) {
-			console.error('Error signing in:', error);
-			return null;
-		}
-	};
-
 	//login
 	const formik = useFormik({
 		enableReinitialize: true,
@@ -86,68 +74,47 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 
 		onSubmit: async (values) => {
 			try {
-				const user = await signInUser(values.email, values.password);
-
-				if (user) {
-					if (setUser) {
-						setUser(values.email);
-					}
-					await Swal.fire({
-						icon: 'success',
-						title: 'Login Successful',
-						text: 'You have successfully logged in!',
-					});
-
-					// Store user information in session
-
-					const usersCollection = collection(firestore, 'user');
-
-					const q = query(usersCollection, where('email', '==', values.email));
-
-					const querySnapshot = await getDocs(q);
-
-					const firebaseData = querySnapshot.docs.map((doc) => {
-						const data = doc.data();
-						return {
-							...data,
-							_id: doc.id,
-						};
-					});
-
-					if (!querySnapshot.empty) {
-						const userData = querySnapshot.docs[0].data();
-						localStorage.setItem('user', JSON.stringify(userData));
-						console.log(userData.position);
-						switch (userData.position) {
-							case 'Admin':
+				try {
+					const baseURL = `http://localhost:3000/api/user/route`;
+					const response = await axios.post(baseURL, values);
+					const email = response.data.user.user.email;
+					localStorage.setItem('email', email);
+					if (response.data.user) {
+						await Swal.fire({
+							icon: 'success',
+							title: 'Login Successful',
+							text: 'You have successfully logged in!',
+						});
+						switch (response.data.user.position) {
+							case 'admin':
 								router.push('/admin/dashboard');
 								break;
-							case 'Cashier':
-								router.push('/cashier/bills');
+							case 'Viewer':
+								router.push('/viewer/dashboard');
 								break;
 
-							case 'Stock keeper':
-								router.push('/stock-keeper/dashboard');
+							case 'Display-Stock':
+								router.push('/display-stock/dashboard');
 								break;
-							case 'Accountant':
-								router.push('/accountant/dashboard');
+							case 'Accessory-Stock':
+								router.push('/accessory-stock/dashboard');
 								break;
-							case 'Owner':
-								router.push('/Owner/dashboard');
+							case 'Bill-Keeper':
+								router.push('/bill-keeper/bill-management');
 								break;
-							case 'Data entry operator':
-								router.push('/dataentry-operater/dashboard');
+							case 'Cashier':
+								router.push('/cashier/rapaired-phone');
 								break;
 						}
+					} else {
+						await Swal.fire({
+							icon: 'error',
+							title: 'Invalid Credentials',
+							text: 'Username and password do not match. Please try again.',
+						});
 					}
-
-					// router.push('/employeepages/dashboard');
-				} else {
-					await Swal.fire({
-						icon: 'error',
-						title: 'Invalid Credentials',
-						text: 'Username and password do not match. Please try again.',
-					});
+				} catch (error) {
+					console.error('Error fetching data: ', error);
 				}
 			} catch (error) {
 				console.error('Error occurred:', error);
