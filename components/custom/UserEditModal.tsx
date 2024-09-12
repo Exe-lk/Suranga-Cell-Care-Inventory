@@ -23,10 +23,12 @@ interface User {
     cid: string;
   
     name: string;
-    type: string;
+    role: string;
     
     password: string;
     mobile: string;
+	email?: string;
+	nic?: string;
    
 }
 // UserEditModal component definition
@@ -39,8 +41,10 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
         
         password: '',
         mobile: '',
+		email: '',
+		nic: '',
        
-		type:""
+		role:""
 	}
 	const [user, setStock] = useState<User>(data);
 	const [imageurl, setImageurl] = useState<any>(null);
@@ -76,25 +80,29 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
         initialValues: {
 			
             name: '',
-            type: '',
+            role: '',
            
             password: '',
             mobile: '',
+			email: '',
+			nic: '',
            
         },
 		validate: (values) => {
 			const errors: {
 				cid?: string;
-                type?: string;
+                role?: string;
 				
 				name?: string;
 				
                 password?: string;
 				mobile?: string;
+				email?: string;
+				nic?: string;
               
 			} = {};
-            if (!user.type) {
-				errors.type = 'Required';
+            if (!user.role) {
+				errors.role = 'Required';
 			}
 			
             if (!user.name) {
@@ -106,6 +114,12 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
             if (!user.mobile) {
 				errors.mobile = 'Required';
+			}
+			if (!user.email) {
+				errors.email = 'Required';
+			}
+			if (!user.nic) {
+				errors.nic = 'Required';
 			}
           
 			return errors;
@@ -122,7 +136,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
     return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id="">{'Edit Stock Keeper'}</ModalTitle>
+				<ModalTitle id="">{'Edit User'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
@@ -137,22 +151,22 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='type' label='Type'onChange={formik.handleChange} className='col-md-6'>
+					<FormGroup id='role' label='Role'onChange={formik.handleChange} className='col-md-6'>
 					
 					<Select
 						ariaLabel='Default select example'
 					
-						onChange={(e: any) => { user.type = e.target.value }}
-						value={user?.type}
+						onChange={(e: any) => { user.role = e.target.value }}
+						value={user?.role}
 						onBlur={formik.handleBlur}
 						isValid={formik.isValid}
-						isTouched={formik.touched.type}
-						invalidFeedback={formik.errors.type}>
-						{/* <Option value={'Admin'}>Admin</Option> */}
-						<Option value={'Stock keeper'}>Electronics</Option>
-						<Option value={'Data entry operator'}>Accessories</Option>
-						{/* <Option value={'Accountant'}>Accountant</Option> */}
-						{/* <Option value={'Cashier'}>Cashier</Option> */}
+						isTouched={formik.touched.role}
+						invalidFeedback={formik.errors.role}>
+						<Option>Select the role</Option>
+						<Option value={'Bill Keeper'}>Bill Keeper</Option>
+						<Option value={'Accessosry Stock Keeper'}>Accessosry Stock Keeper</Option>
+						<Option value={'Display Stock Keeper'}>Display Stock Keeper</Option>
+						<Option value={'Cashier'}>Cashier</Option>
 					</Select>
 				</FormGroup>
                    
@@ -166,6 +180,28 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							invalidFeedback={formik.errors.mobile}
 							validFeedback='Looks good!'
                         />
+					</FormGroup>
+					<FormGroup id='email' label='Email' onChange={formik.handleChange} className='col-md-6'>
+						<Input
+							onChange={(e: any) => { user.email = e.target.value }}
+							value={user?.email}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.email}
+							invalidFeedback={formik.errors.email}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='nic' label='NIC' onChange={formik.handleChange} className='col-md-6'>
+						<Input
+							onChange={(e: any) => { user.nic = e.target.value }}
+							value={user?.nic}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.nic}
+							invalidFeedback={formik.errors.nic}
+							validFeedback='Looks good!'
+						/>
 					</FormGroup>
 					
 					
