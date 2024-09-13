@@ -1,28 +1,40 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import SignInUser from '../../../service/authentication';
+import {
+    SignInUser,
+    getUserPositionByEmail
+} from '../../../service/authentication';
+
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      res.status(400).json({ error: 'Email and password are required' });
-      return;
-    }
-
-    try {
-      const user = await SignInUser(email, password);
-
-      if (user) {
-        res.status(200).json({ message: 'Successfully signed in', user });
-      } else {
-        res.status(401).json({ error: 'Invalid email or password' });
+  try {
+    switch (req.method) {
+      case 'POST': {
+        const { email, password } = req.body;
+        if (!email || !password) {
+          res.status(400).json({ error: 'Email and password are required' });
+          return;
+        }
+        const user = await SignInUser(email, password);
+        res.status(201).json({ message: 'User created', user });
+        break;
       }
-    } catch (error) {
-      res.status(500).json({ error: 'An error occurred while signing in' });
+      case 'GET': {
+        const {email} = req.body;
+        if (!email){
+          res.status(400).json({ error: 'Email is required' });
+          return;
+        }
+        const user = await getUserPositionByEmail(email);
+        res.status(200).json(user);
+        break;
+      }
+      default: {
+        res.setHeader('Allow', ['POST','GET']);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
+        break;
+      }
     }
-  } else {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
+  } catch (error) {
+    res.status(500).json({ error: 'An error occurred',});
   }
 }

@@ -24,6 +24,8 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, firestore } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Logo from '../components/Logo';
+import {useAddUserMutation}  from '../redux/slices/userApiSlice'
+import { useGetUsersQuery } from '../redux/slices/userApiSlice';
 
 interface ILoginHeaderProps {
 	isNewUser?: boolean;
@@ -51,6 +53,7 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 	const { darkModeStatus } = useDarkMode();
 	const [users, setUsers] = useState<User[]>([]);
 	const { setUser } = useContext(AuthContext);
+	const [addUser] = useAddUserMutation();
 
 	//login
 	const formik = useFormik({
@@ -75,55 +78,51 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 
 		onSubmit: async (values) => {
 			try {
-				try {
-					const baseURL = `http://localhost:3000/api/user/route`;
-					const response = await axios.post(baseURL, values);
-					const email = response.data.user.user.email;
-					localStorage.setItem('email', email);
-					if (response.data.user) {
-						await Swal.fire({
-							icon: 'success',
-							title: 'Login Successful',
-							text: 'You have successfully logged in!',
-						});
-						switch (response.data.user.position) {
-							case 'admin':
-								router.push('/admin/dashboard');
-								break;
-							case 'Viewer':
-								router.push('/viewer/dashboard');
-								break;
-
-							case 'Display-Stock':
-								router.push('/display-stock/dashboard');
-								break;
-							case 'Accessory-Stock':
-								router.push('/accessory-stock/dashboard');
-								break;
-							case 'Bill-Keeper':
-								router.push('/bill-keeper/bill-management');
-								break;
-							case 'Cashier':
-								router.push('/cashier/rapaired-phone');
-								break;
-						}
-					} else {
-						await Swal.fire({
-							icon: 'error',
-							title: 'Invalid Credentials',
-							text: 'Username and password do not match. Please try again.',
-						});
-					}
-				} catch (error) {
-					console.error('Error fetching data: ', error);
+			  const response = await addUser(values).unwrap();
+			  const email = response.user.email;
+			  localStorage.setItem('email', email);
+			  if (response.user) {
+				await Swal.fire({
+				  icon: 'success',
+				  title: 'Login Successful',
+				  text: 'You have successfully logged in!',
+				});
+				switch (response.user.position) {
+				  case 'admin':
+					router.push('/admin/dashboard');
+					break;
+				  case 'Viewer':
+					router.push('/viewer/dashboard');
+					break;
+				  case 'Display-Stock':
+					router.push('/display-stock/dashboard');
+					break;
+				  case 'Accessory-Stock':
+					router.push('/accessory-stock/dashboard');
+					break;
+				  case 'Bill-Keeper':
+					router.push('/bill-keeper/bill-management');
+					break;
+				  case 'Cashier':
+					router.push('/cashier/rapaired-phone');
+					break;
+				  default:
+					break;
 				}
+			  } else {
+				await Swal.fire({
+				  icon: 'error',
+				  title: 'Invalid Credentials',
+				  text: 'Username and password do not match. Please try again.',
+				});
+			  }
 			} catch (error) {
-				console.error('Error occurred:', error);
-				Swal.fire('Error', 'An unexpected error occurred', 'error');
+			  console.error('Error occurred:', error);
+			  Swal.fire('Error', 'An unexpected error occurred', 'error');
 			}
-		},
-	});
-
+		  },
+		});
+		
 	return (
 		<PageWrapper
 			isProtected={false}
