@@ -14,6 +14,8 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { useAddUserMutation } from '../../redux/slices/userManagementApiSlice';
+import { useGetUsersQuery } from '../../redux/slices/userManagementApiSlice';
 
 // Define the props for the UserAddModal component
 interface UserAddModalProps {
@@ -25,44 +27,46 @@ interface UserAddModalProps {
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [imageurl, setImageurl] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [addUser , {isLoading}] = useAddUserMutation();
+	const {refetch} = useGetUsersQuery(undefined);
 
 	//image upload
-	const handleUploadimage = async () => {
-		if (imageurl) {
-			// Assuming generatePDF returns a Promise
-			const pdfFile = imageurl;
-			console.log(imageurl);
-			const storageRef = ref(storage, `user/${pdfFile.name}`);
-			const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-			return new Promise((resolve, reject) => {
-				uploadTask.on(
-					'state_changed',
-					(snapshot) => {
-						const progress1 = Math.round(
-							(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-						);
-					},
-					(error) => {
-						console.error(error.message);
-						reject(error.message);
-					},
-					() => {
-						getDownloadURL(uploadTask.snapshot.ref)
-							.then((url) => {
-								console.log('File uploaded successfully. URL:', url);
+	// const handleUploadimage = async () => {
+	// 	if (imageurl) {
+	// 		// Assuming generatePDF returns a Promise
+	// 		const pdfFile = imageurl;
+	// 		console.log(imageurl);
+	// 		const storageRef = ref(storage, `user/${pdfFile.name}`);
+	// 		const uploadTask = uploadBytesResumable(storageRef, pdfFile);
+	// 		return new Promise((resolve, reject) => {
+	// 			uploadTask.on(
+	// 				'state_changed',
+	// 				(snapshot) => {
+	// 					const progress1 = Math.round(
+	// 						(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
+	// 					);
+	// 				},
+	// 				(error) => {
+	// 					console.error(error.message);
+	// 					reject(error.message);
+	// 				},
+	// 				() => {
+	// 					getDownloadURL(uploadTask.snapshot.ref)
+	// 						.then((url) => {
+	// 							console.log('File uploaded successfully. URL:', url);
 
-								console.log(url);
-								resolve(url);
-							})
-							.catch((error) => {
-								console.error(error.message);
-								reject(error.message);
-							});
-					},
-				);
-			});
-		}
-	};
+	// 							console.log(url);
+	// 							resolve(url);
+	// 						})
+	// 						.catch((error) => {
+	// 							console.error(error.message);
+	// 							reject(error.message);
+	// 						});
+	// 				},
+	// 			);
+	// 		});
+	// 	}
+	// };
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -72,8 +76,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			role: '',
 			nic: '',
 			email: '',
-			
-			password: '',
 			mobile: '',
 			
 			status:true
@@ -112,6 +114,37 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+				// Show a processing modal
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+				
+				try {
+					// Add the new category
+					const response: any = await addUser(values).unwrap();
+					console.log(response);
+
+					// Refetch categories to update the list
+					refetch();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'User Created Successfully',
+					});
+					setIsOpen(false); // Close the modal after successful addition
+				} catch (error) {
+					console.error('Error during handleSubmit: ', error);
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to add the user. Please try again.',
+					});
+				}
 				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
