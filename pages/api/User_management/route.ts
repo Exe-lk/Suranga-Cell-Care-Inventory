@@ -1,7 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
     createUser,
-    getUser
+    getUser,
+    updateUser,
+    deleteUser,
 } from '../../../service/userManagementService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -20,6 +22,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'GET': {
         const users = await getUser();
         res.status(200).json(users);
+        break;
+      }
+      case 'PUT': {
+        const { id, status , name,role,nic,email,mobile} = req.body;
+        if (!id || !name) {
+          res.status(400).json({ error: 'User ID and name are required' });
+          return;
+        }
+        await updateUser(id,status,name,role,nic,email,mobile);
+        res.status(200).json({ message: 'User updated' });
+        break;
+      }
+
+      case 'DELETE': {
+        const { id } = req.body;
+        if (!id) {
+          res.status(400).json({ error: 'User ID is required' });
+          return;
+        }
+        await deleteUser(id);
+        res.status(200).json({ message: 'User deleted' });
+        break;
+      }
+
+      default: {
+        res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
+        res.status(405).end(`Method ${req.method} Not Allowed`);
         break;
       }
     }

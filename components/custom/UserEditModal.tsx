@@ -24,11 +24,10 @@ interface User {
   
     name: string;
     role: string;
-    
-    password: string;
     mobile: string;
 	email?: string;
 	nic?: string;
+	status?: boolean;
    
 }
 // UserEditModal component definition
@@ -37,24 +36,20 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		cid: "",
 		
         name: '',
-       
-        
-        password: '',
         mobile: '',
 		email: '',
 		nic: '',
+		status: true,
        
 		role:""
 	}
-	const [user, setStock] = useState<User>(data);
-	const [imageurl, setImageurl] = useState<any>(null);
-	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const [user, setUser] = useState<User>(data);
 
 	//fetch data from database
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const dataCollection = collection(firestore, 'user');
+				const dataCollection = collection(firestore, 'UserManagement');
 				const q = query(dataCollection, where('__name__', '==', id));
 				const querySnapshot = await getDocs(q);
 				const firebaseData: any = querySnapshot.docs.map((doc) => {
@@ -64,7 +59,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						cid: doc.id,
 					};
 				});
-				await setStock(firebaseData[0])
+				await setUser(firebaseData[0])
                 console.log('Firebase Data:', user);
 			} catch (error) {
 				console.error('Error fetching data: ', error);
@@ -82,7 +77,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
             name: '',
             role: '',
            
-            password: '',
+          
             mobile: '',
 			email: '',
 			nic: '',
@@ -95,7 +90,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				
 				name?: string;
 				
-                password?: string;
+               
 				mobile?: string;
 				email?: string;
 				nic?: string;
@@ -109,9 +104,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.name = 'Required';
 			}
 		   
-            if (!user.password) {
-				errors.password = 'Required';
-			}
+           
             if (!user.mobile) {
 				errors.mobile = 'Required';
 			}
@@ -126,12 +119,32 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
-				
+				let data: any = user;
+				const docRef = doc(firestore, 'UserManagement', id);
+				// Update the data
+				updateDoc(docRef, data)
+					.then(() => {
+						setIsOpen(false);
+						showNotification(
+							<span className='d-flex align-items-center'>
+								<Icon icon='Info' size='lg' className='me-1' />
+								<span>Successfully Added</span>
+							</span>,
+							'category has been added successfully',
+						);
+						Swal.fire('Added!', 'category has been add successfully.', 'success');
+					})
+					.catch((error) => {
+						console.error('Error adding document: ', error);
+						alert(
+							'An error occurred while adding the document. Please try again later.',
+						);
+					});
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred during file upload. Please try again later.');
 			}
-        },
+		},
 	});
     return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -140,7 +153,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='name' label='Name' onChange={formik.handleChange} className='col-md-6'>
+					<FormGroup 
+					id='name' 
+					label='Name' 
+					onChange={formik.handleChange} 
+					className='col-md-6'>
 						<Input
 							onChange={(e: any) => { user.name = e.target.value }}
 							value={user?.name}

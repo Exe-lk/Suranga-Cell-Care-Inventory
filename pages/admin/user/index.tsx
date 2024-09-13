@@ -47,43 +47,21 @@ const Index: NextPage = () => {
 	const [user, setuser] = useState<User[]>([]);
 	const [id, setId] = useState<string>('');
 	const [status, setStatus] = useState(true);
-	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-	const position = [
-		// { position: 'Admin' },
-		{ position: 'Stock keeper Accessosry' },
-		{ position: 'Stock keeper Repair' },
-		// { position: 'Cashier' },
-		// { position: 'Data entry operator' },
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const role = [
+		{ role: 'bill keeper' },
+		{ role: 'accessosry stock keeper' },
+		{ role: 'display stock keeper' },
+		{ role: 'cashier' },
 	];
-	//get user data from database
-	const {data : users , error , isLoading} = useGetUsersQuery(undefined);
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'user');
-				const q = query(dataCollection, where('status', '==', true));
-				const querySnapshot = await getDocs(q);
-				const firebaseData = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as User;
-					return {
-						...data,
-						cid: doc.id,
-					};
-				});
-				setuser(firebaseData);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [editModalStatus, addModalStatus, status]);
+	const { data: users, error, isLoading } = useGetUsersQuery(undefined);
 
 	//delete user
 	const handleClickDelete = async (user: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
+				text: 'You will not be able to recover this user!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -92,7 +70,6 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
-					
 				} catch (error) {
 					console.error('Error during handleUpload: ', error);
 					alert('An error occurred during file upload. Please try again later.');
@@ -138,27 +115,25 @@ const Index: NextPage = () => {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Stock keeper type' className='col-12'>
+									<FormGroup label='User type' className='col-12'>
 										<ChecksGroup>
-											{position.map((category, index) => (
+											{role.map((user, index) => (
 												<Checks
-													key={category.position}
-													id={category.position}
-													label={category.position}
-													name={category.position}
-													value={category.position}
-													checked={selectedCategories.includes(
-														category.position,
-													)}
+													key={user.role}
+													id={user.role}
+													label={user.role}
+													name={user.role}
+													value={user.role}
+													checked={selectedUsers.includes(user.role)}
 													onChange={(event: any) => {
 														const { checked, value } = event.target;
-														setSelectedCategories(
-															(prevCategories) =>
+														setSelectedUsers(
+															(prevUsers) =>
 																checked
-																	? [...prevCategories, value] // Add category if checked
-																	: prevCategories.filter(
-																			(category) =>
-																				category !== value,
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(user) =>
+																				user !== value,
 																	  ), // Remove category if unchecked
 														);
 													}}
@@ -186,171 +161,85 @@ const Index: NextPage = () => {
 					<div className='col-12'>
 						{/* Table for displaying user data */}
 						<Card stretch>
-						<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>User Management</div>
-								
+							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
+								<div className='flex-grow-1 text-center text-info'>
+									User Management
+								</div>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-bordered border-primary table-modern table-hover'>
 									<thead>
 										<tr>
 											<th>User</th>
-											<th>Type</th>
-											
+											<th>Email</th>
 											<th>Mobile number</th>
+											<th>NIC</th>
+											<th>Role</th>
 											<th></th>
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Kalpa Chamathkara</td>
-											<td>Stock Keeper Repaier</td>
-											
-											<td>0772369745</td>
-											<td>
-											<td>
-														<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-											</td>
-										</tr>
-										<tr>
-											<td>Ravidu Idamalgoda</td>
-											<td>Stock Keeper Repaier</td>
-											
-											<td>0772369745</td>
-											<td>
-												
-											<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-											</td>
-										</tr>
-										{user
-											.filter((val) => {
-												if (searchTerm === '') {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												} else if (
-													val.name
-														.toLowerCase()
-														.includes(searchTerm.toLowerCase())
-												) {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												}
-											})
+										{isLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{error && (
+											<tr>
+												<td>Error fetching users.</td>
+											</tr>
+										)}
+										{users &&
+											users
+												.filter((user: any) =>
+													searchTerm
+														? user.nic
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.filter((user: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(user.role)
+														: true,
+												)
 
-											.map((user, index) => (
-												<tr key={user.cid}>
-													<td>
-														<div className='d-flex align-items-center'>
-															<div className='flex-shrink-0'>
-																<div
-																	className='ratio ratio-1x1 me-3'
-																	style={{ width: 48 }}>
-																	<div
-																		className={`bg-l${
-																			darkModeStatus
-																				? 'o25'
-																				: '25'
-																		}-${getColorNameWithIndex(
-																			index,
-																		)} text-${getColorNameWithIndex(
-																			index,
-																		)} rounded-2 d-flex align-items-center justify-content-center`}>
-																		<span className='fw-bold'>
-																			{getFirstLetter(
-																				user.name,
-																			)}
-																		</span>
-																	</div>
-																</div>
-															</div>
-															<div className='flex-grow-1'>
-																<div className='fs-6 fw-bold'>
-																	{user.name}
-																</div>
-																<div className='text-muted'>
-																	<Icon icon='Label' />{' '}
-																	<small>{user.cid}</small>
-																</div>
-															</div>
-														</div>
-													</td>
-													<td>{user.position}</td>
-													<td>{user.email}</td>
-													<td>{user.mobile}</td>
-													<td>{user.password}</td>
-													<td>{user.pin_number}</td>
-													<td>
-														<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true),
-																setId(user.cid)
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='warning'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-												</tr>
-											))}
+												.map((user: any) => (
+													<tr key={user.id}>
+														<td>{user.name}</td>
+														<td>{user.email}</td>
+														<td>{user.mobile}</td>
+														<td>{user.nic}</td>
+														<td>{user.role}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() => {
+																	setEditModalStatus(true);
+																}}>
+																Edit
+															</Button>
+															<Button
+																className='m-2'
+																icon='Delete'
+																color='danger'
+																onClick={() =>
+																	handleClickDelete(user)
+																}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-									
-								)}>
-								Recycle Bin</Button> 
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => setDeleteModalStatus(true)}>
+									Recycle Bin
+								</Button>
 							</CardBody>
 						</Card>
 					</div>
