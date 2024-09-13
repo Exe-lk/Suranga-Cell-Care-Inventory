@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const userApiSlice = createApi({
   reducerPath: 'usersApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['User'],
   endpoints: (builder) => ({
     // Read: Fetch all user
