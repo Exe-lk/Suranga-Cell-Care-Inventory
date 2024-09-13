@@ -29,7 +29,7 @@ export const getUserById = async (id: string) => {
   }
 };
 
-export const updateUser = async (id: string, name: string, role: any, nic: string, email: string, mobile: string) => {
+export const updateUser = async (id: string, name: string, role: any, nic: string, email: string, mobile: string,status:string) => {
   const userRef = doc(firestore, 'UserManagement', id);
   await updateDoc(userRef, { name, role,nic,email,mobile, status });
 };
