@@ -2,7 +2,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth, firestore } from '../firebaseConfig'; // Importing the correct firestore instance
 import { collection, query, where, getDocs } from 'firebase/firestore';
 
-const SignInUser = async (email: string, password: string) => {
+export const SignInUser = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
@@ -16,7 +16,7 @@ const SignInUser = async (email: string, password: string) => {
   }
 };
 
-const getUserPositionByEmail = async (email: string) => {
+export const getUserPositionByEmail = async (email: string) => {
   try {
     const q = query(collection(firestore, 'User'), where('email', '==', email)); // Firestore query
     const querySnapshot = await getDocs(q);

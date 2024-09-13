@@ -30,44 +30,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addUser , {isLoading}] = useAddUserMutation();
 	const {refetch} = useGetUsersQuery(undefined);
 
-	//image upload
-	// const handleUploadimage = async () => {
-	// 	if (imageurl) {
-	// 		// Assuming generatePDF returns a Promise
-	// 		const pdfFile = imageurl;
-	// 		console.log(imageurl);
-	// 		const storageRef = ref(storage, `user/${pdfFile.name}`);
-	// 		const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-	// 		return new Promise((resolve, reject) => {
-	// 			uploadTask.on(
-	// 				'state_changed',
-	// 				(snapshot) => {
-	// 					const progress1 = Math.round(
-	// 						(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-	// 					);
-	// 				},
-	// 				(error) => {
-	// 					console.error(error.message);
-	// 					reject(error.message);
-	// 				},
-	// 				() => {
-	// 					getDownloadURL(uploadTask.snapshot.ref)
-	// 						.then((url) => {
-	// 							console.log('File uploaded successfully. URL:', url);
-
-	// 							console.log(url);
-	// 							resolve(url);
-	// 						})
-	// 						.catch((error) => {
-	// 							console.error(error.message);
-	// 							reject(error.message);
-	// 						});
-	// 				},
-	// 			);
-	// 		});
-	// 	}
-	// };
-
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
