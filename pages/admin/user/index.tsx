@@ -24,6 +24,7 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import SellerDeleteModal from '../../../components/custom/UserDeleteModal';
 import { useGetUsersQuery } from '../../../redux/slices/userManagementApiSlice';
+import { updateUser } from '../../../service/userManagementService';
 
 interface User {
 	cid: string;
@@ -54,9 +55,10 @@ const Index: NextPage = () => {
 		{ role: 'display stock keeper' },
 		{ role: 'cashier' },
 	];
-	const { data: users, error, isLoading } = useGetUsersQuery(undefined);
+	const { data: users, error, isLoading, refetch } = useGetUsersQuery(undefined);
 
 	//delete user
+	// Update the user's status to false instead of deleting
 	const handleClickDelete = async (user: any) => {
 		try {
 			const result = await Swal.fire({
@@ -70,9 +72,27 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
+					// Set the user's status to false (soft delete)
+					await updateUser(
+						user.id,
+						user.name,
+						user.role,
+						user.nic,
+						user.email,
+						user.mobile,
+						false,
+					);
+
+					// Refresh the list after deletion
+					Swal.fire('Deleted!', 'User has been deleted.', 'success');
+					refetch(); // This will refresh the list of users to reflect the changes
 				} catch (error) {
-					console.error('Error during handleUpload: ', error);
-					alert('An error occurred during file upload. Please try again later.');
+					console.error('Error during handleDelete: ', error);
+					Swal.fire(
+						'Error',
+						'An error occurred during deletion. Please try again later.',
+						'error',
+					);
 				}
 			}
 		} catch (error) {
@@ -191,6 +211,7 @@ const Index: NextPage = () => {
 										)}
 										{users &&
 											users
+												.filter((user: any) => user.status === true) // Only show users where status is true
 												.filter((user: any) =>
 													searchTerm
 														? user.nic
@@ -203,7 +224,6 @@ const Index: NextPage = () => {
 														? selectedUsers.includes(user.role)
 														: true,
 												)
-
 												.map((user: any) => (
 													<tr key={user.id}>
 														<td>{user.name}</td>
@@ -217,6 +237,7 @@ const Index: NextPage = () => {
 																color='info'
 																onClick={() => {
 																	setEditModalStatus(true);
+																	setId(user.id);
 																}}>
 																Edit
 															</Button>
@@ -246,7 +267,13 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<UserAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<UserEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			<UserEditModal
+				setIsOpen={setEditModalStatus}
+				isOpen={editModalStatus}
+				id={id}
+				refetch={refetch} // Pass refetch function here
+			/>
+
 			<SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 		</PageWrapper>
 	);

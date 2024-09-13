@@ -1,7 +1,7 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createUser = async (name: string, role: any,nic : string,email : string,mobile: string) => {
+export const createDealer = async (name: string, role: any,nic : string,email : string,mobile: string) => {
   const status = true;
   const docRef = await addDoc(collection(firestore, 'UserManagement'), { name,role,nic,email,mobile , status });
   return docRef.id;
@@ -29,7 +29,7 @@ export const getUserById = async (id: string) => {
   }
 };
 
-export const updateUser = async (id: string, name: string, role: any, nic: string, email: string, mobile: string,status:boolean) => {
+export const updateUser = async (id: string, name: string, role: any, nic: string, email: string, mobile: string,status:string) => {
   const userRef = doc(firestore, 'UserManagement', id);
   await updateDoc(userRef, { name, role,nic,email,mobile, status });
 };
