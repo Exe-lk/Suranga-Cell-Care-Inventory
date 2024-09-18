@@ -86,7 +86,6 @@ const Index: NextPage = () => {
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'User has been deleted.', 'success');
 					refetch(); // This will refresh the list of users to reflect the changes
-					
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
 					Swal.fire(
@@ -259,7 +258,10 @@ const Index: NextPage = () => {
 								<Button
 									icon='Delete'
 									className='mb-5'
-									onClick={() => setDeleteModalStatus(true)}>
+									onClick={() => {
+										refetch(); // Add refetch here to get the latest data
+										setDeleteModalStatus(true); // Then open the recycle bin modal
+									}}>
 									Recycle Bin
 								</Button>
 							</CardBody>
@@ -275,7 +277,12 @@ const Index: NextPage = () => {
 				refetch={refetch} // Pass refetch function here
 			/>
 
-			<UserDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetch={refetch}/>
+			<UserDeleteModal
+				setIsOpen={setDeleteModalStatus}
+				isOpen={deleteModalStatus}
+				id=''
+				refetchMainPage={refetch} // Pass the refetch function here
+			/>
 		</PageWrapper>
 	);
 };
