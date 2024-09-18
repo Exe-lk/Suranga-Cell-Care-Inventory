@@ -18,6 +18,17 @@ export const getUser = async () => {
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
+export const getDeleteUser = async () => {
+  // Create a query to get categories where status == true
+  const q = query(collection(firestore, 'UserManagement'), where('status', '==', false));
+
+  // Execute the query and get the documents
+  const querySnapshot = await getDocs(q);
+
+  // Map over the documents and return the data
+  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
+
 export const getUserById = async (id: string) => {
   const userRef = doc(firestore, 'UserManagement', id); // Get the document reference
   const userSnap = await getDoc(userRef); // Get the document snapshot

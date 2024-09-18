@@ -22,7 +22,7 @@ import { getFirstLetter } from '../../../helpers/helpers';
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import SellerDeleteModal from '../../../components/custom/UserDeleteModal';
+import UserDeleteModal from '../../../components/custom/UserDeleteModal';
 import { useGetUsersQuery } from '../../../redux/slices/userManagementApiSlice';
 import { updateUser } from '../../../service/userManagementService';
 
@@ -86,6 +86,7 @@ const Index: NextPage = () => {
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'User has been deleted.', 'success');
 					refetch(); // This will refresh the list of users to reflect the changes
+					
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
 					Swal.fire(
@@ -274,7 +275,7 @@ const Index: NextPage = () => {
 				refetch={refetch} // Pass refetch function here
 			/>
 
-			<SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			<UserDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetch={refetch}/>
 		</PageWrapper>
 	);
 };
