@@ -19,10 +19,13 @@ import BrandAddModal from '../../../components/custom/BrandAddModal';
 import BrandDeleteModal from '../../../components/custom/BrandDeleteModal';
 import BrandEditModal from '../../../components/custom/BrandEditModal';
 import Swal from 'sweetalert2';
+import { useGetBrandsQuery } from '../../../redux/slices/brandApiSlice';
+import { updateBrand } from '../../../service/brandService';
 // Define the interface for category data
 interface Category {
 	cid: string;
 	categoryname: string;
+	description: string;
 	status: boolean;
 }
 // Define the functional component for the index page
@@ -35,11 +38,12 @@ const Index: NextPage = () => {
 	const [category, setcategory] = useState<Category[]>([]); // State for category data
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	
 	
 	// Function to handle deletion of a category
-	const handleClickDelete = async (category: any) => {
+	const handleClickDelete = async (brand: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -51,13 +55,33 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-			
+				try {
+					// Set the user's status to false (soft delete)
+					await updateBrand(
+						brand.id,
+						brand.name,
+						brand.description,
+						false,
+					);
+
+					// Refresh the list after deletion
+					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
+					refetch(); // This will refresh the list of users to reflect the changes
+				} catch (error) {
+					console.error('Error during handleDelete: ', error);
+					Swal.fire(
+						'Error',
+						'An error occurred during deletion. Please try again later.',
+						'error',
+					);
+				}
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete category.', 'error');
+			Swal.fire('Error', 'Failed to delete brand.', 'error');
 		}
 	};
+
 	// JSX for rendering the page
 	return (
 		<PageWrapper>
@@ -118,48 +142,54 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>samsung</td>
-											<td>M20</td>
-											
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete(category)}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										<tr>
-											<td>Apple</td>
-											<td>14 Pro</td>
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete(category)}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										
+										{isLoading &&(
+											<tr>
+												<td>Loadning...</td>
+											</tr>
+										)}
+										{
+											error && (
+												<tr>
+													<td>Error fetching brands.</td>
+												</tr>
+											)
+										}
+										{
+											brands &&
+											brands
+												.filter((brand : any) =>
+													brand.status === true 
+												)
+												.filter((brand : any) => 
+													searchTerm 
+													? brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+													: true,
+												)
+												.map((brand:any) => (
+													<tr key={brand.id}>
+														<td>{brand.name}</td>
+														<td>{brand.description}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() => {
+																	setEditModalStatus(true);
+																	setId(brand.id);
+																}}>
+																Edit
+															</Button>
+															<Button
+																icon='Delete'
+																className='m-2'
+																color='danger'
+																onClick={() => handleClickDelete(brand)}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))
+										}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
@@ -178,7 +208,7 @@ const Index: NextPage = () => {
 			</Page>
 			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<BrandDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);
 };

@@ -178,7 +178,7 @@ const Index: NextPage = () => {
 			</Page>
 			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<BrandDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			{/* <BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
 		</PageWrapper>
 	);
 };

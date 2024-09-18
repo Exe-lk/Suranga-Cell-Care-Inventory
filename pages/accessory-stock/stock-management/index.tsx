@@ -214,7 +214,7 @@ const Index: NextPage = () => {
 			<StockAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
 			<StockDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 
-			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			{/* <StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
 		</PageWrapper>
 	);
 };

@@ -19,7 +19,15 @@ import StockTypeAddModal from '../../../components/custom/StockTypeAddModal';
 import StockTypeDeleteModal from '../../../components/custom/StockTypeDeleteModal';
 import StockTypeEditModal from '../../../components/custom/StockTypeEditModal';
 import Swal from 'sweetalert2';
+import { useGetStockKeepersQuery } from '../../../redux/slices/stockKeeperApiSlice';
+import { updatestockKeeper } from '../../../service/stockKeeperService';
 // Define the interface for category data
+interface Category {
+	cid: string;
+	stockKeeperType: string;
+	description: string;
+	status: boolean;
+}
 
 // Define the functional component for the index page
 const Index: NextPage = () => {
@@ -29,15 +37,17 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current category ID
+	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const { data: stockKeepers, error, isLoading, refetch } = useGetStockKeepersQuery(undefined);
 
 	
 	
 	// Function to handle deletion of a category
-	const handleClickDelete = async () => {
+	const handleClickDelete = async (stockKeeper: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this Stock Type!',
+				text: 'You will not be able to recover this brand!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -45,13 +55,33 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-			
+				try {
+					// Set the user's status to false (soft delete)
+					await updatestockKeeper(
+						stockKeeper.id,
+						stockKeeper.type,
+						stockKeeper.description,
+						false,
+					);
+
+					// Refresh the list after deletion
+					Swal.fire('Deleted!', 'Stock Keeper has been deleted.', 'success');
+					refetch(); // This will refresh the list of users to reflect the changes
+				} catch (error) {
+					console.error('Error during handleDelete: ', error);
+					Swal.fire(
+						'Error',
+						'An error occurred during deletion. Please try again later.',
+						'error',
+					);
+				}
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete category.', 'error');
+			Swal.fire('Error', 'Failed to delete brand.', 'error');
 		}
 	};
+
 	// JSX for rendering the page
 	return (
 		<PageWrapper>
@@ -112,48 +142,54 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Stock Keeper Accessory</td>
-											<td>Accessories </td>
-											
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										<tr>
-											<td>Stock Keeper Repaier</td>
-											<td>Accessories</td>
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										
+										{isLoading &&(
+											<tr>
+												<td>Loadning...</td>
+											</tr>
+										)}
+										{
+											error && (
+												<tr>
+													<td>Error fetching brands.</td>
+												</tr>
+											)
+										}
+										{
+											stockKeepers &&
+											stockKeepers
+												.filter((stockKeeper : any) =>
+													stockKeeper.status === true 
+												)
+												.filter((stockKeeper : any) => 
+													searchTerm 
+													? stockKeeper.type.toLowerCase().includes(searchTerm.toLowerCase())
+													: true,
+												)
+												.map((stockKeeper:any) => (
+													<tr key={stockKeeper.id}>
+														<td>{stockKeeper.type}</td>
+														<td>{stockKeeper.description}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() => {
+																	setEditModalStatus(true);
+																	setId(stockKeeper.id);
+																}}>
+																Edit
+															</Button>
+															<Button
+																icon='Delete'
+																className='m-2'
+																color='danger'
+																onClick={() => handleClickDelete(stockKeeper)}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))
+										}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
@@ -172,7 +208,7 @@ const Index: NextPage = () => {
 			</Page>
 			<StockTypeAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<StockTypeDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<StockTypeEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			<StockTypeEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);
 };

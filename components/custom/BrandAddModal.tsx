@@ -5,6 +5,9 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../boots
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
+import { useAddBrandMutation } from '../../redux/slices/brandApiSlice';
+import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
+import Swal from 'sweetalert2';
 
 interface BrandAddModalProps {
 	id: string;
@@ -13,6 +16,8 @@ interface BrandAddModalProps {
 }
 
 const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const [addBrand , {isLoading}] = useAddBrandMutation();
+	const {refetch} = useGetBrandsQuery(undefined);
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -35,8 +40,42 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+				// Show a processing modal
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+				
+				try {
+					// Add the new category
+					const response: any = await addBrand(values).unwrap();
+					console.log(response);
+
+					// Refetch categories to update the list
+					refetch();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Brand Created Successfully',
+					});
+					formik.resetForm();
+					setIsOpen(false); // Close the modal after successful addition
+				} catch (error) {
+					console.error('Error during handleSubmit: ', error);
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to add the brand. Please try again.',
+					});
+				}
+				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
+				Swal.close;
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
