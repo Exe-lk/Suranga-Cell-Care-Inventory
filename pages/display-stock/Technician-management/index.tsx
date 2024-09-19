@@ -294,7 +294,7 @@ const Index: NextPage = () => {
 													<td>{user.password}</td>
 													<td>{user.pin_number}</td>
 													<td>
-														<Button
+														{/* <Button
 															icon='Edit'
 															tag='a'
 															color='info'
@@ -303,7 +303,7 @@ const Index: NextPage = () => {
 																setId(user.cid)
 															)}>
 															Edit
-														</Button>
+														</Button> */}
 														<Button
 															className='m-2'
 															icon='Delete'
@@ -328,8 +328,8 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<UserAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<UserEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
-			<SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			{/* <UserEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
+			{/* <SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' /> */}
 		</PageWrapper>
 	);
 };

@@ -5,6 +5,9 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../boots
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
+import { useAddModelMutation } from '../../redux/slices/modelApiSlice';
+import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
+import Swal from 'sweetalert2';
 
 interface ModelAddModalProps {
 	id: string;
@@ -13,6 +16,8 @@ interface ModelAddModalProps {
 }
 
 const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const [addModel , {isLoading}] = useAddModelMutation();
+	const {refetch} = useGetModelsQuery(undefined);
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -35,8 +40,42 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+				// Show a processing modal
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+				
+				try {
+					// Add the new category
+					const response: any = await addModel(values).unwrap();
+					console.log(response);
+
+					// Refetch categories to update the list
+					refetch();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Model Created Successfully',
+					});
+					formik.resetForm();
+					setIsOpen(false); // Close the modal after successful addition
+				} catch (error) {
+					console.error('Error during handleSubmit: ', error);
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to add the model. Please try again.',
+					});
+				}
+				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
+				Swal.close;
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
@@ -49,7 +88,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='name' label='Model Name' className='col-md-6'>
+				<FormGroup id='name' label='Modelname' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

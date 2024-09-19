@@ -16,39 +16,103 @@ interface StockTypeEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
+	refetch(...args: unknown[]): unknown;
 }
 
+interface stockKeeper {
+	cid: string;
+	type: string;
+	description?: string;
+	status?: boolean;
+}
 
-const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen , refetch }) => {
 	
-	const [stocktype, setModel] = useState<any>();
+	const [ stockKeeper, setstockKeeper] = useState<stockKeeper>({
+		cid: '',
+		type: '',
+		description: '',
+		status: true,
+	});
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			name: '',
-            description:"",
-            status:true
+			type: stockKeeper.type,
+            description: stockKeeper.description,
+          
 		
 		},
 		validate: (values) => {
 			const errors: {
-				name?: string;
+				type?: string;
+				description?: string;
 			} = {};
-			if (!stocktype.name) {
-				errors.name = 'Required';
+			if (!values.type) {
+				errors.type = 'Required';
+			}
+			if (!values.description) {
+				errors.description = 'Required';
 			}
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				
+				const updatedData = {
+					...stockKeeper, // Keep existing user data
+					...values, // Update with form values
+				};
+				const docRef = doc(firestore, 'stockKeeper', id);
+				await updateDoc(docRef, updatedData);
+				setIsOpen(false);
+				showNotification(
+					<span className='d-flex align-items-center'>
+						<Icon icon='Info' size='lg' className='me-1' />
+						<span>Successfully Updated</span>
+					</span>,
+					'Stock Keeper has been updated successfully',
+				);
+				Swal.fire('Updated!', 'Stock Keeper has been updated successfully.', 'success');
+
+				refetch(); // Trigger refetch of users list after update
 			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				alert('An error occurred during file upload. Please try again later.');
+				console.error('Error updating document: ', error);
+				alert('An error occurred while updating the document. Please try again later.');
 			}
 		},
 	});
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				if (id) {
+					const dataCollection = collection(firestore, 'stockKeeper');
+					const q = query(dataCollection, where('__name__', '==', id));
+					const querySnapshot = await getDocs(q);
+					const firebaseData: any = querySnapshot.docs.map((doc) => {
+						const data = doc.data() as stockKeeper;
+						return {
+							...data,
+							cid: doc.id,
+						};
+					});
+					setstockKeeper(firebaseData[0]);
+
+					// Update formik values when the brand is loaded
+					formik.setValues({
+						type: firebaseData[0]?.type || '',
+						description: firebaseData[0]?.description || '',
+					});
+				} else {
+					console.error('No ID provided');
+				}
+			} catch (error) {
+				console.error('Error fetching data: ', error);
+			}
+		};
+		fetchData();
+	}, [id]);
+
 	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -57,33 +121,23 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup
-						id='name'
-						label='Stock Keeper Type name'
-						onChange={formik.handleChange}
-						className='col-md-6'>
+				<FormGroup id='type' label='Type' className='col-md-6'>
 						<Input
-							onChange={(e: any) => {
-								stocktype.name = e.target.value;
-							}}
-							value={stocktype?.categoryname}
+							name='type'
+							value={formik.values.type}
+							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
+							isTouched={formik.touched.type}
+							invalidFeedback={formik.errors.type}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                    <FormGroup
-						id='description'
-						label='Description'
-						onChange={formik.handleChange}
-						className='col-md-6'>
+					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
-							onChange={(e: any) => {
-								stocktype.description = e.target.value;
-							}}
-							value={stocktype?.categoryname}
+							name='description'
+							onChange={formik.handleChange}
+							value={formik.values.description}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
 							isTouched={formik.touched.description}

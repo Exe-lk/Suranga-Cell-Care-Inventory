@@ -177,7 +177,7 @@ const Index: NextPage = () => {
 			</Page>
 			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			{/* <CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
 		</PageWrapper>
 	);
 };

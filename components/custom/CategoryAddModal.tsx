@@ -5,6 +5,9 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../boots
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
+import Swal from 'sweetalert2';
+import { useAddCategoryMutation } from '../../redux/slices/categoryApiSlice';
+import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 
 interface CategoryEditModalProps {
 	id: string;
@@ -12,27 +15,62 @@ interface CategoryEditModalProps {
 	setIsOpen(...args: unknown[]): unknown;
 }
 
-const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const [addCategory, { isLoading }] = useAddCategoryMutation();
+	const { refetch } = useGetCategoriesQuery(undefined);
 	const formik = useFormik({
 		initialValues: {
-			categoryname: '',
+			name: '',
 			status: true,
 		},
 		validate: (values) => {
 			const errors: {
-				categoryname?: string;
-				subcategory?: string;
+				name?: string;
 			} = {};
-			if (!values.categoryname) {
-				errors.categoryname = 'Required';
+			if (!values.name) {
+				errors.name = 'Required';
 			}
 
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
+				// Show a processing modal
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+				
+				try {
+					// Add the new category
+					const response: any = await addCategory(values).unwrap();
+					console.log(response);
+
+					// Refetch categories to update the list
+					refetch();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Category Created Successfully',
+					});
+					formik.resetForm();
+					setIsOpen(false); // Close the modal after successful addition
+				} catch (error) {
+					console.error('Error during handleSubmit: ', error);
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to add the category. Please try again.',
+					});
+				}
+				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
+				Swal.close;
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
@@ -45,14 +83,14 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='categoryname' label='Category name' className='col-md-6'>
+				<FormGroup id='name' label='Brandname' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
-							value={formik.values.categoryname}
+							value={formik.values.name}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.categoryname}
-							invalidFeedback={formik.errors.categoryname}
+							isTouched={formik.touched.name}
+							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -67,10 +105,10 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 	);
 };
 
-CategoryEditModal.propTypes = {
+CategoryAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
 
-export default CategoryEditModal;
+export default CategoryAddModal;
