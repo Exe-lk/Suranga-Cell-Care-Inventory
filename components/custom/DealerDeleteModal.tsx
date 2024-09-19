@@ -13,11 +13,11 @@ import Swal from 'sweetalert2';
 import useDarkMode from '../../hooks/useDarkMode';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../bootstrap/Dropdown';
 import {
-	useDeleteSupplierMutation,
-	useGetSuppliersQuery,
-	useGetDeleteSuppliersQuery,
-	useUpdateSupplierMutation,
-} from '../../redux/slices/supplierApiSlice';
+	useDeleteDealerMutation,
+	useGetDealersQuery,
+	useGetDeleteDealersQuery,
+	useUpdateDealerMutation,
+} from '../../redux/slices/delearApiSlice';
 
 interface UserEditModalProps {
 	id: string;
@@ -26,12 +26,12 @@ interface UserEditModalProps {
 }
 
 const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const { data: suppliers, error, isLoading } = useGetDeleteSuppliersQuery(undefined);
-	const [updateSupplier] = useUpdateSupplierMutation();
-	const [deleteSupplier] = useDeleteSupplierMutation();
-	const { refetch } = useGetDeleteSuppliersQuery(undefined);
+	const { data: dealers, error, isLoading } = useGetDeleteDealersQuery(undefined);
+	const [updateDealer] = useUpdateDealerMutation();
+	const [deleteDealer] = useDeleteDealerMutation();
+	const { refetch } = useGetDeleteDealersQuery(undefined);
 
-	const handleClickDelete = async (supplier: any) => {
+	const handleClickDelete = async (dealer: any) => {
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
@@ -51,8 +51,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 			if (inputText === 'DELETE') {
 				// Call the delete mutation from Redux
-				await deleteSupplier(supplier.id).unwrap();
-				Swal.fire('Deleted!', 'The supplier has been deleted.', 'success');
+				await deleteDealer(dealer.id).unwrap();
+				Swal.fire('Deleted!', 'The dealer has been deleted.', 'success');
 
 				// Refetch categories to update the list
 				refetch();
@@ -63,7 +63,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		}
 	};
 
-	const handleClickRestore = async (supplier: any) => {
+	const handleClickRestore = async (dealer: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -76,22 +76,22 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 			if (result.isConfirmed) {
 				const values = await {
-					id: supplier.id,
-					name: supplier.name,
+					id: dealer.id,
+					name: dealer.name,
 					status: true,
-					item: supplier.item,
-					email: supplier.email,
-					address: supplier.address,
-					mobileNumber: supplier.mobileNumber,
+					item: dealer.item,
+					email: dealer.email,
+					address: dealer.address,
+					mobileNumber: dealer.mobileNumber,
 				};
 
-				await updateSupplier(values);
+				await updateDealer(values);
 
-				Swal.fire('Restory!', 'The supplier has been deleted.', 'success');
+				Swal.fire('Restory!', 'The dealer has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete supplier.', 'error');
+			Swal.fire('Error', 'Failed to delete dealer.', 'error');
 		}
 	};
 
@@ -114,17 +114,17 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 
 			if (inputText === 'DELETE ALL') {
-				for (const supplier of suppliers) {
-					await deleteSupplier(supplier.id).unwrap();
+				for (const dealer of dealers) {
+					await deleteDealer(dealer.id).unwrap();
 				}
-				Swal.fire('Deleted!', 'All supplier have been deleted.', 'success');
+				Swal.fire('Deleted!', 'All dealers have been deleted.', 'success');
 
 				// Refetch categories after deletion
 				refetch();
 			}
 		} catch (error) {
 			console.error('Error deleting all dealers:', error);
-			Swal.fire('Error', 'Failed to delete all suppliers.', 'error');
+			Swal.fire('Error', 'Failed to delete all dealers.', 'error');
 		}
 	};
 
@@ -142,26 +142,26 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 
 			if (result.isConfirmed) {
-				for (const supplier of suppliers) {
+				for (const dealer of dealers) {
 					const values = {
-						id: supplier.id,
-						name: supplier.name,
+						id: dealer.id,
+						name: dealer.name,
 						status: true, // Assuming restoring means setting status to true
-						item: supplier.item,
-						email: supplier.email,
-						address: supplier.address,
-						mobileNumber: supplier.mobileNumber,
+						item: dealer.item,
+						email: dealer.email,
+						address: dealer.address,
+						mobileNumber: dealer.mobileNumber,
 					};
-					await updateSupplier(values).unwrap();
+					await updateDealer(values).unwrap();
 				}
-				Swal.fire('Restored!', 'All suppliers have been restored.', 'success');
+				Swal.fire('Restored!', 'All deaers have been restored.', 'success');
 
 				// Refetch categories after restoring
 				refetch();
 			}
 		} catch (error) {
 			console.error('Error restoring all dealers:', error);
-			Swal.fire('Error', 'Failed to restore all suppliers.', 'error');
+			Swal.fire('Error', 'Failed to restore all dealers.', 'error');
 		}
 	};
 
@@ -205,17 +205,17 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 								<td>Error fetching dealers.</td>
 							</tr>
 						)}
-						{suppliers &&
-							suppliers.map((supplier: any) => (
-								<tr key={supplier.cid}>
-									<td>{supplier.name}</td>
+						{dealers &&
+							dealers.map((dealer: any) => (
+								<tr key={dealer.cid}>
+									<td>{dealer.name}</td>
 
 									<td>
 										<Button
 											icon='Restore'
 											tag='a'
 											color='info'
-											onClick={() => handleClickRestore(supplier)}>
+											onClick={() => handleClickRestore(dealer)}>
 											Restore
 										</Button>
 
@@ -223,7 +223,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 											className='m-2'
 											icon='Delete'
 											color='danger'
-											onClick={() => handleClickDelete(supplier)}>
+											onClick={() => handleClickDelete(dealer)}>
 											Delete
 										</Button>
 									</td>

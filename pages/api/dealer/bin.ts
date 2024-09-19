@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   createDealer,
-  getDealers,
+  getDeleteDealers,
   updateDealer,
   deleteDealer,
 } from '../../../service/dealerService';
@@ -21,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'GET': {
-        const dealers = await getDealers();
+        const dealers = await getDeleteDealers();
         res.status(200).json(dealers);
         break;
       }

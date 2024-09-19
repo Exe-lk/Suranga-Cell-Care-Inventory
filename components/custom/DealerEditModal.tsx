@@ -14,9 +14,10 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useAddSupplierMutation } from '../../redux/slices/supplierApiSlice';
-import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice'; // Import the query
-import { stringOrDate } from 'react-big-calendar';
+import {
+	useUpdateDealerMutation,
+	useGetDealersQuery,
+} from '../../redux/slices/delearApiSlice';
 
 // Define the props for the UserAddModal component
 interface UserAddModalProps {
@@ -26,49 +27,40 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addSupplier , {isLoading}] = useAddSupplierMutation();
-	const {refetch} = useGetSuppliersQuery(undefined);
+	const { data: dealers } = useGetDealersQuery(undefined);
+	const [updateDealer, { isLoading }] = useUpdateDealerMutation();
 
-	// Initialize formik for form management
+	const dealerToEdit = dealers?.find((dealer: any) => dealer.id === id);
+
 	const formik = useFormik({
 		initialValues: {
-			
-			name: '',
-			item: [''],
-			
-			email: '',
-			address: '',
-			mobileNumber: '',
-			
-			status:true
+			id: '',
+			name: dealerToEdit?.name || '',
+			item: dealerToEdit?.item || [''],
+			email: dealerToEdit?.email || '',
+			address: dealerToEdit?.address || '',
+			mobileNumber: dealerToEdit?.mobileNumber || '',
 		},
+		enableReinitialize: true, // This allows the form to reinitialize when categoryToEdit changes
 		validate: (values) => {
-			const errors: {
-				name?: string;
-				email?: string;
-				address?: string;
-				mobileNumber?: string;
-				item?: string;
-				
-			} = {};
+			const errors: { name?: string; item?: string; email?: string; address?: string; mobileNumber?: string; } = {};
 			if (!values.name) {
-				errors.name = 'Name is required.';
+				errors.name = 'Name is required';
 			}
 			if (!values.email) {
-				errors.email = 'Email is required.';
+				errors.email = 'Email is required';
 			}
 			if (!values.address) {
-				errors.address = 'Address is required.';
+				errors.address = 'Address is required';
 			}
 			if (!values.mobileNumber) {
-				errors.mobileNumber = 'Mobile number is required.';
+				errors.mobileNumber = 'Mobile Number is required';
 			}
-			
+
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -76,26 +68,32 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
-				try {
-					// Add the new category
-					const response: any = await addSupplier(values).unwrap();
-					console.log(response);
 
-					// Refetch categories to update the list
-					refetch();
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						name: values.name,
+						item : values.item,
+						email: values.email,
+						address: values.address,
+						mobileNumber: values.mobileNumber,
+						status: true,
+						id: id,
+					};
+					await updateDealer(data).unwrap();
 
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
-						title: 'Supplier Created Successfully',
+						title: 'Dealer Updated Successfully',
 					});
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false); // Close the modal after successful update
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
 						title: 'Error',
-						text: 'Failed to add the supplier. Please try again.',
+						text: 'Failed to update the dealer. Please try again.',
 					});
 				}
 			} catch (error) {
@@ -105,6 +103,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 	});
 
+	// Functions to handle adding/removing subcategories
 	const addItemField = () => {
 		formik.setValues({
 			...formik.values,
@@ -124,22 +123,25 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id=''>{'New Supplier'}</ModalTitle>
+				<ModalTitle id=''>{'Edit Dealer'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Supplier name' className='col-md-6'>
+				<FormGroup
+						id='name'
+						label='Dealer Name'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='name'
 							onChange={formik.handleChange}
 							value={formik.values.name}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					{formik.values.item.map((sub, index) => (
+					{formik.values.item.map((sub: any, index: any) => (
 						<FormGroup
 							key={index}
 							id={`item-${index}`}
@@ -152,8 +154,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									value={formik.values.item[index]}
 									onBlur={formik.handleBlur}
 									isValid={formik.isValid}
-									// isTouched={formik.touched.subcategory?.[index]}
-									invalidFeedback={formik.errors.item?.[index]}
 									validFeedback='Looks good!'
 								/>
 								<button
@@ -164,44 +164,51 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								</button>
 							</div>
 						</FormGroup>
-						))}
-						<div className='col-md-12'>
-							<Button color='info' onClick={addItemField}>
-								Add Item
-							</Button>
-						</div>
-					<FormGroup id='email' label='Email' className='col-md-6'>
+					))}
+					<div className='col-md-12'>
+						<Button color='info' onClick={addItemField}>
+							Add Item
+						</Button>
+					</div>
+					<FormGroup
+						id='email'
+						label='Email'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
-							type='email'
+							name='email'
 							onChange={formik.handleChange}
 							value={formik.values.email}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.email}
-							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='address' label='Address' className='col-md-6'>
+					<FormGroup
+						id='address'
+						label='Address'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='address'
 							onChange={formik.handleChange}
 							value={formik.values.address}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.address}
-							invalidFeedback={formik.errors.address}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='mobileNumber' label='Mobile Number' className='col-md-6'>
+					<FormGroup
+						id='mobileNumber'
+						label='Mobile Number'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
-							type='tel'
+							name='mobileNumber'
 							onChange={formik.handleChange}
 							value={formik.values.mobileNumber}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.mobileNumber}
-							invalidFeedback={formik.errors.mobileNumber}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

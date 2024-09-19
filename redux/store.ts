@@ -7,6 +7,8 @@ import { brandApiSlice } from './slices/brandApiSlice';
 import { categoryApiSlice } from './slices/categoryApiSlice';
 import { modelApiSlice } from './slices/modelApiSlice';
 import { stockKeeperApiSlice } from './slices/stockKeeperApiSlice';
+import {dealerApiSlice} from './slices/delearApiSlice';
+import {supplierApiSlice} from './slices/supplierApiSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,9 +18,11 @@ const store = configureStore({
     [categoryApiSlice.reducerPath]: categoryApiSlice.reducer,
     [modelApiSlice.reducerPath]: modelApiSlice.reducer,
     [stockKeeperApiSlice.reducerPath]: stockKeeperApiSlice.reducer,
+    [dealerApiSlice.reducerPath]: dealerApiSlice.reducer,
+    [supplierApiSlice.reducerPath]: supplierApiSlice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userManagementApiSlice.middleware, userApiSlice.middleware, brandApiSlice.middleware, categoryApiSlice.middleware , modelApiSlice.middleware , stockKeeperApiSlice.middleware),
+    getDefaultMiddleware().concat(userManagementApiSlice.middleware, userApiSlice.middleware, brandApiSlice.middleware, categoryApiSlice.middleware , modelApiSlice.middleware , stockKeeperApiSlice.middleware, dealerApiSlice.middleware , supplierApiSlice.middleware),
 });
 
 setupListeners(store.dispatch);

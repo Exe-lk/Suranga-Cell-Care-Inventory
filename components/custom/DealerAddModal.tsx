@@ -14,8 +14,8 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { useAddSupplierMutation } from '../../redux/slices/supplierApiSlice';
-import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice'; // Import the query
+import { useAddDealerMutation } from '../../redux/slices/delearApiSlice';
+import { useGetDealersQuery } from '../../redux/slices/delearApiSlice'; // Import the query
 import { stringOrDate } from 'react-big-calendar';
 
 // Define the props for the UserAddModal component
@@ -26,8 +26,8 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addSupplier , {isLoading}] = useAddSupplierMutation();
-	const {refetch} = useGetSuppliersQuery(undefined);
+	const [addDealer , {isLoading}] = useAddDealerMutation();
+	const {refetch} = useGetDealersQuery(undefined);
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -79,7 +79,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				
 				try {
 					// Add the new category
-					const response: any = await addSupplier(values).unwrap();
+					const response: any = await addDealer(values).unwrap();
 					console.log(response);
 
 					// Refetch categories to update the list
@@ -88,14 +88,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
-						title: 'Supplier Created Successfully',
+						title: 'Dealer Created Successfully',
 					});
 					setIsOpen(false); // Close the modal after successful addition
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
 						title: 'Error',
-						text: 'Failed to add the supplier. Please try again.',
+						text: 'Failed to add the dealer. Please try again.',
 					});
 				}
 			} catch (error) {
@@ -124,11 +124,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-				<ModalTitle id=''>{'New Supplier'}</ModalTitle>
+				<ModalTitle id=''>{'New Dealer'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Supplier name' className='col-md-6'>
+				<FormGroup id='name' label='Dealer name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

@@ -1,10 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-  createDealer,
-  getDealers,
-  updateDealer,
-  deleteDealer,
-} from '../../../service/dealerService';
+  createSupplier,
+  getSuppliers,
+  updateSupplier,
+  deleteSupplier,
+} from '../../../service/supplierService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
@@ -12,39 +12,39 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'POST': {
         const { name, email,address,mobileNumber,item } = req.body;
         if (!name) {
-          res.status(400).json({ error: 'Dealer name is required' });
+          res.status(400).json({ error: 'Supplier name is required' });
           return;
         }
-        const id = await createDealer(name, email,address,mobileNumber,item);
-        res.status(201).json({ message: 'Dealer created', id });
+        const id = await createSupplier(name, email,address,mobileNumber,item);
+        res.status(201).json({ message: 'Supplier created', id });
         break;
       }
 
       case 'GET': {
-        const dealers = await getDealers();
-        res.status(200).json(dealers);
+        const suppliers = await getSuppliers();
+        res.status(200).json(suppliers);
         break;
       }
 
       case 'PUT': {
         const { id, name, email,address,mobileNumber,item, status } = req.body;
         if (!id || !name) {
-          res.status(400).json({ error: 'Dealer ID and name are required' });
+          res.status(400).json({ error: 'Supplier ID and name are required' });
           return;
         }
-        await updateDealer(id, name, email,address,mobileNumber,item, status);
-        res.status(200).json({ message: 'Dealer updated' });
+        await updateSupplier(id, name, email,address,mobileNumber,item, status);
+        res.status(200).json({ message: 'Supplier updated' });
         break;
       }
 
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
-          res.status(400).json({ error: 'Dealer ID is required' });
+          res.status(400).json({ error: 'Supplier ID is required' });
           return;
         }
-        await deleteDealer(id);
-        res.status(200).json({ message: 'Dealer deleted' });
+        await deleteSupplier(id);
+        res.status(200).json({ message: 'Supplier deleted' });
         break;
       }
 

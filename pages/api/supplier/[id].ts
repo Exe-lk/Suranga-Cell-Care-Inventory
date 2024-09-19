@@ -1,22 +1,22 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getDealerById, updateDealer, deleteDealer } from '../../../service/dealerService';
+import { getSupplierById, updateSupplier, deleteSupplier } from '../../../service/supplierService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
 
   if (!id) {
-    res.status(400).json({ error: 'Dealer ID is required' });
+    res.status(400).json({ error: 'Supplier ID is required' });
     return;
   }
 
   try {
     switch (req.method) {
       case 'GET': {
-        const dealer = await getDealerById(id as string);
-        if (!dealer) {
-          res.status(404).json({ error: 'Dealer not found' });
+        const supplier = await getSupplierById(id as string);
+        if (!supplier) {
+          res.status(404).json({ error: 'Supplier not found' });
         } else {
-          res.status(200).json(dealer);
+          res.status(200).json(supplier);
         }
         break;
       }
@@ -25,17 +25,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { name, email,address,mobileNumber,item, status } = req.body;
         console.log(req.body)
         if (!name) {
-          res.status(400).json({ error: 'Dealer name is required' });
+          res.status(400).json({ error: 'Supplier name is required' });
           return;
         }
-        await updateDealer(id as string, name, email,address,mobileNumber,item, status);
-        res.status(200).json({ message: 'Dealer updated' });
+        await updateSupplier(id as string, name, email,address,mobileNumber,item, status);
+        res.status(200).json({ message: 'Supplier updated' });
         break;
       }
 
       case 'DELETE': {
-        await deleteDealer(id as string);
-        res.status(200).json({ message: 'Dealer deleted' });
+        await deleteSupplier(id as string);
+        res.status(200).json({ message: 'Supplier deleted' });
         break;
       }
 
