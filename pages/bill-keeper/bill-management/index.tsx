@@ -55,6 +55,7 @@ const Index: NextPage = () => {
 					TechnicianNo: bill.TechnicianNo,
 					CustomerName: bill.CustomerName,
 					CustomerMobileNum: bill.CustomerMobileNum,
+					email: bill.email,
 					NIC: bill.NIC,
 					Price: bill.Price,
 					Status: bill.Status,
@@ -134,6 +135,7 @@ const Index: NextPage = () => {
                                             <th>Technician No.</th>
 											<th>Customer Name</th>
                                             <th>Customer Mobile Number</th>
+											<th>Email</th>
 											<th>NIC</th>
                                             <th>Price</th>
                                             <th>Status</th>
@@ -172,6 +174,7 @@ const Index: NextPage = () => {
 														<td>{bill.TechnicianNo}</td>
 														<td>{bill.CustomerName}</td>
 														<td>{bill.CustomerMobileNum}</td>
+														<td>{bill.email}</td>
 														<td>{bill.NIC}</td>
 														<td>{bill.Price}</td>
 														<td>{bill.Status}</td>

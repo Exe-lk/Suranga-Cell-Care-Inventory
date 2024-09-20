@@ -31,6 +31,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			TechnicianNo: '',
 			CustomerName: '',
 			CustomerMobileNum: '',
+			email: '',
 			NIC: '',
 			Price: '',
 			Status: '',
@@ -47,6 +48,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				TechnicianNo?: string;
 				CustomerName?: string;
 				CustomerMobileNum?: string;
+				email?: string;
 				NIC?: string;
 				Price?: string;
 				Status?: string;
@@ -72,6 +74,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			}
 			if (!values.CustomerMobileNum) {
 				errors.CustomerMobileNum = 'Customer Mobile Number is required.';
+			}
+			if (!values.email) {
+				errors.email = 'Email is required.';
 			}
 			if (!values.NIC) {
 				errors.NIC = 'NIC is required.';
@@ -165,6 +170,17 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isValid={formik.isValid}
 							isTouched={formik.touched.billNumber}
 							invalidFeedback={formik.errors.billNumber}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='email' label='Email' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.email}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.email}
+							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
