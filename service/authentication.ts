@@ -9,6 +9,7 @@ export const SignInUser = async (email: string, password: string) => {
 
     // Fetch the user's position from Firestore
     const userPosition = await getUserPositionByEmail(email);
+    console.log('User position:', userPosition);
     return { user, position: userPosition }; // Return user and position
   } catch (error) {
     console.error('Error signing in:', error);
@@ -18,12 +19,12 @@ export const SignInUser = async (email: string, password: string) => {
 
 export const getUserPositionByEmail = async (email: string) => {
   try {
-    const q = query(collection(firestore, 'User'), where('email', '==', email)); // Firestore query
+    const q = query(collection(firestore, 'UserManagement'), where('email', '==', email)); // Firestore query
     const querySnapshot = await getDocs(q);
 
     if (!querySnapshot.empty) {
       const userData = querySnapshot.docs[0].data(); // Get the first matching document
-      return userData.position; // Assuming 'position' is the field name in Firestore
+      return userData.role; // Assuming 'position' is the field name in Firestore
     } else {
       throw new Error('User not found');
     }

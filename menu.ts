@@ -250,28 +250,75 @@ export const addminPagesMenu = {
 		icon: 'Person',
 
 	},
-	Model: {
-		id: 'model',
+	singlePages: {
+		id: 'singlePages',
 		text: 'Model Management',
-		path: 'admin/model',
+		path: 'single-pages',
 		icon: 'ChangeHistory',
-
+		subMenu: {
+			Display: {
+				id: 'model',
+				text: 'Display Stock Management',
+				path: 'admin/model/display',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'model1',
+				text: 'Accessory Stock Management',
+				path: 'admin/model/accessory',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
 	},
-	Category: {
-		id: 'category',
-		text: 'Category Management',
-		path: 'admin/category',
-		icon: 'Category',
-
-	},
-	Brand: {
-		id: 'model',
+	singlePages1: {
+		id: 'singlePages1',
 		text: 'Brand Management',
-		path: 'admin/brand',
+		path: 'single-pages',
 		icon: 'BrandingWatermark',
-
+		subMenu: {
+			Display: {
+				id: 'brand',
+				text: 'Display Stock Management',
+				path: 'admin/brand/display',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'brand1',
+				text: 'Accessory Stock Management',
+				path: 'admin/brand/accessory',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
 	},
-	
+	singlePages2: {
+		id: 'singlePages2',
+		text: 'Category Management',
+		path: 'single-pages',
+		icon: 'Category',
+		subMenu: {
+			Display: {
+				id: 'category',
+				text: 'Display Stock Management',
+				path: 'admin/category/display',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'category1',
+				text: 'Accessory Stock Management',
+				path: 'admin/category/accessory',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
+	},
 	
 	
 };

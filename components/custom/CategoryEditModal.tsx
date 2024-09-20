@@ -10,6 +10,7 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
+import { useGetCategoryByIdQuery, useUpdateCategoryMutation } from '../../redux/slices/categoryApiSlice';
 
 // Define the props for the CategoryEditModal component
 interface CategoryEditModalProps {
@@ -30,6 +31,19 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 		name: '',
 		status: true,
 	});
+
+	const { data: categoryData, isSuccess } = useGetCategoryByIdQuery(id);
+    const [updateCategory] = useUpdateCategoryMutation();
+
+	useEffect(() => {
+        if (isSuccess && categoryData) {
+            setCategory(categoryData);
+            // Update formik values
+            formik.setValues({
+                name: categoryData.name || '',
+            });
+        }
+    }, [isSuccess, categoryData]);
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -52,19 +66,17 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 					...category, // Keep existing user data
 					...values, // Update with form values
 				};
-				const docRef = doc(firestore, 'Category', id);
-				await updateDoc(docRef, updatedData);
-				setIsOpen(false);
-				showNotification(
-					<span className='d-flex align-items-center'>
-						<Icon icon='Info' size='lg' className='me-1' />
-						<span>Successfully Updated</span>
-					</span>,
-					'Category has been updated successfully',
-				);
-				Swal.fire('Updated!', 'Category has been updated successfully.', 'success');
-
-				refetch(); // Trigger refetch of users list after update
+				await updateCategory({ id, ...updatedData }).unwrap();
+                setIsOpen(false);
+                showNotification(
+                    <span className='d-flex align-items-center'>
+                        <Icon icon='Info' size='lg' className='me-1' />
+                        <span>Successfully Updated</span>
+                    </span>,
+                    'Category has been updated successfully'
+                );
+                Swal.fire('Updated!', 'Category has been updated successfully.', 'success');
+                refetch(); // Trigger refetch of stock keeper list after update
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');
@@ -72,36 +84,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 		},
 	});
 
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				if (id) {
-					const dataCollection = collection(firestore, 'Category');
-					const q = query(dataCollection, where('__name__', '==', id));
-					const querySnapshot = await getDocs(q);
-					const firebaseData: any = querySnapshot.docs.map((doc) => {
-						const data = doc.data() as Category;
-						return {
-							...data,
-							cid: doc.id,
-						};
-					});
-					setCategory(firebaseData[0]);
-
-					// Update formik values when the brand is loaded
-					formik.setValues({
-						name: firebaseData[0]?.name || '',
-					});
-				} else {
-					console.error('No ID provided');
-				}
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [id]);
-
+	
 	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>

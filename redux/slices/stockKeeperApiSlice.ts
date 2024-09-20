@@ -12,8 +12,12 @@ export const stockKeeperApiSlice = createApi({
     }),
     // Get a user by ID
     getStockKeeperById: builder.query({
-      query: (id) => `stockKeeper/route/${id}`, // Call endpoint with ID
+      query: (id) => `stockKeeper/${id}`, // Call endpoint with ID
       providesTags: (result, error, id) => [{ type: 'StockKeeper', id }], // Cache invalidation
+    }),
+    getDeleteStockKeepers: builder.query({
+      query: () => 'stockKeeper/bin',
+      providesTags: ['StockKeeper'],
     }),
     // Create: Add a new user
     addStockKeeper: builder.mutation({
@@ -27,7 +31,7 @@ export const stockKeeperApiSlice = createApi({
     // Update: Update an existing user
     updateStockKeeper: builder.mutation({
       query: ({ id, ...updatedStockKeeper }) => ({
-        url: `stockKeeper/route/${id}`,
+        url: `stockKeeper/${id}`,
         method: 'PUT',
         body: updatedStockKeeper,
       }),
@@ -36,7 +40,7 @@ export const stockKeeperApiSlice = createApi({
     // Delete: Delete a user
     deleteStockKeeper: builder.mutation({
       query: (id) => ({
-        url: `stockKeeper/route/${id}`,
+        url: `stockKeeper/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'StockKeeper', id }],
@@ -46,7 +50,8 @@ export const stockKeeperApiSlice = createApi({
 
 export const {
   useGetStockKeepersQuery,
-  useGetStockKeeperByIdQuery,  // Export the hook for fetching by ID
+  useGetStockKeeperByIdQuery,
+  useGetDeleteStockKeepersQuery,  // Export the hook for fetching by ID
   useAddStockKeeperMutation,
   useUpdateStockKeeperMutation,
   useDeleteStockKeeperMutation,

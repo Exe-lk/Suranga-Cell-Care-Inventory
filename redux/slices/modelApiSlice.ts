@@ -12,8 +12,12 @@ export const modelApiSlice = createApi({
     }),
     // Get a user by ID
     getModelById: builder.query({
-      query: (id) => `model/route/${id}`, // Call endpoint with ID
+      query: (id) => `model/${id}`, // Call endpoint with ID
       providesTags: (result, error, id) => [{ type: 'Model', id }], // Cache invalidation
+    }),
+    getDeleteModels: builder.query({
+      query: () => 'model/bin',
+      providesTags: ['Model'],
     }),
     // Create: Add a new user
     addModel: builder.mutation({
@@ -27,7 +31,7 @@ export const modelApiSlice = createApi({
     // Update: Update an existing user
     updateModel: builder.mutation({
       query: ({ id, ...updatedModel }) => ({
-        url: `model/route/${id}`,
+        url: `model/${id}`,
         method: 'PUT',
         body: updatedModel,
       }),
@@ -36,7 +40,7 @@ export const modelApiSlice = createApi({
     // Delete: Delete a user
     deleteModel: builder.mutation({
       query: (id) => ({
-        url: `model/route/${id}`,
+        url: `model/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Model', id }],
@@ -46,7 +50,8 @@ export const modelApiSlice = createApi({
 
 export const {
   useGetModelsQuery,
-  useGetModelByIdQuery,  // Export the hook for fetching by ID
+  useGetModelByIdQuery,
+  useGetDeleteModelsQuery,  // Export the hook for fetching by ID
   useAddModelMutation,
   useUpdateModelMutation,
   useDeleteModelMutation,

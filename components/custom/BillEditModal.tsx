@@ -7,6 +7,12 @@ import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
+import {
+	useUpdateBillMutation,
+	useGetBillsQuery,
+} from '../../redux/slices/billApiSlice';
+import Swal from 'sweetalert2';
+
 interface CategoryEditModalProps {
 	id: string;
 	isOpen: boolean;
@@ -14,31 +20,122 @@ interface CategoryEditModalProps {
 }
 
 const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const { data: bills } = useGetBillsQuery(undefined);
+	const [updateBill, { isLoading }] = useUpdateBillMutation();
+
+	const billToEdit = bills?.find((bill: any) => bill.id === id);
 	const formik = useFormik({
 		initialValues: {
-			PhoneDetails: '',
-			TechnicianName: '',
-			PnoneNo: '',
-			BillNumber: '',
-			name: '',
-			NIC: '',
-			Model: '',
-			repair: '',
-			Price: '',
-			DateOut: '',
-			status: 
-            "",
+			id: '',
+			phoneDetail: billToEdit?.phoneDetail || '',
+			dateIn : billToEdit?.dateIn || '',
+			billNumber: billToEdit?.billNumber || '',
+			phoneModel : billToEdit?.phoneModel || '',
+			repairType : billToEdit?.repairType || '',
+			TechnicianNo : billToEdit?.TechnicianNo || '',
+			CustomerName : billToEdit?.CustomerName || '',
+			CustomerMobileNum : billToEdit?.CustomerMobileNum || '',
+			NIC : billToEdit?.NIC || '',
+			Price : billToEdit?.Price || '',
+			Status : billToEdit?.Status || '',
+			DateOut : billToEdit?.DateOut || '',
+			
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
-				categoryname?: string;
-				subcategory?: string;
+				phoneDetail?: string;
+				dateIn?: Date;
+				billNumber?: string;
+				phoneModel?: string;
+				repairType?: string;
+				TechnicianNo?: string;
+				CustomerName?: string;
+				CustomerMobileNum?: string;
+				NIC?: string;
+				Price?: string;
+				Status?: string;
+				DateOut?: Date;
 			} = {};
+			if (!values.phoneDetail) {
+				errors.phoneDetail = 'Phone Details is required';
+			}
+			if (!values.billNumber) {
+				errors.billNumber = 'Bill Number is required';
+			}
+			if (!values.phoneModel) {
+				errors.phoneModel = 'Phone Model is required';
+			}
+			if (!values.repairType) {
+				errors.repairType = 'Repair Type is required';
+			}
+			if (!values.TechnicianNo) {
+				errors.TechnicianNo = 'Technician No is required';
+			}
+			if (!values.CustomerName) {
+				errors.CustomerName = 'Customer Name is required';
+			}
+			if (!values.CustomerMobileNum) {
+				errors.CustomerMobileNum = 'Customer Mobile Number is required';
+			}
+			if (!values.NIC) {
+				errors.NIC = 'NIC is required';
+			}
+			if (!values.Price) {
+				errors.Price = 'Price is required';
+			}
+			if (!values.Status) {
+				errors.Status = 'Status is required';
+			}
+
 
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						id: id,
+						phoneDetails: values.phoneDetail,
+						dateIn : values.dateIn,
+						billNumber: values.billNumber,
+						phoneModel : values.phoneModel,
+						repairType : values.repairType,
+						TechnicianNo : values.TechnicianNo,
+						CustomerName : values.CustomerName,
+						CustomerMobileNum : values.CustomerMobileNum,
+						NIC : values.NIC,
+						Price : values.Price,
+						Status : values.Status,
+						DateOut : values.DateOut,
+						status: true,
+						
+					};
+					await updateBill(data).unwrap();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Bill Updated Successfully',
+					});
+					setIsOpen(false); // Close the modal after successful update
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the bill. Please try again.',
+					});
+				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred during file upload. Please try again later.');
@@ -53,129 +150,171 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='categoryname' label='Bill Number' className='col-md-6'>
+				<FormGroup
+						id='phoneDetail'
+						label='Phone Detail'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='phoneDetail'
 							onChange={formik.handleChange}
-							value={formik.values.BillNumber}
+							value={formik.values.phoneDetail}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.BillNumber}
-							invalidFeedback={formik.errors.BillNumber}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='PhoneDetails' label='Phone Details' className='col-md-6'>
+					<FormGroup
+						id='dateIn'
+						label='Date In'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='dateIn'
 							onChange={formik.handleChange}
-							value={formik.values.PhoneDetails}
+							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.PhoneDetails}
-							invalidFeedback={formik.errors.PhoneDetails}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='TechnicianName' label='Technician Name' className='col-md-6'>
+					<FormGroup
+						id='billNumber'
+						label='Bill Number'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='billNumber'
 							onChange={formik.handleChange}
-							value={formik.values.TechnicianName}
+							value={formik.values.billNumber}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.TechnicianName}
-							invalidFeedback={formik.errors.TechnicianName}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='name' label='Customer Name' className='col-md-6'>
+					<FormGroup
+						id='phoneModel'
+						label='Phone Model'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='phoneModel'
 							onChange={formik.handleChange}
-							value={formik.values.name}
+							value={formik.values.phoneModel}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='NIC' label='Customer NIC' className='col-md-6'>
+					<FormGroup
+						id='repairType'
+						label='Repair Type'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='repairType'
+							onChange={formik.handleChange}
+							value={formik.values.repairType}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='TechnicianNo'
+						label='Technician No'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='TechnicianNo'
+							onChange={formik.handleChange}
+							value={formik.values.TechnicianNo}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='CustomerName'
+						label='Customer Name'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='CustomerName'
+							onChange={formik.handleChange}
+							value={formik.values.CustomerName}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='CustomerMobileNum'
+						label='Customer Mobile Number'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='CustomerMobileNum'
+							onChange={formik.handleChange}
+							value={formik.values.CustomerMobileNum}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='NIC'
+						label='NIC'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='NIC'
 							onChange={formik.handleChange}
 							value={formik.values.NIC}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.NIC}
-							invalidFeedback={formik.errors.NIC}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
-					<FormGroup id='PnoneNo' label='Customer Mobile Number' className='col-md-6'>
+						</FormGroup>
+					<FormGroup
+						id='Price'
+						label='Price'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
-							onChange={formik.handleChange}
-							value={formik.values.PnoneNo}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.PnoneNo}
-							invalidFeedback={formik.errors.PnoneNo}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='Model' label='Phone Model	' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.Model}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.Model}
-							invalidFeedback={formik.errors.Model}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='repair' label='Repair' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.repair}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.repair}
-							invalidFeedback={formik.errors.repair}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='categoryname' label='Price' className='col-md-6'>
-						<Input
+							name='Price'
 							onChange={formik.handleChange}
 							value={formik.values.Price}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.Price}
-							invalidFeedback={formik.errors.Price}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='categoryname' label='Status' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
+					<FormGroup
+						id='Status'
+						label='Status'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='Status'
 							onChange={formik.handleChange}
-							value={formik.values.status}
+							value={formik.values.Status}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.status}
-							invalidFeedback={formik.errors.status}>
-							<Option value={'waiting to in progress'}>waiting to in progress</Option>
-							<Option value={'in progress'}>in progress</Option>
-							<Option value={'Completed)'}>Completed</Option>
-							<Option value={'Reject'}>Reject</Option>
-							<Option value={'In progress to completed'}>In progress to completed</Option>
-						</Select>
+							validFeedback='Looks good!'
+						/>	
 					</FormGroup>
-					<FormGroup id='DateOut' label='Date out' className='col-md-6'>
+					<FormGroup
+						id='DateOut'
+						label='Date Out'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='DateOut'
 							onChange={formik.handleChange}
 							value={formik.values.DateOut}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.DateOut}
-							invalidFeedback={formik.errors.DateOut}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -1,26 +1,26 @@
 import React, { useContext, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import useDarkMode from '../../../hooks/useDarkMode';
-import Page from '../../../layout/Page/Page';
-import { firestore } from '../../../firebaseConfig';
+import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
+import useDarkMode from '../../../../hooks/useDarkMode';
+import Page from '../../../../layout/Page/Page';
+import { firestore } from '../../../../firebaseConfig';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
 	SubheaderSeparator,
-} from '../../../layout/SubHeader/SubHeader';
-import Icon from '../../../components/icon/Icon';
-import Input from '../../../components/bootstrap/forms/Input';
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
-import Button from '../../../components/bootstrap/Button';
-import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
+} from '../../../../layout/SubHeader/SubHeader';
+import Icon from '../../../../components/icon/Icon';
+import Input from '../../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownMenu, DropdownToggle } from '../../../../components/bootstrap/Dropdown';
+import Button from '../../../../components/bootstrap/Button';
+import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import ModelAddModal from '../../../components/custom/ModelAddModal';
-import ModelDeleteModal from '../../../components/custom/ModelDeleteModal';
-import ModelEditModal from '../../../components/custom/ModelEditModel';
+import ModelAddModal from '../../../../components/custom/ModelAddModal';
+import ModelDeleteModal from '../../../../components/custom/ModelDeleteModal';
+import ModelEditModal from '../../../../components/custom/ModelEditModel';
 import Swal from 'sweetalert2';
-import { useGetModelsQuery } from '../../../redux/slices/modelApiSlice';
-import { updateModel } from '../../../service/modelService';
+import { useGetModelsQuery ,useUpdateModelMutation} from '../../../../redux/slices/modelApiSlice';
+
 // Define the interface for category data
 
 interface Model {
@@ -40,7 +40,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModelsQuery(undefined);
-
+	const [updateModel] = useUpdateModelMutation();
 	
 	
 	// Function to handle deletion of a category
@@ -58,12 +58,12 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				try {
 					// Set the user's status to false (soft delete)
-					await updateModel(
-						model.id,
-						model.name,
-						model.description,
-						false,
-					);
+					await updateModel({
+						id:model.id,
+						name:model.name,
+						description:model.description,
+						status:false,
+				});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Model has been deleted.', 'success');
@@ -193,10 +193,11 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
-								onClick={() => (
+								onClick={() => {
+									refetch();
 									setDeleteModalStatus(true)
 									
-								)}>
+								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
@@ -207,7 +208,7 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<ModelAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
 			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);

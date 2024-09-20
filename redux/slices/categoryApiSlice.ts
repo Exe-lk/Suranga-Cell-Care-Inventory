@@ -12,8 +12,12 @@ export const categoryApiSlice = createApi({
     }),
     // Get a user by ID
     getCategoryById: builder.query({
-      query: (id) => `category/route/${id}`, // Call endpoint with ID
+      query: (id) => `category/${id}`, // Call endpoint with ID
       providesTags: (result, error, id) => [{ type: 'Category', id }], // Cache invalidation
+    }),
+    getDeleteCategories: builder.query({
+      query: () => 'category/bin',
+      providesTags: ['Category'],
     }),
     // Create: Add a new user
     addCategory: builder.mutation({
@@ -27,7 +31,7 @@ export const categoryApiSlice = createApi({
     // Update: Update an existing user
     updateCategory: builder.mutation({
       query: ({ id, ...updatedCategory }) => ({
-        url: `category/route/${id}`,
+        url: `category/${id}`,
         method: 'PUT',
         body: updatedCategory,
       }),
@@ -36,7 +40,7 @@ export const categoryApiSlice = createApi({
     // Delete: Delete a user
     deleteCategory: builder.mutation({
       query: (id) => ({
-        url: `category/route/${id}`,
+        url: `category/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Category', id }],
@@ -46,7 +50,8 @@ export const categoryApiSlice = createApi({
 
 export const {
   useGetCategoriesQuery,
-  useGetCategoryByIdQuery,  // Export the hook for fetching by ID
+  useGetCategoryByIdQuery,
+  useGetDeleteCategoriesQuery,  // Export the hook for fetching by ID
   useAddCategoryMutation,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,

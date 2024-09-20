@@ -19,8 +19,8 @@ import StockTypeAddModal from '../../../components/custom/StockTypeAddModal';
 import StockTypeDeleteModal from '../../../components/custom/StockTypeDeleteModal';
 import StockTypeEditModal from '../../../components/custom/StockTypeEditModal';
 import Swal from 'sweetalert2';
-import { useGetStockKeepersQuery } from '../../../redux/slices/stockKeeperApiSlice';
-import { updatestockKeeper } from '../../../service/stockKeeperService';
+import { useGetStockKeepersQuery , useUpdateStockKeeperMutation} from '../../../redux/slices/stockKeeperApiSlice';
+
 // Define the interface for category data
 interface Category {
 	cid: string;
@@ -39,6 +39,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: stockKeepers, error, isLoading, refetch } = useGetStockKeepersQuery(undefined);
+	const [updateStockKeeper] = useUpdateStockKeeperMutation();
 
 	
 	
@@ -57,12 +58,12 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				try {
 					// Set the user's status to false (soft delete)
-					await updatestockKeeper(
-						stockKeeper.id,
-						stockKeeper.type,
-						stockKeeper.description,
-						false,
-					);
+					await updateStockKeeper({
+						id:stockKeeper.id,
+						type:stockKeeper.type,
+						description:stockKeeper.description,
+						status:false,
+				});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Stock Keeper has been deleted.', 'success');
@@ -150,7 +151,7 @@ const Index: NextPage = () => {
 										{
 											error && (
 												<tr>
-													<td>Error fetching brands.</td>
+													<td>Error fetching stock keepers.</td>
 												</tr>
 											)
 										}
@@ -193,10 +194,12 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
-								onClick={() => (
+								onClick={() => {
+									refetch();
+									
 									setDeleteModalStatus(true)
 									
-								)}>
+								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
@@ -207,7 +210,7 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<StockTypeAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<StockTypeDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			<StockTypeDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id=''  refetchMainPage={refetch}/>
 			<StockTypeEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);
