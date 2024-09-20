@@ -19,12 +19,8 @@ import BillAddModal from '../../../components/custom/BillAddModal';
 import BillDeleteModal from '../../../components/custom/BillDeleteModal';
 import BillEditModal from '../../../components/custom/BillEditModal';
 import Swal from 'sweetalert2';
-// Define the interface for category data
-interface Category {
-	cid: string;
-	categoryname: string;
-	status: boolean;
-}
+import { useUpdateBillMutation, useGetBillsQuery } from '../../../redux/slices/billApiSlice';
+
 // Define the functional component for the index page
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -32,18 +28,16 @@ const Index: NextPage = () => {
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [category, setcategory] = useState<Category[]>([]); // State for category data
-	const [id, setId] = useState<string>(''); // State for current category ID
-	const [status, setStatus] = useState(true); // State for managing data fetching status
-	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
-	
-	
-	// Function to handle deletion of a category
-	const handleClickDelete = async () => {
+	const [id, setId] = useState<string>(''); // State for ID
+	const {data: bills,error, isLoading} = useGetBillsQuery(undefined);
+	const [updateBill] = useUpdateBillMutation();
+
+	//delete user
+	const handleClickDelete = async (bill: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this category!',
+				// text: 'You will not be able to recover this user!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -51,14 +45,35 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-			
+				const values = await {
+					id: bill.id,
+					phoneDetail: bill.phoneDetail,
+					dateIn: bill.dateIn,
+					billNumber: bill.billNumber,
+					phoneModel: bill.phoneModel,
+					repairType: bill.repairType,
+					TechnicianNo: bill.TechnicianNo,
+					CustomerName: bill.CustomerName,
+					CustomerMobileNum: bill.CustomerMobileNum,
+					email: bill.email,
+					NIC: bill.NIC,
+					Price: bill.Price,
+					Status: bill.Status,
+					DateOut: bill.DateOut,
+					status: false,
+					
+				};
+
+				await updateBill(values);
+
+				Swal.fire('Deleted!', 'The bill has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete category.', 'error');
+			Swal.fire('Error', 'Failed to delete bill.', 'error');
 		}
 	};
-	// JSX for rendering the page
+
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -120,58 +135,72 @@ const Index: NextPage = () => {
                                             <th>Technician No.</th>
 											<th>Customer Name</th>
                                             <th>Customer Mobile Number</th>
+											<th>Email</th>
 											<th>NIC</th>
                                             <th>Price</th>
                                             <th>Status</th>
                                             <th>Date out</th>
-											{/* <th>Phone Details</th>
-                                            <th>Technician No.</th>
-											<th>Customer Name</th>
-                                            <th>Customer Mobile Number</th>
-											<th>NIC</th>
-                                            <th>Bill Number</th>
-                                            <th>Phone Model</th>
-                                            <th>Repair Type</th>
-                                            <th>Price</th>
-                                            <th>Status</th>
-                                            <th>Date out</th> */}
+											
 											
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Samsung A50s</td>
-											<td>2024/07/12</td>
-											<td>R563</td>
-											<td>A50s</td>
-											<td>Touchpad restore </td>
-                                            <td>TC345</td>
-											<td>kalpa</td>
-                                            <td>0715699884</td>
-											<td>200133856479</td>
-                                            <td>500</td>
-                                            <td>In Progress</td>
-                                            <td>2024/08/12</td>
-											
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										
-										
+									{isLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{error && (
+											<tr>
+												<td>Error fetching bills.</td>
+											</tr>
+										)}
+										{bills &&
+											bills
+												.filter((bill: any) =>
+													searchTerm
+														? bill.NIC
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.map((bill: any) => (
+													<tr key={bill.cid}>
+														<td>{bill.phoneDetail}</td>
+														<td>{bill.dateIn}</td>
+														<td>{bill.billNumber}</td>
+														<td>{bill.phoneModel}</td>
+														<td>{bill.repairType}</td>
+														<td>{bill.TechnicianNo}</td>
+														<td>{bill.CustomerName}</td>
+														<td>{bill.CustomerMobileNum}</td>
+														<td>{bill.email}</td>
+														<td>{bill.NIC}</td>
+														<td>{bill.Price}</td>
+														<td>{bill.Status}</td>
+														<td>{bill.DateOut}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() =>(
+																	setEditModalStatus(true),
+																	setId(bill.id))
+																}>
+																Edit
+															</Button>
+															<Button
+																className='m-2'
+																icon='Delete'
+																color='danger'
+																onClick={() =>
+																	handleClickDelete(bill)
+																}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'

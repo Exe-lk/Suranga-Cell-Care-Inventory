@@ -12,8 +12,8 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import UserAddModal from '../../../components/custom/SupplierAddModal';
-import UserEditModal from '../../../components/custom/SupplierEditModal';
+import UserAddModal from '../../../components/custom/DealerAddModal';
+import UserEditModal from '../../../components/custom/DealerEditModal';
 import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
@@ -22,19 +22,9 @@ import { getFirstLetter } from '../../../helpers/helpers';
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import SellerDeleteModal from '../../../components/custom/SupplierDeleteModal';
-
-interface User {
-	cid: string;
-	image: string;
-	name: string;
-	position: string;
-	email: string;
-	password: string;
-	mobile: number;
-	pin_number: number;
-	status: boolean;
-}
+import SellerDeleteModal from '../../../components/custom/DealerDeleteModal';
+import { useUpdateDealerMutation} from '../../../redux/slices/delearApiSlice';
+ import { useGetDealersQuery } from '../../../redux/slices/delearApiSlice';
 
 const Index: NextPage = () => {
 	// Dark mode
@@ -43,41 +33,13 @@ const Index: NextPage = () => {
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [user, setuser] = useState<User[]>([]);
 	const [id, setId] = useState<string>('');
-	const [status, setStatus] = useState(true);
-	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-	const position = [
-		{ position: 'Admin' },
-		{ position: 'Stock keeper' },
-		{ position: 'Accountant' },
-		{ position: 'Cashier' },
-		{ position: 'Data entry operator' },
-	];
-	//get user data from database
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'user');
-				const q = query(dataCollection, where('status', '==', true));
-				const querySnapshot = await getDocs(q);
-				const firebaseData = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as User;
-					return {
-						...data,
-						cid: doc.id,
-					};
-				});
-				setuser(firebaseData);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [editModalStatus, addModalStatus, status]);
+
+	const {data: dealers,error, isLoading} = useGetDealersQuery(undefined);
+	const [updateDealer] = useUpdateDealerMutation();
 
 	//delete user
-	const handleClickDelete = async (user: any) => {
+	const handleClickDelete = async (dealer: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -89,16 +51,23 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-				try {
-					
-				} catch (error) {
-					console.error('Error during handleUpload: ', error);
-					alert('An error occurred during file upload. Please try again later.');
-				}
+				const values = await {
+					id: dealer.id,
+					name: dealer.name,
+					email: dealer.email,
+					address: dealer.address,
+					mobileNumber: dealer.mobileNumber,
+					item: dealer.item,
+					status: false,
+				};
+
+				await updateDealer(values);
+
+				Swal.fire('Deleted!', 'The dealer has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete user.', 'error');
+			Swal.fire('Error', 'Failed to delete dealer.', 'error');
 		}
 	};
 
@@ -125,50 +94,6 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<Dropdown>
-						<DropdownToggle hasIcon={false}>
-							<Button
-								icon='FilterAlt'
-								color='dark'
-								isLight
-								className='btn-only-icon position-relative'></Button>
-						</DropdownToggle>
-						<DropdownMenu isAlignmentEnd size='lg'>
-							<div className='container py-2'>
-								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
-										<ChecksGroup>
-											{position.map((category, index) => (
-												<Checks
-													key={category.position}
-													id={category.position}
-													label={category.position}
-													name={category.position}
-													value={category.position}
-													checked={selectedCategories.includes(
-														category.position,
-													)}
-													onChange={(event: any) => {
-														const { checked, value } = event.target;
-														setSelectedCategories(
-															(prevCategories) =>
-																checked
-																	? [...prevCategories, value] // Add category if checked
-																	: prevCategories.filter(
-																			(category) =>
-																				category !== value,
-																	  ), // Remove category if unchecked
-														);
-													}}
-												/>
-											))}
-										</ChecksGroup>
-									</FormGroup>
-								</div>
-							</div>
-						</DropdownMenu>
-					</Dropdown>
-
 					<SubheaderSeparator />
 					<Button
 						icon='PersonAdd'
@@ -201,149 +126,62 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Kalpa Chamathkara</td>
-											<td>electronics</td>
-											<td>kalpa@gmail.com</td>
-											<td>New Kandy Rd,Malabe.</td>
-											<td>0772369745</td>
-											<td>
-											<td>
-														<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-											</td>
-										</tr>
-										<tr>
-											<td>Ravidu Idamalgoda</td>
-											<td>Accessories</td>
-											<td>ravindu@gmail.com</td>
-											<td>No21, Panadura</td>
-											<td>0772369745</td>
-											<td>
-												
-											<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-											</td>
-										</tr>
-										{user
-											.filter((val) => {
-												if (searchTerm === '') {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												} else if (
-													val.name
-														.toLowerCase()
-														.includes(searchTerm.toLowerCase())
-												) {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												}
-											})
-
-											.map((user, index) => (
-												<tr key={user.cid}>
-													<td>
-														<div className='d-flex align-items-center'>
-															<div className='flex-shrink-0'>
-																<div
-																	className='ratio ratio-1x1 me-3'
-																	style={{ width: 48 }}>
-																	<div
-																		className={`bg-l${
-																			darkModeStatus
-																				? 'o25'
-																				: '25'
-																		}-${getColorNameWithIndex(
-																			index,
-																		)} text-${getColorNameWithIndex(
-																			index,
-																		)} rounded-2 d-flex align-items-center justify-content-center`}>
-																		<span className='fw-bold'>
-																			{getFirstLetter(
-																				user.name,
-																			)}
-																		</span>
-																	</div>
-																</div>
-															</div>
-															<div className='flex-grow-1'>
-																<div className='fs-6 fw-bold'>
-																	{user.name}
-																</div>
-																<div className='text-muted'>
-																	<Icon icon='Label' />{' '}
-																	<small>{user.cid}</small>
-																</div>
-															</div>
-														</div>
-													</td>
-													<td>{user.position}</td>
-													<td>{user.email}</td>
-													<td>{user.mobile}</td>
-													<td>{user.password}</td>
-													<td>{user.pin_number}</td>
-													<td>
-														<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true),
-																setId(user.cid)
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='warning'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-												</tr>
-											))}
+									{isLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{error && (
+											<tr>
+												<td>Error fetching dealers.</td>
+											</tr>
+										)}
+										{dealers &&
+											dealers
+												.filter((dealer: any) =>
+													searchTerm
+														? dealer.name
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.map((dealer: any) => (
+													<tr key={dealer.cid}>
+														<td>{dealer.name}</td>
+														<td>
+															<ul>
+																{dealer.item?.map(
+																	(sub: any, index: any) => (
+																		<p>{sub}</p>
+																	),
+																)}
+															</ul>
+														</td>
+														<td>{dealer.email}</td>
+														<td>{dealer.address}</td>
+														<td>{dealer.mobileNumber}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() =>(
+																	setEditModalStatus(true),
+																	setId(dealer.id))
+																}>
+																Edit
+															</Button>
+															<Button
+																className='m-2'
+																icon='Delete'
+																color='danger'
+																onClick={() =>
+																	handleClickDelete(dealer)
+																}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'

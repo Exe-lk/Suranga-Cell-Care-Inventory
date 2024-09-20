@@ -15,11 +15,20 @@ import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/boot
 import Button from '../../../components/bootstrap/Button';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import ModelAddModal from '../../../components/custom/ModelAddModal';
-import ModelDeleteModal from '../../../components/custom/ModelDeleteModal';
-import ModelEditModal from '../../../components/custom/ModelEditModel';
+import ModelAddModal from '../../../components/custom/Model1AddModal';
+import ModelDeleteModal from '../../../components/custom/Model1DeleteModal';
+import ModelEditModal from '../../../components/custom/Model1EditModal';
 import Swal from 'sweetalert2';
+import { useGetModels1Query ,useUpdateModel1Mutation} from '../../../redux/slices/model1ApiSlice';
+
 // Define the interface for category data
+
+interface Model {
+	cid: string;
+	modelname: string;
+	description: string;
+	status: boolean;
+}
 
 // Define the functional component for the index page
 const Index: NextPage = () => {
@@ -29,15 +38,17 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current category ID
-
+	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
+	const [updateModel] = useUpdateModel1Mutation();
 	
 	
 	// Function to handle deletion of a category
-	const handleClickDelete = async () => {
+	const handleClickDelete = async (model: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this model!',
+				text: 'You will not be able to recover this brand!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -45,11 +56,30 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-			
+				try {
+					// Set the user's status to false (soft delete)
+					await updateModel({
+						id:model.id,
+						name:model.name,
+						description:model.description,
+						status:false,
+				});
+
+					// Refresh the list after deletion
+					Swal.fire('Deleted!', 'Model has been deleted.', 'success');
+					refetch(); // This will refresh the list of users to reflect the changes
+				} catch (error) {
+					console.error('Error during handleDelete: ', error);
+					Swal.fire(
+						'Error',
+						'An error occurred during deletion. Please try again later.',
+						'error',
+					);
+				}
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete category.', 'error');
+			Swal.fire('Error', 'Failed to delete model.', 'error');
 		}
 	};
 	// JSX for rendering the page
@@ -112,55 +142,62 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>S series</td>
-											<td>China </td>
-											
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										<tr>
-											<td>M Series</td>
-											<td>Samsung</td>
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										
+										{isLoading &&(
+											<tr>
+												<td>Loadning...</td>
+											</tr>
+										)}
+										{
+											error && (
+												<tr>
+													<td>Error fetching brands.</td>
+												</tr>
+											)
+										}
+										{
+											models &&
+											models
+												.filter((model : any) =>
+													model.status === true 
+												)
+												.filter((model : any) => 
+													searchTerm 
+													? model.name.toLowerCase().includes(searchTerm.toLowerCase())
+													: true,
+												)
+												.map((model:any) => (
+													<tr key={model.id}>
+														<td>{model.name}</td>
+														<td>{model.description}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() => {
+																	setEditModalStatus(true);
+																	setId(model.id);
+																}}>
+																Edit
+															</Button>
+															<Button
+																icon='Delete'
+																className='m-2'
+																color='danger'
+																onClick={() => handleClickDelete(model)}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))
+										}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
-								onClick={() => (
+								onClick={() => {
+									refetch();
 									setDeleteModalStatus(true)
 									
-								)}>
+								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
@@ -171,8 +208,8 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<ModelAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			{/* <ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
+			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
+			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);
 };

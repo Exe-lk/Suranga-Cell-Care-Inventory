@@ -14,6 +14,10 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+	useUpdateSupplierMutation,
+	useGetSuppliersQuery,
+} from '../../redux/slices/supplierApiSlice';
 
 // Define the props for the UserAddModal component
 interface UserAddModalProps {
@@ -23,92 +27,99 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [imageurl, setImageurl] = useState<any>(null);
-	const [selectedImage, setSelectedImage] = useState<string | null>(null);
+	const { data: suppliers } = useGetSuppliersQuery(undefined);
+	const [updateSupplier, { isLoading }] = useUpdateSupplierMutation();
 
-	//image upload
-	const handleUploadimage = async () => {
-		if (imageurl) {
-			// Assuming generatePDF returns a Promise
-			const pdfFile = imageurl;
-			console.log(imageurl);
-			const storageRef = ref(storage, `user/${pdfFile.name}`);
-			const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-			return new Promise((resolve, reject) => {
-				uploadTask.on(
-					'state_changed',
-					(snapshot) => {
-						const progress1 = Math.round(
-							(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-						);
-					},
-					(error) => {
-						console.error(error.message);
-						reject(error.message);
-					},
-					() => {
-						getDownloadURL(uploadTask.snapshot.ref)
-							.then((url) => {
-								console.log('File uploaded successfully. URL:', url);
+	const supplierToEdit = suppliers?.find((supplier: any) => supplier.id === id);
 
-								console.log(url);
-								resolve(url);
-							})
-							.catch((error) => {
-								console.error(error.message);
-								reject(error.message);
-							});
-					},
-				);
-			});
-		}
-	};
-
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			
-			name: '',
-			type: '',
-			
-			password: '',
-			mobile: '',
-			
-			status:true
+			id: '',
+			name: supplierToEdit?.name || '',
+			item: supplierToEdit?.item || [''],
+			email: supplierToEdit?.email || '',
+			address: supplierToEdit?.address || '',
+			mobileNumber: supplierToEdit?.mobileNumber || '',
 		},
+		enableReinitialize: true, // This allows the form to reinitialize when categoryToEdit changes
 		validate: (values) => {
-			const errors: {
-				type?: string;
-				
-				name?: string;
-			
-				password?: string;
-				mobile?: string;
-				
-			} = {};
-			if (!values.type) {
-				errors.type = 'Required';
-			}
+			const errors: { name?: string; item?: string; email?: string; address?: string; mobileNumber?: string; } = {};
 			if (!values.name) {
-				errors.name = 'Required';
+				errors.name = 'Name is required';
 			}
-		
-			if (!values.mobile) {
-				errors.mobile = 'Required';
+			if (!values.email) {
+				errors.email = 'Email is required';
 			}
-			
+			if (!values.address) {
+				errors.address = 'Address is required';
+			}
+			if (!values.mobileNumber) {
+				errors.mobileNumber = 'Mobile Number is required';
+			}
+
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						name: values.name,
+						item : values.item,
+						email: values.email,
+						address: values.address,
+						mobileNumber: values.mobileNumber,
+						status: true,
+						id: id,
+					};
+					await updateSupplier(data).unwrap();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Supplier Updated Successfully',
+					});
+					setIsOpen(false); // Close the modal after successful update
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the supplier. Please try again.',
+					});
+				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
-				Swal.close;
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
+
+	// Functions to handle adding/removing subcategories
+	const addItemField = () => {
+		formik.setValues({
+			...formik.values,
+			item: [...formik.values.item, ''],
+		});
+	};
+
+	const removeItemField = (index: number) => {
+		const newItems = [...formik.values.item];
+		newItems.splice(index, 1);
+		formik.setValues({
+			...formik.values,
+			item: newItems,
+		});
+	};
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -116,58 +127,88 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='name' label='Name' className='col-md-6'>
+				<FormGroup
+						id='name'
+						label='Supplier Name'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
-							onChange={formik.handleChange}
-							
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='name' label='Address' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-						
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='name' label='Contact Number' className='col-md-6'>
-						<Input
+							name='name'
 							onChange={formik.handleChange}
 							value={formik.values.name}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='name' label='Email' className='col-md-6'>
+					{formik.values.item.map((sub: any, index: any) => (
+						<FormGroup
+							key={index}
+							id={`item-${index}`}
+							label={`Item ${index + 1}`}
+							className='col-md-6'>
+							<div className='d-flex align-items-center'>
+								<Input
+									name={`item[${index}]`}
+									onChange={formik.handleChange}
+									value={formik.values.item[index]}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									validFeedback='Looks good!'
+								/>
+								<button
+									type='button'
+									onClick={() => removeItemField(index)}
+									className='btn btn-outline-danger ms-2'>
+									<Icon icon='Delete' />
+								</button>
+							</div>
+						</FormGroup>
+					))}
+					<div className='col-md-12'>
+						<Button color='info' onClick={addItemField}>
+							Add Item
+						</Button>
+					</div>
+					<FormGroup
+						id='email'
+						label='Email'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='email'
 							onChange={formik.handleChange}
-						
+							value={formik.values.email}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='name' label='Company Name' className='col-md-6'>
+					<FormGroup
+						id='address'
+						label='Address'
+						onChange={formik.handleChange}
+						className='col-md-6'>
 						<Input
+							name='address'
 							onChange={formik.handleChange}
-							
+							value={formik.values.address}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.name}
-							invalidFeedback={formik.errors.name}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='mobileNumber'
+						label='Mobile Number'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='mobileNumber'
+							onChange={formik.handleChange}
+							value={formik.values.mobileNumber}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -12,8 +12,12 @@ export const brandApiSlice = createApi({
     }),
     // Get a user by ID
     getBrandById: builder.query({
-      query: (id) => `brand/route/${id}`, // Call endpoint with ID
+      query: (id) => `brand/${id}`, // Call endpoint with ID
       providesTags: (result, error, id) => [{ type: 'Brand', id }], // Cache invalidation
+    }),
+    getDeleteBrands: builder.query({
+      query: () => 'brand/bin',
+      providesTags: ['Brand'],
     }),
     // Create: Add a new user
     addBrand: builder.mutation({
@@ -27,7 +31,7 @@ export const brandApiSlice = createApi({
     // Update: Update an existing user
     updateBrand: builder.mutation({
       query: ({ id, ...updatedBrand }) => ({
-        url: `brand/route/${id}`,
+        url: `brand/${id}`,
         method: 'PUT',
         body: updatedBrand,
       }),
@@ -36,7 +40,7 @@ export const brandApiSlice = createApi({
     // Delete: Delete a user
     deleteBrand: builder.mutation({
       query: (id) => ({
-        url: `brand/route/${id}`,
+        url: `brand/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (result, error, id) => [{ type: 'Brand', id }],
@@ -46,7 +50,8 @@ export const brandApiSlice = createApi({
 
 export const {
   useGetBrandsQuery,
-  useGetBrandByIdQuery,  // Export the hook for fetching by ID
+  useGetBrandByIdQuery,
+  useGetDeleteBrandsQuery,  // Export the hook for fetching by ID
   useAddBrandMutation,
   useUpdateBrandMutation,
   useDeleteBrandMutation,

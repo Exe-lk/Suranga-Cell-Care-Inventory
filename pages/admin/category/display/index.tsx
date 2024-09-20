@@ -1,30 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import useDarkMode from '../../../hooks/useDarkMode';
-import Page from '../../../layout/Page/Page';
-import { firestore } from '../../../firebaseConfig';
+import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
+import useDarkMode from '../../../../hooks/useDarkMode';
+import Page from '../../../../layout/Page/Page';
+import { firestore } from '../../../../firebaseConfig';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
 	SubheaderSeparator,
-} from '../../../layout/SubHeader/SubHeader';
-import Icon from '../../../components/icon/Icon';
-import Input from '../../../components/bootstrap/forms/Input';
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
-import Button from '../../../components/bootstrap/Button';
-import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
+} from '../../../../layout/SubHeader/SubHeader';
+import Icon from '../../../../components/icon/Icon';
+import Input from '../../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownMenu, DropdownToggle } from '../../../../components/bootstrap/Dropdown';
+import Button from '../../../../components/bootstrap/Button';
+import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import CategoryAddModal from '../../../components/custom/CategoryAddModal';
-import CategoryDeleteModal from '../../../components/custom/CategoryDeleteModal';
-import CategoryEditModal from '../../../components/custom/CategoryEditModal';
+import CategoryAddModal from '../../../../components/custom/CategoryAddModal';
+import CategoryDeleteModal from '../../../../components/custom/CategoryDeleteModal';
+import CategoryEditModal from '../../../../components/custom/CategoryEditModal';
 import Swal from 'sweetalert2';
-import { useGetCategoriesQuery } from '../../../redux/slices/categoryApiSlice';
-import { updateCategory } from '../../../service/categoryService';
+import { useGetCategoriesQuery , useUpdateCategoryMutation} from '../../../../redux/slices/categoryApiSlice';
+
 // Define the interface for category data
 interface Category {
 	cid: string;
-	categoryname: string;
+	name: string;
 	status: boolean;
 }
 // Define the functional component for the index page
@@ -39,7 +39,7 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
-	
+	const [updateCategory] = useUpdateCategoryMutation();
 	
 	// Function to handle deletion of a category
 	const handleClickDelete = async (category: any) => {
@@ -56,11 +56,11 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				try {
 					// Set the user's status to false (soft delete)
-					await updateCategory(
-						category.id,
-						category.name,
-						false,
-					);
+					await updateCategory({
+						id:category.id,
+						name:category.name,
+						status:false,
+				});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
@@ -189,10 +189,11 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
-								onClick={() => (
+								onClick={() => {
+									refetch();
 									setDeleteModalStatus(true)
 									
-								)}>
+								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
@@ -203,7 +204,7 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
+			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch}/>
 			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);

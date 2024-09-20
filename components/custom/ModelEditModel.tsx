@@ -10,6 +10,7 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
+import { useGetModelByIdQuery, useUpdateModelMutation } from '../../redux/slices/modelApiSlice';
 
 // Define the props for the CategoryEditModal component
 interface ModelEditModalProps {
@@ -34,6 +35,20 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 		description: '',
 		status: true,
 	});
+	const { data: modelData, isSuccess } = useGetModelByIdQuery(id);
+    const [updateModel] = useUpdateModelMutation();
+
+	useEffect(() => {
+        if (isSuccess && modelData) {
+            setModel(modelData);
+            // Update formik values
+            formik.setValues({
+                name: modelData.name || '',
+                description: modelData.description || '',
+            });
+        }
+    }, [isSuccess, modelData]);
+
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -60,9 +75,8 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 					...model, // Keep existing user data
 					...values, // Update with form values
 				};
-				const docRef = doc(firestore, 'Model', id);
-				await updateDoc(docRef, updatedData);
-				setIsOpen(false);
+				await updateModel({ id, ...updatedData }).unwrap();
+                setIsOpen(false);
 				showNotification(
 					<span className='d-flex align-items-center'>
 						<Icon icon='Info' size='lg' className='me-1' />
@@ -79,37 +93,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 			}
 		},
 	});
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				if (id) {
-					const dataCollection = collection(firestore, 'Model');
-					const q = query(dataCollection, where('__name__', '==', id));
-					const querySnapshot = await getDocs(q);
-					const firebaseData: any = querySnapshot.docs.map((doc) => {
-						const data = doc.data() as Model;
-						return {
-							...data,
-							cid: doc.id,
-						};
-					});
-					setModel(firebaseData[0]);
-
-					// Update formik values when the brand is loaded
-					formik.setValues({
-						name: firebaseData[0]?.name || '',
-						description: firebaseData[0]?.description || '',
-					});
-				} else {
-					console.error('No ID provided');
-				}
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [id]);
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>

@@ -12,8 +12,8 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import UserAddModal from '../../../components/custom/UserAddModal';
-import UserEditModal from '../../../components/custom/UserEditModal';
+import UserAddModal from '../../../components/custom/technicianAddModal';
+import UserEditModal from '../../../components/custom/technicianEditModal';
 import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
@@ -22,19 +22,8 @@ import { getFirstLetter } from '../../../helpers/helpers';
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import SellerDeleteModal from '../../../components/custom/UserDeleteModal';
-
-interface User {
-	cid: string;
-	image: string;
-	name: string;
-	position: string;
-	email: string;
-	password: string;
-	mobile: number;
-	pin_number: number;
-	status: boolean;
-}
+import SellerDeleteModal from '../../../components/custom/technicianDeleteModal';
+import { useGetTechniciansQuery, useUpdateTechnicianMutation } from '../../../redux/slices/technicianManagementApiSlice';
 
 const Index: NextPage = () => {
 	// Dark mode
@@ -43,45 +32,15 @@ const Index: NextPage = () => {
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [user, setuser] = useState<User[]>([]);
 	const [id, setId] = useState<string>('');
-	const [status, setStatus] = useState(true);
-	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-	const position = [
-		{ position: 'Admin' },
-		{ position: 'Stock keeper' },
-		{ position: 'Accountant' },
-		{ position: 'Cashier' },
-		{ position: 'Data entry operator' },
-	];
-	//get user data from database
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'user');
-				const q = query(dataCollection, where('status', '==', true));
-				const querySnapshot = await getDocs(q);
-				const firebaseData = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as User;
-					return {
-						...data,
-						cid: doc.id,
-					};
-				});
-				setuser(firebaseData);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, [editModalStatus, addModalStatus, status]);
+	const { data: technicians, error, isLoading } = useGetTechniciansQuery(undefined);
+	const [updateTechnician] = useUpdateTechnicianMutation();
 
-	//delete user
-	const handleClickDelete = async (user: any) => {
+	const handleClickDelete = async (technician: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
+				// text: 'You will not be able to recover this category!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -89,16 +48,21 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
-				try {
-					
-				} catch (error) {
-					console.error('Error during handleUpload: ', error);
-					alert('An error occurred during file upload. Please try again later.');
-				}
+				const values = await {
+					id: technician.id,
+					name: technician.name,
+					status: false,
+					type: technician.type,
+					mobileNumber: technician.mobileNumber,
+				};
+
+				await updateTechnician(values);
+
+				Swal.fire('Deleted!', 'The Technician has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete user.', 'error');
+			Swal.fire('Error', 'Failed to delete Technician.', 'error');
 		}
 	};
 
@@ -173,147 +137,52 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										<tr>
-											<td>Kalpa Chamathkara</td>
-											<td>electronics</td>
-											
-											<td>0772369745</td>
-											<td>
-											<td>
-														<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-											</td>
-										</tr>
-										<tr>
-											<td>Ravidu Idamalgoda</td>
-											<td>Accessories</td>
-											
-											<td>0772369745</td>
-											<td>
-												
-											<Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true)
-																
-															)}>
-															Edit
-														</Button>
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='danger'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-											</td>
-										</tr>
-										{user
-											.filter((val) => {
-												if (searchTerm === '') {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												} else if (
-													val.name
-														.toLowerCase()
-														.includes(searchTerm.toLowerCase())
-												) {
-													if (!selectedCategories.length) {
-														return true; // Show all items if no categories selected
-													} else {
-														return selectedCategories.includes(
-															val.position.toString(),
-														);
-													}
-												}
-											})
-
-											.map((user, index) => (
-												<tr key={user.cid}>
-													<td>
-														<div className='d-flex align-items-center'>
-															<div className='flex-shrink-0'>
-																<div
-																	className='ratio ratio-1x1 me-3'
-																	style={{ width: 48 }}>
-																	<div
-																		className={`bg-l${
-																			darkModeStatus
-																				? 'o25'
-																				: '25'
-																		}-${getColorNameWithIndex(
-																			index,
-																		)} text-${getColorNameWithIndex(
-																			index,
-																		)} rounded-2 d-flex align-items-center justify-content-center`}>
-																		<span className='fw-bold'>
-																			{getFirstLetter(
-																				user.name,
-																			)}
-																		</span>
-																	</div>
-																</div>
-															</div>
-															<div className='flex-grow-1'>
-																<div className='fs-6 fw-bold'>
-																	{user.name}
-																</div>
-																<div className='text-muted'>
-																	<Icon icon='Label' />{' '}
-																	<small>{user.cid}</small>
-																</div>
-															</div>
-														</div>
-													</td>
-													<td>{user.position}</td>
-													<td>{user.email}</td>
-													<td>{user.mobile}</td>
-													<td>{user.password}</td>
-													<td>{user.pin_number}</td>
-													<td>
-														{/* <Button
-															icon='Edit'
-															tag='a'
-															color='info'
-															onClick={() => (
-																setEditModalStatus(true),
-																setId(user.cid)
-															)}>
-															Edit
-														</Button> */}
-														<Button
-															className='m-2'
-															icon='Delete'
-															color='warning'
-															onClick={() => handleClickDelete(user)}>
-															Delete
-														</Button>
-													</td>
-												</tr>
-											))}
+										{isLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{error && (
+											<tr>
+												<td>Error fetching technicians.</td>
+											</tr>
+										)}
+										{technicians &&
+											technicians
+												.filter((technician: any) =>
+													searchTerm
+														? technician.name
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.map((technician: any) => (
+													<tr key={technician.cid}>
+														<td>{technician.name}</td>
+														<td>{technician.type}</td>
+														<td>{technician.mobileNumber}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() =>(
+																	setEditModalStatus(true),
+																	setId(technician.id))
+																}>
+																Edit
+															</Button>
+															<Button
+																className='m-2'
+																icon='Delete'
+																color='danger'
+																onClick={() =>
+																	handleClickDelete(technician)
+																}>
+																Delete
+															</Button>
+														</td>
+													</tr>
+												))}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
@@ -328,8 +197,8 @@ const Index: NextPage = () => {
 				</div>
 			</Page>
 			<UserAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			{/* <UserEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
-			{/* <SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' /> */}
+			<UserEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> 
+			<SellerDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 		</PageWrapper>
 	);
 };

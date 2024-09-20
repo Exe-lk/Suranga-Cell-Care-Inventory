@@ -1,9 +1,12 @@
-import { firestore } from '../firebaseConfig';
+import { firestore , auth} from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 
 export const createUser = async (name: string, role: any,nic : string,email : string,mobile: string) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, nic);
+  const user = userCredential.user;
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'UserManagement'), { name,role,nic,email,mobile , status });
+  const docRef = await addDoc(collection(firestore, 'UserManagement'), { name,role,nic,email,mobile,status });
   return docRef.id;
 };
 

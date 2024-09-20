@@ -1,31 +1,30 @@
 import React, { useContext, useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import useDarkMode from '../../../hooks/useDarkMode';
-import Page from '../../../layout/Page/Page';
-import { firestore } from '../../../firebaseConfig';
+import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
+import useDarkMode from '../../../../hooks/useDarkMode';
+import Page from '../../../../layout/Page/Page';
+import { firestore } from '../../../../firebaseConfig';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
 	SubheaderSeparator,
-} from '../../../layout/SubHeader/SubHeader';
-import Icon from '../../../components/icon/Icon';
-import Input from '../../../components/bootstrap/forms/Input';
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
-import Button from '../../../components/bootstrap/Button';
-import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
+} from '../../../../layout/SubHeader/SubHeader';
+import Icon from '../../../../components/icon/Icon';
+import Input from '../../../../components/bootstrap/forms/Input';
+import Dropdown, { DropdownMenu, DropdownToggle } from '../../../../components/bootstrap/Dropdown';
+import Button from '../../../../components/bootstrap/Button';
+import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
 import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import BrandAddModal from '../../../components/custom/BrandAddModal';
-import BrandDeleteModal from '../../../components/custom/BrandDeleteModal';
-import BrandEditModal from '../../../components/custom/BrandEditModal';
+import CategoryAddModal from '../../../../components/custom/Category1AddModal';
+import CategoryDeleteModal from '../../../../components/custom/Category1DeleteModal';
+import CategoryEditModal from '../../../../components/custom/Category1EditModal';
 import Swal from 'sweetalert2';
-import { useGetBrandsQuery } from '../../../redux/slices/brandApiSlice';
-import { updateBrand } from '../../../service/brandService';
+import { useGetCategories1Query , useUpdateCategory1Mutation} from '../../../../redux/slices/category1ApiSlice';
+
 // Define the interface for category data
 interface Category {
 	cid: string;
-	categoryname: string;
-	description: string;
+	name: string;
 	status: boolean;
 }
 // Define the functional component for the index page
@@ -38,12 +37,12 @@ const Index: NextPage = () => {
 	const [category, setcategory] = useState<Category[]>([]); // State for category data
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
-	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
+	const { data: categories, error, isLoading, refetch } = useGetCategories1Query(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
-	
+	const [updateCategory] = useUpdateCategory1Mutation();
 	
 	// Function to handle deletion of a category
-	const handleClickDelete = async (brand: any) => {
+	const handleClickDelete = async (category: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -57,12 +56,11 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				try {
 					// Set the user's status to false (soft delete)
-					await updateBrand(
-						brand.id,
-						brand.name,
-						brand.description,
-						false,
-					);
+					await updateCategory({
+						id:category.id,
+						name:category.name,
+						status:false,
+				});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
@@ -81,7 +79,6 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete brand.', 'error');
 		}
 	};
-
 	// JSX for rendering the page
 	return (
 		<PageWrapper>
@@ -112,7 +109,7 @@ const Index: NextPage = () => {
 						color='success'
 						isLight
 						onClick={() => setAddModalStatus(true)}>
-						New Brand
+						New category
 					</Button>
 				</SubHeaderRight>
 			</SubHeader>
@@ -122,7 +119,7 @@ const Index: NextPage = () => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Manage Brand</div>
+								<div className='flex-grow-1 text-center text-info'>Manage Category</div>
 								<Button
 									icon='UploadFile'
 									color='warning'
@@ -136,8 +133,8 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
-											<th>Brand name</th>
-											<th>Description</th>
+											<th>Category name</th>
+											
 											<th></th>
 										</tr>
 									</thead>
@@ -155,27 +152,26 @@ const Index: NextPage = () => {
 											)
 										}
 										{
-											brands &&
-											brands
-												.filter((brand : any) =>
-													brand.status === true 
+											categories &&
+											categories
+												.filter((category : any) =>
+													category.status === true 
 												)
-												.filter((brand : any) => 
+												.filter((category : any) => 
 													searchTerm 
-													? brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+													? category.name.toLowerCase().includes(searchTerm.toLowerCase())
 													: true,
 												)
-												.map((brand:any) => (
-													<tr key={brand.id}>
-														<td>{brand.name}</td>
-														<td>{brand.description}</td>
+												.map((category:any) => (
+													<tr key={category.id}>
+														<td>{category.name}</td>
 														<td>
 															<Button
 																icon='Edit'
 																color='info'
 																onClick={() => {
 																	setEditModalStatus(true);
-																	setId(brand.id);
+																	setId(category.id);
 																}}>
 																Edit
 															</Button>
@@ -183,7 +179,7 @@ const Index: NextPage = () => {
 																icon='Delete'
 																className='m-2'
 																color='danger'
-																onClick={() => handleClickDelete(brand)}>
+																onClick={() => handleClickDelete(category)}>
 																Delete
 															</Button>
 														</td>
@@ -193,10 +189,11 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
-								onClick={() => (
+								onClick={() => {
+									refetch();
 									setDeleteModalStatus(true)
 									
-								)}>
+								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
@@ -206,9 +203,9 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<BrandDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
+			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch}/>
+			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
 		</PageWrapper>
 	);
 };

@@ -24,7 +24,8 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import UserDeleteModal from '../../../components/custom/UserDeleteModal';
 import { useGetUsersQuery } from '../../../redux/slices/userManagementApiSlice';
-import { updateUser } from '../../../service/userManagementService';
+import { useUpdateUserMutation} from '../../../redux/slices/userManagementApiSlice';
+
 
 interface User {
 	cid: string;
@@ -56,6 +57,7 @@ const Index: NextPage = () => {
 		{ role: 'cashier' },
 	];
 	const { data: users, error, isLoading, refetch } = useGetUsersQuery(undefined);
+	const [updateUser] = useUpdateUserMutation();
 
 	//delete user
 	// Update the user's status to false instead of deleting
@@ -73,15 +75,15 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				try {
 					// Set the user's status to false (soft delete)
-					await updateUser(
-						user.id,
-						user.name,
-						user.role,
-						user.nic,
-						user.email,
-						user.mobile,
-						false,
-					);
+					await updateUser({
+						id: user.id,
+						name: user.name,
+						role: user.role,
+						nic: user.nic,
+						email: user.email,
+						mobile: user.mobile,
+						status: false,
+					});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'User has been deleted.', 'success');

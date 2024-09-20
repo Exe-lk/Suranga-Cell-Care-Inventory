@@ -94,16 +94,16 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 				  case 'Viewer':
 					router.push('/viewer/dashboard');
 					break;
-				  case 'Display-Stock':
+				  case 'display stock keeper':
 					router.push('/display-stock/dashboard');
 					break;
-				  case 'Accessory-Stock':
+				  case 'accessosry stock keeper':
 					router.push('/accessory-stock/dashboard');
 					break;
-				  case 'Bill-Keeper':
+				  case 'bill keeper':
 					router.push('/bill-keeper/bill-management');
 					break;
-				  case 'Cashier':
+				  case 'cashier':
 					router.push('/cashier/rapaired-phone');
 					break;
 				  default:
