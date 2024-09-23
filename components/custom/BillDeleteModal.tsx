@@ -116,7 +116,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 
 			if (inputText === 'DELETE ALL') {
 				for (const bill of bills) {
-					await (bill.id).unwrap();
+					await deleteBill(bill.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All bills have been deleted.', 'success');
 
