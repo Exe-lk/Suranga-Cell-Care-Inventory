@@ -20,7 +20,10 @@ import StockTypeDeleteModal from '../../../components/custom/StockTypeDeleteModa
 import StockTypeEditModal from '../../../components/custom/StockTypeEditModal';
 import Swal from 'sweetalert2';
 import { useGetStockKeepersQuery , useUpdateStockKeeperMutation} from '../../../redux/slices/stockKeeperApiSlice';
-
+import jsPDF from 'jspdf'; 
+import autoTable from 'jspdf-autotable';
+import { DropdownItem }from '../../../components/bootstrap/Dropdown';
+import { toPng, toSvg } from 'html-to-image';
 // Define the interface for category data
 interface Category {
 	cid: string;
@@ -83,6 +86,145 @@ const Index: NextPage = () => {
 		}
 	};
 
+	// Function to handle the download in different formats
+	const handleExport = async (format: string) => {
+		const table = document.querySelector('table');
+		if (!table) return;
+
+		const clonedTable = table.cloneNode(true) as HTMLElement;
+
+		// Remove Edit/Delete buttons column from cloned table
+		const rows = clonedTable.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell) {
+				lastCell.remove();
+			}
+		});
+	
+		
+		const clonedTableStyles = getComputedStyle(table);
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);
+	
+		
+		try {
+			switch (format) {
+				case 'svg':
+					await downloadTableAsSVG(clonedTable);
+					break;
+				case 'png':
+					await downloadTableAsPNG(clonedTable);
+					break;
+				case 'csv':
+					downloadTableAsCSV(clonedTable);
+					break;
+				case 'pdf': 
+					await downloadTableAsPDF(clonedTable);
+					break;
+				default:
+					console.warn('Unsupported export format: ', format);
+			}
+		} catch (error) {
+			console.error('Error exporting table: ', error);
+		}
+	};
+
+	// function to export the table data in CSV format
+	const downloadTableAsCSV = (table: any) => {
+				let csvContent = '';
+				const rows = table.querySelectorAll('tr');
+				rows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td, th');
+					const rowData = Array.from(cols)
+						.map((col: any) => `"${col.innerText}"`)
+						.join(',');
+					csvContent += rowData + '\n';
+				});
+
+				const blob = new Blob([csvContent], { type: 'text/csv' });
+				const link = document.createElement('a');
+				link.href = URL.createObjectURL(blob);
+				link.download = 'table_data.csv';
+				link.click();
+	};
+	//  function for PDF export
+	const downloadTableAsPDF = (table: HTMLElement) => {
+		try {
+		  const pdf = new jsPDF('p', 'pt', 'a4');
+		  const rows: any[] = [];
+		  const headers: any[] = [];
+		  
+		  const thead = table.querySelector('thead');
+		  if (thead) {
+			const headerCells = thead.querySelectorAll('th');
+			headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+		  }
+		  const tbody = table.querySelector('tbody');
+		  if (tbody) {
+			const bodyRows = tbody.querySelectorAll('tr');
+			bodyRows.forEach((row: any) => {
+			  const cols = row.querySelectorAll('td');
+			  const rowData = Array.from(cols).map((col: any) => col.innerText);
+			  rows.push(rowData);
+			});
+		  }
+		  autoTable(pdf, {
+			head: headers,
+			body: rows,
+			margin: { top: 50 },
+			styles: {
+			  overflow: 'linebreak',
+			  cellWidth: 'wrap',
+			},
+			theme: 'grid',
+		  });
+	  
+		  pdf.save('table_data.pdf');
+		} catch (error) {
+		  console.error('Error generating PDF: ', error);
+		  alert('Error generating PDF. Please try again.');
+		}
+	  };
+	
+	
+	// Function to export the table data in SVG format using library html-to-image
+	const downloadTableAsSVG = async (table: HTMLElement) => {
+		try {
+			const dataUrl = await toSvg(table, {
+				backgroundColor: 'white', 
+				cacheBust: true, 
+				style: { 
+					width: table.offsetWidth + 'px'
+				}
+			});
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.svg'; 
+			link.click();
+		} catch (error) {
+			console.error('Error generating SVG: ', error); 
+		}
+	};
+	
+	// Function to export the table data in PNG format using library html-to-image
+	const downloadTableAsPNG = async (table: HTMLElement) => {
+		try {
+			const dataUrl = await toPng(table, {
+				backgroundColor: 'white', 
+				cacheBust: true, 
+				style: { 
+					width: table.offsetWidth + 'px'
+				}
+			});
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.png'; 
+			link.click();
+		} catch (error) {
+			console.error('Error generating PNG: ', error); 
+		}
+	};
+
 	// JSX for rendering the page
 	return (
 		<PageWrapper>
@@ -124,12 +266,21 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>Manage Stock Keeper Type</div>
-								<Button
-									icon='UploadFile'
-									color='warning'
-									>
-									Export
-								</Button>
+								<Dropdown>
+								<DropdownToggle hasIcon={false}>
+									<Button
+										icon='UploadFile'
+										color='warning'>
+										Export
+									</Button>
+								</DropdownToggle>
+								<DropdownMenu isAlignmentEnd>
+									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
+									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
+									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
+									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
+								</DropdownMenu>
+							</Dropdown>
 							</CardTitle>
 
 							<CardBody isScrollable className='table-responsive'>

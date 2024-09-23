@@ -154,7 +154,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
-							name='dateIn'
+							type='date'
 							onChange={formik.handleChange}
 							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
@@ -279,7 +279,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
-							name='DateOut'
+							type='date'
 							onChange={formik.handleChange}
 							value={formik.values.DateOut}
 							onBlur={formik.handleBlur}

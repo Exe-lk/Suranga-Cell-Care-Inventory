@@ -26,27 +26,27 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 	const billToEdit = bills?.find((bill: any) => bill.id === id);
 	const formik = useFormik({
 		initialValues: {
-			id: '',
+			id: billToEdit?.id || '', // Ensure `id` is included
 			phoneDetail: billToEdit?.phoneDetail || '',
-			dateIn : billToEdit?.dateIn || '',
+			dateIn: billToEdit?.dateIn || '',
 			billNumber: billToEdit?.billNumber || '',
-			phoneModel : billToEdit?.phoneModel || '',
-			repairType : billToEdit?.repairType || '',
-			TechnicianNo : billToEdit?.TechnicianNo || '',
-			CustomerName : billToEdit?.CustomerName || '',
-			CustomerMobileNum : billToEdit?.CustomerMobileNum || '',
+			phoneModel: billToEdit?.phoneModel || '',
+			repairType: billToEdit?.repairType || '',
+			TechnicianNo: billToEdit?.TechnicianNo || '',
+			CustomerName: billToEdit?.CustomerName || '',
+			CustomerMobileNum: billToEdit?.CustomerMobileNum || '',
 			email: billToEdit?.email || '',
-			NIC : billToEdit?.NIC || '',
-			Price : billToEdit?.Price || '',
-			Status : billToEdit?.Status || '',
-			DateOut : billToEdit?.DateOut || '',
-			
-		},
+			NIC: billToEdit?.NIC || '',
+			Price: billToEdit?.Price || '',
+			Status: billToEdit?.Status || '',
+			DateOut: billToEdit?.DateOut || '',
+		 },
+		 
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				phoneDetail?: string;
-				dateIn?: Date;
+				dateIn?: string;
 				billNumber?: string;
 				phoneModel?: string;
 				repairType?: string;
@@ -57,7 +57,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				NIC?: string;
 				Price?: string;
 				Status?: string;
-				DateOut?: Date;
+				DateOut?: string;
 			} = {};
 			if (!values.phoneDetail) {
 				errors.phoneDetail = 'Phone Details is required';
@@ -97,6 +97,15 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			return errors;
 		},
 		onSubmit: async (values) => {
+			if (!values.id) {
+			   await Swal.fire({
+				  icon: 'error',
+				  title: 'Error',
+				  text: 'ID is missing. Unable to update the bill.',
+			   });
+			   return;
+			}
+			
 			try {
 				const process = Swal.fire({
 					title: 'Processing...',
@@ -108,9 +117,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 
 				try {
 					// Update the category
-					console.log(values);
+					console.log("Values ane",values);
 					const data = {
-						id: id,
+						
 						phoneDetails: values.phoneDetail,
 						dateIn : values.dateIn,
 						billNumber: values.billNumber,
@@ -125,6 +134,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						Status : values.Status,
 						DateOut : values.DateOut,
 						status: true,
+						id: id,
 						
 					};
 					await updateBill(data).unwrap();
@@ -176,7 +186,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
-							name='dateIn'
+							type='date'
 							onChange={formik.handleChange}
 							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
@@ -330,7 +340,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
-							name='DateOut'
+							type='date'
 							onChange={formik.handleChange}
 							value={formik.values.DateOut}
 							onBlur={formik.handleBlur}
