@@ -66,6 +66,7 @@ const Index: NextPage = () => {
 						id:brand.id,
 						name:brand.name,
 						description:brand.description,
+						category:brand.category,
 						status:false,
 				});
 					// Refresh the list after deletion
@@ -287,6 +288,7 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
+											<th>Category</th>
 											<th>Brand name</th>
 											<th>Description</th>
 											<th></th>
@@ -318,6 +320,7 @@ const Index: NextPage = () => {
 												)
 												.map((brand:any) => (
 													<tr key={brand.id}>
+														<td>{brand.category}</td>
 														<td>{brand.name}</td>
 														<td>{brand.description}</td>
 														<td>

@@ -1,4 +1,5 @@
 import React, { FC } from 'react';
+import Select from '../bootstrap/forms/Select'; // Adjust the import path as necessary
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -6,7 +7,7 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { useAddBrandMutation } from '../../redux/slices/brandApiSlice';
-import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
+import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice'; // Import the category query
 import Swal from 'sweetalert2';
 
 interface BrandAddModalProps {
@@ -16,24 +17,37 @@ interface BrandAddModalProps {
 }
 
 const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addBrand , {isLoading}] = useAddBrandMutation();
-	const {refetch} = useGetBrandsQuery(undefined);
+	const [addBrand, { isLoading }] = useAddBrandMutation();
+	const { refetch } = useGetCategoriesQuery(undefined); // Refetch brands
+
+	// Fetch categories from categoryApiSlice
+	const {
+		data: categories,
+		isLoading: categoriesLoading,
+		isError,
+	} = useGetCategoriesQuery(undefined);
+
 	const formik = useFormik({
 		initialValues: {
+			category: '',
 			name: '',
-            description:'',
+			description: '',
 			status: true,
 		},
 		validate: (values) => {
 			const errors: {
+				category?: string;
 				name?: string;
 				description?: string;
 			} = {};
 			if (!values.description) {
 				errors.description = 'Required';
 			}
-            if (!values.name) {
+			if (!values.name) {
 				errors.name = 'Required';
+			}
+			if (!values.category) {
+				errors.category = 'Required';
 			}
 
 			return errors;
@@ -48,13 +62,17 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
-					// Add the new category
-					const response: any = await addBrand(values).unwrap();
+					console.log(values.category);
+					// Add the new brand
+					const response: any = await addBrand({
+						...values,
+						category: values.category, // Pass category name instead of ID
+					}).unwrap();
 					console.log(response);
 
-					// Refetch categories to update the list
+					// Refetch brands to update the list
 					refetch();
 
 					// Success feedback
@@ -72,7 +90,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						text: 'Failed to add the brand. Please try again.',
 					});
 				}
-				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				Swal.close;
@@ -88,6 +105,35 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup id='category' label='Category' className='col-md-6'>
+						<Select
+							id='category'
+							name='category'
+							ariaLabel='Category'
+							onChange={formik.handleChange} // This updates the value in formik
+							value={formik.values.category} // This binds the formik value to the selected option
+							onBlur={formik.handleBlur}
+							className={`form-control ${
+								formik.touched.category && formik.errors.category
+									? 'is-invalid'
+									: ''
+							}`}>
+							<option value=''>Select a category</option>
+							{categoriesLoading && <option>Loading categories...</option>}
+							{isError && <option>Error fetching categories</option>}
+							{categories?.map((category: { id: string; name: string }) => (
+								<option key={category.id} value={category.name}> {/* Use name as value */}
+									{category.name}
+								</option>
+							))}
+						</Select>
+
+						{formik.touched.category && formik.errors.category ? (
+							<div className='invalid-feedback'>{formik.errors.category}</div>
+						) : (
+							<></>
+						)}
+					</FormGroup>
 					<FormGroup id='name' label='Brand name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -99,7 +145,7 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                    <FormGroup id='description' label='Description' className='col-md-6'>
+					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.description}
@@ -110,11 +156,11 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                </div>
+				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='info' onClick={formik.handleSubmit} isDisable={isLoading}>
+					{isLoading ? 'Saving...' : 'Save'}
 				</Button>
 			</ModalFooter>
 		</Modal>

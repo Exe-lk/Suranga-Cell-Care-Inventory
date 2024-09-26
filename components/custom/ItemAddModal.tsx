@@ -1,270 +1,18 @@
-// import React, { FC, useEffect, useRef, useState } from 'react';
-// import PropTypes from 'prop-types';
-// import { useFormik } from 'formik';
-// import Modal, {ModalBody,ModalFooter,ModalHeader,ModalTitle,} from '../bootstrap/Modal';
-// import showNotification from '../extras/showNotification';
-// import Icon from '../icon/Icon';
-// import FormGroup from '../bootstrap/forms/FormGroup';
-// import Input from '../bootstrap/forms/Input';
-// import Button from '../bootstrap/Button';
-// import { collection, addDoc, doc, setDoc, getDocs } from 'firebase/firestore';
-// import { firestore, storage } from '../../firebaseConfig';
-// import Swal from 'sweetalert2';
-// import Select from '../bootstrap/forms/Select';
-// import Option, { Options } from '../bootstrap/Option';
-// import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-
-// // Define the props for the ItemAddModal component
-// interface ItemAddModalProps {
-// 	id: string;
-// 	isOpen: boolean;
-// 	setIsOpen(...args: unknown[]): unknown;
-// }
-// interface Category {
-// 	categoryname: string
-// }
-// // ItemAddModal component definition
-// const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-//     const [imageurl, setImageurl] = useState<any>(null);
-// 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-// 	const [category, setCategory] = useState<Category[]>([]);
-//     //get data from database
-// 	useEffect(() => {
-// 		const fetchData = async () => {
-// 			try {
-// 				const dataCollection = collection(firestore, 'category');
-// 				const querySnapshot = await getDocs(dataCollection);
-// 				const firebaseData = querySnapshot.docs.map((doc) => {
-// 					const data = doc.data() as Category;
-// 					return {
-// 						...data,
-//                     };
-// 				});
-//                 setCategory(firebaseData);
-// 			} catch (error) {
-// 				console.error('Error fetching data: ', error);
-// 			}
-// 		};
-//         fetchData();
-// 	}, []);
-//    //image upload 
-// 	const handleUploadimage = async () => {
-//         if (imageurl) {
-// 			// Assuming generatePDF returns a Promise
-// 			const pdfFile = imageurl;
-//             const storageRef = ref(storage, `item/${pdfFile.name}`);
-// 			const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-//             return new Promise((resolve, reject) => {
-// 				uploadTask.on(
-// 					'state_changed',
-// 					(snapshot) => {
-// 						const progress1 = Math.round(
-// 							(snapshot.bytesTransferred / snapshot.totalBytes) * 100
-// 						);
-// 					},
-// 					(error) => {
-// 						console.error(error.message);
-// 						reject(error.message);
-// 					},
-// 					 () => {
-// 						    getDownloadURL(uploadTask.snapshot.ref)
-// 							.then((url) => {
-// 								console.log('File uploaded successfully. URL:', url);
-
-// 								console.log(url);
-// 								resolve(url); // Resolve the Promise with the URL
-// 							})
-// 							.catch((error) => {
-// 								console.error(error.message);
-// 								reject(error.message);
-// 							});
-// 				    }
-// 				);
-// 			});
-// 		} else {
-// 			return ""
-// 		}
-// 	}
-// 	const divRef: any = useRef(null);
-//     // Initialize formik for form management
-// 	const formik = useFormik({
-//         initialValues: {
-//             category: '',
-// 			image: "",
-// 			name: '',
-// 			price: '',
-// 			description:"",
-// 			modelNo:'',
-// 			quantity: 0,
-// 			reorderlevel: '',
-// 			status:true
-//         },
-// 		validate: (values) => {
-// 			const errors: {
-// 				category?: string;
-// 				image?: string;
-// 				name?: string;
-// 				price?: string;
-// 				quantity?: string;
-// 				reorderlevel?: string;
-// 				description?:string;
-// 				modelNo?:string
-// 			} = {};
-//             if (!values.category) {
-// 				errors.category = 'Required';
-// 			}
-//             if (!values.name) {
-// 				errors.name = 'Required';
-// 			}
-// 			if (!values.price) {
-// 				errors.price = 'Required';
-// 			}
-// 			return errors;
-// 		},
-// 		onSubmit: async (values) => {
-// 			try {
-				
-// 			} catch (error) {
-// 				console.error('Error during handleUpload: ', error);
-// 				Swal.close
-// 				alert('An error occurred during file upload. Please try again later.');
-// 			}
-//         },
-// 	});
-
-// 	return (
-// 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-// 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
-// 				<ModalTitle id="">{'New Item'}</ModalTitle>
-// 			</ModalHeader>
-// 			<ModalBody className='px-4'>
-// 				<div className='row g-4'>
-// 					<FormGroup id='name' label='Name' className='col-md-6'>
-// 						<Input
-// 							onChange={formik.handleChange}
-// 							value={formik.values.name}
-//                             onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.name}
-// 							invalidFeedback={formik.errors.name}
-// 							validFeedback='Looks good!'
-//                         />
-// 					</FormGroup>
-// 					<FormGroup id='modelNo' label='Model No' className='col-md-6'>
-// 						<Input
-// 							onChange={formik.handleChange}
-// 							value={formik.values.modelNo}
-//                             onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.modelNo}
-// 							invalidFeedback={formik.errors.modelNo}
-// 							validFeedback='Looks good!'
-//                         />
-// 					</FormGroup>
-// 					<FormGroup id='description' label='Description' className='col-md-6'>
-// 						<Input
-// 							onChange={formik.handleChange}
-// 							value={formik.values.description}
-//                             onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.description}
-// 							invalidFeedback={formik.errors.description}
-// 							validFeedback='Looks good!'
-//                         />
-// 					</FormGroup>
-//                     <FormGroup id='price' label='Price' className='col-md-6'>
-// 						<Input
-// 							type="number"
-// 							onChange={formik.handleChange}
-// 							value={formik.values.price}
-//                             onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.price}
-// 							invalidFeedback={formik.errors.price}
-// 							validFeedback='Looks good!'
-// 						/>
-// 					</FormGroup>
-//                     <FormGroup id='category' label='Category' className='col-md-6'>
-//                        <Select
-// 							ariaLabel='Default select example'
-// 							placeholder='Open this select category'
-// 							onChange={formik.handleChange}
-// 							value={formik.values.category}
-// 							onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.category}
-// 							invalidFeedback={formik.errors.category}
-// 							validFeedback='Looks good!'>
-
-// 						   <Option value="Speekers">Speeker</Option>
-// 						   <Option value="Speekers">Pen Drive</Option>
-// 						   <Option value="Speekers">Modile</Option>
-						   
-// 						   <Option value="Speekers">Other</Option>
-
-// 						</Select>
-// 					</FormGroup>
-// 					<FormGroup id='reorderlevel' label='Reorder Level' className='col-md-6'>
-// 						<Input
-// 							type='number'
-// 							onChange={formik.handleChange}
-// 							value={formik.values.reorderlevel}
-//                             onBlur={formik.handleBlur}
-// 							isValid={formik.isValid}
-// 							isTouched={formik.touched.reorderlevel}
-// 							invalidFeedback={formik.errors.reorderlevel}
-// 							validFeedback='Looks good!'
-// 						/>
-// 					</FormGroup>
-// 					{/* <FormGroup label='Profile Picture' className='col-md-6'>
-// 						<Input
-// 							type='file'
-// 							onChange={(e: any) => {
-// 								setImageurl(e.target.files[0]);
-// 								// Display the selected image
-// 								setSelectedImage(URL.createObjectURL(e.target.files[0]));
-// 							}}
-// 						/>
-// 					</FormGroup>
-// 					{selectedImage && <img src={selectedImage} className="mx-auto d-block mb-4" alt="Selected Profile Picture" style={{ width: '200px', height: '200px', }} />}
-// 					Barcode component */}
-// 					<div ref={divRef}>
-// 						{/* <Barcode value={formik.values.barcode} /> */}
-// 					</div>
-// 				</div>
-//             </ModalBody>
-// 			<ModalFooter className='px-4 pb-4'>
-// 				{/* Save button to submit the form */}
-// 				<Button color='info' onClick={formik.handleSubmit} >
-// 					Save
-// 				</Button>
-// 			</ModalFooter>
-// 		</Modal>
-// 	);
-// }
-// // Prop types definition for ItemAddModal component
-// ItemAddModal.propTypes = {
-// 	id: PropTypes.string.isRequired,
-// 	isOpen: PropTypes.bool.isRequired,
-// 	setIsOpen: PropTypes.func.isRequired,
-// };
-// export default ItemAddModal;
 import React, { FC, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
 import showNotification from '../extras/showNotification';
-import Icon from '../icon/Icon';
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
-import { collection, addDoc, doc, setDoc, getDocs } from 'firebase/firestore';
-import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
 import Select from '../bootstrap/forms/Select';
-import Option, { Options } from '../bootstrap/Option';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
+import Option from '../bootstrap/Option';
+import { useGetCategories1Query } from '../../redux/slices/category1ApiSlice';
+import { useGetBrands1Query } from '../../redux/slices/brand1ApiSlice';
+import { useGetModels1Query } from '../../redux/slices/model1ApiSlice';
+import { useAddItemAcceMutation, useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 
 // Define the props for the ItemAddModal component
 interface ItemAddModalProps {
@@ -272,128 +20,117 @@ interface ItemAddModalProps {
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-interface Category {
-	categoryname: string;
-}
-// ItemAddModal component definition
-const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [imageurl, setImageurl] = useState<any>(null);
-	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-	const [category, setCategory] = useState<Category[]>([]);
-	const [selectedOption, setSelectedOption] = useState<string>('');
-	//get data from database
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'category');
-				const querySnapshot = await getDocs(dataCollection);
-				const firebaseData = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as Category;
-					return {
-						...data,
-					};
-				});
-				setCategory(firebaseData);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, []);
-	//image upload
-	const handleUploadimage = async () => {
-		if (imageurl) {
-			// Assuming generatePDF returns a Promise
-			const pdfFile = imageurl;
-			const storageRef = ref(storage, `item/${pdfFile.name}`);
-			const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-			return new Promise((resolve, reject) => {
-				uploadTask.on(
-					'state_changed',
-					(snapshot) => {
-						const progress1 = Math.round(
-							(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-						);
-					},
-					(error) => {
-						console.error(error.message);
-						reject(error.message);
-					},
-					() => {
-						getDownloadURL(uploadTask.snapshot.ref)
-							.then((url) => {
-								console.log('File uploaded successfully. URL:', url);
 
-								console.log(url);
-								resolve(url); // Resolve the Promise with the URL
-							})
-							.catch((error) => {
-								console.error(error.message);
-								reject(error.message);
-							});
-					},
-				);
-			});
-		} else {
-			return '';
-		}
-	};
-	const divRef: any = useRef(null);
+const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const [selectedCategory, setSelectedCategory] = useState<string>('');
+	const [selectedBrand, setSelectedBrand] = useState<string>('');
+	const [addItemAcce, { isLoading }] = useAddItemAcceMutation();
+	const { refetch } = useGetItemAccesQuery(undefined);
+	const { data: brands } = useGetBrands1Query(undefined);
+	const { data: models } = useGetModels1Query(undefined);
+	const { data: categories, isLoading: categoriesLoading, isError } = useGetCategories1Query(undefined);
+
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
+			type: '',
+			mobileType: '',
 			category: '',
-			image: '',
-			name: '',
-			phone: '',
-			NIC: '',
-			costprice: '',
-			sellingprice: '',
+			model: '',
+			brand: '',
+			reorderLevel: '',
 			description: '',
-			modelNo: '',
-			quentity: 0,
-			reorderlevel: '',
 			status: true,
-			imi: '',
-			datein: '',
-			dateout: '',
-			storage: '',
-			boxnumber:'',
 		},
 		validate: (values) => {
-			const errors: {
-				category?: string;
-				image?: string;
-				name?: string;
-				price?: string;
-				quentity?: string;
-				reorderlevel?: string;
-				description?: string;
-				modelNo?: string;
-			} = {};
+			const errors: Record<string, string> = {};
+			if (!values.type) {
+				errors.type = 'Type is required';
+			}
 			if (!values.category) {
-				errors.category = 'Required';
+				errors.category = 'Category is required';
 			}
-			if (!values.name) {
-				errors.name = 'Required';
+			if (!values.model) {
+				errors.model = 'Model is required';
 			}
-			if (!values.costprice) {
-				errors.price = 'Required';
+			if (!values.brand) {
+				errors.brand = 'Brand is required';
+			}
+			if (!values.reorderLevel) {
+				errors.reorderLevel = 'Reorder Level is required';
+			}
+			if (!values.description) {
+				errors.description = 'Description is required';
 			}
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
+				const process = Swal.fire({
+				  title: 'Processing...',
+				  html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+				  allowOutsideClick: false,
+				  showCancelButton: false,
+				  showConfirmButton: false,
+			   });
+		 
+			   try {
+				console.log('Formik values:', values); // Debugging formik values
+				  const response:any = await addItemAcce({
+					 ...values,
+					 category: values.category,
+					 brand: values.brand,
+					 model: values.model,
+				  }).unwrap();
+		 
+				  console.log('Response from API:', response); // Debugging API response
+		 
+				  refetch(); // Refetch data after successful addition
+				  await Swal.fire({
+					 icon: 'success',
+					 title: 'Item Created Successfully',
+				  });
+				  setIsOpen(false); // Close the modal on success
+			   } catch (error) {
+				  console.error('Error:', error); // Debugging API error
+				  await Swal.fire({
+					 icon: 'error',
+					 title: 'Error',
+					 text: 'Failed to add the item. Please try again.',
+				  });
+			   }
 			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				Swal.close;
-				alert('An error occurred during file upload. Please try again later.');
+			   console.error('Error: ', error);
 			}
-		},
+		 },
+		 
 	});
-	const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedOption(event.target.value);
+
+	const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSelectedCategory(e.target.value);
+		formik.setFieldValue('category', e.target.value);
+		setSelectedBrand(''); // Reset brand selection
+		formik.setFieldValue('brand', ''); // Clear selected brand in formik
+		formik.setFieldValue('model', ''); // Clear selected model in formik
 	};
+
+	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSelectedBrand(e.target.value);
+		formik.setFieldValue('brand', e.target.value);
+		formik.setFieldValue('model', ''); // Clear selected model when changing brand
+	};
+
+	// Filter brands based on selected category
+	const filteredBrands = brands?.filter(
+		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other'
+	);
+
+	// Filter models based on selected brand and category
+	const filteredModels = models?.filter(
+		(model: any) =>
+			model.brand === selectedBrand && (model.category === selectedCategory || selectedCategory === 'Other')
+	);
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -401,264 +138,139 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='membershipDate' className='col-md-12'>
-						<ChecksGroup isInline>
-							<Checks
-								type='radio'
-								id='brendnew'
-								label='Brand New'
-								name='type'
-								value='brendnew'
-								onChange={handleOptionChange}
-								checked={selectedOption}
-							/>
-							<Checks
-								type='radio'
-								id='used'
-								label='Used (Second Hand)'
-								name='type'
-								value='used'
-								onChange={handleOptionChange}
-								checked={selectedOption}
-							/>
-						</ChecksGroup>
+					<FormGroup id='type' label='Type' className='col-md-6'>
+						<Select
+							ariaLabel='Default select type'
+							placeholder='Open this select type'
+							onChange={formik.handleChange}
+							value={formik.values.type}
+							name='type'
+							isValid={formik.isValid}
+							isTouched={formik.touched.type}
+							invalidFeedback={formik.errors.type}
+							validFeedback='Looks good!'
+						>
+							<Option value=''>Select the Type</Option>
+							<Option value='Mobile'>Mobile</Option>
+							<Option value='Accessory'>Accessory</Option>
+						</Select>
+					</FormGroup>
+					
+					{formik.values.type === 'Mobile' && (
+						<FormGroup id='mobileType' label='Mobile Type' className='col-md-6'>
+							<Select
+								ariaLabel='Select Mobile Type'
+								onChange={formik.handleChange}
+								value={formik.values.mobileType}
+								name='mobileType'
+								isValid={formik.isValid}
+								isTouched={formik.touched.mobileType}
+								invalidFeedback={formik.errors.mobileType}
+								validFeedback='Looks good!'
+							>
+								<Option value=''>Select Mobile Type</Option>
+								<Option value='Brand New'>Brand New</Option>
+								<Option value='Used'>Used</Option>
+							</Select>
+						</FormGroup>
+					)}
+
+					<FormGroup id='category' label='Category' className='col-md-6'>
+						<Select
+							ariaLabel='Category'
+							onChange={handleCategoryChange}
+							value={selectedCategory}
+							onBlur={formik.handleBlur}
+						>
+							<Option value=''>Select a category</Option>
+							{categoriesLoading && <Option value='loading'>Loading categories...</Option>}
+							{isError && <Option value='error'>Error fetching categories</Option>}
+							{categories?.map((category: { id: string; name: string }) => (
+								<Option key={category.id} value={category.name}>
+									{category.name}
+								</Option>
+							))}
+						</Select>
 					</FormGroup>
 
-					<FormGroup id='modelNo' label='Model No' className='col-md-6'>
+					{selectedCategory && (
+						<FormGroup id='brandSelect' label='Brand' className='col-md-6'>
+							<Select
+								ariaLabel='Select brand'
+								onChange={handleBrandChange}
+								value={selectedBrand}
+								onBlur={formik.handleBlur}
+							>
+								<Option value=''>Select Brand</Option>
+								{filteredBrands?.map((brand: any) => (
+									<Option key={brand.id} value={brand.name}>
+										{brand.name}
+									</Option>
+								))}
+							</Select>
+						</FormGroup>
+					)}
+
+					{selectedBrand && (
+						<FormGroup id='modelSelect' label='Model' className='col-md-6'>
+							<Select
+								ariaLabel='Select model'
+								onChange={formik.handleChange}
+								value={formik.values.model}
+								onBlur={formik.handleBlur}
+								name='model'
+							>
+								 <Option value=''>Select Model</Option>
+								{filteredModels?.map((model: any) => (
+									<Option key={model.id} value={model.name}>
+										{model.name}
+									</Option>
+								))}
+							</Select>
+						</FormGroup>
+					)}
+
+
+					<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
-							value={formik.values.modelNo}
-							onBlur={formik.handleBlur}
+							value={formik.values.reorderLevel}
+							name='reorderLevel'
+							placeholder='Enter Reorder Level'
 							isValid={formik.isValid}
-							isTouched={formik.touched.modelNo}
-							invalidFeedback={formik.errors.modelNo}
+							isTouched={formik.touched.reorderLevel}
+							invalidFeedback={formik.errors.reorderLevel}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+
 					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.description}
-							onBlur={formik.handleBlur}
+							name='description'
+							placeholder='Enter Description'
 							isValid={formik.isValid}
 							isTouched={formik.touched.description}
 							invalidFeedback={formik.errors.description}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='costprice' label='Cost Price' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.costprice}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.costprice}
-							invalidFeedback={formik.errors.costprice}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='sellingprice' label='Selling Price' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.sellingprice}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.sellingprice}
-							invalidFeedback={formik.errors.sellingprice}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='category' label='Category' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select category'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>Speeker</Option>
-							<Option value='Speekers'>Pen Drive</Option>
-							<Option value='Speekers'>Modile</Option>
-							<Option value='Speekers'>Other</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='category' label='Model' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select model'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>A50s</Option>
-							<Option value='Speekers'>M12</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='category' label='Brand' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select Brand'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>Apple</Option>
-							<Option value='Speekers'>Samsung</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='imi' label='IMI' className='col-md-6'>
-						<Input
-							type='text'
-							onChange={formik.handleChange}
-							value={formik.values.imi}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.imi}
-							invalidFeedback={formik.errors.imi}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='storage' label='Storage' className='col-md-6'>
-						<Input
-							type='text'
-							onChange={formik.handleChange}
-							value={formik.values.storage}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.storage}
-							invalidFeedback={formik.errors.storage}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='reorderlevel' label='Reorder Level' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.reorderlevel}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.reorderlevel}
-							invalidFeedback={formik.errors.reorderlevel}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					{/* <FormGroup id='boxnumber' label='Box Number' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.boxnumber}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.boxnumber}
-									invalidFeedback={formik.errors.boxnumber}
-									validFeedback='Looks good!'
-								/>
-					</FormGroup> */}
-					<FormGroup id='datein' label='Date In' className='col-md-6'>
-						<Input
-							type='date'
-							onChange={formik.handleChange}
-							value={formik.values.datein}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.datein}
-							invalidFeedback={formik.errors.datein}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='dateout' label='Date Out' className='col-md-6'>
-						<Input
-							type='date'
-							onChange={formik.handleChange}
-							value={formik.values.dateout}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.dateout}
-							invalidFeedback={formik.errors.dateout}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					
-					{selectedOption === 'used' && (
-						<>
-							<FormGroup id='name' label='Name' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.name}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.name}
-									invalidFeedback={formik.errors.name}
-									validFeedback='Looks good!'
-								/>
-							</FormGroup>
-							<FormGroup id='phonne' label='Mobile Number' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.phone}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.phone}
-									invalidFeedback={formik.errors.phone}
-									validFeedback='Looks good!'
-								/>
-							</FormGroup>
-							<FormGroup id='nic' label='NIC' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.NIC}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.NIC}
-									invalidFeedback={formik.errors.NIC}
-									validFeedback='Looks good!'
-								/>
-							</FormGroup>
-							
-						</>
-					)}
-					{/* <FormGroup label='Profile Picture' className='col-md-6'>
-						<Input
-							type='file'
-							onChange={(e: any) => {
-								setImageurl(e.target.files[0]);
-								// Display the selected image
-								setSelectedImage(URL.createObjectURL(e.target.files[0]));
-							}}
-						/>
-					</FormGroup>
-					{selectedImage && <img src={selectedImage} className="mx-auto d-block mb-4" alt="Selected Profile Picture" style={{ width: '200px', height: '200px', }} />}
-					Barcode component */}
-					<div ref={divRef}>{/* <Barcode value={formik.values.barcode} /> */}</div>
 				</div>
 			</ModalBody>
-			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
-				<Button color='info' onClick={formik.handleSubmit}>
+			<ModalFooter className='p-4'>
+				<Button color='primary' onClick={() => formik.handleSubmit()}>
 					Save
 				</Button>
 			</ModalFooter>
 		</Modal>
 	);
 };
-// Prop types definition for ItemAddModal component
+
 ItemAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default ItemAddModal;

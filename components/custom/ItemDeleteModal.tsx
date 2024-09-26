@@ -3,6 +3,12 @@ import PropTypes from 'prop-types';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
 import Button from '../bootstrap/Button';
 import Swal from 'sweetalert2';
+import {
+	useDeleteItemDisMutation,
+	useGetItemDissQuery,
+	useGetDeleteItemDissQuery,
+	useUpdateItemDisMutation,
+} from '../../redux/slices/itemManagementDisApiSlice';
 
 interface CategoryEditModalProps {
 	id: string;
@@ -11,11 +17,16 @@ interface CategoryEditModalProps {
 }
 
 const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const handleClickDelete = async () => {
+	const { data: ItemDiss, error, isLoading } = useGetDeleteItemDissQuery(undefined);
+	const [updateItemDis] = useUpdateItemDisMutation();
+	const [deleteItemDis] = useDeleteItemDisMutation();
+	const { refetch } = useGetDeleteItemDissQuery(undefined);
+
+	const handleClickDelete = async (itemDis: any) => {
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE" to confirm ',
+				text: 'Please type "DELETE" to confirm',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
@@ -30,12 +41,129 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			});
 
 			if (inputText === 'DELETE') {
-				// Perform delete action here
-				console.log('Delete confirmed');
+				// Call the delete mutation from Redux
+				await deleteItemDis(itemDis.id).unwrap();
+				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');
+
+				// Refetch categories to update the list
+				refetch();
+			}
+		} catch (error) {
+			console.error('Error deleting dealer:', error);
+			Swal.fire('Error', 'Failed to delete dealer.', 'error');
+		}
+	};
+
+	const handleClickRestore = async (itemDis: any) => {
+		try {
+			const result = await Swal.fire({
+				title: 'Are you sure?',
+
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, Restore it!',
+			});
+			if (result.isConfirmed) {
+				const values = await {
+					id: itemDis.id,
+					status: true,
+					model: itemDis.model,
+					brand: itemDis.brand,
+					reorderLevel: itemDis.reorderLevel,
+					quantity: itemDis.quantity,
+					boxNumber: itemDis.boxNumber,
+					category: itemDis.category,
+					touchpadNumber: itemDis.touchpadNumber,
+					batteryCellNumber: itemDis.batteryCellNumber,
+					displaySNumber: itemDis.displaySNumber,
+					otherCategory: itemDis.otherCategory
+					
+				};
+
+				await updateItemDis(values);
+
+				Swal.fire('Restory!', 'The item dis has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete category.', 'error');
+			Swal.fire('Error', 'Failed to delete item dis.', 'error');
+		}
+	};
+
+	const handleDeleteAll = async () => {
+		try {
+			const { value: inputText } = await Swal.fire({
+				title: 'Are you sure?',
+				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				input: 'text',
+				icon: 'warning',
+				inputValidator: (value) => {
+					if (value !== 'DELETE ALL') {
+						return 'You need to type "DELETE ALL" to confirm!';
+					}
+				},
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete all!',
+			});
+
+			if (inputText === 'DELETE ALL') {
+				for (const itemDis of ItemDiss) {
+					await deleteItemDis(itemDis.id).unwrap();
+				}
+				Swal.fire('Deleted!', 'All items have been deleted.', 'success');
+
+				// Refetch categories after deletion
+				refetch();
+			}
+		} catch (error) {
+			console.error('Error deleting all items:', error);
+			Swal.fire('Error', 'Failed to delete all items.', 'error');
+		}
+	};
+
+	// Handle restore all categories
+	const handleRestoreAll = async () => {
+		try {
+			const result = await Swal.fire({
+				title: 'Are you sure?',
+				text: 'This will restore all categories.',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, restore all!',
+			});
+
+			if (result.isConfirmed) {
+				for (const itemDis of ItemDiss) {
+					const values = {
+					id: itemDis.id,
+					status: true,
+					model: itemDis.model,
+					brand: itemDis.brand,
+					reorderLevel: itemDis.reorderLevel,
+					quantity: itemDis.quantity,
+					boxNumber: itemDis.boxNumber,
+					category: itemDis.category,
+					touchpadNumber: itemDis.touchpadNumber,
+					batteryCellNumber: itemDis.batteryCellNumber,
+					displaySNumber: itemDis.displaySNumber,
+					otherCategory: itemDis.otherCategory
+					};
+					await updateItemDis(values).unwrap();
+				}
+				Swal.fire('Restored!', 'All items have been restored.', 'success');
+
+				// Refetch categories after restoring
+				refetch();
+			}
+		} catch (error) {
+			console.error('Error restoring all items:', error);
+			Swal.fire('Error', 'Failed to restore all items.', 'error');
 		}
 	};
 	return (
@@ -47,40 +175,60 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				<table className='table table-bordered border-primary table-modern table-hover text-center'>
 					<thead>
 						<tr>
-							<th>Name</th>
-							<th>Model No</th>
+							<th>Model</th>
 							<th>
 								<Button
 									icon='Delete'
-									onClick={handleClickDelete}
-									color='primary'
+									onClick={handleDeleteAll}
+									color='danger'
 									isLight>
 									Delete All
 								</Button>
-								<Button icon='Restore' className='ms-3' color='primary'>
+								<Button
+									icon='Restore'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									color='primary'>
 									Restore All
 								</Button>
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-						<tr>
-							<td>pen drive</td>
-							<td>td563</td>
-							<td>
-								<Button icon='Restore' tag='a' color='info'>
-									Restore
-								</Button>
-								<Button
-									className='m-2'
-									icon='Delete'
-									color='danger'
-									onClick={handleClickDelete}>
-									Delete
-								</Button>
-							</td>
-						</tr>
-						
+					{isLoading && (
+							<tr>
+								<td>Loading...</td>
+							</tr>
+						)}
+						{error && (
+							<tr>
+								<td>Error fetching items.</td>
+							</tr>
+						)}
+						{ItemDiss &&
+							ItemDiss.map((itemDis: any) => (
+								<tr key={itemDis.cid}>
+									<td>{itemDis.model}</td>
+
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(itemDis)}>
+											Restore
+										</Button>
+
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(itemDis)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

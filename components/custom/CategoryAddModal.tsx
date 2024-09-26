@@ -83,7 +83,7 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Brandname' className='col-md-6'>
+				<FormGroup id='name' label='Category Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

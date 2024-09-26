@@ -32,7 +32,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			
+			technicianNum:'',
 			name: '',
 			type: '',
 			mobileNumber: '',
@@ -41,12 +41,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		validate: (values) => {
 			const errors: {
+				technicianNum?: string;
 				name?: string;
 				type?: string;
 				mobileNumber?: string;
 				item?: string;
 				
 			} = {};
+			if (!values.technicianNum) {
+				errors.technicianNum = 'Technician number is required.';
+			}
 			if (!values.name) {
 				errors.name = 'Name is required.';
 			}
@@ -106,6 +110,17 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup id='technicianNum' label='Technician number' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.technicianNum}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.technicianNum}
+							invalidFeedback={formik.errors.technicianNum}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 				<FormGroup id='name' label='Technician name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}

@@ -54,6 +54,7 @@ const Index: NextPage = () => {
 			if (result.isConfirmed) {
 				const values = await {
 					id: technician.id,
+					technicianNum: technician.technicianNum,
 					name: technician.name,
 					status: false,
 					type: technician.type,
@@ -286,6 +287,7 @@ const Index: NextPage = () => {
 								<table className='table table-bordered border-primary table-modern table-hover'>
 									<thead>
 										<tr>
+											<th>Technician Number</th>
 											<th>User</th>
 											<th>Type</th>
 											
@@ -315,6 +317,7 @@ const Index: NextPage = () => {
 												)
 												.map((technician: any) => (
 													<tr key={technician.cid}>
+														<td>{technician.technicianNum}</td>
 														<td>{technician.name}</td>
 														<td>{technician.type}</td>
 														<td>{technician.mobileNumber}</td>

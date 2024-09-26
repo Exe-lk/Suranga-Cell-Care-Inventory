@@ -280,7 +280,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 					</FormGroup>
 					<FormGroup
 						id='email'
-						label='Email'
+						label='Customer Email'
 						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input

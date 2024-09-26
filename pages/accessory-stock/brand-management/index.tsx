@@ -64,6 +64,7 @@ const Index: NextPage = () => {
 					// Set the user's status to false (soft delete)
 					await updateBrand({
 						id:brand.id,
+						category:brand.category,
 						name:brand.name,
 						description:brand.description,
 						status:false,
@@ -288,6 +289,7 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
+											<th>Category</th>
 											<th>Brand name</th>
 											<th>Description</th>
 											<th></th>
@@ -319,6 +321,7 @@ const Index: NextPage = () => {
 												)
 												.map((brand:any) => (
 													<tr key={brand.id}>
+														<td>{brand.category}</td>
 														<td>{brand.name}</td>
 														<td>{brand.description}</td>
 														<td>

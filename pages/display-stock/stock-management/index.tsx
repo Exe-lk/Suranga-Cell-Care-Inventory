@@ -25,35 +25,18 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import { toPng, toSvg } from 'html-to-image';
+import { useGetStockInOutsQuery , useUpdateStockInOutMutation } from '../../../redux/slices/stockInOutDissApiSlice';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [id, setId] = useState<string>(''); // State for current stock item ID
-	const [id1, setId1] = useState<string>('12356'); // State for new item ID
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [id, setId] = useState<string>(''); // State for current category ID
+	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	console.log(StockInOuts);
+	const [updateStockInOut] = useUpdateStockInOutMutation();
 
-	// State for managing data fetching status
-	// Fetch data from Firestore for items
-	const handleClickDelete = async () => {
-		try {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
-
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!',
-			});
-			if (result.isConfirmed) {
-			}
-		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete employee.', 'error');
-		}
-	};
 
 	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
@@ -257,7 +240,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Transactions{' '}
+									Transactions
 								</div>
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>
@@ -277,76 +260,66 @@ const Index: NextPage = () => {
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-modern table-bordered border-primary table-hover '>
-									<thead>
+								<thead>
 										<tr>
-											<th>Code</th>
-											<th>Name</th>
-											<th>Date</th>
-											<th>Type</th>
+											
+											<th>Category</th>
+											<th>Brand</th>
+											<th>Model</th>
 											<th>Quantity</th>
-											<th>Branch</th>
+											<th>Selling Price</th>
+											<th>Date</th>
+											<th>Stock</th>
 											<th></th>
-											
-											
-											
 										</tr>
 									</thead>
-
 									<tbody>
-										<tr className='text-success'>
-											<td className='text-warning'>15368</td>
-											<td className='text-warning'>Display</td>
-											<td className='text-warning'>2024/08/09</td>
-											<td className='text-warning'>Stock Out</td>
-											<td className='text-warning'>260</td>
-											<td className='text-warning'>Suranga Cell Care 3</td>
-										
-										
-											
-
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}
-													>
-													Delete
-												</Button>
-											</td>
-										</tr>
-										<tr>
-											<td className='text-success'>15368</td>
-											<td className='text-success'>Touch Pad</td>
-											<td className='text-success'>2024/08/09</td>
-											<td className='text-success'>Stock In</td>
-											<td className='text-success'>260</td>
-											<td className='text-success'>Suranga Cell Care 1</td>
-										
-											<td>
-											<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() => setEditModalStatus(true)}>
-													Edit
-												</Button>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}>
-													Delete
-												</Button>
-											</td>
-										</tr>
+										{isLoading &&(
+											<tr>
+												<td>Loadning...</td>
+											</tr>
+										)}
+										{
+											error && (
+												<tr>
+													<td>Error fetching stocks.</td>
+												</tr>
+											)
+										}
+										{
+											StockInOuts &&
+											StockInOuts
+												.filter((StockInOut : any) =>
+													StockInOut.status === true 
+												)
+												.filter((brand : any) => 
+													searchTerm 
+													? brand.category.toLowerCase().includes(searchTerm.toLowerCase())
+													: true,
+												)
+												.map((brand:any) => (
+													<tr key={brand.id}>
+														<td>{brand.category}</td>
+														<td>{brand.brand}</td>
+														<td>{brand.model}</td>
+														<td>{brand.quantity}</td>
+														<td>{brand.sellingPrice}</td>
+														<td>{brand.date}</td>
+														<td>{brand.stock}</td>
+														<td>
+															<Button
+																icon='Edit'
+																color='info'
+																onClick={() => {
+																	setEditModalStatus(true);
+																	setId(brand.id);
+																}}>
+																Edit
+															</Button>
+														</td>
+													</tr>
+												))
+										}
 									</tbody>
 								</table>
 							</CardBody>
@@ -354,8 +327,8 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			<StockAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
-			{/* <StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} /> */}
+			
+			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };
