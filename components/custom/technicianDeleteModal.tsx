@@ -77,6 +77,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (result.isConfirmed) {
 				const values = await {
 					id: technician.id,
+					technicianNum: technician.technicianNum,
 					name: technician.name,
 					status: true,
 					type: technician.type,
@@ -143,6 +144,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				for (const technician of technicians) {
 					const values = {
 						id: technician.id,
+						technicianNum: technician.technicianNum,
 						name: technician.name,
 						status: true, // Assuming restoring means setting status to true
 						type: technician.type,

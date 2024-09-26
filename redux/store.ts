@@ -14,6 +14,10 @@ import { dealerApiSlice } from './slices/delearApiSlice';
 import { supplierApiSlice } from './slices/supplierApiSlice';
 import { billApiSlice } from './slices/billApiSlice';
 import {technicianApiSlice} from './slices/technicianManagementApiSlice';
+import {ItemAcceApiSlice} from './slices/itemManagementAcceApiSlice';
+import {stockInOutApiSlice} from './slices/stockInOutDissApiSlice';
+import {ItemDisApiSlice} from './slices/itemManagementDisApiSlice';
+import {stockInOutAcceApiSlice} from './slices/stockInOutAcceApiSlice';
 
 const store = configureStore({
 	reducer: {
@@ -30,6 +34,10 @@ const store = configureStore({
 		[brand1ApiSlice.reducerPath]: brand1ApiSlice.reducer,
 		[category1ApiSlice.reducerPath]: category1ApiSlice.reducer,
 		[model1ApiSlice.reducerPath]: model1ApiSlice.reducer,
+		[ItemAcceApiSlice.reducerPath]: ItemAcceApiSlice.reducer,
+		[stockInOutApiSlice.reducerPath]: stockInOutApiSlice.reducer,
+		[ItemDisApiSlice.reducerPath]: ItemDisApiSlice.reducer,
+		[stockInOutAcceApiSlice.reducerPath]: stockInOutAcceApiSlice.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(
@@ -46,6 +54,10 @@ const store = configureStore({
 			brand1ApiSlice.middleware,
 			category1ApiSlice.middleware,
 			model1ApiSlice.middleware,
+			ItemAcceApiSlice.middleware,
+			stockInOutApiSlice.middleware,
+			ItemDisApiSlice.middleware,
+			stockInOutAcceApiSlice.middleware,
 		),
 });
 

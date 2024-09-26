@@ -173,17 +173,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='email' label='Email' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.email}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.email}
-							invalidFeedback={formik.errors.email}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
+					
 					<FormGroup id='phoneModel' label='Phone Model' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -237,6 +227,17 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isValid={formik.isValid}
 							isTouched={formik.touched.CustomerMobileNum}
 							invalidFeedback={formik.errors.CustomerMobileNum}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='email' label='Customer Email' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.email}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.email}
+							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

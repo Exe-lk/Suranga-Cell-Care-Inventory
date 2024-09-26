@@ -26,6 +26,9 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import { toPng, toSvg } from 'html-to-image';
+import { useUpdateItemDisMutation} from '../../../redux/slices/itemManagementDisApiSlice';
+import { useGetItemDissQuery } from '../../../redux/slices/itemManagementDisApiSlice';
+import { ref } from 'firebase/storage';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -35,13 +38,12 @@ const Index: NextPage = () => {
     const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-
-	const [id, setId] = useState<string>(''); // State for current stock item ID
-	const [id1, setId1] = useState<string>('12356'); // State for new item ID
-	const [status, setStatus] = useState(true);
+	const [id, setId] = useState<string>('');
+	const {data: itemDiss,error, isLoading} = useGetItemDissQuery(undefined);
+	const [updateItemDis] = useUpdateItemDisMutation();
 
 	// Function to handle deletion of an item
-	const handleClickDelete = async () => {
+	const handleClickDelete = async (itemDis:any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -53,6 +55,25 @@ const Index: NextPage = () => {
 				confirmButtonText: 'Yes, delete it!',
 			});
 			if (result.isConfirmed) {
+				const values = await {
+					id: itemDis.id,
+					model: itemDis.model,
+					brand: itemDis.brand,
+					reorderLevel: itemDis.reorderLevel,
+					quantity: itemDis.quantity,
+					boxNumber: itemDis.boxNumber,
+					category: itemDis.category,
+					touchpadNumber: itemDis.touchpadNumber,
+					batteryCellNumber: itemDis.batteryCellNumber,
+					displaySNumber: itemDis.displaySNumber,
+					otherCategory: itemDis.otherCategory, 
+					status: false,
+
+				};
+
+				await updateItemDis(values);
+
+				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -275,90 +296,92 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
-											<th>Date In</th>
-											<th>Model No</th>
-											<th>Display Name</th>
-											<th>Cost</th>
-											<th>Description</th>
-											<th>Quantity</th>
+											<th>Model</th>
+											<th>Brand</th>
 											<th>Reorder Level</th>
-											<th>Date Out </th>
-											<th>Technition Name</th>
-											<th>Suppliers</th>
+											<th>Quantity</th>
 											<th>Box Number</th>
-											<th>Display Number</th>
-											<th>Stock In</th>
-											<th>Stock Out</th>
-											<th>Update</th>
-											<th>Delete</th>
+											<th>Category</th>
+											<th></th>
+											<th></th>
+											<th></th>
+											<th></th>
 											
-
-											{/* <th>Model No</th>
-											<th>Name</th>
-											<th>Cost</th>
-											<th>Description</th>
-											<th>Quantity</th>
-											<th>Reorder Level</th>
-											<th>Stock In</th>
-											<th>Stock Out</th>
-											<th>Update</th>
-											<th>Delete</th> */}
-
-											{/* <th><Button icon='PersonAdd' color='primary' isLight onClick={() => setAddModalStatus(true)}>
-                        New Item
-                      </Button></th> */}
+											
 										</tr>
 									</thead>
 
 									<tbody>
-										<tr>
-											<td>2024/06/09</td>
-											<td>SK006</td>
-											<td>Display</td>
-											<td>400</td>
-											<td>AUX port</td>
-											<td>50</td>
-											<td>10</td>
-											<td>2024/08/09</td>
-											<td>Achintha</td>
-											<td>Sakya</td>
-											<td>b123</td>
-											<td>I123</td>
-											<td>
-												<Button
-													icon='CallReceived'
-													tag='a'
-													color='success'
-													onClick={() =>
-														setAddstockModalStatus(true)
-													}></Button>
-											</td>
-											<td>
-												<Button
-													icon='CallMissedOutgoing'
-													tag='a'
-													color='warning'
-													onClick={() =>
-														setEditstockModalStatus(true)
-													}></Button>
-											</td>
-											<td>
-												<Button
-													icon='Edit'
-													tag='a'
-													color='info'
-													onClick={() =>
-														setEditModalStatus(true)
-													}></Button>
-											</td>
-											<td>
-												<Button
-													className='m-2'
-													icon='Delete'
-													color='danger'
-													onClick={() => handleClickDelete()}></Button>
-											</td>
-										</tr>
+									{isLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{error && (
+											<tr>
+												<td>Error fetching dealers.</td>
+											</tr>
+										)}
+										{itemDiss &&
+											itemDiss
+												.filter((itemDiss: any) =>
+													searchTerm
+														? itemDiss.modelNo
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.map((itemDiss: any) => (
+													<tr key={itemDiss.cid}>
+														<td>{itemDiss.model}</td>
+														<td>{itemDiss.brand}</td>
+														<td>{itemDiss.reorderLevel}</td>
+														<td>{itemDiss.quantity}</td>
+														<td>{itemDiss.boxNumber}</td>
+														<td>{itemDiss.category}</td>
+														
+														<td>
+															<Button
+																icon='CallReceived'
+																tag='a'
+																color='success'
+																onClick={() =>(
+																	setAddstockModalStatus(true),
+																	setId(itemDiss.id))
+																	
+																}></Button>
+														</td>
+														<td>
+															<Button
+																icon='CallMissedOutgoing'
+																tag='a'
+																color='warning'
+																onClick={() =>(
+																	setEditstockModalStatus(true),
+																	setId(itemDiss.id))
+																	
+																}></Button>
+														</td>
+														<td>
+															<Button
+																icon='Edit'
+																tag='a'
+																color='info'
+																onClick={() =>(
+																	setEditModalStatus(true),
+																	setId(itemDiss.id))
+																}></Button>
+														</td>
+														<td>
+															<Button
+																className='m-2'
+																icon='Delete'
+																color='danger'
+																onClick={() => handleClickDelete(itemDiss)}></Button>
+														</td>
+														
+													</tr>
+												))}
 									</tbody>
 								</table>
 								<Button icon='Delete' className='mb-5'
@@ -372,9 +395,9 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id={id1} />
+			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
-            <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id1} />
+            <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id} />
 			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} />
 			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 

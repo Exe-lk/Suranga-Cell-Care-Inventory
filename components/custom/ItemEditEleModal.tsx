@@ -14,6 +14,12 @@ import Select from '../bootstrap/forms/Select';
 import Option, { Options } from '../bootstrap/Option';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
+import {
+	useUpdateItemDisMutation,
+	useGetItemDissQuery,
+} from '../../redux/slices/itemManagementDisApiSlice';
+import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
+import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
 
 // Define the props for the ItemAddModal component
 interface ItemAddModalProps {
@@ -21,129 +27,150 @@ interface ItemAddModalProps {
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-interface Category {
-	categoryname: string;
-}
-// ItemAddModal component definition
+
 const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [imageurl, setImageurl] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-	const [category, setCategory] = useState<Category[]>([]);
 	const [selectedOption, setSelectedOption] = useState<string>('');
-	//get data from database
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const dataCollection = collection(firestore, 'category');
-				const querySnapshot = await getDocs(dataCollection);
-				const firebaseData = querySnapshot.docs.map((doc) => {
-					const data = doc.data() as Category;
-					return {
-						...data,
-					};
-				});
-				setCategory(firebaseData);
-			} catch (error) {
-				console.error('Error fetching data: ', error);
-			}
-		};
-		fetchData();
-	}, []);
-	//image upload
-	const handleUploadimage = async () => {
-		if (imageurl) {
-			// Assuming generatePDF returns a Promise
-			const pdfFile = imageurl;
-			const storageRef = ref(storage, `item/${pdfFile.name}`);
-			const uploadTask = uploadBytesResumable(storageRef, pdfFile);
-			return new Promise((resolve, reject) => {
-				uploadTask.on(
-					'state_changed',
-					(snapshot) => {
-						const progress1 = Math.round(
-							(snapshot.bytesTransferred / snapshot.totalBytes) * 100,
-						);
-					},
-					(error) => {
-						console.error(error.message);
-						reject(error.message);
-					},
-					() => {
-						getDownloadURL(uploadTask.snapshot.ref)
-							.then((url) => {
-								console.log('File uploaded successfully. URL:', url);
-
-								console.log(url);
-								resolve(url); // Resolve the Promise with the URL
-							})
-							.catch((error) => {
-								console.error(error.message);
-								reject(error.message);
-							});
-					},
-				);
-			});
-		} else {
-			return '';
-		}
-	};
+	const { data: itemDiss ,refetch} = useGetItemDissQuery(undefined);
+	const [updateItemDis, { isLoading }] = useUpdateItemDisMutation();
+	const itemDisToEdit = itemDiss?.find((itemDis: any) => itemDis.id === id);
+	const { data: brands } = useGetBrandsQuery(undefined);
+	const { data: models } = useGetModelsQuery(undefined);
+	const [selectedCategory, setSelectedCategory] = useState<string>('');
+	const [selectedBrand, setSelectedBrand] = useState<string>('');
+	const [customCategory, setCustomCategory] = useState<string>('');
 	const divRef: any = useRef(null);
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			category: '',
-			image: '',
-			name: '',
-
-			phone: '',
-			NIC: '',
-			costprice: '',
-			sellingprice: '',
-			description: '',
-			modelNo: '',
-			quentity: 0,
-			reorderlevel: '',
+			id: '',
+			model: itemDisToEdit?.model || '',
+			brand: itemDisToEdit?.brand || '',
+			reorderLevel: itemDisToEdit?.reorderLevel || '',
+			quantity: itemDisToEdit?.quantity || '',
+			boxNumber: itemDisToEdit?.boxNumber || '',
+			category: itemDisToEdit?.category || '',
+			touchpadNumber: itemDisToEdit?.touchpadNumber || '',
+			batteryCellNumber: itemDisToEdit?.batteryCellNumber || '',
+			displaySNumber: itemDisToEdit?.displaySNumber || '',
+			otherCategory: itemDisToEdit?.otherCategory || '',
 			status: true,
-			imi: '',
-			datein: '',
-			dateout: '',
-			storage: '',
-			boxnumber:'',
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
-				category?: string;
-				image?: string;
-				name?: string;
-				price?: string;
+				model?: string;
+				brand?: string;
+				reorderLevel?: string;
 				quantity?: string;
-				reorderlevel?: string;
-				description?: string;
-				modelNo?: string;
+				boxNumber?: string;
+				category?: string;
+				touchpadNumber?: string;
+				batteryCellNumber?: string;
+				displaySNumber?: string;
+				otherCategory?: string;
 			} = {};
+			if (!values.model) {
+				errors.model = 'Model is required';
+			}
+			if (!values.brand) {
+				errors.brand = 'Brand is required';
+			}
+			if (!values.reorderLevel) {
+				errors.reorderLevel = 'Reorder Level is required';
+			}
+			if (!values.boxNumber) {
+				errors.boxNumber = 'Box Number is required';
+			}
 			if (!values.category) {
-				errors.category = 'Required';
+				errors.category = 'Category is required';
 			}
-			if (!values.name) {
-				errors.name = 'Required';
-			}
-			if (!values.costprice) {
-				errors.price = 'Required';
-			}
+
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						status: true,
+						id: id,
+						model: values.model,
+						brand: values.brand,
+						reorderLevel: values.reorderLevel,
+						quantity: values.quantity,
+						boxNumber: values.boxNumber,
+						category: values.category,
+						touchpadNumber: values.touchpadNumber,
+						batteryCellNumber: values.batteryCellNumber,
+						displaySNumber: values.displaySNumber,
+						otherCategory: values.otherCategory,
+					};
+					await updateItemDis(data).unwrap();
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Item Dis Updated Successfully',
+					});
+					await refetch(); // Refresh the data
+					setIsOpen(false); // Close the modal after successful update
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the item dis. Please try again.',
+					});
+				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
-				Swal.close;
 				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
-	const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedOption(event.target.value);
+	const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSelectedCategory(e.target.value);
+		formik.setFieldValue('category', e.target.value);
+		setSelectedBrand(''); // Reset brand selection
+		formik.setFieldValue('brand', ''); // Clear selected brand in formik
+		formik.setFieldValue('model', ''); // Clear selected model in formik
+		setCustomCategory(''); // Reset custom category if changed
 	};
+
+	// Handle custom category input change
+	const handleCustomCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setCustomCategory(e.target.value);
+		formik.setFieldValue('otherCategory', e.target.value); // Update the custom category in formik values
+	};
+
+	// Handle brand selection
+	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		setSelectedBrand(e.target.value);
+		formik.setFieldValue('brand', e.target.value);
+		formik.setFieldValue('model', ''); // Clear selected model when changing brand
+	};
+
+	// Filter brands based on selected category
+	const filteredBrands = brands?.filter(
+		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other',
+	);
+
+	// Filter models based on selected brand and category
+	const filteredModels = models?.filter(
+		(model: any) =>
+			model.brand === selectedBrand &&
+			(model.category === selectedCategory || selectedCategory === 'Other'),
+	);
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -151,238 +178,178 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='membershipDate' className='col-md-12'>
+					{/* Radio buttons for Category selection */}
+					<FormGroup id='categorySelect' label='Category' className='col-md-12'>
 						<ChecksGroup isInline>
 							<Checks
 								type='radio'
-								id='brendnew'
-								label='Brand New'
-								name='type'
-								value='brendnew'
-								onChange={handleOptionChange}
-								checked={selectedOption}
+								id='touchpad'
+								label='Touch Pad'
+								name='category'
+								value='Touch Pad'
+								onChange={handleCategoryChange}
+								checked={selectedCategory === 'Touch Pad'}
 							/>
 							<Checks
 								type='radio'
-								id='used'
-								label='Used (Second Hand)'
-								name='type'
-								value='used'
-								onChange={handleOptionChange}
-								checked={selectedOption}
+								id='displays'
+								label='Displays'
+								name='category'
+								value='Displays'
+								onChange={handleCategoryChange}
+								checked={selectedCategory === 'Displays'}
+							/>
+							<Checks
+								type='radio'
+								id='batteryCell'
+								label='Battery Cell'
+								name='category'
+								value='Battery Cell'
+								onChange={handleCategoryChange}
+								checked={selectedCategory === 'Battery Cell'}
+							/>
+							<Checks
+								type='radio'
+								id='other'
+								label='Other'
+								name='category'
+								value='Other'
+								onChange={handleCategoryChange}
+								checked={selectedCategory === 'Other'}
 							/>
 						</ChecksGroup>
 					</FormGroup>
 
-					<FormGroup id='modelNo' label='Model No' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.modelNo}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.modelNo}
-							invalidFeedback={formik.errors.modelNo}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='description' label='Description' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.description}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.description}
-							invalidFeedback={formik.errors.description}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='costprice' label='Cost Price' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.costprice}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.costprice}
-							invalidFeedback={formik.errors.costprice}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='sellingprice' label='Selling Price' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.sellingprice}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.sellingprice}
-							invalidFeedback={formik.errors.sellingprice}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='category' label='Category' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select category'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>Speeker</Option>
-							<Option value='Speekers'>Pen Drive</Option>
-							<Option value='Speekers'>Modile</Option>
-							<Option value='Speekers'>Other</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='category' label='Model' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select model'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>A50s</Option>
-							<Option value='Speekers'>M12</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='category' label='Brand' className='col-md-6'>
-						<Select
-							ariaLabel='Default select example'
-							placeholder='Open this select Brand'
-							onChange={formik.handleChange}
-							value={formik.values.category}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-							invalidFeedback={formik.errors.category}
-							validFeedback='Looks good!'>
-							<Option value='Speekers'>Apple</Option>
-							<Option value='Speekers'>Samsung</Option>
-						</Select>
-					</FormGroup>
-					<FormGroup id='imi' label='IMI' className='col-md-6'>
-						<Input
-							type='text'
-							onChange={formik.handleChange}
-							value={formik.values.imi}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.imi}
-							invalidFeedback={formik.errors.imi}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='boxnumber' label='Box Number' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.boxnumber}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.boxnumber}
-									invalidFeedback={formik.errors.boxnumber}
-									validFeedback='Looks good!'
-								/>
-					</FormGroup>
-					<FormGroup id='storage' label='Storage' className='col-md-6'>
-						<Input
-							type='text'
-							onChange={formik.handleChange}
-							value={formik.values.storage}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.storage}
-							invalidFeedback={formik.errors.storage}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='reorderlevel' label='Reorder Level' className='col-md-6'>
-						<Input
-							type='number'
-							onChange={formik.handleChange}
-							value={formik.values.reorderlevel}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.reorderlevel}
-							invalidFeedback={formik.errors.reorderlevel}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					
-					<FormGroup id='datein' label='Date In' className='col-md-6'>
-						<Input
-							type='date'
-							onChange={formik.handleChange}
-							value={formik.values.datein}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.datein}
-							invalidFeedback={formik.errors.datein}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='dateout' label='Date Out' className='col-md-6'>
-						<Input
-							type='date'
-							onChange={formik.handleChange}
-							value={formik.values.dateout}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.dateout}
-							invalidFeedback={formik.errors.dateout}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					{selectedOption === 'used' && (
+					{/* Conditionally show custom category input if "Other" is selected */}
+					{selectedCategory === 'Other' && (
+						<FormGroup id='customCategory' label='Custom Category' className='col-md-6'>
+							<Input
+								type='text'
+								placeholder='Enter custom category'
+								value={customCategory}
+								onChange={handleCustomCategoryChange}
+								onBlur={formik.handleBlur}
+							/>
+						</FormGroup>
+					)}
+
+					{/* Conditionally show brand dropdown if a category is selected */}
+					{selectedCategory && (
+						<FormGroup id='brandSelect' label='Brand' className='col-md-6'>
+							<Select
+								ariaLabel='Select brand'
+								onChange={handleBrandChange}
+								value={selectedBrand}
+								onBlur={formik.handleBlur}>
+								<Option value=''>Select Brand</Option>
+								{filteredBrands?.map((brand: any) => (
+									<Option key={brand.id} value={brand.name}>
+										{brand.name}
+									</Option>
+								))}
+							</Select>
+						</FormGroup>
+					)}
+
+					{/* Conditionally show model dropdown if a brand is selected */}
+					{selectedBrand && (
+						<FormGroup id='modelSelect' label='Model' className='col-md-6'>
+							<Select
+								ariaLabel='Select model'
+								onChange={formik.handleChange}
+								value={formik.values.model}
+								onBlur={formik.handleBlur}
+								name='model'>
+								<Option value=''>Select Model</Option>
+								{filteredModels?.map((model: any) => (
+									<Option key={model.id} value={model.name}>
+										{model.name}
+									</Option>
+								))}
+							</Select>
+						</FormGroup>
+					)}
+
+					{/* Show additional fields after brand and model are selected */}
+					{formik.values.model && (
 						<>
-							<FormGroup id='name' label='Name' className='col-md-6'>
+							<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
+								<Input
+									type='number'
+									onChange={formik.handleChange}
+									value={formik.values.reorderLevel}
+									onBlur={formik.handleBlur}
+									name='reorderLevel'
+								/>
+							</FormGroup>
+							<FormGroup id='quantity' label='Quantity' className='col-md-6'>
+								<Input
+									type='number'
+									onChange={formik.handleChange}
+									value={formik.values.quantity}
+									onBlur={formik.handleBlur}
+									name='quantity'
+									readOnly
+								/>
+							</FormGroup>
+							<FormGroup id='boxNumber' label='Box Number' className='col-md-6'>
 								<Input
 									type='text'
 									onChange={formik.handleChange}
-									value={formik.values.name}
+									value={formik.values.boxNumber}
 									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.name}
-									invalidFeedback={formik.errors.name}
-									validFeedback='Looks good!'
-								/>
-							</FormGroup>
-							<FormGroup id='phonne' label='Mobile Number' className='col-md-6'>
-								<Input
-									type='text'
-									onChange={formik.handleChange}
-									value={formik.values.phone}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.phone}
-									invalidFeedback={formik.errors.phone}
-									validFeedback='Looks good!'
+									name='boxNumber'
 								/>
 							</FormGroup>
 							
-							
+
+							{/* Conditionally show fields based on the selected category */}
+							{selectedCategory === 'Touch Pad' && (
+								<FormGroup
+									id='touchpadNumber'
+									label='Touchpad Number'
+									className='col-md-6'>
+									<Input
+										type='text'
+										onChange={formik.handleChange}
+										value={formik.values.touchpadNumber}
+										onBlur={formik.handleBlur}
+										name='touchpadNumber'
+									/>
+								</FormGroup>
+							)}
+
+							{selectedCategory === 'Displays' && (
+								<FormGroup
+									id='displaySNumber'
+									label='Display Serial Number'
+									className='col-md-6'>
+									<Input
+										type='text'
+										onChange={formik.handleChange}
+										value={formik.values.displaySNumber}
+										onBlur={formik.handleBlur}
+										name='displaySNumber'
+									/>
+								</FormGroup>
+							)}
+
+							{selectedCategory === 'Battery Cell' && (
+								<FormGroup
+									id='batteryCellNumber'
+									label='Battery Cell Number'
+									className='col-md-6'>
+									<Input
+										type='text'
+										onChange={formik.handleChange}
+										value={formik.values.batteryCellNumber}
+										onBlur={formik.handleBlur}
+										name='batteryCellNumber'
+									/>
+								</FormGroup>
+							)}
 						</>
 					)}
-					{/* <FormGroup label='Profile Picture' className='col-md-6'>
-						<Input
-							type='file'
-							onChange={(e: any) => {
-								setImageurl(e.target.files[0]);
-								// Display the selected image
-								setSelectedImage(URL.createObjectURL(e.target.files[0]));
-							}}
-						/>
-					</FormGroup>
-					{selectedImage && <img src={selectedImage} className="mx-auto d-block mb-4" alt="Selected Profile Picture" style={{ width: '200px', height: '200px', }} />}
-					Barcode component */}
-					<div ref={divRef}>{/* <Barcode value={formik.values.barcode} /> */}</div>
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>

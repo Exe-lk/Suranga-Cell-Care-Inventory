@@ -70,6 +70,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			if (result.isConfirmed) {
 				const values = {
 					id: brand.id,
+					category: brand.category,
 					name: brand.name,
 					description: brand.description,
 					status: true,

@@ -35,13 +35,17 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const formik = useFormik({
 		initialValues: {
 			id: '',
+			technicianNum:technicianToEdit?.technicianNum || '',
 			name: technicianToEdit?.name || '',
 			type : technicianToEdit?.type || '',
 			mobileNumber: technicianToEdit?.mobileNumber || '',
 		},
 		enableReinitialize: true, // This allows the form to reinitialize when categoryToEdit changes
 		validate: (values) => {
-			const errors: { name?: string; type?:String ;mobileNumber?: string; } = {};
+			const errors: { technicianNum?:string,name?: string; type?:String ;mobileNumber?: string; } = {};
+			if (!values.technicianNum) {
+				errors.technicianNum = 'Technician number is required';
+			}
 			if (!values.name) {
 				errors.name = 'Name is required';
 			}
@@ -68,6 +72,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					// Update the category
 					console.log(values);
 					const data = {
+						technicianNum: values.technicianNum,
 						name: values.name,
 						type: values.type,
 						mobileNumber: values.mobileNumber,
@@ -104,6 +109,20 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup
+						id='technicianNum'
+						label='Technician Number'
+						onChange={formik.handleChange}
+						className='col-md-6'>
+						<Input
+							name='technicianNum'
+							onChange={formik.handleChange}
+							value={formik.values.technicianNum}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 				<FormGroup
 						id='name'
 						label='Technician Name'

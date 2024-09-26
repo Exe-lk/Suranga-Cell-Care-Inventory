@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createTechnician = async (name: string, type: string,mobileNumber:string) => {
+export const createTechnician = async (technicianNum:string,name: string, type: string,mobileNumber:string) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'technician'), { name, type,mobileNumber, status });
+  const docRef = await addDoc(collection(firestore, 'technician'), { technicianNum,name, type,mobileNumber, status });
   return docRef.id;
 };
 
@@ -40,9 +40,9 @@ export const getTechnicianById = async (id: string) => {
   }
 };
 
-export const updateTechnician = async (id: string, name: string, type: string,mobileNumber:string, status: any) => {
+export const updateTechnician = async (id: string,technicianNum:string, name: string, type: string,mobileNumber:string, status: any) => {
   const technicianRef = doc(firestore, 'technician', id);
-  await updateDoc(technicianRef, { name, type,mobileNumber, status });
+  await updateDoc(technicianRef, { technicianNum,name, type,mobileNumber, status });
 };
 
 export const deleteTechnician = async (id: string) => {

@@ -71,6 +71,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 				const values = {
 					id: model.id,
 					name: model.name,
+					category: model.category,
+					brand: model.brand,
 					description: model.description,
 					status: true,
 				};

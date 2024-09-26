@@ -31,6 +31,7 @@ interface Model {
 	cid: string;
 	modelname: string;
 	description: string;
+	brand: string;
 	status: boolean;
 }
 
@@ -65,6 +66,8 @@ const Index: NextPage = () => {
 					await updateModel({
 						id:model.id,
 						name:model.name,
+						category:model.category,
+						brand:model.brand,
 						description:model.description,
 						status:false,
 				});
@@ -288,6 +291,8 @@ const Index: NextPage = () => {
 									<thead>
 										<tr>
 											<th>Model name</th>
+											<th>Category Name</th>
+											<th>Brand Name</th>
 											<th>Description</th>
 											<th></th>
 										</tr>
@@ -319,6 +324,8 @@ const Index: NextPage = () => {
 												.map((model:any) => (
 													<tr key={model.id}>
 														<td>{model.name}</td>
+														<td>{model.category}</td>
+														<td>{model.brand}</td>
 														<td>{model.description}</td>
 														<td>
 															<Button

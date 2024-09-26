@@ -19,10 +19,13 @@ import CategoryAddModal from '../../../components/custom/CategoryAddModal';
 import CategoryDeleteModal from '../../../components/custom/CategoryDeleteModal';
 import CategoryEditModal from '../../../components/custom/CategoryEditModal';
 import Swal from 'sweetalert2';
-import { useGetCategoriesQuery , useUpdateCategoryMutation} from '../../../redux/slices/categoryApiSlice';
-import jsPDF from 'jspdf'; 
+import {
+	useGetCategoriesQuery,
+	useUpdateCategoryMutation,
+} from '../../../redux/slices/categoryApiSlice';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
+import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import { toPng, toSvg } from 'html-to-image';
 // Define the interface for category data
 interface Category {
@@ -43,7 +46,7 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategoryMutation();
-	
+
 	// Function to handle deletion of a category
 	const handleClickDelete = async (category: any) => {
 		try {
@@ -60,10 +63,10 @@ const Index: NextPage = () => {
 				try {
 					// Set the user's status to false (soft delete)
 					await updateCategory({
-						id:category.id,
-						name:category.name,
-						status:false,
-				});
+						id: category.id,
+						name: category.name,
+						status: false,
+					});
 
 					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
@@ -97,12 +100,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+
 		try {
 			switch (format) {
 				case 'svg':
@@ -114,7 +115,7 @@ const Index: NextPage = () => {
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
 					break;
-				case 'pdf': 
+				case 'pdf':
 					await downloadTableAsPDF(clonedTable);
 					break;
 				default:
@@ -127,97 +128,96 @@ const Index: NextPage = () => {
 
 	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
-				let csvContent = '';
-				const rows = table.querySelectorAll('tr');
-				rows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td, th');
-					const rowData = Array.from(cols)
-						.map((col: any) => `"${col.innerText}"`)
-						.join(',');
-					csvContent += rowData + '\n';
-				});
+		let csvContent = '';
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row: any) => {
+			const cols = row.querySelectorAll('td, th');
+			const rowData = Array.from(cols)
+				.map((col: any) => `"${col.innerText}"`)
+				.join(',');
+			csvContent += rowData + '\n';
+		});
 
-				const blob = new Blob([csvContent], { type: 'text/csv' });
-				const link = document.createElement('a');
-				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
-				link.click();
+		const blob = new Blob([csvContent], { type: 'text/csv' });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'table_data.csv';
+		link.click();
 	};
 	//  function for PDF export
 	const downloadTableAsPDF = (table: HTMLElement) => {
 		try {
-		  const pdf = new jsPDF('p', 'pt', 'a4');
-		  const rows: any[] = [];
-		  const headers: any[] = [];
-		  
-		  const thead = table.querySelector('thead');
-		  if (thead) {
-			const headerCells = thead.querySelectorAll('th');
-			headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
-		  }
-		  const tbody = table.querySelector('tbody');
-		  if (tbody) {
-			const bodyRows = tbody.querySelectorAll('tr');
-			bodyRows.forEach((row: any) => {
-			  const cols = row.querySelectorAll('td');
-			  const rowData = Array.from(cols).map((col: any) => col.innerText);
-			  rows.push(rowData);
+			const pdf = new jsPDF('p', 'pt', 'a4');
+			const rows: any[] = [];
+			const headers: any[] = [];
+
+			const thead = table.querySelector('thead');
+			if (thead) {
+				const headerCells = thead.querySelectorAll('th');
+				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+			}
+			const tbody = table.querySelector('tbody');
+			if (tbody) {
+				const bodyRows = tbody.querySelectorAll('tr');
+				bodyRows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td');
+					const rowData = Array.from(cols).map((col: any) => col.innerText);
+					rows.push(rowData);
+				});
+			}
+			autoTable(pdf, {
+				head: headers,
+				body: rows,
+				margin: { top: 50 },
+				styles: {
+					overflow: 'linebreak',
+					cellWidth: 'wrap',
+				},
+				theme: 'grid',
 			});
-		  }
-		  autoTable(pdf, {
-			head: headers,
-			body: rows,
-			margin: { top: 50 },
-			styles: {
-			  overflow: 'linebreak',
-			  cellWidth: 'wrap',
-			},
-			theme: 'grid',
-		  });
-	  
-		  pdf.save('table_data.pdf');
+
+			pdf.save('table_data.pdf');
 		} catch (error) {
-		  console.error('Error generating PDF: ', error);
-		  alert('Error generating PDF. Please try again.');
+			console.error('Error generating PDF: ', error);
+			alert('Error generating PDF. Please try again.');
 		}
-	  };
-	
-	
+	};
+
 	// Function to export the table data in SVG format using library html-to-image
 	const downloadTableAsSVG = async (table: HTMLElement) => {
 		try {
 			const dataUrl = await toSvg(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
+				backgroundColor: 'white',
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
 			});
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.svg'; 
+			link.download = 'table_data.svg';
 			link.click();
 		} catch (error) {
-			console.error('Error generating SVG: ', error); 
+			console.error('Error generating SVG: ', error);
 		}
 	};
-	
+
 	// Function to export the table data in PNG format using library html-to-image
 	const downloadTableAsPNG = async (table: HTMLElement) => {
 		try {
 			const dataUrl = await toPng(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
+				backgroundColor: 'white',
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
 			});
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.png'; 
+			link.download = 'table_data.png';
 			link.click();
 		} catch (error) {
-			console.error('Error generating PNG: ', error); 
+			console.error('Error generating PNG: ', error);
 		}
 	};
 	// JSX for rendering the page
@@ -260,22 +260,30 @@ const Index: NextPage = () => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Manage Category</div>
+								<div className='flex-grow-1 text-center text-info'>
+									Manage Category
+								</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>
+											Download SVG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('png')}>
+											Download PNG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>
+											Download PDF
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 
 							<CardBody isScrollable className='table-responsive'>
@@ -284,78 +292,103 @@ const Index: NextPage = () => {
 									<thead>
 										<tr>
 											<th>Category name</th>
-											
+
 											<th></th>
 										</tr>
 									</thead>
 									<tbody>
-										{isLoading &&(
+										{isLoading && (
 											<tr>
-												<td>Loadning...</td>
+												<td>Loading...</td>
 											</tr>
 										)}
-										{
-											error && (
-												<tr>
-													<td>Error fetching brands.</td>
-												</tr>
-											)
-										}
-										{
-											categories &&
+										{error && (
+											<tr>
+												<td>Error fetching brands.</td>
+											</tr>
+										)}
+										{categories &&
 											categories
-												.filter((category : any) =>
-													category.status === true 
+												.filter((category: any) => category.status === true) // Only active categories
+												.filter((category: any) =>
+													searchTerm
+														? category.name
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
 												)
-												.filter((category : any) => 
-													searchTerm 
-													? category.name.toLowerCase().includes(searchTerm.toLowerCase())
-													: true,
-												)
-												.map((category:any) => (
-													<tr key={category.id}>
-														<td>{category.name}</td>
-														<td>
-															<Button
-																icon='Edit'
-																color='info'
-																onClick={() => {
-																	setEditModalStatus(true);
-																	setId(category.id);
-																}}>
-																Edit
-															</Button>
-															<Button
-																icon='Delete'
-																className='m-2'
-																color='danger'
-																onClick={() => handleClickDelete(category)}>
-																Delete
-															</Button>
-														</td>
-													</tr>
-												))
-										}
+												.map((category: any, index: number) => {
+													// Disable Edit/Delete for specific categories
+													const disableButtons =
+														category.name === 'Touch Pad' ||
+														category.name === 'Battery Cell' ||
+														category.name === 'Displays';
+
+													return (
+														<tr key={category.id}>
+															<td>{category.name}</td>
+															<td>
+																<Button
+																	icon='Edit'
+																	color='info'
+																	isDisable={disableButtons} // Disable edit button for specific categories
+																	onClick={() => {
+																		if (!disableButtons) {
+																			setEditModalStatus(
+																				true,
+																			);
+																			setId(category.id);
+																		}
+																	}}>
+																	Edit
+																</Button>
+																<Button
+																	icon='Delete'
+																	className='m-2'
+																	color='danger'
+																	isDisable={disableButtons} // Disable delete button for specific categories
+																	onClick={() => {
+																		if (!disableButtons) {
+																			handleClickDelete(
+																				category,
+																			);
+																		}
+																	}}>
+																	Delete
+																</Button>
+															</td>
+														</tr>
+													);
+												})}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => {
-									refetch();
-									setDeleteModalStatus(true)
-									
-								}}>
-								Recycle Bin</Button> 
-								
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => {
+										refetch();
+										setDeleteModalStatus(true);
+									}}>
+									Recycle Bin
+								</Button>
 							</CardBody>
 						</Card>
-						
-			
 					</div>
 				</div>
 			</Page>
 			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch}/>
-			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<CategoryDeleteModal
+				setIsOpen={setDeleteModalStatus}
+				isOpen={deleteModalStatus}
+				id=''
+				refetchMainPage={refetch}
+			/>
+			<CategoryEditModal
+				setIsOpen={setEditModalStatus}
+				isOpen={editModalStatus}
+				id={id}
+				refetch={refetch}
+			/>
 		</PageWrapper>
 	);
 };

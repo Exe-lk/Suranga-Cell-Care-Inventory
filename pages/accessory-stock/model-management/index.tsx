@@ -64,6 +64,8 @@ const Index: NextPage = () => {
 					// Set the user's status to false (soft delete)
 					await updateModel({
 						id:model.id,
+						brand:model.brand,
+						category: model.category,
 						name:model.name,
 						description:model.description,
 						status:false,
@@ -288,6 +290,8 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
+											<th>Category</th>
+											<th>Brand</th>
 											<th>Model name</th>
 											<th>Description</th>
 											<th></th>
@@ -319,6 +323,8 @@ const Index: NextPage = () => {
 												)
 												.map((model:any) => (
 													<tr key={model.id}>
+														<td>{model.category}</td>
+														<td>{model.brand}</td>
 														<td>{model.name}</td>
 														<td>{model.description}</td>
 														<td>

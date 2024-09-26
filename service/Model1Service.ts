@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createModel = async (name: string, description: string) => {
+export const createModel = async (name: string, description: string,brand:string, category:string) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'ModelAccessory'), { name,description , status });
+  const docRef = await addDoc(collection(firestore, 'ModelAccessory'), { name,description , brand, category,status });
   return docRef.id;
 };
 
@@ -40,9 +40,9 @@ export const getModelById = async (id: string) => {
   }
 };
 
-export const updateModel = async (id: string, name: string,description: string,status:boolean) => {
+export const updateModel = async (id: string, name: string,description: string,brand:string, category:string,status:boolean) => {
   const ModelRef = doc(firestore, 'ModelAccessory', id);
-  await updateDoc(ModelRef, { name, description, status });
+  await updateDoc(ModelRef, { name, description,brand, category, status });
 };
 
 export const deleteModel = async (id: string) => {
