@@ -13,15 +13,21 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import StockAddModal from '../../../components/custom/ItemAddModal';
-import StockEditModal from '../../../components/custom/StockEditModal';
-
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
-import StockDeleteModal from '../../../components/custom/StockDeleteModal';
-
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
+import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
+
+interface StockItem {
+	id: string;
+	model: string;
+	brand: string;
+	category: string;
+	date: string;
+	sellingPrice: number;
+	stock: string;
+}
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -31,36 +37,18 @@ const Index: NextPage = () => {
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
-	const [id1, setId1] = useState<string>('12356'); // State for new item ID
 
-	// State for managing data fetching status
-	// Fetch data from Firestore for items
-	const handleClickDelete = async () => {
-		try {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
+	const { data: stockInOuts, error: stockInOutsError, isLoading: stockInOutsLoading } = useGetStockInOutsQuery(undefined);
 
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!',
-			});
-			if (result.isConfirmed) {
-			}
-		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete employee.', 'error');
-		}
-	};
+	// Filter stockInOuts for stockOut items
+	const filteredStockOuts = stockInOuts?.filter((stock: StockItem) => stock.stock === 'stockOut');
+
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
 					{/* Search input */}
-					<label
-						className='border-0 bg-transparent cursor-pointer me-0'
-						htmlFor='searchInput'>
+					<label className='border-0 bg-transparent cursor-pointer me-0' htmlFor='searchInput'>
 						<Icon icon='Search' size='2x' color='primary' />
 					</label>
 					<Input
@@ -107,7 +95,7 @@ const Index: NextPage = () => {
 						</DropdownMenu>
 					</Dropdown>
 
-					{/* Button to open  New Item modal */}
+					{/* Button to open New Item modal */}
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
@@ -116,7 +104,7 @@ const Index: NextPage = () => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Sold Phone</div>
+								<div className='flex-grow-1 text-center text-info'>Sold Items</div>
 								<Button
 									icon='UploadFile'
 									color='warning'
@@ -130,26 +118,22 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Model</th>
 											<th>Brand</th>
+											<th>Category</th>
 											<th>Date</th>
 											<th>Price(Rs.)</th>
 										</tr>
 									</thead>
 
 									<tbody>
-										<tr className='text-success'>
-											<td className=''>A21</td>
-											<td className=''>Samsung</td>
-
-											<td className=''>2024/08/09</td>
-											<td className=''>48000</td>
-										</tr>
-										<tr>
-											<td className=''>A21</td>
-											<td className=''>Samsung</td>
-
-											<td className=''>2024/08/09</td>
-											<td className=''>48000</td>
-										</tr>
+										{filteredStockOuts?.map((item: StockItem) => (
+											<tr className='text-success' key={item.id}>
+												<td>{item.model}</td>
+												<td>{item.brand}</td>
+												<td>{item.category}</td>
+												<td>{item.date}</td>
+												<td>{item.sellingPrice}</td>
+											</tr>
+										))}
 									</tbody>
 								</table>
 							</CardBody>
@@ -160,4 +144,5 @@ const Index: NextPage = () => {
 		</PageWrapper>
 	);
 };
+
 export default Index;

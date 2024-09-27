@@ -28,11 +28,12 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			billNumber: '',
 			phoneModel: '',
 			repairType: '',
-			TechnicianNo: '',
+			technicianNum: '',
 			CustomerName: '',
 			CustomerMobileNum: '',
 			email: '',
 			NIC: '',
+			cost: '',
 			Price: '',
 			Status: '',
 			DateOut: '',
@@ -45,11 +46,12 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				billNumber?: string;
 				phoneModel?: string;
 				repairType?: string;
-				TechnicianNo?: string;
+				technicianNum?: string;
 				CustomerName?: string;
 				CustomerMobileNum?: string;
 				email?: string;
 				NIC?: string;
+				cost?: string;
 				Price?: string;
 				Status?: string;
 				DateOut?: Date;
@@ -66,8 +68,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.repairType) {
 				errors.repairType = 'Repair Type is required.';
 			}
-			if (!values.TechnicianNo) {
-				errors.TechnicianNo = 'Technician No is required.';
+			if (!values.technicianNum) {
+				errors.technicianNum = 'Technician No is required.';
 			}
 			if (!values.CustomerName) {
 				errors.CustomerName = 'Customer Name is required.';
@@ -80,6 +82,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			}
 			if (!values.NIC) {
 				errors.NIC = 'NIC is required.';
+			}
+			if (!values.cost) {
+				errors.cost = 'Cost is required.';
 			}
 			if (!values.Price) {
 				errors.Price = 'Price is required.';
@@ -196,14 +201,14 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='TechnicianNo' label='Technician No' className='col-md-6'>
+					<FormGroup id='technicianNum' label='Technician No' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
-							value={formik.values.TechnicianNo}
+							value={formik.values.technicianNum}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.TechnicianNo}
-							invalidFeedback={formik.errors.TechnicianNo}
+							isTouched={formik.touched.technicianNum}
+							invalidFeedback={formik.errors.technicianNum}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -252,6 +257,17 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='cost' label='Cost' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.cost}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.cost}
+							invalidFeedback={formik.errors.cost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 					<FormGroup id='Price' label='Price' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -264,15 +280,24 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						/>
 					</FormGroup>
 					<FormGroup id='Status' label='Status' className='col-md-6'>
-						<Input
+						<Select
+							ariaLabel='Default select Status'
+							placeholder='Open this select Status'
 							onChange={formik.handleChange}
 							value={formik.values.Status}
-							onBlur={formik.handleBlur}
+							name='Status'
 							isValid={formik.isValid}
 							isTouched={formik.touched.Status}
 							invalidFeedback={formik.errors.Status}
 							validFeedback='Looks good!'
-						/>
+						>
+							<Option value=''>Select the Status</Option>
+							<Option value='waiting to in progress'>waiting to in progress</Option>
+							<Option value='in progress'>in progress</Option>
+							<Option value='completed'>completed</Option>
+							<Option value='reject'>reject</Option>
+							<Option value='in progress to complete'>Hand Over to cashier</Option>
+						</Select>
 					</FormGroup>
 					<FormGroup
 						id='DateOut'

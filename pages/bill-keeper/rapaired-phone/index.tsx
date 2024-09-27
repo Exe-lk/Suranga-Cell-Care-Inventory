@@ -13,82 +13,44 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import StockAddModal from '../../../components/custom/ItemAddModal';
-import StockEditModal from '../../../components/custom/StockEditModal';
-
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
-import StockDeleteModal from '../../../components/custom/StockDeleteModal';
-
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import Select from '../../../components/bootstrap/forms/Select';
 import Option from '../../../components/bootstrap/Option';
-import { useFormik } from 'formik';
+import { useGetBillsQuery } from '../../../redux/slices/billApiSlice';
+import { useGetTechniciansQuery } from '../../../redux/slices/technicianManagementApiSlice';
+
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const Status = [
+		{ Status: 'waiting to in progress' },
+		{ Status: 'in progress' },
+		{ Status: 'completed' },
+		{ Status: 'reject' },
+		{ Status: 'in progress to complete' }
+
+	];
 
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
-	const [id1, setId1] = useState<string>('12356'); // State for new item ID
 
-	// State for managing data fetching status
-	// Fetch data from Firestore for items
-	const handleClickDelete = async () => {
-		try {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
+	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
+	const { data: technicians, error: techniciansError, isLoading: techniciansLoading } = useGetTechniciansQuery(undefined);
+	console.log('tech', technicians);
+	
 
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!',
-			});
-			if (result.isConfirmed) {
-			}
-		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete employee.', 'error');
-		}
+	// Function to get technician name by TechnicianNo
+	const getTechnicianName = (technicianNum: string) => {
+		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
+		return technician ? technician.name : 'Unknown';
 	};
-	const formik = useFormik({
-        initialValues: {
-			
-            name: '',
-            type: '',
-           
-            password: '',
-            mobile: '',
-           
-        },
-		validate: (values) => {
-			const errors: {
-				cid?: string;
-                type?: string;
-				
-				name?: string;
-				
-                password?: string;
-				mobile?: string;
-              
-			} = {};
-           
-          
-			return errors;
-		},
-		onSubmit: async (values) => {
-			try {
-				
-			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				alert('An error occurred during file upload. Please try again later.');
-			}
-        },
-	});
+
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -123,19 +85,29 @@ const Index: NextPage = () => {
 							<div className='container py-2'>
 								<div className='row g-3'>
 									<FormGroup label='Category type' className='col-12'>
-										<ChecksGroup>
-											<Checks
-												key='check'
-												id='check'
-												label='Outgoing'
-												name='check'
-												value='check'></Checks>
-											<Checks
-												key='check'
-												id='check'
-												label='Return'
-												name='check'
-												value='check'></Checks>
+									<ChecksGroup>
+											{Status.map((bill, index) => (
+												<Checks
+													key={bill.Status}
+													id={bill.Status}
+													label={bill.Status}
+													name={bill.Status}
+													value={bill.Status}
+													checked={selectedUsers.includes(bill.Status)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers(
+															(prevUsers) =>
+																checked
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(bill) =>
+																				bill !== value,
+																	  ), // Remove category if unchecked
+														);
+													}}
+												/>
+											))}
 										</ChecksGroup>
 									</FormGroup>
 								</div>
@@ -169,70 +141,52 @@ const Index: NextPage = () => {
 											<th>Date</th>
 											<th>Technician</th>
 											<th>Bill Number</th>
-											<th>Model</th>
+											<th>Phone Model</th>
 											<th>Repair Type</th>
 											<th>Status</th>
-											<th>Cost(Rs.)</th>
-											<th>Price(Rs.)</th>
-											<th>IMI</th>
-											<th>Profit(Rs.)</th>
-
-											{/* <th>Technician</th>
-											<th>Description</th>
-											<th>Model</th>
-											<th>Date</th>
-											<th>Status</th>
-											<th>Cost(Rs.)</th>
-											<th>Price(Rs.)</th>
-											<th>Profit(Rs.)</th> */}
-											
+											<th>Cost</th>
+											<th>Price</th>
+											<th>Profit</th>
 										</tr>
 									</thead>
-
 									<tbody>
-										{/* <tr className='text-success'>
-											<td className='text-warning'>Kalpa</td>
-											<td className='text-warning'>Display Change</td>
-											<td className='text-warning'>A50s</td>
-											<td className='text-warning'>2024/08/09</td>
-											<td className='text-warning'>Ongoing</td>
-											<td>
-												<FormGroup
-													id='type'
-													
-													onChange={formik.handleChange}
-													className='col-md-6'>
-													<Select
-														ariaLabel='Default select example'
-														onBlur={formik.handleBlur}
-														isValid={formik.isValid}
-														isTouched={formik.touched.type}
-														invalidFeedback={formik.errors.type}>
-													
-														<Option value={'Stock keeper'}>
-															Waiting
-														</Option>
-														<Option value={'Data entry operator'}>
-															Ongoing
-														</Option>
-														
-													</Select>
-												</FormGroup>
-											</td>
-										</tr> */}
-										<tr>
-											<td className='text-success'>2024/08/09</td>
-											<td className='text-success'>Kalpa</td>
-											<td className='text-success'>R563</td>
-											<td className='text-success'>A50s</td>
-											<td className='text-success'>Display Change</td>
-											<td className='text-success'>Completed</td>
-											<td className='text-success'>3500</td>
-											<td className='text-success'>6500</td>
-											<td className='text-success'>350123451234560</td>
-											<td className='text-success'>3000</td>
-											
-										</tr>
+										{billsLoading && (
+											<tr>
+												<td>Loading...</td>
+											</tr>
+										)}
+										{billsError && (
+											<tr>
+												<td>Error fetching repaired phones.</td>
+											</tr>
+										)}
+										{bills &&
+											bills
+												.filter((bill: any) =>
+													searchTerm
+														? bill.billNumber
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
+												)
+												.filter((bill: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(bill.Status)
+														: true,
+												)
+												.map((bill: any) => (
+													<tr key={bill.cid}>
+														<td>{bill.dateIn}</td>
+														<td>{getTechnicianName(bill.technicianNum)}</td>
+														<td>{bill.billNumber}</td>
+														<td>{bill.phoneModel}</td>
+														<td>{bill.repairType}</td>
+														<td>{bill.Status}</td>
+														<td>{bill.cost}</td>
+														<td>{bill.Price}</td>
+														<td>{bill.Price - bill.cost}</td>
+													</tr>
+												))}
 									</tbody>
 								</table>
 							</CardBody>
@@ -243,4 +197,5 @@ const Index: NextPage = () => {
 		</PageWrapper>
 	);
 };
+
 export default Index;

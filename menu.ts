@@ -171,12 +171,28 @@ export const ViewPagesMenu = {
 		icon: 'Dashboard',
 		subMenu: null,
 	},
-	stock: {
-		id: 'stock',
+	singlePages: {
+		id: 'singlePages',
 		text: 'Stock Management',
-		path: 'viewer/Stock-Transaction',
-		icon: 'AmpStories',
-		subMenu: null,
+		path: 'single-pages',
+		icon: 'ChangeHistory',
+		subMenu: {
+			Display: {
+				id: 'model',
+				text: 'Accesory Stock Management',
+				path: 'viewer/Stock-Transaction/Accesories',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'model1',
+				text: 'Display Stock Management',
+				path: 'viewer/Stock-Transaction/Displays',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
 	},
 	technician: {
 		id: 'stock',
@@ -187,17 +203,33 @@ export const ViewPagesMenu = {
 	},
 	Phone: {
 		id: 'stock',
-		text: 'Sold Phone',
-		path: 'viewer/sold-phone',
+		text: 'Sold Items',
+		path: 'viewer/sold-items',
 		icon: 'AutoStories',
 		subMenu: null,
 	},
-	coustomer: {
-		id: 'stock',
-		text: 'Customers',
-		path: 'viewer/coustomer',
-		icon: 'Person',
-		subMenu: null,
+	singlePages1: {
+		id: 'singlePages1',
+		text: 'Customer',
+		path: 'single-pages1',
+		icon: 'person',
+		subMenu: {
+			Display: {
+				id: 'model',
+				text: 'Accesory',
+				path: 'viewer/Customer/Accesories',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'model1',
+				text: 'Display',
+				path: 'viewer/Customer/Displays',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
 	},
 	supplier: {
 		id: 'stock',

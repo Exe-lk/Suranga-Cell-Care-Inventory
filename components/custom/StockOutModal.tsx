@@ -48,6 +48,7 @@ interface StockOut {
 	customerName: string;
 	mobile: string;
 	nic: string;
+	email: string;
 	dateIn: string;
 	cost: string;
 	sellingPrice: string;
@@ -68,6 +69,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		customerName: '',
 		mobile: '',
 		nic: '',
+		email: '',
 		dateIn: '',
 		cost: '',
 		sellingPrice: '',
@@ -124,6 +126,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			customerName: '',
 			mobile: '',
 			nic: '',
+			email: '',
 			dateIn: '',
 			cost: '',
 			sellingPrice: '',
@@ -283,6 +286,17 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							onBlur={formik.handleBlur}
 							name='nic'
 							isValid={!!formik.errors.nic && formik.touched.nic}
+						/>
+					</FormGroup>
+					<FormGroup id='email' label='Email' className='col-md-6'>
+						<Input
+							type='text'
+							placeholder='Enter Email'
+							value={formik.values.email}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							name='email'
+							isValid={!!formik.errors.email && formik.touched.email}
 						/>
 					</FormGroup>
 
