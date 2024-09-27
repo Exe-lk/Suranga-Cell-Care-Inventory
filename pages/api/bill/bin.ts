@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { phoneDetail, dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut } = req.body;
+        const { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut } = req.body;
         if (!phoneDetail) {
           res.status(400).json({ error: 'Phone Detail is required' });
           return;
         }
-        const id = await createBill(phoneDetail, dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut);
+        const id = await createBill(phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut);
         res.status(201).json({ message: 'Bill created', id });
         break;
       }
@@ -27,12 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id, phoneDetail, status,dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut } = req.body;
+        const { id, phoneDetail, status,dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut } = req.body;
         if (!id || !phoneDetail) {
           res.status(400).json({ error: 'Bill ID and phone detail are required' });
           return;
         }
-        await updateBill(id,phoneDetail, dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut,status);
+        await updateBill(id,phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut,status);
         res.status(200).json({ message: 'Bill updated' });
         break;
       }

@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createBill = async (phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,TechnicianNo: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,Price:string,Status:string,DateOut:string) => {
+export const createBill = async (phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,technicianNum: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,cost:string,Price:string,Status:string,DateOut:string) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'bill'), { phoneDetail, dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut,status });
+  const docRef = await addDoc(collection(firestore, 'bill'), { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,cost,Price,Status,DateOut,status });
   return docRef.id;
 };
 
@@ -38,9 +38,9 @@ export const getBillById = async (id: string) => {
   }
 };
 
-export const updateBill = async (id: string, phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,TechnicianNo: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,Price:string,Status:string,DateOut:string,status: any) => {
+export const updateBill = async (id: string, phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,technicianNum: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,Price:string,cost:string,Status:string,DateOut:string,status: any) => {
   const billRef = doc(firestore, 'bill', id);
-  await updateDoc(billRef, { phoneDetail, dateIn, billNumber,phoneModel,repairType,TechnicianNo,CustomerName,CustomerMobileNum,email,NIC,Price,Status,DateOut,status });
+  await updateDoc(billRef, { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut,status });
 };
 
 export const deleteBill = async (id: string) => {

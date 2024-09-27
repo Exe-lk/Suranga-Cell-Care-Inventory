@@ -55,13 +55,14 @@ const Index: NextPage = () => {
 					billNumber: bill.billNumber,
 					phoneModel: bill.phoneModel,
 					repairType: bill.repairType,
-					TechnicianNo: bill.TechnicianNo,
+					technicianNum: bill.technicianNum,
 					CustomerName: bill.CustomerName,
 					CustomerMobileNum: bill.CustomerMobileNum,
 					email: bill.email,
 					NIC: bill.NIC,
 					Price: bill.Price,
 					Status: bill.Status,
+					cost: bill.cost,
 					DateOut: bill.DateOut,
 					status: false,
 					
@@ -288,6 +289,7 @@ const Index: NextPage = () => {
                                             <th>Customer Mobile Number</th>
 											<th>Email</th>
 											<th>NIC</th>
+											<th>Cost</th>
                                             <th>Price</th>
                                             <th>Status</th>
                                             <th>Date out</th>
@@ -322,11 +324,12 @@ const Index: NextPage = () => {
 														<td>{bill.billNumber}</td>
 														<td>{bill.phoneModel}</td>
 														<td>{bill.repairType}</td>
-														<td>{bill.TechnicianNo}</td>
+														<td>{bill.technicianNum}</td>
 														<td>{bill.CustomerName}</td>
 														<td>{bill.CustomerMobileNum}</td>
 														<td>{bill.email}</td>
 														<td>{bill.NIC}</td>
+														<td>{bill.cost}</td>
 														<td>{bill.Price}</td>
 														<td>{bill.Status}</td>
 														<td>{bill.DateOut}</td>
