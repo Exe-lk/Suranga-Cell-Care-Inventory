@@ -8,7 +8,7 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { collection, addDoc } from 'firebase/firestore';
-import { firestore, storage,auth } from '../../firebaseConfig';
+import { firestore, storage, auth } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
@@ -26,21 +26,19 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addDealer , {isLoading}] = useAddDealerMutation();
-	const {refetch} = useGetDealersQuery(undefined);
+	const [addDealer, { isLoading }] = useAddDealerMutation();
+	const { refetch } = useGetDealersQuery(undefined);
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			
 			name: '',
 			item: [''],
-			
 			email: '',
 			address: '',
 			mobileNumber: '',
-			
-			status:true
+
+			status: true,
 		},
 		validate: (values) => {
 			const errors: {
@@ -48,8 +46,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				email?: string;
 				address?: string;
 				mobileNumber?: string;
-				item?: string;
-				
+				item?: string[];
 			} = {};
 			if (!values.name) {
 				errors.name = 'Name is required.';
@@ -57,13 +54,26 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.email) {
 				errors.email = 'Email is required.';
 			}
+			if(!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
 			if (!values.address) {
 				errors.address = 'Address is required.';
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
 			}
-			
+			const itemErrors: string[] = values.item.map((item, index) => {
+				if (!item.trim()) {
+					return `Item ${index + 1} cannot be empty.`;
+				}
+				return '';
+			}).filter(error => error !== '');
+		
+			if (itemErrors.length > 0) {
+				errors.item = itemErrors;
+			}
+
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -76,7 +86,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
 					// Add the new category
 					const response: any = await addDealer(values).unwrap();
@@ -128,7 +138,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Dealer name' className='col-md-6'>
+					<FormGroup id='name' label='Dealer name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}
@@ -152,8 +162,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									value={formik.values.item[index]}
 									onBlur={formik.handleBlur}
 									isValid={formik.isValid}
-									// isTouched={formik.touched.subcategory?.[index]}
-									invalidFeedback={formik.errors.item?.[index]}
+									isTouched={Array.isArray(formik.touched.item) && formik.touched.item[index]} // Ensure the item is touched
+									invalidFeedback={
+										formik.errors.item
+											? Array.isArray(formik.errors.item)
+												? formik.errors.item[index]
+												: formik.errors.item
+											: undefined
+									}
 									validFeedback='Looks good!'
 								/>
 								<button
@@ -164,12 +180,18 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								</button>
 							</div>
 						</FormGroup>
-						))}
-						<div className='col-md-12'>
-							<Button color='info' onClick={addItemField}>
-								Add Item
-							</Button>
-						</div>
+					))}
+					
+
+					<div className='col-md-12'>
+						<Button
+							color='info'
+							onClick={addItemField}
+							isDisable={formik.values.item.length >= 10}>
+							Add Item
+						</Button>
+						
+					</div>
 					<FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
 							type='email'
@@ -205,8 +227,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
-					
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>

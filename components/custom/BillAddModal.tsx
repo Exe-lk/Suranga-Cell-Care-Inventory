@@ -42,7 +42,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		validate: (values) => {
 			const errors: {
 				phoneDetail?: string;
-				dateIn?: Date;
+				dateIn?: string;
 				billNumber?: string;
 				phoneModel?: string;
 				repairType?: string;
@@ -54,10 +54,13 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				cost?: string;
 				Price?: string;
 				Status?: string;
-				DateOut?: Date;
+				DateOut?: string;
 			} = {};
 			if (!values.phoneDetail) {
 				errors.phoneDetail = 'Phone Detail is required.';
+			}
+			if (!values.dateIn) {
+				errors.dateIn = 'Date In is required.';
 			}
 			if (!values.billNumber) {
 				errors.billNumber = 'Bill Number is required.';
@@ -80,6 +83,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.email) {
 				errors.email = 'Email is required.';
 			}
+			if(!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
 			if (!values.NIC) {
 				errors.NIC = 'NIC is required.';
 			}
@@ -91,6 +97,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			}
 			if (!values.Status) {
 				errors.Status = 'Status is required.';
+			}
+			if (!values.DateOut) {
+				errors.DateOut = 'Date Out is required.';
 			}
 			
 
@@ -164,6 +173,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.dateIn}
+							invalidFeedback={formik.errors.dateIn}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -310,6 +321,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							value={formik.values.DateOut}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.DateOut}
+							invalidFeedback={formik.errors.DateOut}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

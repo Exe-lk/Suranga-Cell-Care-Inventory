@@ -326,7 +326,7 @@ const Index: NextPage = () => {
 											itemDiss
 												.filter((itemDiss: any) =>
 													searchTerm
-														? itemDiss.modelNo
+														? itemDiss.model
 																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
 														: true,

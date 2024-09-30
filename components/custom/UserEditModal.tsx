@@ -278,12 +278,18 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
             if (!values.name) {
                 errors.name = 'Required';
             }
+            if (!values.role) {
+                errors.role = 'Required';
+            }
             if (!values.mobile) {
                 errors.mobile = 'Required';
             }
             if (!values.email) {
                 errors.email = 'Required';
             }
+            if(!(values.email ?? '').includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
             if (!values.nic) {
                 errors.nic = 'Required';
             }

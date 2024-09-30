@@ -13,8 +13,6 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import StockAddModal from '../../../components/custom/ItemAddModal';
-import StockEditModal from '../../../components/custom/StockEditModal';
 
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 
@@ -34,8 +32,37 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const stock = [
+		{ stock: 'stockOut' },
+		{ stock: 'stockIn' },
+
+	];
 	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const filteredTransactions = StockInOuts?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); // Parse the transaction date
+		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
+		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+	
+		// Apply date range filter if both start and end dates are selected
+		if (start && end) {
+			return transactionDate >= start && transactionDate <= end;
+		} 
+		// If only start date is selected
+		else if (start) {
+			return transactionDate >= start;
+		} 
+		// If only end date is selected
+		else if (end) {
+			return transactionDate <= end;
+		}
+	
+		return true; // Return all if no date range is selected
+	});
+	
 
 
 	// Function to handle the download in different formats
@@ -181,9 +208,7 @@ const Index: NextPage = () => {
 			<SubHeader>
 				<SubHeaderLeft>
 					{/* Search input */}
-					<label
-						className='border-0 bg-transparent cursor-pointer me-0'
-						htmlFor='searchInput'>
+					<label className='border-0 bg-transparent cursor-pointer me-0' htmlFor='searchInput'>
 						<Icon icon='Search' size='2x' color='primary' />
 					</label>
 					<Input
@@ -191,46 +216,49 @@ const Index: NextPage = () => {
 						type='search'
 						className='border-0 shadow-none bg-transparent'
 						placeholder='Search...'
-						onChange={(event: any) => {
-							setSearchTerm(event.target.value);
-						}}
+						onChange={(event: any) => setSearchTerm(event.target.value)}
 						value={searchTerm}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
 					<Dropdown>
 						<DropdownToggle hasIcon={false}>
-							<Button
-								icon='FilterAlt'
-								color='dark'
-								isLight
-								className='btn-only-icon position-relative'></Button>
+							<Button icon='FilterAlt' color='dark' isLight className='btn-only-icon position-relative'></Button>
 						</DropdownToggle>
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
-										<ChecksGroup>
-											<Checks
-												key='check'
-												id='check'
-												label='Outgoing'
-												name='check'
-												value='check'></Checks>
-											<Checks
-												key='check'
-												id='check'
-												label='Return'
-												name='check'
-												value='check'></Checks>
+								<ChecksGroup>
+											{stock.map((brand, index) => (
+												<Checks
+													key={brand.stock}
+													id={brand.stock}
+													label={brand.stock}
+													name={brand.stock}
+													value={brand.stock}
+													checked={selectedUsers.includes(brand.stock)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers(
+															(prevUsers) =>
+																checked
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(brand) =>
+																				brand !== value,
+																	  ), // Remove category if unchecked
+														);
+													}}
+												/>
+											))}
 										</ChecksGroup>
+									<FormGroup label='Date' className='col-6'>
+										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
 									</FormGroup>
 								</div>
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-
-					{/* Button to open  New Item modal */}
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
@@ -239,30 +267,25 @@ const Index: NextPage = () => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>
-									Transactions
-								</div>
+								<div className='flex-grow-1 text-center text-info'>Transactions</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
+										<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
+										<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-modern table-bordered border-primary table-hover '>
-								<thead>
+									<thead>
 										<tr>
-											
 											<th>Category</th>
 											<th>Brand</th>
 											<th>Model</th>
@@ -270,34 +293,32 @@ const Index: NextPage = () => {
 											<th>Selling Price</th>
 											<th>Date</th>
 											<th>Stock</th>
-											<th></th>
 										</tr>
 									</thead>
 									<tbody>
-										{isLoading &&(
+										{isLoading && (
 											<tr>
-												<td>Loadning...</td>
+												<td>Loading...</td>
 											</tr>
 										)}
-										{
-											error && (
-												<tr>
-													<td>Error fetching stocks.</td>
-												</tr>
-											)
-										}
-										{
-											StockInOuts &&
-											StockInOuts
-												.filter((StockInOut : any) =>
-													StockInOut.status === true 
+										{error && (
+											<tr>
+												<td>Error fetching stocks.</td>
+											</tr>
+										)}
+										{filteredTransactions &&
+											filteredTransactions
+												.filter((StockInOut: any) => StockInOut.status === true)
+												.filter((brand: any) =>
+													searchTerm ? brand.category.toLowerCase().includes(searchTerm.toLowerCase()) : true
 												)
-												.filter((brand : any) => 
-													searchTerm 
-													? brand.category.toLowerCase().includes(searchTerm.toLowerCase())
-													: true,
+												.filter((brand: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(brand.stock)
+														: true,
 												)
-												.map((brand:any) => (
+
+												.map((brand: any) => (
 													<tr key={brand.id}>
 														<td>{brand.category}</td>
 														<td>{brand.brand}</td>
@@ -306,20 +327,10 @@ const Index: NextPage = () => {
 														<td>{brand.sellingPrice}</td>
 														<td>{brand.date}</td>
 														<td>{brand.stock}</td>
-														<td>
-															<Button
-																icon='Edit'
-																color='info'
-																onClick={() => {
-																	setEditModalStatus(true);
-																	setId(brand.id);
-																}}>
-																Edit
-															</Button>
-														</td>
+
+
 													</tr>
-												))
-										}
+												))}
 									</tbody>
 								</table>
 							</CardBody>
@@ -327,9 +338,9 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			
-			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
+
+	
 };
 export default Index;

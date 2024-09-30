@@ -173,20 +173,20 @@ export const ViewPagesMenu = {
 	},
 	singlePages: {
 		id: 'singlePages',
-		text: 'Stock Management',
+		text: 'Stock',
 		path: 'single-pages',
 		icon: 'ChangeHistory',
 		subMenu: {
 			Display: {
 				id: 'model',
-				text: 'Accesory Stock Management',
+				text: 'Accesory Stock',
 				path: 'viewer/Stock-Transaction/Accesories',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'model1',
-				text: 'Display Stock Management',
+				text: 'Display Stock',
 				path: 'viewer/Stock-Transaction/Displays',
 				icon: 'SupervisedUserCircle',
 		

@@ -1,9 +1,10 @@
 import { firestore } from '../firebaseConfig';
-import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where,Timestamp } from 'firebase/firestore';
 
 export const createCategory = async (name: string) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'CategoryDisplay'), { name , status });
+  const timestamp = Timestamp.now();
+  const docRef = await addDoc(collection(firestore, 'CategoryDisplay'), { name , status ,timestamp:timestamp});
   return docRef.id;
 };
 

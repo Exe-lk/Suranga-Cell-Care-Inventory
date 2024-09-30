@@ -70,6 +70,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.email) {
 				errors.email = 'Required';
 			}
+			if(!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
 
 			
 			return errors;

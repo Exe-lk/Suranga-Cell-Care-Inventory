@@ -47,6 +47,9 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.type) {
 				errors.type = 'Type is required';
 			}
+			if (values.type === 'Mobile' && !values.mobileType) {
+				errors.mobileType = 'Mobile Type is required';
+			}
 			if (!values.category) {
 				errors.category = 'Category is required';
 			}

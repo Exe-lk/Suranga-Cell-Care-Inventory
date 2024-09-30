@@ -138,6 +138,14 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			const errors: any = {};
 			if (!values.quantity) errors.quantity = 'Quantity is required';
 			if (!values.date) errors.date = 'Date is required';
+			if (!values.dateIn) errors.dateIn = 'Date In is required';
+			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
+			if (!values.customerName) errors.customerName = 'Customer Name is required';
+			if (!values.mobile) errors.mobile = 'Mobile is required';
+			if (!values.nic) errors.nic = 'NIC is required';
+			if (!values.email) errors.email = 'Email is required';
+			if(!values.cost) errors.cost = 'Cost is required';
+			
 
 			
 			return errors;

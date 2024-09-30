@@ -58,7 +58,16 @@ const Index: NextPage = () => {
 										</tr>
 									</thead>
 									<tbody>
-										{filteredStockInOuts?.map((stock: any) => (
+									{filteredStockInOuts &&
+											filteredStockInOuts
+											.filter((StockItem: any) =>
+												searchTerm
+													? StockItem.customerName
+															.toLowerCase()
+															.includes(searchTerm.toLowerCase())
+													: true,
+											)
+										.map((stock: any) => (
 											<tr key={stock.id}>
 												<td>{stock.customerName}</td>
 												<td>{stock.mobile}</td>

@@ -35,11 +35,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			
 			name: '',
 			item: [''],
-			
 			email: '',
 			address: '',
 			mobileNumber: '',
-			
 			status:true
 		},
 		validate: (values) => {
@@ -48,7 +46,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				email?: string;
 				address?: string;
 				mobileNumber?: string;
-				item?: string;
+				item?: string[];
 				
 			} = {};
 			if (!values.name) {
@@ -57,11 +55,24 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.email) {
 				errors.email = 'Email is required.';
 			}
+			if(!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
 			if (!values.address) {
 				errors.address = 'Address is required.';
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
+			}
+			const itemErrors: string[] = [];
+			values.item.forEach((item, index) => {
+				if (!item.trim()) {
+					itemErrors[index] = `Item ${index + 1} cannot be empty.`;
+				}
+			});
+		
+			if (itemErrors.length > 0) {
+				errors.item = itemErrors;
 			}
 			
 			return errors;
@@ -141,29 +152,36 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</FormGroup>
 					{formik.values.item.map((sub, index) => (
 						<FormGroup
-							key={index}
-							id={`item-${index}`}
-							label={`Item ${index + 1}`}
-							className='col-md-6'>
-							<div className='d-flex align-items-center'>
-								<Input
-									name={`item[${index}]`}
-									onChange={formik.handleChange}
-									value={formik.values.item[index]}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									// isTouched={formik.touched.subcategory?.[index]}
-									invalidFeedback={formik.errors.item?.[index]}
-									validFeedback='Looks good!'
-								/>
-								<button
-									type='button'
-									onClick={() => removeItemField(index)}
-									className='btn btn-outline-danger ms-2'>
-									<Icon icon='Delete' />
-								</button>
-							</div>
-						</FormGroup>
+						key={index}
+						id={`item-${index}`}
+						label={`Item ${index + 1}`}
+						className='col-md-6'>
+						<div className='d-flex align-items-center'>
+							<Input
+								name={`item[${index}]`}
+								onChange={formik.handleChange}
+								value={formik.values.item[index]}
+								onBlur={formik.handleBlur}
+								isValid={formik.touched.item && !formik.errors.item?.[index]} // Check for individual item errors
+								isTouched={Array.isArray(formik.touched.item) && formik.touched.item[index]} // Ensure the item is touched
+									invalidFeedback={
+										formik.errors.item
+											? Array.isArray(formik.errors.item)
+												? formik.errors.item[index]
+												: formik.errors.item
+											: undefined
+									}
+								validFeedback='Looks good!'
+							/>
+							<button
+								type='button'
+								onClick={() => removeItemField(index)}
+								className='btn btn-outline-danger ms-2'>
+								<Icon icon='Delete' />
+							</button>
+						</div>
+					</FormGroup>
+					
 						))}
 						<div className='col-md-12'>
 							<Button color='info' onClick={addItemField}>

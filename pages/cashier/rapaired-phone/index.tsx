@@ -24,6 +24,7 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import Select from '../../../components/bootstrap/forms/Select';
 import Option from '../../../components/bootstrap/Option';
+
 import { useFormik } from 'formik';
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
