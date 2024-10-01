@@ -232,24 +232,7 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<Dropdown>
-						<DropdownToggle hasIcon={false}>
-							<Button
-								icon='FilterAlt'
-								color='dark'
-								isLight
-								className='btn-only-icon position-relative'></Button>
-						</DropdownToggle>
-						<DropdownMenu isAlignmentEnd size='lg'>
-							<div className='container py-2'>
-								<div className='row g-3'>
-									
-								</div>
-							</div>
-						</DropdownMenu>
-					</Dropdown>
 
-					<SubheaderSeparator />
 					<Button
 						icon='PersonAdd'
 						color='success'

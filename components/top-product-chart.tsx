@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card, {
 	CardActions,
 	CardBody,
@@ -8,17 +8,23 @@ import Card, {
 	CardTitle,
 } from '../components/bootstrap/Card';
 import Chart, { IChartOptions } from '../components/extras/Chart';
-import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
+import { useGetCategoriesQuery } from '../redux/slices/categoryApiSlice';
+import { useGetCategories1Query } from '../redux/slices/category1ApiSlice';
 
 const PieBasic = () => {
-	const [state] = useState<IChartOptions>({
-		series: [44, 55,],
+	// Fetch categories data
+	const { data: categoriesData, isLoading: isCategoriesLoading } = useGetCategoriesQuery(undefined);
+	const { data: categories1Data, isLoading: isCategories1Loading } = useGetCategories1Query(undefined);
+
+	// State for chart options
+	const [state, setState] = useState<IChartOptions>({
+		series: [0, 0], // Default series
 		options: {
 			chart: {
 				width: 380,
 				type: 'pie',
 			},
-			labels: ['Stock Type A', 'Stock Type B'],
+			labels: ['Accessory', 'Displays'],
 			responsive: [
 				{
 					breakpoint: 480,
@@ -34,6 +40,28 @@ const PieBasic = () => {
 			],
 		},
 	});
+
+	// Compute percentages and update chart when data is fetched
+	useEffect(() => {
+		if (!isCategoriesLoading && !isCategories1Loading && categoriesData && categories1Data) {
+			const accessoryCount = categories1Data.length; // Assuming categories1Data contains Accessory items
+			const displaysCount = categoriesData.length; // Assuming categoriesData contains Display items
+
+			// Total count
+			const totalCount = accessoryCount + displaysCount;
+
+			// Calculate percentage for each category
+			const accessoryPercentage = ((accessoryCount / totalCount) * 100).toFixed(2);
+			const displaysPercentage = ((displaysCount / totalCount) * 100).toFixed(2);
+
+			// Update chart series
+			setState(prevState => ({
+				...prevState,
+				series: [parseFloat(accessoryPercentage), parseFloat(displaysPercentage)],
+			}));
+		}
+	}, [categoriesData, categories1Data, isCategoriesLoading, isCategories1Loading]);
+
 	return (
 		<div className='col-lg-6'>
 			<Card stretch>
@@ -42,19 +70,19 @@ const PieBasic = () => {
 						<CardTitle>
 							Stock Type <small>analytics</small>
 						</CardTitle>
-						{/* <CardSubTitle>Chart</CardSubTitle> */}
 					</CardLabel>
-					{/* <CardActions>
-						<CommonStoryBtn to='/story/extra-chart-pie-donut--pie-basic' />
-					</CardActions> */}
 				</CardHeader>
 				<CardBody>
-					<Chart
-						series={state.series}
-						options={state.options}
-						type={state.options.chart?.type}
-						width={state.options.chart?.width}
-					/>
+					{!isCategoriesLoading && !isCategories1Loading ? (
+						<Chart
+							series={state.series}
+							options={state.options}
+							type={state.options.chart?.type}
+							width={state.options.chart?.width}
+						/>
+					) : (
+						<p>Loading chart...</p>
+					)}
 				</CardBody>
 			</Card>
 		</div>

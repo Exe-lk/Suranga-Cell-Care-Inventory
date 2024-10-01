@@ -62,41 +62,6 @@ const Index: NextPage = () => {
 						value={searchTerm}
 					/>
 				</SubHeaderLeft>
-				<SubHeaderRight>
-					<Dropdown>
-						<DropdownToggle hasIcon={false}>
-							<Button
-								icon='FilterAlt'
-								color='dark'
-								isLight
-								className='btn-only-icon position-relative'></Button>
-						</DropdownToggle>
-						<DropdownMenu isAlignmentEnd size='lg'>
-							<div className='container py-2'>
-								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
-										<ChecksGroup>
-											<Checks
-												key='check'
-												id='check'
-												label='Outgoing'
-												name='check'
-												value='check'></Checks>
-											<Checks
-												key='check'
-												id='check'
-												label='Return'
-												name='check'
-												value='check'></Checks>
-										</ChecksGroup>
-									</FormGroup>
-								</div>
-							</div>
-						</DropdownMenu>
-					</Dropdown>
-
-					{/* Button to open New Item modal */}
-				</SubHeaderRight>
 			</SubHeader>
 			<Page>
 				<div className='row h-100'>
@@ -125,7 +90,17 @@ const Index: NextPage = () => {
 									</thead>
 
 									<tbody>
-										{filteredStockOuts?.map((item: StockItem) => (
+									
+										{filteredStockOuts &&
+											filteredStockOuts
+											.filter((StockItem: any) =>
+												searchTerm
+													? StockItem.category
+															.toLowerCase()
+															.includes(searchTerm.toLowerCase())
+													: true,
+											)
+										.map((item: StockItem) => (
 											<tr className='text-success' key={item.id}>
 												<td>{item.model}</td>
 												<td>{item.brand}</td>

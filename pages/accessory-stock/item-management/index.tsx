@@ -22,6 +22,8 @@ import StockOutModal from '../../../components/custom/StockOutModal';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import Swal from 'sweetalert2';
 import ItemDeleteModal from '../../../components/custom/itemDeleteAcce';
+import FormGroup from '../../../components/bootstrap/forms/FormGroup';
+import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
@@ -40,6 +42,12 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const {data: itemAcces,error, isLoading} = useGetItemAccesQuery(undefined);
 	const [updateItemAcce] = useUpdateItemAcceMutation();
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const type = [
+		{ type: 'Accessory' },
+		{ type: 'Mobile' },
+
+	];
 
 	// Function to handle deletion of an item
 	const handleClickDelete = async (itemAcce:any) => {
@@ -98,7 +106,7 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<Dropdown>
+				<Dropdown>
 						<DropdownToggle hasIcon={false}>
 							<Button
 								icon='FilterAlt'
@@ -106,9 +114,36 @@ const Index: NextPage = () => {
 								isLight
 								className='btn-only-icon position-relative'></Button>
 						</DropdownToggle>
-						<DropdownMenu isAlignmentEnd size='lg'>
+				<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
-								<div className='row g-3'></div>
+								<div className='row g-3'>
+									<FormGroup label='Type' className='col-12'>
+									<ChecksGroup>
+											{type.map((itemAcces, index) => (
+												<Checks
+													key={itemAcces.type}
+													id={itemAcces.type}
+													label={itemAcces.type}
+													name={itemAcces.type}
+													value={itemAcces.type}
+													checked={selectedUsers.includes(itemAcces.type)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers(
+															(prevUsers) =>
+																checked
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(itemAcces) =>
+																				itemAcces !== value,
+																	  ), // Remove category if unchecked
+														);
+													}}
+												/>
+											))}
+										</ChecksGroup>
+									</FormGroup>
+								</div>
 							</div>
 						</DropdownMenu>
 					</Dropdown>
@@ -173,21 +208,28 @@ const Index: NextPage = () => {
 										)}
 										{itemAcces &&
 											itemAcces
-												.filter((itemAcces: any) =>
-													searchTerm
-														? itemAcces.model
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
-														: true,
-												)
-												.map((itemAcces: any) => (
-													<tr key={itemAcces.cid}>
-														<td>{itemAcces.type}</td>
-														<td>{itemAcces.category}</td>
-														<td>{itemAcces.model}</td>
-														<td>{itemAcces.brand}</td>
-														<td>{itemAcces.reorderLevel}</td>
-														<td>{itemAcces.description}</td>
+											.filter((itemAcces: any) =>
+												searchTerm
+													? itemAcces.category
+															.toLowerCase()
+															.includes(searchTerm.toLowerCase())
+													: true,
+											)
+											.filter((itemAcces: any) =>
+												selectedUsers.length > 0
+													? selectedUsers.includes(itemAcces.type)
+													: true,
+											)
+											.map((itemAcces: any) => (
+												<tr 
+													key={itemAcces.cid}
+												>
+													<td>{itemAcces.type}</td>
+													<td>{itemAcces.category}</td>
+													<td>{itemAcces.model}</td>
+													<td>{itemAcces.brand}</td>
+													<td>{itemAcces.reorderLevel}</td>
+													<td>{itemAcces.description}</td>
 
 														
 

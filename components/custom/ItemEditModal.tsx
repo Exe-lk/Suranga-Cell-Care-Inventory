@@ -369,6 +369,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		validate: (values) => {
 			const errors: {
 				type?: string;
+				mobileType?: string;
 				category?: string;
 				model?: string;
 				brand?: string;
@@ -376,6 +377,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				description?: string;
 			} = {};
 			if (!values.type) errors.type = 'Type is required';
+			if (values.type === 'Mobile' && !values.mobileType)
+				errors.mobileType = 'Mobile Type is required';
 			if (!values.category) errors.category = 'Category is required';
 			if (!values.model) errors.model = 'Model is required';
 			if (!values.brand) errors.brand = 'Brand is required';

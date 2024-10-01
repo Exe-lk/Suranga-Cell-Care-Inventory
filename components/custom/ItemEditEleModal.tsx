@@ -20,6 +20,7 @@ import {
 } from '../../redux/slices/itemManagementDisApiSlice';
 import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
 import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
+import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 
 // Define the props for the ItemAddModal component
 interface ItemAddModalProps {
@@ -37,6 +38,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const itemDisToEdit = itemDiss?.find((itemDis: any) => itemDis.id === id);
 	const { data: brands } = useGetBrandsQuery(undefined);
 	const { data: models } = useGetModelsQuery(undefined);
+	const { data: categories } = useGetCategoriesQuery(undefined);
 	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
 	const [customCategory, setCustomCategory] = useState<string>('');
@@ -71,21 +73,31 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				displaySNumber?: string;
 				otherCategory?: string;
 			} = {};
-			if (!values.model) {
-				errors.model = 'Model is required';
-			}
-			if (!values.brand) {
-				errors.brand = 'Brand is required';
-			}
+			if (!values.model) errors.model = 'Required';
+			if (!values.brand) errors.brand = 'Required';
 			if (!values.reorderLevel) {
-				errors.reorderLevel = 'Reorder Level is required';
+			  errors.reorderLevel = 'Required';
+			} else if (Number(values.reorderLevel) <= 0) {
+			  errors.reorderLevel = 'Must be a positive number';
 			}
-			if (!values.boxNumber) {
-				errors.boxNumber = 'Box Number is required';
+			if (!values.boxNumber) errors.boxNumber = 'Required';
+		  
+			// Conditionally validate fields based on the selected category
+			if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
+			  errors.touchpadNumber = 'Touchpad Number is required';
 			}
-			if (!values.category) {
-				errors.category = 'Category is required';
+			if (selectedCategory === 'Displays' && !values.displaySNumber) {
+			  errors.displaySNumber = 'Display Serial Number is required';
 			}
+			if (selectedCategory === 'Battery Cell' && !values.batteryCellNumber) {
+			  errors.batteryCellNumber = 'Battery Cell Number is required';
+			}
+		  
+			// Validate "Other" category input
+			if (selectedCategory === 'Other' && !values.otherCategory) {
+			  errors.otherCategory = 'Please specify the category';
+			}
+		  
 
 			return errors;
 		},
@@ -222,14 +234,29 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 					{/* Conditionally show custom category input if "Other" is selected */}
 					{selectedCategory === 'Other' && (
-						<FormGroup id='customCategory' label='Custom Category' className='col-md-6'>
-							<Input
-								type='text'
-								placeholder='Enter custom category'
-								value={customCategory}
-								onChange={handleCustomCategoryChange}
-								onBlur={formik.handleBlur}
-							/>
+						<FormGroup
+							id='categorySelectDropdown'
+							label='Select Category'
+							className='col-md-6'>
+							<Select
+								ariaLabel='Select category'
+								onChange={handleCategoryChange}
+								value={formik.values.category}
+								onBlur={formik.handleBlur}>
+								<Option value=''>Select Category</Option>
+								{categories
+									?.filter(
+										(category: any) =>
+											category.name !== 'Battery Cell' &&
+											category.name !== 'Displays' &&
+											category.name !== 'Touch Pad',
+									)
+									.map((category: any) => (
+										<Option key={category.id} value={category.name}>
+											{category.name}
+										</Option>
+									))}
+							</Select>
 						</FormGroup>
 					)}
 

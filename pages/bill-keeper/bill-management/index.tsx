@@ -273,6 +273,53 @@ const Index: NextPage = () => {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
+							<center>
+							<div className='d-flex justify-content-center mb-3'>
+								
+								
+								{/* Added horizontal margin */}
+								<div
+									className='rounded-circle bg-success d-flex mx-2 '
+									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+								>
+									<span className='text-white'></span>
+								</div>
+								<div className='mx-2'>waiting to in progress</div>{' '}
+								
+								<div
+									className='rounded-circle bg-info d-flex mx-2 '
+									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+								>
+									<span className='text-white'></span>
+								</div>
+								<div className='mx-2'>in progress</div> {/* Added horizontal margin */}
+								
+								<div
+									className='rounded-circle bg-warning d-flex mx-2 '
+									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+								>
+									<span className='text-white'></span>
+								</div>
+								<div className='mx-2'>completed</div> {/* Added horizontal margin */}
+								
+								<div
+									className='rounded-circle bg-danger d-flex mx-2 '
+									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+								>
+									<span className='text-white'></span>
+								</div>
+								<div className='mx-2'>reject</div> {/* Added horizontal margin */}
+								
+								<div
+									className='rounded-circle bg-lo50-primary d-flex mx-2 '
+									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+								>
+									<span className='text-white'></span>
+								</div>
+								<div className='mx-2'>Hand Over to cashier</div> {/* Added horizontal margin */}
+								
+							</div>
+							</center>
 
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}

@@ -95,6 +95,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.email) {
 				errors.email = 'email is required';
 			}
+			if(!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
 			if (!values.NIC) {
 				errors.NIC = 'NIC is required';
 			}

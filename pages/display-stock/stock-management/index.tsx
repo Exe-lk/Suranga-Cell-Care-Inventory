@@ -36,6 +36,12 @@ const Index: NextPage = () => {
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
 	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const stock = [
+		{ stock: 'stockOut' },
+		{ stock: 'stockIn' },
+
+	];
 
 
 	// Function to handle the download in different formats
@@ -210,19 +216,29 @@ const Index: NextPage = () => {
 							<div className='container py-2'>
 								<div className='row g-3'>
 									<FormGroup label='Category type' className='col-12'>
-										<ChecksGroup>
-											<Checks
-												key='check'
-												id='check'
-												label='Outgoing'
-												name='check'
-												value='check'></Checks>
-											<Checks
-												key='check'
-												id='check'
-												label='Return'
-												name='check'
-												value='check'></Checks>
+									<ChecksGroup>
+											{stock.map((stockInOut, index) => (
+												<Checks
+													key={stockInOut.stock}
+													id={stockInOut.stock}
+													label={stockInOut.stock}
+													name={stockInOut.stock}
+													value={stockInOut.stock}
+													checked={selectedUsers.includes(stockInOut.stock)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers(
+															(prevUsers) =>
+																checked
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(stockInOut) =>
+																				stockInOut !== value,
+																	  ), // Remove category if unchecked
+														);
+													}}
+												/>
+											))}
 										</ChecksGroup>
 									</FormGroup>
 								</div>
@@ -270,7 +286,7 @@ const Index: NextPage = () => {
 											<th>Selling Price</th>
 											<th>Date</th>
 											<th>Stock</th>
-											<th></th>
+										
 										</tr>
 									</thead>
 									<tbody>
@@ -289,14 +305,18 @@ const Index: NextPage = () => {
 										{
 											StockInOuts &&
 											StockInOuts
-												.filter((StockInOut : any) =>
-													StockInOut.status === true 
-												)
-												.filter((brand : any) => 
-													searchTerm 
-													? brand.category.toLowerCase().includes(searchTerm.toLowerCase())
+											.filter((stockInOut: any) =>
+												searchTerm
+													? stockInOut.category
+															.toLowerCase()
+															.includes(searchTerm.toLowerCase())
 													: true,
-												)
+											)
+											.filter((stockInOut: any) =>
+												selectedUsers.length > 0
+													? selectedUsers.includes(stockInOut.stock)
+													: true,
+											)
 												.map((brand:any) => (
 													<tr key={brand.id}>
 														<td>{brand.category}</td>
@@ -306,17 +326,6 @@ const Index: NextPage = () => {
 														<td>{brand.sellingPrice}</td>
 														<td>{brand.date}</td>
 														<td>{brand.stock}</td>
-														<td>
-															<Button
-																icon='Edit'
-																color='info'
-																onClick={() => {
-																	setEditModalStatus(true);
-																	setId(brand.id);
-																}}>
-																Edit
-															</Button>
-														</td>
 													</tr>
 												))
 										}

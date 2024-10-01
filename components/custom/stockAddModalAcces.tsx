@@ -83,13 +83,36 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     },
     enableReinitialize: true,
     validate: (values) => {
-      const errors: { quantity?: string; date?: string; } = {};
+      const errors: Record<string, string> = {};
       if (!values.quantity) {
         errors.quantity = 'Quantity is required';
       }
       if (!values.date) {
         errors.date = 'Date In is required';
       }
+      if (values.type === 'Mobile') {
+        if (!values.imi) {
+          errors.imi = 'IMI is required';
+        }
+        if (!values.storage) {
+          errors.storage = 'Storage is required';
+        }
+        if (values.mobileType === 'Used') {
+          if (!values.name) {
+            errors.name = 'Name is required';
+          }
+          if (!values.nic) {
+            errors.nic = 'NIC is required';
+          }
+          if (!values.mobile) {
+            errors.mobile = 'Mobile Number is required';
+          }
+        }
+      }
+      if (!values.cost) {
+        errors.cost = 'Cost is required';
+      }
+      
       return errors;
     },
     onSubmit: async (values) => {
