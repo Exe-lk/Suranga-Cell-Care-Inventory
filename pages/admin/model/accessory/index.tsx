@@ -52,7 +52,7 @@ const Index: NextPage = () => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this brand!',
+				text: 'You will not be able to recover this model!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -306,7 +306,7 @@ const Index: NextPage = () => {
 										{
 											error && (
 												<tr>
-													<td>Error fetching brands.</td>
+													<td>Error fetching models.</td>
 												</tr>
 											)
 										}

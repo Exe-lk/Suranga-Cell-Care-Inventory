@@ -54,12 +54,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				await deleteSupplier(supplier.id).unwrap();
 				Swal.fire('Deleted!', 'The supplier has been deleted.', 'success');
 
-				// Refetch categories to update the list
 				refetch();
 			}
 		} catch (error) {
-			console.error('Error deleting dealer:', error);
-			Swal.fire('Error', 'Failed to delete dealer.', 'error');
+			console.error('Error deleting supplier:', error);
+			Swal.fire('Error', 'Failed to delete supplier.', 'error');
 		}
 	};
 
@@ -99,7 +98,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				text: 'Please type "DELETE ALL" to confirm deleting all suppliers',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
@@ -119,21 +118,21 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				}
 				Swal.fire('Deleted!', 'All supplier have been deleted.', 'success');
 
-				// Refetch categories after deletion
+				
 				refetch();
 			}
 		} catch (error) {
-			console.error('Error deleting all dealers:', error);
+			console.error('Error deleting all suppliers:', error);
 			Swal.fire('Error', 'Failed to delete all suppliers.', 'error');
 		}
 	};
 
-	// Handle restore all categories
+
 	const handleRestoreAll = async () => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'This will restore all categories.',
+				text: 'This will restore all suppliers.',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -156,11 +155,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				}
 				Swal.fire('Restored!', 'All suppliers have been restored.', 'success');
 
-				// Refetch categories after restoring
+				
 				refetch();
 			}
 		} catch (error) {
-			console.error('Error restoring all dealers:', error);
+			console.error('Error restoring all suppliers:', error);
 			Swal.fire('Error', 'Failed to restore all suppliers.', 'error');
 		}
 	};
@@ -174,7 +173,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<table className='table table-bordered border-primary table-modern table-hover'>
 					<thead>
 						<tr>
-							<th>User</th>
+							<th>Supplier</th>
 
 							<th>
 								<Button
@@ -202,7 +201,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						)}
 						{error && (
 							<tr>
-								<td>Error fetching dealers.</td>
+								<td>Error fetching suppliers.</td>
 							</tr>
 						)}
 						{suppliers &&

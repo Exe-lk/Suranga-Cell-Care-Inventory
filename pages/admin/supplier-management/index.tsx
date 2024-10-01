@@ -40,7 +40,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const {data: suppliers,error, isLoading} = useGetSuppliersQuery(undefined);
 	const [updateSupplier] = useUpdateSupplierMutation();
-	//get user data from database
+	
 	const handleClickDelete = async (supplier: any) => {
 		try {
 			const result = await Swal.fire({
@@ -274,7 +274,7 @@ const Index: NextPage = () => {
 								<table className='table table-bordered border-primary table-modern table-hover'>
 								<thead>
 										<tr>
-											<th>User</th>
+											<th>Supplier</th>
 											<th>Items</th>
 											<th>E-mail</th>
 											<th>Address</th>

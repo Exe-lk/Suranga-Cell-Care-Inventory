@@ -357,6 +357,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
                     </FormGroup>
                     <FormGroup id='mobile' label='Mobile number' className='col-md-6'>
                         <Input
+                            type='number'
                             name="mobile"
                             value={formik.values.mobile}
                             onChange={formik.handleChange}

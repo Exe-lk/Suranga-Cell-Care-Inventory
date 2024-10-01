@@ -159,6 +159,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
 						<Input
+							type='number'
 							onChange={formik.handleChange}
 							value={formik.values.mobile}
 							onBlur={formik.handleBlur}

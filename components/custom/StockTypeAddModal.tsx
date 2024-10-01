@@ -69,7 +69,7 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 					await Swal.fire({
 						icon: 'error',
 						title: 'Error',
-						text: 'Failed to add the brand. Please try again.',
+						text: 'Failed to add the stock keeper. Please try again.',
 					});
 				}
 				
@@ -89,7 +89,7 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='type' label='StockKeeperType' className='col-md-6'>
+				<FormGroup id='type' label='Stock Keeper Type' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.type}
