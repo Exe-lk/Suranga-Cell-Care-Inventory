@@ -52,12 +52,10 @@ const Index: NextPage = () => {
 			if (lastCell) {
 				lastCell.remove();
 			}
-		});
-	
+		});	
 		
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
 		
 		try {
 			switch (format) {
@@ -177,7 +175,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {

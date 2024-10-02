@@ -48,7 +48,6 @@ const Index: NextPage = () => {
 	const { data: technicians, error: techniciansError, isLoading: techniciansLoading } = useGetTechniciansQuery(undefined);
 	console.log('tech', technicians);
 	
-
 	// Function to get technician name by TechnicianNo
 	const getTechnicianName = (technicianNum: string) => {
 		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
@@ -70,12 +69,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+			
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+			
 		try {
 			switch (format) {
 				case 'svg':
@@ -195,7 +192,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {

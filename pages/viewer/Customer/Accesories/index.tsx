@@ -40,12 +40,10 @@ const Index: NextPage = () => {
 			if (lastCell) {
 				lastCell.remove();
 			}
-		});
-	
+		});	
 		
 		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);	
 		
 		try {
 			switch (format) {
