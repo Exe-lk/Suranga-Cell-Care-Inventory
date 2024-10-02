@@ -27,7 +27,7 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const { data: suppliers } = useGetSuppliersQuery(undefined);
+	const { data: suppliers,refetch } = useGetSuppliersQuery(undefined);
 	const [updateSupplier, { isLoading }] = useUpdateSupplierMutation();
 
 	const supplierToEdit = suppliers?.find((supplier: any) => supplier.id === id);
@@ -95,12 +95,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateSupplier(data).unwrap();
+					refetch(); // Trigger refetch of stock keeper list after update
 
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Supplier Updated Successfully',
 					});
+					formik.resetForm();
 					setIsOpen(false); // Close the modal after successful update
 				} catch (error) {
 					await Swal.fire({

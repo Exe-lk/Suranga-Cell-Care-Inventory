@@ -20,10 +20,10 @@ import CategoryDeleteModal from '../../../components/custom/Category1DeleteModal
 import CategoryEditModal from '../../../components/custom/Category1EditModal';
 import Swal from 'sweetalert2';
 import { useGetCategories1Query , useUpdateCategory1Mutation} from '../../../redux/slices/category1ApiSlice';
+import { toPng, toSvg } from 'html-to-image';
+import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
-import { toPng, toSvg } from 'html-to-image';
 
 // Define the interface for category data
 interface Category {
@@ -107,10 +107,10 @@ const Index: NextPage = () => {
 		try {
 			switch (format) {
 				case 'svg':
-					await downloadTableAsSVG(clonedTable);
+					await downloadTableAsSVG();
 					break;
 				case 'png':
-					await downloadTableAsPNG(clonedTable);
+					await downloadTableAsPNG();
 					break;
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
@@ -182,46 +182,105 @@ const Index: NextPage = () => {
 		  alert('Error generating PDF. Please try again.');
 		}
 	  };
-	
-	
-	// Function to export the table data in SVG format using library html-to-image
-	const downloadTableAsSVG = async (table: HTMLElement) => {
-		try {
-			const dataUrl = await toSvg(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
-			});
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.svg'; 
-			link.click();
-		} catch (error) {
-			console.error('Error generating SVG: ', error); 
+
+	  // Helper function to hide the last cell of every row (including borders)
+const hideLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'hidden';  
+			lastCell.style.border = 'none'; 
+			lastCell.style.padding = '0';  
+			lastCell.style.margin = '0';  
 		}
-	};
-	
-	// Function to export the table data in PNG format using library html-to-image
-	const downloadTableAsPNG = async (table: HTMLElement) => {
-		try {
-			const dataUrl = await toPng(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
-			});
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.png'; 
-			link.click();
-		} catch (error) {
-			console.error('Error generating PNG: ', error); 
+	});
+};
+
+// Helper function to restore the visibility and styles of the last cell
+const restoreLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'visible'; 
+			lastCell.style.border = '';  
+			lastCell.style.padding = '';  
+			lastCell.style.margin = '';  
 		}
-	};
-	// JSX for rendering the page
+	});
+};
+
+
+// Function to export the table data in PNG format using html-to-image without cloning the table
+const downloadTableAsPNG = async () => {
+	try {
+		const table = document.querySelector('table');
+		if (!table) {
+			console.error('Table element not found');
+			return;
+		}
+
+		// Hide last cells before export
+		hideLastCells(table);
+
+		const dataUrl = await toPng(table, {
+			cacheBust: true,
+			style: {
+				width: table.offsetWidth + 'px',
+			},
+		});
+
+		// Restore the last cells after export
+		restoreLastCells(table);
+
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'table_data.png';
+		link.click();
+	} catch (error) {
+		console.error('Error generating PNG: ', error);
+		// Restore the last cells in case of error
+		const table = document.querySelector('table');
+		if (table) restoreLastCells(table);
+	}
+};
+
+// Function to export the table data in SVG format using html-to-image without cloning the table
+const downloadTableAsSVG = async () => {
+	try {
+		const table = document.querySelector('table');
+		if (!table) {
+			console.error('Table element not found');
+			return;
+		}
+
+		// Hide last cells before export
+		hideLastCells(table);
+
+		const dataUrl = await toSvg(table, {
+			backgroundColor: 'white',
+			cacheBust: true,
+			style: {
+				width: table.offsetWidth + 'px',
+				color: 'black',
+			},
+		});
+
+		// Restore the last cells after export
+		restoreLastCells(table);
+
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'table_data.svg';
+		link.click();
+	} catch (error) {
+		console.error('Error generating SVG: ', error);
+		// Restore the last cells in case of error
+		const table = document.querySelector('table');
+		if (table) restoreLastCells(table);
+	}
+};
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -244,7 +303,7 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<SubheaderSeparator />
+					
 					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
@@ -272,7 +331,7 @@ const Index: NextPage = () => {
 								</DropdownToggle>
 								<DropdownMenu isAlignmentEnd>
 									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
+									{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
 									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
 									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
 								</DropdownMenu>

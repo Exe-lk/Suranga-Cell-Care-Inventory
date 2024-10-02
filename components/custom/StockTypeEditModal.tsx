@@ -73,7 +73,7 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 					...values, // Update with form values
 				};
 				await updateStockKeeper({ id, ...updatedData }).unwrap();
-                setIsOpen(false);
+                refetch(); // Trigger refetch of stock keeper list after update
                 showNotification(
                     <span className='d-flex align-items-center'>
                         <Icon icon='Info' size='lg' className='me-1' />
@@ -82,7 +82,8 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
                     'Stock Keeper has been updated successfully'
                 );
                 Swal.fire('Updated!', 'Stock Keeper has been updated successfully.', 'success');
-                refetch(); // Trigger refetch of stock keeper list after update
+                formik.resetForm();
+                setIsOpen(false);
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');

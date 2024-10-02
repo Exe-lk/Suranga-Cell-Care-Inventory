@@ -92,7 +92,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 					...values, // Update with form values
 				};
 				await updateBrand({ id, ...updatedData }).unwrap();
-                setIsOpen(false);
+				refetch(); // Trigger refetch of stock keeper list after update
                 showNotification(
                     <span className='d-flex align-items-center'>
                         <Icon icon='Info' size='lg' className='me-1' />
@@ -101,7 +101,8 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
                     'Brand has been updated successfully'
                 );
                 Swal.fire('Updated!', 'Brand has been updated successfully.', 'success');
-                refetch(); // Trigger refetch of stock keeper list after update
+                formik.resetForm();
+                setIsOpen(false);
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');

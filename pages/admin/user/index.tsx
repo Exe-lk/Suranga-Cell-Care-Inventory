@@ -108,8 +108,8 @@ const Index: NextPage = () => {
 		}
 	};
 
-	 // Function to handle the download in different formats
-	 const handleExport = async (format: string) => {
+	// Function to handle the download in different formats
+	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
 
@@ -401,7 +401,7 @@ const downloadTableAsSVG = async () => {
 								</DropdownToggle>
 								<DropdownMenu isAlignmentEnd>
 									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
+									{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
 									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
 									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
 								</DropdownMenu>

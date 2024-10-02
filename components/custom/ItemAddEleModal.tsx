@@ -99,6 +99,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						title: 'Item Created Successfully',
 					});
 					setIsOpen(false);
+					formik.resetForm();
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',

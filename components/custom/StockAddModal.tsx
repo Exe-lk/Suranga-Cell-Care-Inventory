@@ -8,8 +8,11 @@ import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { useAddStockInMutation } from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetItemDisByIdQuery } from '../../redux/slices/itemManagementDisApiSlice';
+import { useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
 import {useGetSuppliersQuery} from '../../redux/slices/supplierApiSlice';
+import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
 import Select from '../bootstrap/forms/Select';
+
 
 // Define the props for the StockAddModal component
 interface StockAddModalProps {
@@ -48,7 +51,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
   const { data: stockInData, isSuccess } = useGetItemDisByIdQuery(id);
   const [addstockIn, { isLoading }] = useAddStockInMutation();
-  const { data: suppliers ,isLoading: supplierLoading,isError,} = useGetSuppliersQuery(undefined);
+  const { data: suppliers ,isLoading: supplierLoading,isError} = useGetSuppliersQuery(undefined);
+  const [updateStockInOut] = useUpdateStockInOutMutation();
+  const { refetch } = useGetItemDissQuery(undefined);
+  
   
 
   useEffect(() => {
@@ -104,9 +110,14 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
         });
 
         try {
+          const updatedQuantity = parseInt(stockInData.quantity) + parseInt(values.quantity);
           // Pass all values, including the read-only fields
           const response: any = await addstockIn(values).unwrap();
           console.log(response);
+
+          await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+
+          refetch();
 
           // Success feedback
           await Swal.fire({

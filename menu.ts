@@ -240,7 +240,7 @@ export const ViewPagesMenu = {
 	},
 	dealer: {
 		id: 'stock',
-		text: 'dealers',
+		text: 'Dealers',
 		path: 'viewer/dealer',
 		icon: 'SupervisedUserCircle',
 		subMenu: null,
