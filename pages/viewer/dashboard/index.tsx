@@ -22,11 +22,8 @@ const Index: NextPage = () => {
 				<PolarBasic />
 				<LineWithLabel1 />
 					<PieBasic1 />
-					<LineWithLabe2 />
-				
-				</div>
-				
-				
+					<LineWithLabe2 />				
+				</div>				
 			</Page>
 		</PageWrapper>
 	);

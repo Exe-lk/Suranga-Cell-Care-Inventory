@@ -15,10 +15,8 @@ import Page from '../../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
 import StockAddModal from '../../../../components/custom/ItemAddModal';
 import StockEditModal from '../../../../components/custom/StockEditModal';
-
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../../components/bootstrap/Dropdown';
 import StockDeleteModal from '../../../../components/custom/StockDeleteModal';
-
 import Swal from 'sweetalert2';
 import FormGroup from '../../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../../components/bootstrap/forms/Checks';
@@ -32,7 +30,6 @@ const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
@@ -59,12 +56,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+			
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+			
 		try {
 			switch (format) {
 				case 'svg':
@@ -171,7 +166,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -344,8 +338,7 @@ const downloadTableAsSVG = async () => {
 											<th>Brand</th>
 											<th>Model</th>
 											<th>Type</th>
-											<th>Quantity</th>
-											
+											<th>Quantity</th>											
 										</tr>
 									</thead>
 									<tbody>
