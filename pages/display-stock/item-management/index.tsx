@@ -39,7 +39,7 @@ const Index: NextPage = () => {
 	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
-	const {data: itemDiss,error, isLoading} = useGetItemDissQuery(undefined);
+	const {data: itemDiss,error, isLoading,refetch} = useGetItemDissQuery(undefined);
 	const [updateItemDis] = useUpdateItemDisMutation();
 
 	// Function to handle deletion of an item
@@ -343,6 +343,7 @@ const Index: NextPage = () => {
 																tag='a'
 																color='warning'
 																onClick={() =>(
+																	refetch(),
 																	setEditstockModalStatus(true),
 																	setId(itemDiss.id))
 																	

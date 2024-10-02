@@ -18,6 +18,8 @@ import {ItemAcceApiSlice} from './slices/itemManagementAcceApiSlice';
 import {stockInOutApiSlice} from './slices/stockInOutDissApiSlice';
 import {ItemDisApiSlice} from './slices/itemManagementDisApiSlice';
 import {stockInOutAcceApiSlice} from './slices/stockInOutAcceApiSlice';
+import {repairedPhoneApiSlice} from './slices/repairedPhoneApiSlice';
+
 
 const store = configureStore({
 	reducer: {
@@ -38,6 +40,7 @@ const store = configureStore({
 		[stockInOutApiSlice.reducerPath]: stockInOutApiSlice.reducer,
 		[ItemDisApiSlice.reducerPath]: ItemDisApiSlice.reducer,
 		[stockInOutAcceApiSlice.reducerPath]: stockInOutAcceApiSlice.reducer,
+		[repairedPhoneApiSlice.reducerPath]: repairedPhoneApiSlice.reducer,
 	},
 	middleware: (getDefaultMiddleware) =>
 		getDefaultMiddleware().concat(
@@ -58,6 +61,7 @@ const store = configureStore({
 			stockInOutApiSlice.middleware,
 			ItemDisApiSlice.middleware,
 			stockInOutAcceApiSlice.middleware,
+			repairedPhoneApiSlice.middleware,
 		),
 });
 

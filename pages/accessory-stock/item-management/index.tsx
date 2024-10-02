@@ -29,7 +29,7 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import { useUpdateItemAcceMutation} from '../../../redux/slices/itemManagementAcceApiSlice';
-import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
+import { useGetItemAccesQuery} from '../../../redux/slices/itemManagementAcceApiSlice';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -40,7 +40,7 @@ const Index: NextPage = () => {
 	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
-	const {data: itemAcces,error, isLoading} = useGetItemAccesQuery(undefined);
+	const {data: itemAcces,error, isLoading,refetch} = useGetItemAccesQuery(undefined);
 	const [updateItemAcce] = useUpdateItemAcceMutation();
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const type = [
@@ -462,6 +462,7 @@ const downloadTableAsSVG = async () => {
 																tag='a'
 																color='warning'
 																onClick={() =>(
+																	refetch(),
 																	setEditstockModalStatus(true),
 																	setId(itemAcces.id))
 																	
