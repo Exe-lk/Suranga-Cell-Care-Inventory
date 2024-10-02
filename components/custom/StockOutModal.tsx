@@ -11,6 +11,8 @@ import Button from '../bootstrap/Button';
 import Select from '../bootstrap/forms/Select';
 import Swal from 'sweetalert2';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
+import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
+import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 
 // Define the props for the StockAddModal component
 interface StockAddModalProps {
@@ -58,7 +60,6 @@ interface StockOut {
 
 // StockAddModal component definition
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
 		model: '',
@@ -88,6 +89,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	const [addstockOut] = useAddStockOutMutation();
 	const { data: stockOutData, isSuccess } = useGetItemAcceByIdQuery(id);
+	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const { refetch } = useGetItemAccesQuery(undefined);
 
 	useEffect(() => {
 		if (isSuccess && stockOutData) {
@@ -107,10 +110,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		formik.setFieldValue('dateIn', selectedTimestamp);
 
 		// Find the selected stockIn entry based on the selected timestamp
-		const selectedStock = filteredStockIn?.find((item: { timestamp: { seconds: number; nanoseconds: number } }) => {
-			const formattedDate = formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds);
-			return formattedDate === selectedTimestamp;
-		});
+		const selectedStock = filteredStockIn?.find(
+			(item: { timestamp: { seconds: number; nanoseconds: number } }) => {
+				const formattedDate = formatTimestamp(
+					item.timestamp.seconds,
+					item.timestamp.nanoseconds,
+				);
+				return formattedDate === selectedTimestamp;
+			},
+		);
 
 		// Set the cost from the selected stockIn entry
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
@@ -144,10 +152,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.mobile) errors.mobile = 'Mobile is required';
 			if (!values.nic) errors.nic = 'NIC is required';
 			if (!values.email) errors.email = 'Email is required';
-			if(!values.cost) errors.cost = 'Cost is required';
-			
+			// if (!values.cost) errors.cost = 'Cost is required';
 
-			
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -159,11 +165,43 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
+					const stockInQuantity = stockOutData.quantity;
+					console.log(stockInQuantity);
+					// Parse the submitted stock out quantity
+					const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
+					console.log(stockOutQuantity);
+					// Check if stock quantities are valid numbers
+					if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Invalid Quantity',
+							text: 'Quantity must be a valid number.',
+						});
+						return; // Exit early if quantities are invalid
+					}
 
-				try {
+					// Subtract the stock out quantity from stock in quantity
+					const updatedQuantity = stockInQuantity - stockOutQuantity;
+
+					if (updatedQuantity < 0) {
+						Swal.fire({
+							icon: 'error',
+							title: 'Insufficient Stock',
+							text: 'The stock out quantity exceeds available stock.',
+						});
+						return; // Prevent stock from going below zero
+					}
+
 					const response = await addstockOut(values).unwrap();
 					console.log(response);
+
+					await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+
+					// Refetch data to update UI
+					refetch();
+
 					await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
+					formik.resetForm();
 					setIsOpen(false); // Close the modal after successful addition
 				} catch (error) {
 					await Swal.fire({
@@ -172,11 +210,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						text: 'Failed to add the item dis. Please try again.',
 					});
 				}
-			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				alert('An error occurred during file upload. Please try again later.');
-			}
-		},
+			} 
 	});
 
 	return (
@@ -218,37 +252,48 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						/>
 					</FormGroup>
 
-					<FormGroup id="dateIn" label="Date In" className="col-md-6">
+					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
 						<Select
-							id="dateIn"
-							name="dateIn"
-							ariaLabel="dateIn"
+							id='dateIn'
+							name='dateIn'
+							ariaLabel='dateIn'
 							onChange={handleDateInChange}
 							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
-							className={`form-control ${formik.touched.dateIn && formik.errors.dateIn ? 'is-invalid' : ''}`}
-						>
-							<option value="">Select a Time Stamp</option>
+							className={`form-control ${
+								formik.touched.dateIn && formik.errors.dateIn ? 'is-invalid' : ''
+							}`}>
+							<option value=''>Select a Time Stamp</option>
 							{stockInLoading && <option>Loading time stamps...</option>}
 							{stockInError && <option>Error fetching timestamps</option>}
-							{filteredStockIn?.map((item: { id: string; timestamp: { seconds: number; nanoseconds: number } }) => (
-								<option
-									key={item.id}
-									value={formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds)}
-								>
-									{formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds)}
-								</option>
-							))}
+							{filteredStockIn?.map(
+								(item: {
+									id: string;
+									timestamp: { seconds: number; nanoseconds: number };
+								}) => (
+									<option
+										key={item.id}
+										value={formatTimestamp(
+											item.timestamp.seconds,
+											item.timestamp.nanoseconds,
+										)}>
+										{formatTimestamp(
+											item.timestamp.seconds,
+											item.timestamp.nanoseconds,
+										)}
+									</option>
+								),
+							)}
 							{formik.touched.dateIn && formik.errors.dateIn && (
-								<div className="invalid-feedback">{formik.errors.dateIn}</div>
+								<div className='invalid-feedback'>{formik.errors.dateIn}</div>
 							)}
 						</Select>
 					</FormGroup>
 
 					{/* Display cost field if selectedCost is available */}
 					{selectedCost && (
-						<FormGroup id="cost" label="Cost(Per Unit)" className="col-md-6">
-							<Input type="text" value={selectedCost} readOnly />
+						<FormGroup id='cost' label='Cost(Per Unit)' className='col-md-6'>
+							<Input type='text' value={selectedCost} readOnly />
 						</FormGroup>
 					)}
 
@@ -307,7 +352,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={!!formik.errors.email && formik.touched.email}
 						/>
 					</FormGroup>
-
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>

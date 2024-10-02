@@ -287,7 +287,7 @@ const downloadTableAsSVG = async () => {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
+									<FormGroup label='Status type' className='col-12'>
 									<ChecksGroup>
 											{Status.map((bill, index) => (
 												<Checks

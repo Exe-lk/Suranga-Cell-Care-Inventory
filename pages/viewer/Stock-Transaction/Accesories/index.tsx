@@ -276,7 +276,7 @@ const downloadTableAsSVG = async () => {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Category type' className='col-12'>
+									<FormGroup label='Stock type' className='col-12'>
 									<ChecksGroup>
 											{stock.map((stockInOut, index) => (
 												<Checks
@@ -339,10 +339,10 @@ const downloadTableAsSVG = async () => {
 								<table className='table table-modern table-bordered border-primary table-hover '>
 								<thead>
 										<tr>
+											<th>Date</th>
 											<th>Category</th>
 											<th>Brand</th>
 											<th>Model</th>
-											<th>Date</th>
 											<th>Type</th>
 											<th>Quantity</th>
 											
@@ -375,10 +375,10 @@ const downloadTableAsSVG = async () => {
 												)
 												.map((stockInOut: any) => (
 													<tr key={stockInOut.cid}>
+														<td>{stockInOut.date}</td>
 														<td>{stockInOut.category}</td>
 														<td>{stockInOut.brand}</td>
 														<td>{stockInOut.model}</td>
-														<td>{stockInOut.date}</td>
 														<td>{stockInOut.stock}</td>
 														<td>{stockInOut.quantity}</td>
 													</tr>

@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createItemAcce = async (type:string,mobileType: string,category:string,model:string,brand:string,reorderLevel:string,description:string) => {
+export const createItemAcce = async (type:string,mobileType: string,category:string,model:string,quantity:string,brand:string,reorderLevel:string,description:string) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'ItemManagementAcce'), {type, mobileType , category , model,brand,reorderLevel,description, status });
+  const docRef = await addDoc(collection(firestore, 'ItemManagementAcce'), {type, mobileType , category , model,quantity,brand,reorderLevel,description, status });
   return docRef.id;
 };
 
@@ -40,9 +40,9 @@ export const getItemAcceById = async (id: string) => {
   }
 };
 
-export const updateItemAcce= async (id: string,type:string,mobileType: string,category:string,model:string,brand:string,reorderLevel:string,description:string,status:boolean) => {
+export const updateItemAcce= async (id: string,type:string,mobileType: string,category:string,model:string,quantity:string,brand:string,reorderLevel:string,description:string,status:boolean) => {
   const ItemAcceRef = doc(firestore, 'ItemManagementAcce', id);
-  await updateDoc(ItemAcceRef, { type, mobileType , category , model,brand,reorderLevel,description, status });
+  await updateDoc(ItemAcceRef, { type, mobileType , category , model,quantity,brand,reorderLevel,description, status });
 };
 
 export const deleteItemAcce = async (id: string) => {

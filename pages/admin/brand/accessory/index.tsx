@@ -309,7 +309,7 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<SubheaderSeparator />
+					
 					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'

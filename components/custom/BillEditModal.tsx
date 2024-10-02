@@ -27,7 +27,7 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const { data: bills } = useGetBillsQuery(undefined);
+	const { data: bills ,refetch} = useGetBillsQuery(undefined);
 	const [updateBill, { isLoading }] = useUpdateBillMutation();
 
 	const billToEdit = bills?.find((bill: any) => bill.id === id);
@@ -149,12 +149,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateBill(data).unwrap();
+					refetch(); // Refetch the data to update the UI
 
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Bill Updated Successfully',
 					});
+					formik.resetForm(); // Reset the form
 					setIsOpen(false); // Close the modal after successful update
 				} catch (error) {
 					await Swal.fire({

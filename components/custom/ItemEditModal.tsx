@@ -362,6 +362,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			category: itemAcceToEdit?.category || '',
 			model: itemAcceToEdit?.model || '',
 			brand: itemAcceToEdit?.brand || '',
+			quantity: itemAcceToEdit?.quantity || '',
 			reorderLevel: itemAcceToEdit?.reorderLevel || '',
 			description: itemAcceToEdit?.description || '',
 			status: true,
@@ -373,6 +374,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				category?: string;
 				model?: string;
 				brand?: string;
+				quantity?: string;
 				reorderLevel?: string;
 				description?: string;
 			} = {};
@@ -406,17 +408,20 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					category: values.category,
 					model: values.model,
 					brand: values.brand,
+					quantity: values.quantity,
 					reorderLevel: values.reorderLevel,
 					description: values.description,
 				};
 				await updateItemAcce(data).unwrap();
+				
+				await refetch(); // Refresh the data
 
 				// Success feedback
 				await Swal.fire({
 					icon: 'success',
 					title: 'Item Acce Updated Successfully',
 				});
-				await refetch(); // Refresh the data
+				formik.resetForm();
 				setIsOpen(false); // Close the modal after successful update
 			} catch (error) {
 				await Swal.fire({
@@ -476,6 +481,16 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value='Mobile'>Mobile</Option>
 							<Option value='Accessory'>Accessory</Option>
 						</Select>
+					</FormGroup>
+					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
+								<Input
+									type='number'
+									onChange={formik.handleChange}
+									value={formik.values.quantity}
+									onBlur={formik.handleBlur}
+									name='quantity'
+									readOnly
+								/>
 					</FormGroup>
 
 					{/* Additional form fields based on condition */}

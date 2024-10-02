@@ -8,6 +8,8 @@ import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { useAddStockInMutation } from '../../redux/slices/stockInOutAcceApiSlice';
 import { useGetItemAcceByIdQuery } from '../../redux/slices/itemManagementAcceApiSlice';
+import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
+import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
 
 interface StockAddModalProps {
   id: string;
@@ -56,6 +58,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
   const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
   const [addstockIn, { isLoading }] = useAddStockInMutation();
+  const [updateStockInOut] = useUpdateStockInOutMutation();
+  const { refetch } = useGetItemAccesQuery(undefined);
 
   useEffect(() => {
     if (isSuccess && stockInData) {
@@ -126,13 +130,20 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
         });
 
         try {
+          const updatedQuantity = parseInt(stockInData.quantity) + parseInt(values.quantity);
           const response: any = await addstockIn(values).unwrap();
           console.log(response);
+
+          await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+
+          refetch();
+          
 
           await Swal.fire({
             icon: 'success',
             title: 'Stock In Created Successfully',
           });
+          formik.resetForm();
           setIsOpen(false); 
         } catch (error) {
           await Swal.fire({
