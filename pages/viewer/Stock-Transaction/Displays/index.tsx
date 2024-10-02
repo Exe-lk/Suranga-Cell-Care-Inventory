@@ -103,42 +103,54 @@ const Index: NextPage = () => {
 	//  function for PDF export
 	const downloadTableAsPDF = (table: HTMLElement) => {
 		try {
-		  const pdf = new jsPDF('p', 'pt', 'a4');
-		  const rows: any[] = [];
-		  const headers: any[] = [];
-		  
-		  const thead = table.querySelector('thead');
-		  if (thead) {
-			const headerCells = thead.querySelectorAll('th');
-			headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
-		  }
-		  const tbody = table.querySelector('tbody');
-		  if (tbody) {
-			const bodyRows = tbody.querySelectorAll('tr');
-			bodyRows.forEach((row: any) => {
-			  const cols = row.querySelectorAll('td');
-			  const rowData = Array.from(cols).map((col: any) => col.innerText);
-			  rows.push(rowData);
+			const pdf = new jsPDF('p', 'pt', 'a4');
+			const rows: any[] = [];
+			const headers: any[] = [];
+	
+			// Adding the title "Accessory + Report" before the table
+			pdf.setFontSize(16);
+			pdf.setFont('helvetica', 'bold'); // Make the text bold
+			const title = 'Displays Transactions Report';
+			const pageWidth = pdf.internal.pageSize.getWidth();
+			const titleWidth = pdf.getTextWidth(title);
+			const titleX = (pageWidth - titleWidth) / 2; // Center the title
+			pdf.text(title, titleX, 30); // Position the title
+			
+	
+			const thead = table.querySelector('thead');
+			if (thead) {
+				const headerCells = thead.querySelectorAll('th');
+				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+			}
+	
+			const tbody = table.querySelector('tbody');
+			if (tbody) {
+				const bodyRows = tbody.querySelectorAll('tr');
+				bodyRows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td');
+					const rowData = Array.from(cols).map((col: any) => col.innerText);
+					rows.push(rowData);
+				});
+			}
+	
+			// Generate the table below the title
+			autoTable(pdf, {
+				head: headers,
+				body: rows,
+				margin: { top: 50 },
+				styles: {
+					overflow: 'linebreak',
+					cellWidth: 'wrap',
+				},
+				theme: 'grid',
 			});
-		  }
-		  autoTable(pdf, {
-			head: headers,
-			body: rows,
-			margin: { top: 50 },
-			styles: {
-			  overflow: 'linebreak',
-			  cellWidth: 'wrap',
-			},
-			theme: 'grid',
-		  });
-	  
-		  pdf.save('table_data.pdf');
+	
+			pdf.save('Displays Transactions Report.pdf');
 		} catch (error) {
-		  console.error('Error generating PDF: ', error);
-		  alert('Error generating PDF. Please try again.');
+			console.error('Error generating PDF: ', error);
+			alert('Error generating PDF. Please try again.');
 		}
-	  };
-
+	};
 	  // Helper function to hide the last cell of every row (including borders)
 const hideLastCells = (table: HTMLElement) => {
 	const rows = table.querySelectorAll('tr');
