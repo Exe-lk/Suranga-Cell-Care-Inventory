@@ -37,11 +37,9 @@ const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
-
 	const { data: stockInOuts, error: stockInOutsError, isLoading: stockInOutsLoading } = useGetStockInOutsQuery(undefined);
 
 	// Filter stockInOuts for stockOut items
@@ -62,11 +60,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+			
 		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);	
 		
 		try {
 			switch (format) {
@@ -300,9 +296,7 @@ const downloadTableAsSVG = async () => {
 											<th>Price(Rs.)</th>
 										</tr>
 									</thead>
-
-									<tbody>
-									
+									<tbody>									
 										{filteredStockOuts &&
 											filteredStockOuts
 											.filter((StockItem: any) =>

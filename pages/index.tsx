@@ -68,11 +68,9 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 			if (!values.email) {
 				errors.email = 'Required';
 			}
-
 			if (!values.password) {
 				errors.password = 'Required';
 			}
-
 			return errors;
 		},
 
@@ -149,9 +147,7 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 										<Logo width={200} />
 									</Link>
 								</div>
-
 								<LoginHeader />
-
 								<form className='row g-4'>
 									<>
 										<div className='col-12'>

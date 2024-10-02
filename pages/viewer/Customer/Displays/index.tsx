@@ -48,12 +48,10 @@ const Index: NextPage = () => {
 			if (lastCell) {
 				lastCell.remove();
 			}
-		});
-	
+		});	
 		
 		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);	
 		
 		try {
 			switch (format) {
@@ -161,7 +159,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -277,8 +274,7 @@ const downloadTableAsSVG = async () => {
 									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
 									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
 								</DropdownMenu>
-							</Dropdown>
-								
+							</Dropdown>								
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-bordered border-primary table-modern table-hover'>
@@ -287,8 +283,7 @@ const downloadTableAsSVG = async () => {
 											<th>Customer Name</th>
 											<th>Email</th>
 											<th>Mobile Number</th>
-											<th>NIC</th>
-											
+											<th>NIC</th>											
 										</tr>
 									</thead>
 									<tbody>
@@ -320,8 +315,7 @@ const downloadTableAsSVG = async () => {
 													</tr>
 												))}
 									</tbody>
-								</table>
-								
+								</table>								
 							</CardBody>
 						</Card>
 					</div>
