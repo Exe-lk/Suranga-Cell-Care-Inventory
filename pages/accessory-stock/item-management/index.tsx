@@ -68,6 +68,7 @@ const Index: NextPage = () => {
 					mobileType: itemAcce.mobileType,
 					category: itemAcce.category,
 					model: itemAcce.model,
+					quantity: itemAcce.quantity,
 					brand: itemAcce.brand,
 					reorderLevel: itemAcce.reorderLevel,
 					description: itemAcce.description,
@@ -392,6 +393,7 @@ const downloadTableAsSVG = async () => {
 											<th>Category</th>
 											<th>Model</th>
 											<th>Brand</th>
+											<th>Quantity</th>
 											<th>Reorder Level</th>
 											<th>Description</th>
 											<th></th>
@@ -436,6 +438,7 @@ const downloadTableAsSVG = async () => {
 													<td>{itemAcces.category}</td>
 													<td>{itemAcces.model}</td>
 													<td>{itemAcces.brand}</td>
+													<td>{itemAcces.quantity}</td>
 													<td>{itemAcces.reorderLevel}</td>
 													<td>{itemAcces.description}</td>
 

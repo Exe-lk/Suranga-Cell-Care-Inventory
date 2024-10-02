@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import Option from '../bootstrap/Option';
 import { useAddBillMutation } from '../../redux/slices/billApiSlice';
 import { useGetBillsQuery } from '../../redux/slices/billApiSlice';
+import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
 
 interface CategoryEditModalProps {
 	id: string;
@@ -18,8 +19,14 @@ interface CategoryEditModalProps {
 }
 
 const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addBill , {isLoading}] = useAddBillMutation();
-	const {refetch} = useGetBillsQuery(undefined);
+	const [addBill, { isLoading }] = useAddBillMutation();
+	const { refetch } = useGetBillsQuery(undefined);
+	const {
+		data: technicians,
+		isLoading: techniciansLoading,
+		isError,
+	} = useGetTechniciansQuery(undefined);
+	console.log(technicians);
 
 	const formik = useFormik({
 		initialValues: {
@@ -37,7 +44,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			Price: '',
 			Status: '',
 			DateOut: '',
-			status: true
+			status: true,
 		},
 		validate: (values) => {
 			const errors: {
@@ -83,7 +90,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.email) {
 				errors.email = 'Email is required.';
 			}
-			if(!values.email.includes('@')) {
+			if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
 			if (!values.NIC) {
@@ -101,7 +108,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.DateOut) {
 				errors.DateOut = 'Date Out is required.';
 			}
-			
 
 			return errors;
 		},
@@ -115,7 +121,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
 					// Add the new category
 					const response: any = await addBill(values).unwrap();
@@ -129,6 +135,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						icon: 'success',
 						title: 'Bill Created Successfully',
 					});
+					formik.resetForm();
 					setIsOpen(false); // Close the modal after successful addition
 				} catch (error) {
 					await Swal.fire({
@@ -151,7 +158,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
+					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.phoneDetail}
@@ -189,7 +196,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
+
 					<FormGroup id='phoneModel' label='Phone Model' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -213,16 +220,28 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						/>
 					</FormGroup>
 					<FormGroup id='technicianNum' label='Technician No' className='col-md-6'>
-						<Input
+						<Select
+							ariaLabel='Select Technician'
+							placeholder='Select a Technician'
 							onChange={formik.handleChange}
 							value={formik.values.technicianNum}
-							onBlur={formik.handleBlur}
+							name='technicianNum'
 							isValid={formik.isValid}
 							isTouched={formik.touched.technicianNum}
 							invalidFeedback={formik.errors.technicianNum}
 							validFeedback='Looks good!'
-						/>
+							disabled={techniciansLoading || isError}>
+							<Option value=''>Select a Technician</Option>
+							{technicians?.map((technician: any) => (
+								<Option key={technician.id} value={technician.id}>
+									{technician.technicianNum}
+								</Option>
+							))}
+						</Select>
+						{techniciansLoading ? <p>Loading technicians...</p> : <></>}
+						{isError ? <p>Error loading technicians. Please try again.</p> : <></>}
 					</FormGroup>
+
 					<FormGroup id='CustomerName' label='Customer Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -234,7 +253,10 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='CustomerMobileNum' label='Customer Mobile Number' className='col-md-6'>
+					<FormGroup
+						id='CustomerMobileNum'
+						label='Customer Mobile Number'
+						className='col-md-6'>
 						<Input
 							type='tel'
 							onChange={formik.handleChange}
@@ -300,8 +322,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isValid={formik.isValid}
 							isTouched={formik.touched.Status}
 							invalidFeedback={formik.errors.Status}
-							validFeedback='Looks good!'
-						>
+							validFeedback='Looks good!'>
 							<Option value=''>Select the Status</Option>
 							<Option value='waiting to in progress'>waiting to in progress</Option>
 							<Option value='in progress'>in progress</Option>

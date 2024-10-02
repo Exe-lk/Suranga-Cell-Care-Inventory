@@ -129,13 +129,14 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						otherCategory: values.otherCategory,
 					};
 					await updateItemDis(data).unwrap();
+					await refetch(); // Refresh the data
 
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Item Dis Updated Successfully',
 					});
-					await refetch(); // Refresh the data
+					formik.resetForm();
 					setIsOpen(false); // Close the modal after successful update
 				} catch (error) {
 					await Swal.fire({

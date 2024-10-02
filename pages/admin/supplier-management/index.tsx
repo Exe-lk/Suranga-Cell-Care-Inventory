@@ -296,7 +296,7 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<SubheaderSeparator />
+					
 					<Button
 						icon='PersonAdd'
 						color='success'

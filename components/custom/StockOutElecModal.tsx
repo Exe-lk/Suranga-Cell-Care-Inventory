@@ -220,6 +220,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		
 				// Show success message
 				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
+				formik.resetForm();
 				setIsOpen(false); // Close the modal after successful addition
 			} catch (error) {
 				await Swal.fire({

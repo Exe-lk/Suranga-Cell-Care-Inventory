@@ -20,10 +20,11 @@ import BillDeleteModal from '../../../components/custom/BillDeleteModal';
 import BillEditModal from '../../../components/custom/BillEditModal';
 import Swal from 'sweetalert2';
 import { useUpdateBillMutation, useGetBillsQuery } from '../../../redux/slices/billApiSlice';
+import { toPng, toSvg } from 'html-to-image';
+import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
-import { toPng, toSvg } from 'html-to-image';
+
 // Define the functional component for the index page
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -34,6 +35,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>(''); // State for ID
 	const {data: bills,error, isLoading} = useGetBillsQuery(undefined);
 	const [updateBill] = useUpdateBillMutation();
+	
 
 	//delete user
 	const handleClickDelete = async (bill: any) => {
@@ -102,10 +104,10 @@ const Index: NextPage = () => {
 		try {
 			switch (format) {
 				case 'svg':
-					await downloadTableAsSVG(clonedTable);
+					await downloadTableAsSVG();
 					break;
 				case 'png':
-					await downloadTableAsPNG(clonedTable);
+					await downloadTableAsPNG();
 					break;
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
@@ -177,45 +179,105 @@ const Index: NextPage = () => {
 		  alert('Error generating PDF. Please try again.');
 		}
 	  };
-	
-	
-	// Function to export the table data in SVG format using library html-to-image
-	const downloadTableAsSVG = async (table: HTMLElement) => {
-		try {
-			const dataUrl = await toSvg(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
-			});
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.svg'; 
-			link.click();
-		} catch (error) {
-			console.error('Error generating SVG: ', error); 
+
+	  // Helper function to hide the last cell of every row (including borders)
+const hideLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'hidden';  
+			lastCell.style.border = 'none'; 
+			lastCell.style.padding = '0';  
+			lastCell.style.margin = '0';  
 		}
-	};
-	
-	// Function to export the table data in PNG format using library html-to-image
-	const downloadTableAsPNG = async (table: HTMLElement) => {
-		try {
-			const dataUrl = await toPng(table, {
-				backgroundColor: 'white', 
-				cacheBust: true, 
-				style: { 
-					width: table.offsetWidth + 'px'
-				}
-			});
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.png'; 
-			link.click();
-		} catch (error) {
-			console.error('Error generating PNG: ', error); 
+	});
+};
+
+// Helper function to restore the visibility and styles of the last cell
+const restoreLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'visible'; 
+			lastCell.style.border = '';  
+			lastCell.style.padding = '';  
+			lastCell.style.margin = '';  
 		}
-	};
+	});
+};
+
+
+// Function to export the table data in PNG format using html-to-image without cloning the table
+const downloadTableAsPNG = async () => {
+	try {
+		const table = document.querySelector('table');
+		if (!table) {
+			console.error('Table element not found');
+			return;
+		}
+
+		// Hide last cells before export
+		hideLastCells(table);
+
+		const dataUrl = await toPng(table, {
+			cacheBust: true,
+			style: {
+				width: table.offsetWidth + 'px',
+			},
+		});
+
+		// Restore the last cells after export
+		restoreLastCells(table);
+
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'table_data.png';
+		link.click();
+	} catch (error) {
+		console.error('Error generating PNG: ', error);
+		// Restore the last cells in case of error
+		const table = document.querySelector('table');
+		if (table) restoreLastCells(table);
+	}
+};
+
+// Function to export the table data in SVG format using html-to-image without cloning the table
+const downloadTableAsSVG = async () => {
+	try {
+		const table = document.querySelector('table');
+		if (!table) {
+			console.error('Table element not found');
+			return;
+		}
+
+		// Hide last cells before export
+		hideLastCells(table);
+
+		const dataUrl = await toSvg(table, {
+			backgroundColor: 'white',
+			cacheBust: true,
+			style: {
+				width: table.offsetWidth + 'px',
+				color: 'black',
+			},
+		});
+
+		// Restore the last cells after export
+		restoreLastCells(table);
+
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'table_data.svg';
+		link.click();
+	} catch (error) {
+		console.error('Error generating SVG: ', error);
+		// Restore the last cells in case of error
+		const table = document.querySelector('table');
+		if (table) restoreLastCells(table);
+	}
+};
 
 	return (
 		<PageWrapper>
@@ -267,7 +329,7 @@ const Index: NextPage = () => {
 								</DropdownToggle>
 								<DropdownMenu isAlignmentEnd>
 									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
+									{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
 									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
 									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
 								</DropdownMenu>
@@ -326,8 +388,9 @@ const Index: NextPage = () => {
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
-											<th>Phone Details</th>
 											<th>Date In</th>
+											<th>Date out</th>
+											<th>Phone Details</th>
 											<th>Bill Number</th>
 											<th>Phone Model</th>
 											<th>Repair Type</th>
@@ -339,7 +402,7 @@ const Index: NextPage = () => {
 											<th>Cost</th>
                                             <th>Price</th>
                                             <th>Status</th>
-                                            <th>Date out</th>
+                                            
 											
 											
 										</tr>
@@ -366,8 +429,9 @@ const Index: NextPage = () => {
 												)
 												.map((bill: any) => (
 													<tr key={bill.cid}>
-														<td>{bill.phoneDetail}</td>
 														<td>{bill.dateIn}</td>
+														<td>{bill.DateOut}</td>
+														<td>{bill.phoneDetail}</td>
 														<td>{bill.billNumber}</td>
 														<td>{bill.phoneModel}</td>
 														<td>{bill.repairType}</td>
@@ -379,7 +443,7 @@ const Index: NextPage = () => {
 														<td>{bill.cost}</td>
 														<td>{bill.Price}</td>
 														<td>{bill.Status}</td>
-														<td>{bill.DateOut}</td>
+														
 														<td>
 															<Button
 																icon='Edit'

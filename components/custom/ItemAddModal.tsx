@@ -38,6 +38,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			category: '',
 			model: '',
 			brand: '',
+			quantity: 0,
 			reorderLevel: '',
 			description: '',
 			status: true,
@@ -85,6 +86,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					 brand: values.brand,
 					 model: values.model,
 				  }).unwrap();
+				  
 		 
 				  console.log('Response from API:', response); // Debugging API response
 		 
@@ -93,6 +95,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					 icon: 'success',
 					 title: 'Item Created Successfully',
 				  });
+				  formik.resetForm();
 				  setIsOpen(false); // Close the modal on success
 			   } catch (error) {
 				  console.error('Error:', error); // Debugging API error
