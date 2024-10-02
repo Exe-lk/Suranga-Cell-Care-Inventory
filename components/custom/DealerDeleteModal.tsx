@@ -87,7 +87,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				await updateDealer(values);
 
-				Swal.fire('Restory!', 'The dealer has been deleted.', 'success');
+				Swal.fire('Restory!', 'The dealer has been restored.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -133,7 +133,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'This will restore all categories.',
+				text: 'This will restore all dealers.',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -154,7 +154,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateDealer(values).unwrap();
 				}
-				Swal.fire('Restored!', 'All deaers have been restored.', 'success');
+				Swal.fire('Restored!', 'All dealers have been restored.', 'success');
 
 				// Refetch categories after restoring
 				refetch();
@@ -174,7 +174,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<table className='table table-bordered border-primary table-modern table-hover'>
 					<thead>
 						<tr>
-							<th>User</th>
+							<th>Dealer</th>
 
 							<th>
 								<Button

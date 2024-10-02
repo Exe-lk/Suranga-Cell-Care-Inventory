@@ -100,6 +100,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						icon: 'success',
 						title: 'Dealer Created Successfully',
 					});
+					formik.resetForm();
 					setIsOpen(false); // Close the modal after successful addition
 				} catch (error) {
 					await Swal.fire({

@@ -271,7 +271,7 @@ const Index: NextPage = () => {
 									<thead>
 										<tr>
 											<th>Technician Number</th>
-											<th>User</th>
+											<th>Technicians</th>
 											<th>Type</th>
 											
 											<th>Mobile number</th>

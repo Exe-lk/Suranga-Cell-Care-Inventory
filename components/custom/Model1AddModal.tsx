@@ -182,7 +182,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<div className='invalid-feedback'>{formik.errors.brand}</div>
 						) : <></>}
 					</FormGroup>
-				<FormGroup id='name' label='Modelname' className='col-md-6'>
+				<FormGroup id='name' label='Model Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

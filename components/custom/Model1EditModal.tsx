@@ -110,7 +110,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 					...values, // Update with form values
 				};
 				await updateModel({ id, ...updatedData }).unwrap();
-                setIsOpen(false);
+                refetch(); // Trigger refetch of stock keeper list after update
 				showNotification(
 					<span className='d-flex align-items-center'>
 						<Icon icon='Info' size='lg' className='me-1' />
@@ -120,7 +120,8 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 				);
 				Swal.fire('Updated!', 'Model has been updated successfully.', 'success');
 
-				refetch(); // Trigger refetch of users list after update
+				formik.resetForm();
+                setIsOpen(false);
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');

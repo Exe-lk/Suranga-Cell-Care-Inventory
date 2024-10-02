@@ -53,7 +53,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 
 	const handleClickRestore = async (model: any) => {
 		if (!models) {
-			console.error('No users to restore.');
+			console.error('No models to restore.');
 			return;
 		}
 
@@ -92,7 +92,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 	const handleDeleteAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Type "DELETE ALL" to confirm deleting all users.',
+			text: 'Type "DELETE ALL" to confirm deleting all models.',
 			input: 'text',
 			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
@@ -111,7 +111,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 	const handleRestoreAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Restore all users?',
+			text: 'Restore all models?',
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});

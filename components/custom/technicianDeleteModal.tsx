@@ -86,7 +86,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				await updateTechnician(values);
 
-				Swal.fire('Restory!', 'The technician has been deleted.', 'success');
+				Swal.fire('Deleted!', 'The technician has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -98,7 +98,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				text: 'Please type "DELETE ALL" to confirm deleting all technicians',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
@@ -132,7 +132,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'This will restore all categories.',
+				text: 'This will restore all technicians.',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -172,7 +172,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<table className='table table-bordered border-primary table-modern table-hover'>
 					<thead>
 						<tr>
-							<th>User</th>
+							<th>Technicians</th>
 
 							<th>
 								<Button

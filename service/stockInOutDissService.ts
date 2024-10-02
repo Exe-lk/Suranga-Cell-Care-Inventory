@@ -29,9 +29,9 @@ export const getstockInById = async (id: string) => {
     return null; 
   }
 };
-export const updatestockIn = async (id: string,quantity:string ,status: any) => {
-  const stockInRef = doc(firestore, 'Stock', id);
-  await updateDoc(stockInRef, {quantity, status });
+export const updatestockIn = async (id: string,quantity:string ) => {
+  const stockInRef = doc(firestore, 'ItemManagementDis', id);
+  await updateDoc(stockInRef, {quantity });
 };
 
 export const createstockOut = async (model: string,brand: string,category:string,quantity:string, date: string,dealerName:string,dealerTelNum:string,dealerPrecentage:string,technicianNum:string,dateIn:string,cost:string,sellingPrice:string,sellerName:string,stock:string) => {

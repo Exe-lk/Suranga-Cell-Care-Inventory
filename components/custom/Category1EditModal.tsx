@@ -67,7 +67,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 					...values, // Update with form values
 				};
 				await updateCategory({ id, ...updatedData }).unwrap();
-                setIsOpen(false);
+                refetch(); // Trigger refetch of stock keeper list after update
                 showNotification(
                     <span className='d-flex align-items-center'>
                         <Icon icon='Info' size='lg' className='me-1' />
@@ -76,7 +76,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
                     'Category has been updated successfully'
                 );
                 Swal.fire('Updated!', 'Category has been updated successfully.', 'success');
-                refetch(); // Trigger refetch of stock keeper list after update
+                formik.resetForm();
+                setIsOpen(false);
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');

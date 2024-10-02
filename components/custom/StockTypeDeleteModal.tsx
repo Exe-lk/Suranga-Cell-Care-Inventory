@@ -53,7 +53,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 
 	const handleClickRestore = async (stockKeeper: any) => {
 		if (!stockKeepers) {
-			console.error('No users to restore.');
+			console.error('No stock types to restore.');
 			return;
 		}
 
@@ -90,7 +90,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 	const handleDeleteAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Type "DELETE ALL" to confirm deleting all users.',
+			text: 'Type "DELETE ALL" to confirm deleting all stock keepers.',
 			input: 'text',
 			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
@@ -109,7 +109,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 	const handleRestoreAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Restore all users?',
+			text: 'Restore all stock keepers?',
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});

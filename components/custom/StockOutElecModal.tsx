@@ -12,6 +12,8 @@ import Select from '../bootstrap/forms/Select';
 import Swal from 'sweetalert2';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
+import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
+import { useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
 
 // Define the props for the StockAddModal component
 interface StockAddModalProps {
@@ -95,10 +97,13 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		isLoading: stockInLoading,
 		isError: stockInError,
 	} = useGetStockInOutsQuery(undefined);
-	console.log(stockInData);
+	// console.log(stockInData);
 
 	const [addstockOut] = useAddStockOutMutation();
 	const { data: stockOutData, isSuccess } = useGetItemDisByIdQuery(id);
+	console.log(stockOutData);
+	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const { refetch } = useGetItemDissQuery(undefined);
 
 	useEffect(() => {
 		if (isSuccess && stockOutData) {
@@ -110,7 +115,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		(item: { stock: string }) => item.stock === 'stockIn',
 	);
 
-	console.log(filteredStockIn);
+	// console.log(filteredStockIn);
 
 	// Function to handle dateIn selection change
 	const handleDateInChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -174,24 +179,56 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
-				try {
-					const response = await addstockOut(values).unwrap();
-					console.log(response);
-					await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
-					setIsOpen(false); // Close the modal after successful addition
-				} catch (error) {
-					await Swal.fire({
+		
+				// Ensure that stockInData exists and has a valid quantity
+				const stockInQuantity = stockOutData.quantity;
+				console.log(stockInQuantity);
+				// Parse the submitted stock out quantity
+				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
+				console.log(stockOutQuantity);
+		
+				// Check if stock quantities are valid numbers
+				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
+					Swal.fire({
 						icon: 'error',
-						title: 'Error',
-						text: 'Failed to add the item dis. Please try again.',
+						title: 'Invalid Quantity',
+						text: 'Quantity must be a valid number.',
 					});
+					return; // Exit early if quantities are invalid
 				}
+		
+				// Subtract the stock out quantity from stock in quantity
+				const updatedQuantity = stockInQuantity - stockOutQuantity;
+		
+				if (updatedQuantity < 0) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Insufficient Stock',
+						text: 'The stock out quantity exceeds available stock.',
+					});
+					return; // Prevent stock from going below zero
+				}
+		
+				// Submit the stock out data
+				const stockOutResponse = await addstockOut(values).unwrap();
+		
+				// Update the stock in with the new quantity
+				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+		
+				// Refetch data to update UI
+				refetch();
+		
+				// Show success message
+				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
+				setIsOpen(false); // Close the modal after successful addition
 			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				alert('An error occurred during file upload. Please try again later.');
+				await Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Failed to process the stock. Please try again.',
+				});
 			}
-		},
+		}		
 	});
 
 	// Handle radio button selection

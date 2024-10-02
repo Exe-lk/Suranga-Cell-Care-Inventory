@@ -53,7 +53,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 
 	const handleClickRestore = async (category: any) => {
 		if (!categories) {
-			console.error('No users to restore.');
+			console.error('No categories to restore.');
 			return;
 		}
 
@@ -89,7 +89,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 	const handleDeleteAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Type "DELETE ALL" to confirm deleting all users.',
+			text: 'Type "DELETE ALL" to confirm deleting all categories.',
 			input: 'text',
 			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
@@ -108,7 +108,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 	const handleRestoreAll = async () => {
 		const confirmation = await Swal.fire({
 			title: 'Are you sure?',
-			text: 'Restore all users?',
+			text: 'Restore all categories?',
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});

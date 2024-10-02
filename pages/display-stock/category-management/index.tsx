@@ -52,7 +52,7 @@ const Index: NextPage = () => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this brand!',
+				text: 'You will not be able to recover this category!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -69,7 +69,7 @@ const Index: NextPage = () => {
 					});
 
 					// Refresh the list after deletion
-					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
+					Swal.fire('Deleted!', 'Category has been deleted.', 'success');
 					refetch(); // This will refresh the list of users to reflect the changes
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);

@@ -302,7 +302,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
                     ...values,
                 };
                 await updateUser({ id, ...updatedData }).unwrap();
-                setIsOpen(false);
+                refetch(); // Trigger refetch of stock keeper list after update
                 showNotification(
                     <span className='d-flex align-items-center'>
                         <Icon icon='Info' size='lg' className='me-1' />
@@ -311,7 +311,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
                     'User has been updated successfully'
                 );
                 Swal.fire('Updated!', 'User has been updated successfully.', 'success');
-                refetch(); // Trigger refetch of users list after update
+                formik.resetForm();
+                setIsOpen(false);
             } catch (error) {
                 console.error('Error updating document: ', error);
                 alert('An error occurred while updating the document. Please try again later.');
@@ -357,6 +358,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
                     </FormGroup>
                     <FormGroup id='mobile' label='Mobile number' className='col-md-6'>
                         <Input
+                            type='number'
                             name="mobile"
                             value={formik.values.mobile}
                             onChange={formik.handleChange}
