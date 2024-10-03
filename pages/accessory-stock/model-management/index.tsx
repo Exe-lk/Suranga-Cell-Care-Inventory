@@ -25,7 +25,6 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 
-
 // Define the interface for category data
 
 interface Model {
@@ -46,8 +45,7 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
-	
-	
+		
 	// Function to handle deletion of a category
 	const handleClickDelete = async (model: any) => {
 		try {
@@ -105,12 +103,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+			
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+			
 		try {
 			switch (format) {
 				case 'svg':
@@ -166,8 +162,7 @@ const Index: NextPage = () => {
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
 			pdf.text(title, titleX, 30); // Position the title
-			
-	
+				
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
@@ -229,7 +224,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -356,7 +350,6 @@ const downloadTableAsSVG = async () => {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
@@ -425,15 +418,11 @@ const downloadTableAsSVG = async () => {
 								<Button icon='Delete' className='mb-5'
 								onClick={() => {
 									refetch();
-									setDeleteModalStatus(true)
-									
+									setDeleteModalStatus(true)									
 								}}>
-								Recycle Bin</Button> 
-								
+								Recycle Bin</Button> 								
 							</CardBody>
 						</Card>
-						
-			
 					</div>
 				</div>
 			</Page>

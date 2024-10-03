@@ -45,8 +45,7 @@ const Index: NextPage = () => {
 	const { data: brands, error, isLoading, refetch } = useGetBrands1Query(undefined);
 	const [updateBrand] = useUpdateBrand1Mutation();
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
-	
-	
+		
 	// Function to handle deletion of a category
 	const handleClickDelete = async (brand: any) => {
 		try {
@@ -102,11 +101,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
 		
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
 		
 		try {
 			switch (format) {
@@ -164,7 +161,6 @@ const Index: NextPage = () => {
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
 			pdf.text(title, titleX, 30); // Position the title
 			
-	
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
@@ -227,7 +223,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -321,8 +316,7 @@ const downloadTableAsSVG = async () => {
 						value={searchTerm}
 					/>
 				</SubHeaderLeft>
-				<SubHeaderRight>
-					
+				<SubHeaderRight>					
 					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
@@ -356,7 +350,6 @@ const downloadTableAsSVG = async () => {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
@@ -423,15 +416,12 @@ const downloadTableAsSVG = async () => {
 								<Button icon='Delete' className='mb-5'
 								onClick={() => {
 									refetch();
-									setDeleteModalStatus(true)
-									
+									setDeleteModalStatus(true)									
 								}}>
 								Recycle Bin</Button> 
 								
 							</CardBody>
 						</Card>
-						
-			
 					</div>
 				</div>
 			</Page>

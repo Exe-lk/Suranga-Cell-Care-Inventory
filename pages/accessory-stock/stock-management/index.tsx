@@ -13,9 +13,7 @@ import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
-
 import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
@@ -38,7 +36,6 @@ const Index: NextPage = () => {
 	const stock = [
 		{ stock: 'stockOut' },
 		{ stock: 'stockIn' },
-
 	];
 	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
@@ -63,8 +60,6 @@ const Index: NextPage = () => {
 		return true; // Return all if no date range is selected
 	});
 	
-
-
 	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
@@ -80,11 +75,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
 		
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
 		
 		try {
 			switch (format) {
@@ -142,7 +135,6 @@ const Index: NextPage = () => {
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
 			pdf.text(title, titleX, 30); // Position the title
 			
-	
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
@@ -204,7 +196,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -401,8 +392,6 @@ const downloadTableAsSVG = async () => {
 														<td>{brand.quantity}</td>
 														<td>{brand.sellingPrice}</td>
 														<td>{brand.stock}</td>
-
-
 													</tr>
 												))}
 									</tbody>
