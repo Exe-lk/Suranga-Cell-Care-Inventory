@@ -98,11 +98,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
 		
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
 		
 		try {
 			switch (format) {
@@ -158,8 +156,7 @@ const Index: NextPage = () => {
 			const pageWidth = pdf.internal.pageSize.getWidth();
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
-			pdf.text(title, titleX, 30); // Position the title
-			
+			pdf.text(title, titleX, 30); // Position the title			
 	
 			const thead = table.querySelector('thead');
 			if (thead) {
@@ -222,7 +219,6 @@ const restoreLastCells = (table: HTMLElement) => {
 		}
 	});
 };
-
 
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
@@ -349,14 +345,12 @@ const downloadTableAsSVG = async () => {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 									<thead>
 										<tr>
-											<th>Category name</th>
-											
+											<th>Category name</th>	
 											<th></th>
 										</tr>
 									</thead>
@@ -413,15 +407,11 @@ const downloadTableAsSVG = async () => {
 								<Button icon='Delete' className='mb-5'
 								onClick={() => {
 									refetch();
-									setDeleteModalStatus(true)
-									
+									setDeleteModalStatus(true)									
 								}}>
-								Recycle Bin</Button> 
-								
+								Recycle Bin</Button> 								
 							</CardBody>
-						</Card>
-						
-			
+						</Card>			
 					</div>
 				</div>
 			</Page>

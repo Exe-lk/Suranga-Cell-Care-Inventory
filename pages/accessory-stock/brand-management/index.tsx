@@ -46,7 +46,6 @@ const Index: NextPage = () => {
 	const [updateBrand] = useUpdateBrand1Mutation();
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	
-	
 	// Function to handle deletion of a category
 	const handleClickDelete = async (brand: any) => {
 		try {
@@ -102,12 +101,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+			
 		try {
 			switch (format) {
 				case 'svg':
@@ -163,8 +160,7 @@ const Index: NextPage = () => {
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
 			pdf.text(title, titleX, 30); // Position the title
-			
-	
+				
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
@@ -227,7 +223,6 @@ const restoreLastCells = (table: HTMLElement) => {
 	});
 };
 
-
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
 	try {
@@ -285,7 +280,6 @@ const downloadTableAsSVG = async () => {
 
 		// Restore the last cells after export
 		restoreLastCells(table);
-
 		const link = document.createElement('a');
 		link.href = dataUrl;
 		link.download = 'table_data.svg';
@@ -320,7 +314,6 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					
 					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
@@ -354,7 +347,6 @@ const downloadTableAsSVG = async () => {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
@@ -421,15 +413,11 @@ const downloadTableAsSVG = async () => {
 								<Button icon='Delete' className='mb-5'
 								onClick={() => {
 									refetch();
-									setDeleteModalStatus(true)
-									
+									setDeleteModalStatus(true)									
 								}}>
 								Recycle Bin</Button> 
-								
 							</CardBody>
 						</Card>
-						
-			
 					</div>
 				</div>
 			</Page>

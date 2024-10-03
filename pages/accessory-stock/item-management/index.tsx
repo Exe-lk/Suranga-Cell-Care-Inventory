@@ -99,11 +99,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+			
 		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);	
 		
 		try {
 			switch (format) {
@@ -225,7 +223,6 @@ const restoreLastCells = (table: HTMLElement) => {
 	});
 };
 
-
 // Function to export the table data in PNG format using html-to-image without cloning the table
 const downloadTableAsPNG = async () => {
 	try {
@@ -283,7 +280,6 @@ const downloadTableAsSVG = async () => {
 
 		// Restore the last cells after export
 		restoreLastCells(table);
-
 		const link = document.createElement('a');
 		link.href = dataUrl;
 		link.download = 'table_data.svg';
@@ -359,7 +355,6 @@ const downloadTableAsSVG = async () => {
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-				
 					{/* Button to open  New Item modal */}
 					<Button
 						icon='AddCircleOutline'
@@ -379,7 +374,6 @@ const downloadTableAsSVG = async () => {
 								<div className='flex-grow-1 text-center text-info'>
 									Manage Items
 								</div>
-								
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>
 									<Button
@@ -395,14 +389,12 @@ const downloadTableAsSVG = async () => {
 									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
-								
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-modern table-bordered border-primary table-hover text-center'>
 								<thead>
 										<tr>
 											<th>Type</th>
-
 											<th>Category</th>
 											<th>Model</th>
 											<th>Brand</th>
@@ -412,12 +404,9 @@ const downloadTableAsSVG = async () => {
 											<th></th>
 											<th></th>
 											<th></th>
-											<th></th>
-											
-											
+											<th></th>											
 										</tr>
 									</thead>
-
 									<tbody>
 									{isLoading && (
 											<tr>
