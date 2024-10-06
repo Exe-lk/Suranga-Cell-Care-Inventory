@@ -137,8 +137,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 							<th>Stock Keeper Type </th>
                             
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll}>Restore All</Button>
+							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!stockKeepers || stockKeepers.length === 0 || isLoading}>Delete All</Button>
+							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!stockKeepers || stockKeepers.length === 0 || isLoading}>Restore All</Button>
 							</th>
 						</tr>
 					</thead>

@@ -34,10 +34,10 @@ export const updatestockIn = async (id: string,quantity:string ) => {
   await updateDoc(stockInRef, {quantity });
 };
 
-export const createstockOut = async (model: string,brand: string,category:string,quantity:string, date: string,dealerName:string,dealerTelNum:string,dealerPrecentage:string,technicianNum:string,dateIn:string,cost:string,sellingPrice:string,sellerName:string,stock:string) => {
+export const createstockOut = async (model: string,brand: string,category:string,quantity:string, date: string,dealerName:string,dealerTelNum:string,dealerPrecentage:string,technicianNum:string,dateIn:string,cost:string,sellingPrice:string,branchNum:string,sellerName:string,stock:string) => {
   const status = true;
   const timestamp = Timestamp.now();
-  const docRef = await addDoc(collection(firestore, 'Stock'), { model, brand,category,quantity,date,dealerName,dealerTelNum,dealerPrecentage,technicianNum,dateIn,cost,sellingPrice,sellerName,stock, status ,timestamp:timestamp});
+  const docRef = await addDoc(collection(firestore, 'Stock'), { model, brand,category,quantity,date,dealerName,dealerTelNum,dealerPrecentage,technicianNum,dateIn,cost,sellingPrice,branchNum,sellerName,stock, status ,timestamp:timestamp});
   return docRef.id;
 };
 

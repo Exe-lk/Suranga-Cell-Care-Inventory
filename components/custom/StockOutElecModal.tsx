@@ -20,6 +20,7 @@ interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
+	quantity: any;
 }
 
 const formatTimestamp = (seconds: number, nanoseconds: number): string => {
@@ -55,14 +56,15 @@ interface StockOut {
 	dateIn: string;
 	cost: string;
 	sellingPrice: string;
+	branchNum: string;
 	sellerName: string;
 	stock: string;
 	status: boolean;
 }
 
 // StockAddModal component definition
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [selectedOption, setSelectedOption] = useState<'Dealer' | 'Technician' | 'Return' | ''>(
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
+	const [selectedOption, setSelectedOption] = useState<'Dealer' | 'Technician' | 'Return' |'Branch'| ''>(
 		'',
 	);
 
@@ -80,6 +82,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		dateIn: '',
 		cost: '',
 		sellingPrice: '',
+		branchNum: '',
 		sellerName: '',
 		stock: 'stockOut',
 		status: true,
@@ -131,6 +134,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		// Set the cost from the selected stockIn entry
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
+
+	const stockInQuantity = quantity;
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
@@ -146,6 +151,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			dateIn: '',
 			cost: '',
 			sellingPrice: '',
+			branchNum: '',
 			sellerName: '',
 			stock: 'stockOut',
 			status: true,
@@ -168,6 +174,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (selectedOption === 'Return') {
 				if (!values.sellerName) errors.sellerName = 'Seller Name is required';
 			}
+			if (selectedOption === 'Branch') {
+				if (!values.branchNum) errors.branchNum = 'Branch Number is required';
+			}
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -179,14 +188,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
+
+				await refetch();
 		
 				// Ensure that stockInData exists and has a valid quantity
-				const stockInQuantity = stockOutData.quantity;
-				console.log(stockInQuantity);
+				console.log(stockInQuantity); // Check the quantity coming from props
+	
 				// Parse the submitted stock out quantity
 				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
-				console.log(stockOutQuantity);
-		
+	
 				// Check if stock quantities are valid numbers
 				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
 					Swal.fire({
@@ -234,7 +244,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	// Handle radio button selection
 	const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return');
+		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return'| 'Branch');
 	};
 
 	return (
@@ -352,6 +362,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								onChange={handleOptionChange}
 								checked={selectedOption === 'Return'}
 							/>
+							<Checks
+								type='radio'
+								id='branch'
+								label='Branch'
+								name='stockOutType'
+								value='Branch'
+								onChange={handleOptionChange}
+								checked={selectedOption === 'Branch'}
+							/>
 						</ChecksGroup>
 					</FormGroup>
 
@@ -454,6 +473,18 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								onChange={formik.handleChange}
 								name='sellerName'
 								isValid={!!formik.errors.sellerName && formik.touched.sellerName}
+							/>
+						</FormGroup>
+					)}
+					{selectedOption === 'Branch' && (
+						<FormGroup id='branchNum' label='Branch Number' className='col-md-6'>
+							<Input
+								type='number'
+								placeholder='Enter Branch Number'
+								value={formik.values.branchNum}
+								onChange={formik.handleChange}
+								name='branchNum'
+								isValid={!!formik.errors.branchNum && formik.touched.branchNum}
 							/>
 						</FormGroup>
 					)}

@@ -180,14 +180,16 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 									icon='Delete'
 									onClick={handleDeleteAll}
 									color='danger'
-									isLight>
+									isLight
+									isDisable={!suppliers || suppliers.length === 0 || isLoading}>
 									Delete All
 								</Button>
 								<Button
 									icon='Restore'
 									className='ms-3'
 									onClick={handleRestoreAll}
-									color='primary'>
+									color='primary'
+									isDisable={!suppliers || suppliers.length === 0 || isLoading}>
 									Restore All
 								</Button>
 							</th>

@@ -97,6 +97,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	const handleDeleteAll = async () => {
 		try {
+			if (!dealers || dealers.length === 0) {
+				Swal.fire('Error', 'No dealers available to delete.', 'error');
+				return;
+			}
+	
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
 				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
@@ -112,13 +117,13 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-
+	
 			if (inputText === 'DELETE ALL') {
 				for (const dealer of dealers) {
 					await deleteDealer(dealer.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All dealers have been deleted.', 'success');
-
+	
 				// Refetch categories after deletion
 				refetch();
 			}
@@ -127,10 +132,14 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Swal.fire('Error', 'Failed to delete all dealers.', 'error');
 		}
 	};
-
-	// Handle restore all categories
+	
 	const handleRestoreAll = async () => {
 		try {
+			if (!dealers || dealers.length === 0) {
+				Swal.fire('Error', 'No dealers available to restore.', 'error');
+				return;
+			}
+	
 			const result = await Swal.fire({
 				title: 'Are you sure?',
 				text: 'This will restore all dealers.',
@@ -140,7 +149,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-
+	
 			if (result.isConfirmed) {
 				for (const dealer of dealers) {
 					const values = {
@@ -155,7 +164,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					await updateDealer(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All dealers have been restored.', 'success');
-
+	
 				// Refetch categories after restoring
 				refetch();
 			}
@@ -164,6 +173,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Swal.fire('Error', 'Failed to restore all dealers.', 'error');
 		}
 	};
+	
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -181,14 +191,16 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 									icon='Delete'
 									onClick={handleDeleteAll}
 									color='danger'
-									isLight>
+									isLight
+									isDisable={!dealers || dealers.length === 0 || isLoading}>
 									Delete All
 								</Button>
 								<Button
 									icon='Restore'
 									className='ms-3'
 									onClick={handleRestoreAll}
-									color='primary'>
+									color='primary'
+									isDisable={!dealers || dealers.length === 0 || isLoading}>
 									Restore All
 								</Button>
 							</th>

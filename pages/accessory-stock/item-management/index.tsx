@@ -49,6 +49,11 @@ const Index: NextPage = () => {
 
 	];
 
+	const [quantity, setQuantity] = useState<any>();
+
+
+	
+
 	// Function to handle deletion of an item
 	const handleClickDelete = async (itemAcce:any) => {
 		try {
@@ -84,7 +89,7 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete employee.', 'error');
 		}
 	};
-	// Function to handle the download in different formats
+
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
@@ -99,9 +104,9 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-			
+		
 		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);	
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);
 		
 		try {
 			switch (format) {
@@ -153,12 +158,11 @@ const Index: NextPage = () => {
 			// Adding the title "Accessory + Report" before the table
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold'); // Make the text bold
-			const title = 'Item Management Report';
+			const title = 'Category Management Report';
 			const pageWidth = pdf.internal.pageSize.getWidth();
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
-			pdf.text(title, titleX, 30); // Position the title
-			
+			pdf.text(title, titleX, 30); // Position the title			
 	
 			const thead = table.querySelector('thead');
 			if (thead) {
@@ -188,13 +192,12 @@ const Index: NextPage = () => {
 				theme: 'grid',
 			});
 	
-			pdf.save('Item Management Report.pdf');
+			pdf.save('Category Management Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-
 	  // Helper function to hide the last cell of every row (including borders)
 const hideLastCells = (table: HTMLElement) => {
 	const rows = table.querySelectorAll('tr');
@@ -280,6 +283,7 @@ const downloadTableAsSVG = async () => {
 
 		// Restore the last cells after export
 		restoreLastCells(table);
+
 		const link = document.createElement('a');
 		link.href = dataUrl;
 		link.download = 'table_data.svg';
@@ -291,6 +295,7 @@ const downloadTableAsSVG = async () => {
 		if (table) restoreLastCells(table);
 	}
 };
+	
 	// Return the JSX for rendering the page
 	return (
 		<PageWrapper>
@@ -466,7 +471,10 @@ const downloadTableAsSVG = async () => {
 																onClick={() =>(
 																	refetch(),
 																	setEditstockModalStatus(true),
-																	setId(itemAcces.id))
+																	setId(itemAcces.id),
+																	setQuantity(itemAcces.quantity)
+																)
+																	
 																	
 																}></Button>
 														</td>
@@ -506,7 +514,7 @@ const downloadTableAsSVG = async () => {
 			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id= ''/>
 			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
             <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id} />
-			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} />
+			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} quantity={quantity} />
 			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 
 		</PageWrapper>

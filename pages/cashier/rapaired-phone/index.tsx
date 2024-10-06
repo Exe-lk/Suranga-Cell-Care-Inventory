@@ -32,6 +32,30 @@ const Index: NextPage = () => {
 	const { data: bills, error: billsError, isLoading: billsLoading , refetch } = useGetBillsQuery(undefined);
 	const [updateRepairedPhone] = useUpdaterepairedPhoneMutation();
 
+	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const filteredTransactions = bills?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); // Parse the transaction date
+		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
+		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+	
+		// Apply date range filter if both start and end dates are selected
+		if (start && end) {
+			return transactionDate >= start && transactionDate <= end;
+		} 
+		// If only start date is selected
+		else if (start) {
+			return transactionDate >= start;
+		} 
+		// If only end date is selected
+		else if (end) {
+			return transactionDate <= end;
+		}
+	
+		return true; // Return all if no date range is selected
+	});
+	
+
 	const handleStatusChange = async (id: string, newStatus: string) => {
 		try {
 			await updateRepairedPhone({ id, Status: newStatus }).unwrap();
@@ -276,6 +300,26 @@ const downloadTableAsSVG = async () => {
 						value={searchTerm}
 					/>
 				</SubHeaderLeft>
+				<SubHeaderRight>
+				<Dropdown>
+						<DropdownToggle hasIcon={false}>
+							<Button
+								icon='FilterAlt'
+								color='dark'
+								isLight
+								className='btn-only-icon position-relative'></Button>
+						</DropdownToggle>
+						<DropdownMenu isAlignmentEnd size='lg'>
+							<div className='container py-2'>
+								<div className='row g-3'>
+									<FormGroup label='Date' className='col-6'>
+										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									</FormGroup>
+								</div>
+							</div>
+						</DropdownMenu>
+					</Dropdown>
+					</SubHeaderRight>
 			</SubHeader>
 			<Page>
 				<div className='row h-100'>
@@ -317,8 +361,8 @@ const downloadTableAsSVG = async () => {
 									</thead>
 
 									<tbody>
-										{bills &&
-											bills
+										{filteredTransactions &&
+											filteredTransactions
 												.filter((bill: any) =>
 													searchTerm
 														? bill.billNumber

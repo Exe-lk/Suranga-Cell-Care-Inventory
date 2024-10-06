@@ -43,6 +43,31 @@ const Index: NextPage = () => {
 
 	];
 
+	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [endDate, setEndDate] = useState<string>(''); // State for end date
+
+	const filteredTransactions = StockInOuts?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); // Parse the transaction date
+		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
+		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+	
+		// Apply date range filter if both start and end dates are selected
+		if (start && end) {
+			return transactionDate >= start && transactionDate <= end;
+		} 
+		// If only start date is selected
+		else if (start) {
+			return transactionDate >= start;
+		} 
+		// If only end date is selected
+		else if (end) {
+			return transactionDate <= end;
+		}
+	
+		return true; // Return all if no date range is selected
+	});
+	
+
 
 	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
@@ -314,6 +339,9 @@ const downloadTableAsSVG = async () => {
 											))}
 										</ChecksGroup>
 									</FormGroup>
+									<FormGroup label='Date' className='col-6'>
+										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									</FormGroup>
 								</div>
 							</div>
 						</DropdownMenu>
@@ -375,8 +403,8 @@ const downloadTableAsSVG = async () => {
 											)
 										}
 										{
-											StockInOuts &&
-											StockInOuts
+											filteredTransactions &&
+											filteredTransactions
 											.filter((stockInOut: any) =>
 												searchTerm
 													? stockInOut.category

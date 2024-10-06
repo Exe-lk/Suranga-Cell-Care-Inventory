@@ -21,9 +21,10 @@ import BillEditModal from '../../../components/custom/BillEditModal';
 import Swal from 'sweetalert2';
 import { useUpdateBillMutation, useGetBillsQuery } from '../../../redux/slices/billApiSlice';
 import { toPng, toSvg } from 'html-to-image';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
-import jsPDF from 'jspdf'; 
+import { DropdownItem } from '../../../components/bootstrap/Dropdown';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 
 // Define the functional component for the index page
 const Index: NextPage = () => {
@@ -33,10 +34,43 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for ID
-	const {data: bills,error, isLoading} = useGetBillsQuery(undefined);
+	const { data: bills, error, isLoading } = useGetBillsQuery(undefined);
 	const [updateBill] = useUpdateBillMutation();
-	
+	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [endDate, setEndDate] = useState<string>(''); // State for end date
 
+	const filteredTransactions = bills?.filter((bill: any) => {
+		// Ensure proper date parsing
+		const transactionDateIn = bill.dateIn ? new Date(bill.dateIn) : null; // Parse dateIn
+		const transactionDateOut = bill.DateOut ? new Date(bill.DateOut) : null; // Parse DateOut if it exists
+		const start = startDate ? new Date(startDate) : null; // Start date (if selected)
+		const end = endDate ? new Date(endDate) : null; // End date (if selected)
+	
+		// Handle filtering logic for start and end dates
+		if (start && end) {
+			// If both start and end dates are provided, filter by both dateIn and DateOut
+			return (
+				(transactionDateIn && transactionDateIn >= start && transactionDateIn <= end) || 
+				(transactionDateOut && transactionDateOut >= start && transactionDateOut <= end)
+			);
+		} else if (start) {
+			// If only start date is provided, filter where dateIn >= start or DateOut >= start
+			return (
+				(transactionDateIn && transactionDateIn >= start) || 
+				(transactionDateOut && transactionDateOut >= start)
+			);
+		} else if (end) {
+			// If only end date is provided, filter where dateIn <= end or DateOut <= end
+			return (
+				(transactionDateIn && transactionDateIn <= end) || 
+				(transactionDateOut && transactionDateOut <= end)
+			);
+		}
+	
+		// Return all transactions if no date range is selected
+		return true;
+	});
+	
 	//delete user
 	const handleClickDelete = async (bill: any) => {
 		try {
@@ -67,7 +101,6 @@ const Index: NextPage = () => {
 					cost: bill.cost,
 					DateOut: bill.DateOut,
 					status: false,
-					
 				};
 
 				await updateBill(values);
@@ -95,12 +128,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+
 		try {
 			switch (format) {
 				case 'svg':
@@ -112,7 +143,7 @@ const Index: NextPage = () => {
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
 					break;
-				case 'pdf': 
+				case 'pdf':
 					await downloadTableAsPDF(clonedTable);
 					break;
 				default:
@@ -125,21 +156,21 @@ const Index: NextPage = () => {
 
 	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
-				let csvContent = '';
-				const rows = table.querySelectorAll('tr');
-				rows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td, th');
-					const rowData = Array.from(cols)
-						.map((col: any) => `"${col.innerText}"`)
-						.join(',');
-					csvContent += rowData + '\n';
-				});
+		let csvContent = '';
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row: any) => {
+			const cols = row.querySelectorAll('td, th');
+			const rowData = Array.from(cols)
+				.map((col: any) => `"${col.innerText}"`)
+				.join(',');
+			csvContent += rowData + '\n';
+		});
 
-				const blob = new Blob([csvContent], { type: 'text/csv' });
-				const link = document.createElement('a');
-				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
-				link.click();
+		const blob = new Blob([csvContent], { type: 'text/csv' });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'table_data.csv';
+		link.click();
 	};
 	//  function for PDF export
 	const downloadTableAsPDF = (table: HTMLElement) => {
@@ -147,7 +178,7 @@ const Index: NextPage = () => {
 			const pdf = new jsPDF('p', 'pt', 'a4');
 			const rows: any[] = [];
 			const headers: any[] = [];
-	
+
 			// Adding the title "Accessory + Report" before the table
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold'); // Make the text bold
@@ -156,14 +187,13 @@ const Index: NextPage = () => {
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
 			pdf.text(title, titleX, 30); // Position the title
-			
-	
+
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
-	
+
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -173,7 +203,7 @@ const Index: NextPage = () => {
 					rows.push(rowData);
 				});
 			}
-	
+
 			// Generate the table below the title
 			autoTable(pdf, {
 				head: headers,
@@ -185,111 +215,127 @@ const Index: NextPage = () => {
 				},
 				theme: 'grid',
 			});
-	
+
 			pdf.save('Bill Management Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-	  // Helper function to hide the last cell of every row (including borders)
-const hideLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'hidden';  
-			lastCell.style.border = 'none'; 
-			lastCell.style.padding = '0';  
-			lastCell.style.margin = '0';  
-		}
-	});
-};
-
-// Helper function to restore the visibility and styles of the last cell
-const restoreLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'visible'; 
-			lastCell.style.border = '';  
-			lastCell.style.padding = '';  
-			lastCell.style.margin = '';  
-		}
-	});
-};
-
-
-// Function to export the table data in PNG format using html-to-image without cloning the table
-const downloadTableAsPNG = async () => {
-	try {
-		const table = document.querySelector('table');
-		if (!table) {
-			console.error('Table element not found');
-			return;
-		}
-
-		// Hide last cells before export
-		hideLastCells(table);
-
-		const dataUrl = await toPng(table, {
-			cacheBust: true,
-			style: {
-				width: table.offsetWidth + 'px',
-			},
+	// Helper function to hide the last cell of every row (including borders)
+	const hideLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'hidden';
+				lastCell.style.border = 'none';
+				lastCell.style.padding = '0';
+				lastCell.style.margin = '0';
+			}
 		});
+	};
 
-		// Restore the last cells after export
-		restoreLastCells(table);
-
-		const link = document.createElement('a');
-		link.href = dataUrl;
-		link.download = 'table_data.png';
-		link.click();
-	} catch (error) {
-		console.error('Error generating PNG: ', error);
-		// Restore the last cells in case of error
-		const table = document.querySelector('table');
-		if (table) restoreLastCells(table);
-	}
-};
-
-// Function to export the table data in SVG format using html-to-image without cloning the table
-const downloadTableAsSVG = async () => {
-	try {
-		const table = document.querySelector('table');
-		if (!table) {
-			console.error('Table element not found');
-			return;
-		}
-
-		// Hide last cells before export
-		hideLastCells(table);
-
-		const dataUrl = await toSvg(table, {
-			backgroundColor: 'white',
-			cacheBust: true,
-			style: {
-				width: table.offsetWidth + 'px',
-				color: 'black',
-			},
+	// Helper function to restore the visibility and styles of the last cell
+	const restoreLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'visible';
+				lastCell.style.border = '';
+				lastCell.style.padding = '';
+				lastCell.style.margin = '';
+			}
 		});
+	};
 
-		// Restore the last cells after export
-		restoreLastCells(table);
+	// Function to export the table data in PNG format using html-to-image without cloning the table
+	const downloadTableAsPNG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
 
-		const link = document.createElement('a');
-		link.href = dataUrl;
-		link.download = 'table_data.svg';
-		link.click();
-	} catch (error) {
-		console.error('Error generating SVG: ', error);
-		// Restore the last cells in case of error
-		const table = document.querySelector('table');
-		if (table) restoreLastCells(table);
-	}
-};
+			// Hide last cells before export
+			hideLastCells(table);
+
+			const dataUrl = await toPng(table, {
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
+			});
+
+			// Restore the last cells after export
+			restoreLastCells(table);
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.png';
+			link.click();
+		} catch (error) {
+			console.error('Error generating PNG: ', error);
+			// Restore the last cells in case of error
+			const table = document.querySelector('table');
+			if (table) restoreLastCells(table);
+		}
+	};
+
+	// Function to export the table data in SVG format using html-to-image without cloning the table
+	const downloadTableAsSVG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+
+			// Hide last cells before export
+			hideLastCells(table);
+
+			const dataUrl = await toSvg(table, {
+				backgroundColor: 'white',
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+					color: 'black',
+				},
+			});
+
+			// Restore the last cells after export
+			restoreLastCells(table);
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.svg';
+			link.click();
+		} catch (error) {
+			console.error('Error generating SVG: ', error);
+			// Restore the last cells in case of error
+			const table = document.querySelector('table');
+			if (table) restoreLastCells(table);
+		}
+	};
+
+	const getStatusColorClass = (status: string) => {
+		switch (status) {
+			case 'waiting to in progress':
+				return 'bg-success'; // green
+			case 'in progress':
+				return 'bg-info'; // blue
+			case 'completed':
+				return 'bg-warning'; // yellow
+			case 'reject':
+				return 'bg-danger'; // red
+			case 'in progress to complete':
+				return 'bg-lo50-primary'; // dark blue or whatever color you prefer
+			case 'HandOver':
+				return 'bg-lo50-info'; // yellow
+		}
+	};
 
 	return (
 		<PageWrapper>
@@ -313,6 +359,24 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
+				<Dropdown>
+						<DropdownToggle hasIcon={false}>
+							<Button icon='FilterAlt' color='dark' isLight className='btn-only-icon position-relative'></Button>
+						</DropdownToggle>
+						<DropdownMenu isAlignmentEnd size='lg'>
+							<div className='container py-2'>
+								<div className='row g-3'>
+								
+									<FormGroup label='Date' className='col-6'>
+										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									</FormGroup>
+									<FormGroup label='To' className='col-6'>
+										<Input type='date' onChange={(e: any) => setEndDate(e.target.value)} value={endDate} />
+									</FormGroup>
+								</div>
+							</div>
+						</DropdownMenu>
+					</Dropdown>
 					<SubheaderSeparator />
 					{/* Button to open New category */}
 					<Button
@@ -330,69 +394,80 @@ const downloadTableAsSVG = async () => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Manage Bills</div>
+								<div className='flex-grow-1 text-center text-info'>
+									Manage Bills
+								</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>
+											Download SVG
+										</DropdownItem>
+										{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>
+											Download PDF
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 							<center>
-							<div className='d-flex justify-content-center mb-3'>
-								
-								
-								{/* Added horizontal margin */}
-								<div
-									className='rounded-circle bg-success d-flex mx-2 '
-									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-								>
-									<span className='text-white'></span>
+								<div className='d-flex justify-content-center mb-3'>
+									{/* Added horizontal margin */}
+									<div
+										className='rounded-circle bg-success d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>waiting to in progress</div>{' '}
+									<div
+										className='rounded-circle bg-info d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>in progress</div>{' '}
+									{/* Added horizontal margin */}
+									<div
+										className='rounded-circle bg-warning d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>completed</div>{' '}
+									{/* Added horizontal margin */}
+									<div
+										className='rounded-circle bg-danger d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>reject</div>{' '}
+									{/* Added horizontal margin */}
+									<div
+										className='rounded-circle bg-lo50-primary d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>in progress to complete</div>{' '}
+									{/* Added horizontal margin */}
+									<div
+										className='rounded-circle bg-lo50-info d-flex mx-2 '
+										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
+									>
+										<span className='text-white'></span>
+									</div>
+									<div className='mx-2'>HandOver</div>{' '}
+									{/* Added horizontal margin */}
 								</div>
-								<div className='mx-2'>waiting to in progress</div>{' '}
-								
-								<div
-									className='rounded-circle bg-info d-flex mx-2 '
-									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-								>
-									<span className='text-white'></span>
-								</div>
-								<div className='mx-2'>in progress</div> {/* Added horizontal margin */}
-								
-								<div
-									className='rounded-circle bg-warning d-flex mx-2 '
-									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-								>
-									<span className='text-white'></span>
-								</div>
-								<div className='mx-2'>completed</div> {/* Added horizontal margin */}
-								
-								<div
-									className='rounded-circle bg-danger d-flex mx-2 '
-									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-								>
-									<span className='text-white'></span>
-								</div>
-								<div className='mx-2'>reject</div> {/* Added horizontal margin */}
-								
-								<div
-									className='rounded-circle bg-lo50-primary d-flex mx-2 '
-									style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-								>
-									<span className='text-white'></span>
-								</div>
-								<div className='mx-2'>Hand Over to cashier</div> {/* Added horizontal margin */}
-								
-							</div>
 							</center>
 
 							<CardBody isScrollable className='table-responsive'>
@@ -403,24 +478,23 @@ const downloadTableAsSVG = async () => {
 											<th>Date In</th>
 											<th>Date out</th>
 											<th>Phone Details</th>
-											<th>Bill Number</th>
+											<th>Bill Num</th>
 											<th>Phone Model</th>
 											<th>Repair Type</th>
-                                            <th>Technician No.</th>
+											<th>Tech No.</th>
 											<th>Customer Name</th>
-                                            <th>Customer Mobile Number</th>
+											<th>Mobile Num</th>
 											<th>Email</th>
 											<th>NIC</th>
 											<th>Cost</th>
-                                            <th>Price</th>
-                                            <th>Status</th>
-                                            
-											
-											
+											<th>Price</th>
+											<th>Status</th>
+
+											<th></th>
 										</tr>
 									</thead>
 									<tbody>
-									{isLoading && (
+										{isLoading && (
 											<tr>
 												<td>Loading...</td>
 											</tr>
@@ -430,13 +504,13 @@ const downloadTableAsSVG = async () => {
 												<td>Error fetching bills.</td>
 											</tr>
 										)}
-										{bills &&
-											bills
+										{filteredTransactions &&
+											filteredTransactions
 												.filter((bill: any) =>
 													searchTerm
-														? bill.NIC
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
+														? bill.NIC.toLowerCase().includes(
+																searchTerm.toLowerCase(),
+														  )
 														: true,
 												)
 												.map((bill: any) => (
@@ -454,16 +528,24 @@ const downloadTableAsSVG = async () => {
 														<td>{bill.NIC}</td>
 														<td>{bill.cost}</td>
 														<td>{bill.Price}</td>
-														<td>{bill.Status}</td>
-														
+														<td>
+															<span
+																className={`badge rounded-pill ${getStatusColorClass(
+																	bill.Status,
+																)}`}>
+																{bill.Status}
+															</span>
+														</td>
+
+														{/* Show Status text */}
 														<td>
 															<Button
 																icon='Edit'
 																color='info'
-																onClick={() =>(
+																onClick={() => (
 																	setEditModalStatus(true),
-																	setId(bill.id))
-																}>
+																	setId(bill.id)
+																)}>
 																Edit
 															</Button>
 															<Button
@@ -480,16 +562,14 @@ const downloadTableAsSVG = async () => {
 												))}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-									
-								)}>
-								Recycle Bin</Button> 
-								
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => setDeleteModalStatus(true)}>
+									Recycle Bin
+								</Button>
 							</CardBody>
-	</Card>		
-			
+						</Card>
 					</div>
 				</div>
 			</Page>
