@@ -18,6 +18,7 @@ import {
 	useUpdateBillMutation,
 	useGetBillsQuery,
 } from '../../redux/slices/billApiSlice';
+import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
 
 // Define the props for the UserAddModal component
 interface UserAddModalProps {
@@ -29,6 +30,12 @@ interface UserAddModalProps {
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: bills ,refetch} = useGetBillsQuery(undefined);
 	const [updateBill, { isLoading }] = useUpdateBillMutation();
+	const {
+		data: technicians,
+		isLoading: techniciansLoading,
+		isError,
+	} = useGetTechniciansQuery(undefined);
+	console.log(technicians);
 
 	const billToEdit = bills?.find((bill: any) => bill.id === id);
 
@@ -250,19 +257,25 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='technicianNum'
-						label='Technician No'
-						onChange={formik.handleChange}
-						className='col-md-6'>
-						<Input
-							name='technicianNum'
+					<FormGroup id='technicianNum' label='Technician No' className='col-md-6'>
+						<Select
+							ariaLabel='Select Technician'
+							placeholder='Select a Technician'
 							onChange={formik.handleChange}
 							value={formik.values.technicianNum}
-							onBlur={formik.handleBlur}
+							name='technicianNum'
 							isValid={formik.isValid}
 							validFeedback='Looks good!'
-						/>
+							disabled={techniciansLoading || isError}>
+							<Option value=''>Select a Technician</Option>
+							{technicians?.map((technician: any) => (
+								<Option key={technician.id} value={technician.technicianNum}>
+									{technician.technicianNum}
+								</Option>
+							))}
+						</Select>
+						{techniciansLoading ? <p>Loading technicians...</p> : <></>}
+						{isError ? <p>Error loading technicians. Please try again.</p> : <></>}
 					</FormGroup>
 					<FormGroup
 						id='CustomerName'

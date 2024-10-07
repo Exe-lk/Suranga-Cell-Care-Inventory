@@ -139,8 +139,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 						<tr>
 							<th>Model name</th>
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll}>Restore All</Button>
+							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!models || models.length === 0 || isLoading}>Delete All</Button>
+							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!models || models.length === 0 || isLoading}>Restore All</Button>
 							</th>
 						</tr>
 					</thead>

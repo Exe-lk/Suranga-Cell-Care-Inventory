@@ -19,6 +19,7 @@ interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
+	quantity: any;
 }
 
 const formatTimestamp = (seconds: number, nanoseconds: number): string => {
@@ -59,7 +60,7 @@ interface StockOut {
 }
 
 // StockAddModal component definition
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
 		model: '',
@@ -123,6 +124,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		// Set the cost from the selected stockIn entry
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
+
+	const stockInQuantity = quantity;
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
@@ -158,6 +161,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+
 				Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -165,52 +169,57 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-					const stockInQuantity = stockOutData.quantity;
-					console.log(stockInQuantity);
-					// Parse the submitted stock out quantity
-					const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
-					console.log(stockOutQuantity);
-					// Check if stock quantities are valid numbers
-					if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
-						Swal.fire({
-							icon: 'error',
-							title: 'Invalid Quantity',
-							text: 'Quantity must be a valid number.',
-						});
-						return; // Exit early if quantities are invalid
-					}
-
-					// Subtract the stock out quantity from stock in quantity
-					const updatedQuantity = stockInQuantity - stockOutQuantity;
-
-					if (updatedQuantity < 0) {
-						Swal.fire({
-							icon: 'error',
-							title: 'Insufficient Stock',
-							text: 'The stock out quantity exceeds available stock.',
-						});
-						return; // Prevent stock from going below zero
-					}
-
-					const response = await addstockOut(values).unwrap();
-					console.log(response);
-
-					await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-
-					// Refetch data to update UI
-					refetch();
-
-					await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
-					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
-				} catch (error) {
-					await Swal.fire({
+		
+				// Previous Swal logic...
+				await refetch();
+				
+				console.log(stockInQuantity); // Check the quantity coming from props
+	
+				// Parse the submitted stock out quantity
+				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
+	
+				// Check if stock quantities are valid numbers
+				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
+					Swal.fire({
 						icon: 'error',
-						title: 'Error',
-						text: 'Failed to add the item dis. Please try again.',
+						title: 'Invalid Quantity',
+						text: 'Quantity must be a valid number.',
 					});
+					return; // Exit early if quantities are invalid
 				}
-			} 
+	
+				// Subtract the stock out quantity from stock in quantity
+				const updatedQuantity = stockInQuantity - stockOutQuantity;
+	
+				if (updatedQuantity < 0) {
+					Swal.fire({
+						icon: 'error',
+						title: 'Insufficient Stock',
+						text: 'The stock out quantity exceeds available stock.',
+					});
+					return; // Prevent stock from going below zero
+				}
+	
+				// Proceed to add stock out and update the stock in...
+				const response = await addstockOut(values).unwrap();
+				console.log(response);
+	
+				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+	
+				// Refetch data to update UI
+				refetch();
+	
+				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
+				formik.resetForm();
+				setIsOpen(false); // Close the modal after successful addition
+			} catch (error) {
+				await Swal.fire({
+					icon: 'error',
+					title: 'Error',
+					text: 'Failed to add the item. Please try again.',
+				});
+			}
+		}
 	});
 
 	return (

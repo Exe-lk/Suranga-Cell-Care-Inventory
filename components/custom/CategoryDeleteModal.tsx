@@ -135,8 +135,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 						<tr>
 							<th>Category name</th>
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll}>Restore All</Button>
+							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!categories || categories.length === 0 || isLoading}>Delete All</Button>
+							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!categories || categories.length === 0 || isLoading}>Restore All</Button>
 							</th>
 						</tr>
 					</thead>

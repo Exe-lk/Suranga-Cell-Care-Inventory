@@ -140,8 +140,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 							<th>User</th>
 							<th>
 								
-									<Button icon="Delete" color="danger" onClick={handleDeleteAll}>Delete All</Button>
-									<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll}>Restore All</Button>
+									<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!users || users.length === 0 || isLoading}>Delete All</Button>
+									<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!users || users.length === 0 || isLoading}>Restore All</Button>
 							
 							</th>
 						</tr>

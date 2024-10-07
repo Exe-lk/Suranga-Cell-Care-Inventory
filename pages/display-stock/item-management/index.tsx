@@ -41,6 +41,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const {data: itemDiss,error, isLoading,refetch} = useGetItemDissQuery(undefined);
 	const [updateItemDis] = useUpdateItemDisMutation();
+	const [quantity, setQuantity] = useState<any>();
 
 	// Function to handle deletion of an item
 	const handleClickDelete = async (itemDis:any) => {
@@ -358,7 +359,9 @@ const Index: NextPage = () => {
 																onClick={() =>(
 																	refetch(),
 																	setEditstockModalStatus(true),
-																	setId(itemDiss.id))
+																	setId(itemDiss.id),
+																	setQuantity(itemDiss.quantity)
+																)
 																	
 																}></Button>
 														</td>
@@ -398,7 +401,7 @@ const Index: NextPage = () => {
 			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
             <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id} />
-			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} />
+			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} quantity={quantity} />
 			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 
 		</PageWrapper>

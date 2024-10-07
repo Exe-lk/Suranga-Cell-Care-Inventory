@@ -40,6 +40,9 @@ const Index: NextPage = () => {
 
 	];
 
+	
+	
+
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
@@ -48,6 +51,28 @@ const Index: NextPage = () => {
 	const { data: technicians, error: techniciansError, isLoading: techniciansLoading } = useGetTechniciansQuery(undefined);
 	console.log('tech', technicians);
 	
+	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const filteredTransactions = bills?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); // Parse the transaction date
+		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
+		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+	
+		// Apply date range filter if both start and end dates are selected
+		if (start && end) {
+			return transactionDate >= start && transactionDate <= end;
+		} 
+		// If only start date is selected
+		else if (start) {
+			return transactionDate >= start;
+		} 
+		// If only end date is selected
+		else if (end) {
+			return transactionDate <= end;
+		}
+	
+		return true; // Return all if no date range is selected
+	});
 	// Function to get technician name by TechnicianNo
 	const getTechnicianName = (technicianNum: string) => {
 		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
@@ -322,6 +347,9 @@ const downloadTableAsSVG = async () => {
 											))}
 										</ChecksGroup>
 									</FormGroup>
+									<FormGroup label='Date' className='col-6'>
+										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									</FormGroup>
 								</div>
 							</div>
 						</DropdownMenu>
@@ -377,8 +405,8 @@ const downloadTableAsSVG = async () => {
 												<td>Error fetching repaired phones.</td>
 											</tr>
 										)}
-										{bills &&
-											bills
+										{filteredTransactions &&
+											filteredTransactions
 												.filter((bill: any) =>
 													searchTerm
 														? bill.repairType

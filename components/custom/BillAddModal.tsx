@@ -233,7 +233,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
 							{technicians?.map((technician: any) => (
-								<Option key={technician.id} value={technician.id}>
+								<Option key={technician.id} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
 							))}
