@@ -1,9 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
-import Page from '../../../layout/Page/Page';
-import { firestore } from '../../../firebaseConfig';
+import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
@@ -11,107 +10,61 @@ import SubHeader, {
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
-import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
 import Button from '../../../components/bootstrap/Button';
+import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
-import BillAddModal from '../../../components/custom/BillAddModal';
-import BillDeleteModal from '../../../components/custom/BillDeleteModal';
-import BillEditModal from '../../../components/custom/BillEditModal';
+import StockAddModal from '../../../components/custom/ItemAddModal';
+import StockEditModal from '../../../components/custom/StockEditModal';
+
+import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
+
 import Swal from 'sweetalert2';
-import { useUpdateBillMutation, useGetBillsQuery } from '../../../redux/slices/billApiSlice';
+import FormGroup from '../../../components/bootstrap/forms/FormGroup';
+import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import FormGroup from '../../../components/bootstrap/forms/FormGroup';
+import {
+	useGetStockInOutsQuery,
+	useUpdateStockInOutMutation,
+} from '../../../redux/slices/stockInOutDissApiSlice';
 
-// Define the functional component for the index page
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
-	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [id, setId] = useState<string>(''); // State for ID
-	const { data: bills, error, isLoading } = useGetBillsQuery(undefined);
-	const [updateBill] = useUpdateBillMutation();
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [id, setId] = useState<string>(''); // State for current category ID
+	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	console.log(StockInOuts);
+	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const stock = [{ stock: 'stockOut' }, { stock: 'stockIn' }];
+
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 
-	const filteredTransactions = bills?.filter((bill: any) => {
-		// Ensure proper date parsing
-		const transactionDateIn = bill.dateIn ? new Date(bill.dateIn) : null; // Parse dateIn
-		const transactionDateOut = bill.DateOut ? new Date(bill.DateOut) : null; // Parse DateOut if it exists
-		const start = startDate ? new Date(startDate) : null; // Start date (if selected)
-		const end = endDate ? new Date(endDate) : null; // End date (if selected)
-	
-		// Handle filtering logic for start and end dates
+	const filteredTransactions = StockInOuts?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); // Parse the transaction date
+		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
+		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+
+		// Apply date range filter if both start and end dates are selected
 		if (start && end) {
-			// If both start and end dates are provided, filter by both dateIn and DateOut
-			return (
-				(transactionDateIn && transactionDateIn >= start && transactionDateIn <= end) || 
-				(transactionDateOut && transactionDateOut >= start && transactionDateOut <= end)
-			);
-		} else if (start) {
-			// If only start date is provided, filter where dateIn >= start or DateOut >= start
-			return (
-				(transactionDateIn && transactionDateIn >= start) || 
-				(transactionDateOut && transactionDateOut >= start)
-			);
-		} else if (end) {
-			// If only end date is provided, filter where dateIn <= end or DateOut <= end
-			return (
-				(transactionDateIn && transactionDateIn <= end) || 
-				(transactionDateOut && transactionDateOut <= end)
-			);
+			return transactionDate >= start && transactionDate <= end;
 		}
-	
-		// Return all transactions if no date range is selected
-		return true;
+		// If only start date is selected
+		else if (start) {
+			return transactionDate >= start;
+		}
+		// If only end date is selected
+		else if (end) {
+			return transactionDate <= end;
+		}
+
+		return true; // Return all if no date range is selected
 	});
-	
-	//delete user
-	const handleClickDelete = async (bill: any) => {
-		try {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!',
-			});
-			if (result.isConfirmed) {
-				const values = await {
-					id: bill.id,
-					phoneDetail: bill.phoneDetail,
-					dateIn: bill.dateIn,
-					billNumber: bill.billNumber,
-					phoneModel: bill.phoneModel,
-					repairType: bill.repairType,
-					technicianNum: bill.technicianNum,
-					CustomerName: bill.CustomerName,
-					CustomerMobileNum: bill.CustomerMobileNum,
-					email: bill.email,
-					NIC: bill.NIC,
-					Price: bill.Price,
-					Status: bill.Status,
-					cost: bill.cost,
-					DateOut: bill.DateOut,
-					status: false,
-				};
-
-				await updateBill(values);
-
-				Swal.fire('Deleted!', 'The bill has been deleted.', 'success');
-			}
-		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete bill.', 'error');
-		}
-	};
 
 	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
@@ -182,7 +135,7 @@ const Index: NextPage = () => {
 			// Adding the title "Accessory + Report" before the table
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold'); // Make the text bold
-			const title = 'Bill Management Report';
+			const title = 'Stock Management Report';
 			const pageWidth = pdf.internal.pageSize.getWidth();
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = (pageWidth - titleWidth) / 2; // Center the title
@@ -216,7 +169,7 @@ const Index: NextPage = () => {
 				theme: 'grid',
 			});
 
-			pdf.save('Bill Management Report.pdf');
+			pdf.save('Stock Management Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
@@ -320,23 +273,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	const getStatusColorClass = (status: string) => {
-		switch (status) {
-			case 'waiting to in progress':
-				return 'bg-success'; // green
-			case 'in progress':
-				return 'bg-info'; // blue
-			case 'completed':
-				return 'bg-warning'; // yellow
-			case 'reject':
-				return 'bg-danger'; // red
-			case 'in progress to complete':
-				return 'bg-lo50-primary'; // dark blue or whatever color you prefer
-			case 'HandOver':
-				return 'bg-lo50-info'; // yellow
-		}
-	};
-
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -359,33 +295,59 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-				<Dropdown>
+					<Dropdown>
 						<DropdownToggle hasIcon={false}>
-							<Button icon='FilterAlt' color='dark' isLight className='btn-only-icon position-relative'></Button>
+							<Button
+								icon='FilterAlt'
+								color='dark'
+								isLight
+								className='btn-only-icon position-relative'></Button>
 						</DropdownToggle>
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-								
-									<FormGroup label='Date' className='col-6'>
-										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									<FormGroup label='Stock type' className='col-12'>
+										<ChecksGroup>
+											{stock.map((stockInOut, index) => (
+												<Checks
+													key={stockInOut.stock}
+													id={stockInOut.stock}
+													label={stockInOut.stock}
+													name={stockInOut.stock}
+													value={stockInOut.stock}
+													checked={selectedUsers.includes(
+														stockInOut.stock,
+													)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers(
+															(prevUsers) =>
+																checked
+																	? [...prevUsers, value] // Add category if checked
+																	: prevUsers.filter(
+																			(stockInOut) =>
+																				stockInOut !==
+																				value,
+																	  ), // Remove category if unchecked
+														);
+													}}
+												/>
+											))}
+										</ChecksGroup>
 									</FormGroup>
-									<FormGroup label='To' className='col-6'>
-										<Input type='date' onChange={(e: any) => setEndDate(e.target.value)} value={endDate} />
+									<FormGroup label='Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setStartDate(e.target.value)}
+											value={startDate}
+										/>
 									</FormGroup>
 								</div>
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-					<SubheaderSeparator />
-					{/* Button to open New category */}
-					<Button
-						icon='AddCircleOutline'
-						color='success'
-						isLight
-						onClick={() => setAddModalStatus(true)}>
-						New Bill
-					</Button>
+
+					{/* Button to open  New Item modal */}
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
@@ -395,7 +357,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Manage Bills
+									Barcode Printing
 								</div>
 								<Dropdown>
 									<DropdownToggle hasIcon={false}>
@@ -417,80 +379,17 @@ const Index: NextPage = () => {
 									</DropdownMenu>
 								</Dropdown>
 							</CardTitle>
-							<center>
-								<div className='d-flex justify-content-center mb-3'>
-									{/* Added horizontal margin */}
-									<div
-										className='rounded-circle bg-success d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>waiting to in progress</div>{' '}
-									<div
-										className='rounded-circle bg-info d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>in progress</div>{' '}
-									{/* Added horizontal margin */}
-									<div
-										className='rounded-circle bg-warning d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>completed</div>{' '}
-									{/* Added horizontal margin */}
-									<div
-										className='rounded-circle bg-danger d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>reject</div>{' '}
-									{/* Added horizontal margin */}
-									<div
-										className='rounded-circle bg-lo50-primary d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>in progress to complete</div>{' '}
-									{/* Added horizontal margin */}
-									<div
-										className='rounded-circle bg-lo50-info d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
-										<span className='text-white'></span>
-									</div>
-									<div className='mx-2'>HandOver</div>{' '}
-									{/* Added horizontal margin */}
-								</div>
-							</center>
-
 							<CardBody isScrollable className='table-responsive'>
-								{/* <table className='table table-modern table-hover'> */}
-								<table className='table table-modern table-bordered border-primary table-hover text-center'>
+								<table className='table table-modern table-bordered border-primary table-hover '>
 									<thead>
 										<tr>
-											<th>Date In</th>
-											<th>Date out</th>
-											<th>Phone Details</th>
-											<th>Bill Num</th>
-											<th>Phone Model</th>
-											<th>Repair Type</th>
-											<th>Tech No.</th>
-											<th>Customer Name</th>
-											<th>Mobile Num</th>
-											<th>Email</th>
-											<th>NIC</th>
-											<th>Cost</th>
-											<th>Price</th>
-											<th>Status</th>
-
-											<th></th>
+											<th>Date</th>
+											<th>Category</th>
+											<th>Brand</th>
+											<th>Model</th>
+											<th>Quantity</th>
+                                            <th>Code</th>
+                                            <th></th>
 										</tr>
 									</thead>
 									<tbody>
@@ -501,81 +400,55 @@ const Index: NextPage = () => {
 										)}
 										{error && (
 											<tr>
-												<td>Error fetching bills.</td>
+												<td>Error fetching stocks.</td>
 											</tr>
 										)}
 										{filteredTransactions &&
 											filteredTransactions
-												.filter((bill: any) =>
+												.filter((stockInOut: any) =>
 													searchTerm
-														? bill.NIC.toLowerCase().includes(
-																searchTerm.toLowerCase(),
-														  )
+														? stockInOut.category
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((bill: any) => (
-													<tr key={bill.cid}>
-														<td>{bill.dateIn}</td>
-														<td>{bill.DateOut}</td>
-														<td>{bill.phoneDetail}</td>
-														<td>{bill.billNumber}</td>
-														<td>{bill.phoneModel}</td>
-														<td>{bill.repairType}</td>
-														<td>{bill.technicianNum}</td>
-														<td>{bill.CustomerName}</td>
-														<td>{bill.CustomerMobileNum}</td>
-														<td>{bill.email}</td>
-														<td>{bill.NIC}</td>
-														<td>{bill.cost}</td>
-														<td>{bill.Price}</td>
-														<td>
-															<span
-																className={`badge rounded-pill ${getStatusColorClass(
-																	bill.Status,
-																)}`}>
-																{bill.Status}
-															</span>
-														</td>
-
-														{/* Show Status text */}
-														<td>
+												.filter((stockInOut: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(stockInOut.stock)
+														: true,
+												)
+												.filter(
+													(stockInOut: any) =>
+														stockInOut.stock === 'stockIn',
+												) // Add this filter
+												.map((brand: any) => (
+													<tr key={brand.id}>
+														<td>{brand.date}</td>
+														<td>{brand.category}</td>
+														<td>{brand.brand}</td>
+														<td>{brand.model}</td>
+														<td>{brand.quantity}</td>
+                                                        <td>{brand.code}</td>
+                                                        <td>
 															<Button
-																icon='Edit'
+																icon='Print'
 																color='info'
-																onClick={() => (
-																	setEditModalStatus(true),
-																	setId(bill.id)
-																)}>
-																
+																>
+																Edit
 															</Button>
-															<Button
-																className='m-2'
-																icon='Delete'
-																color='danger'
-																onClick={() =>
-																	handleClickDelete(bill)
-																}>
-																
-															</Button>
-														</td>
+                                                            </td>
 													</tr>
+                                                    
 												))}
 									</tbody>
 								</table>
-								<Button
-									icon='Delete'
-									className='mb-5'
-									onClick={() => setDeleteModalStatus(true)}>
-									Recycle Bin
-								</Button>
 							</CardBody>
 						</Card>
 					</div>
 				</div>
 			</Page>
-			<BillAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<BillDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
-			<BillEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+
+			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

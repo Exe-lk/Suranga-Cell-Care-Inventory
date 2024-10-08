@@ -72,6 +72,13 @@ export const stockAccPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
+	Stockkeeperbar1: {
+		id: 'stock keeper bar1',
+		text: 'Barcode Printing',
+		path: 'accessory-stock/barcode',
+		icon: 'FormatAlignCenter',
+
+	},
 }
 export const CashierPagesMenu = {
 	bill: {
@@ -131,6 +138,13 @@ export const stockElePagesMenu = {
 		path: 'display-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,
+	},
+	Stockkeeperbar: {
+		id: 'stock keeper bar',
+		text: 'Barcode Printing',
+		path: 'display-stock/barcode',
+		icon: 'FormatAlignCenter',
+
 	},
 	Stockkeeper: {
 		id: 'stock keeper',
@@ -290,14 +304,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'model',
-				text: 'Display Stock Management',
+				text: 'Display Model Management',
 				path: 'admin/model/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'model1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Model Management',
 				path: 'admin/model/accessory',
 				icon: 'SupervisedUserCircle',
 		
@@ -313,14 +327,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'brand',
-				text: 'Display Stock Management',
+				text: 'Display Brand Management',
 				path: 'admin/brand/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'brand1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Brand Management',
 				path: 'admin/brand/accessory',
 				icon: 'SupervisedUserCircle',
 		
@@ -336,14 +350,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'category',
-				text: 'Display Stock Management',
+				text: 'Display Category Management',
 				path: 'admin/category/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'category1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Category Management',
 				path: 'admin/category/accessory',
 				icon: 'SupervisedUserCircle',
 		
