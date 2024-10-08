@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import Page from '../../../layout/Page/Page';
-import LineWithLabel1 from '../../../components/sock-monthly';
+import LineWithLabel1 from '../../../components/lineAcces';
 import PieBasic from '../../../components/QRAnalatisk';
 import LineWithLabe2 from '../../../components/SalesAnalatisk';
 const Index: NextPage = () => {

@@ -8,12 +8,10 @@ import Card, {
 	CardTitle,
 } from './bootstrap/Card';
 import Chart, { IChartOptions } from './extras/Chart';
-import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
 import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const TypeAnalatisk = () => {
-	const { data: bills } = useGetBillsQuery(undefined);
-	
+	const { data: bills, isLoading } = useGetBillsQuery(undefined);
 	const [monthlyData, setMonthlyData] = useState<number[]>(Array(12).fill(0)); // Initialize an array for 12 months
 
 	useEffect(() => {
@@ -21,20 +19,20 @@ const TypeAnalatisk = () => {
 			const counts = Array(12).fill(0); // Array to hold counts for each month (Jan-Dec)
 
 			bills.forEach((bill: { dateIn: string }) => {
-				const date = new Date(bills.dateIn); // Parse date
+				const date = new Date(bill.dateIn); // Parse the `dateIn` field of each bill
 				const month = date.getMonth(); // Get month index (0 for Jan, 1 for Feb, ..., 11 for Dec)
 				counts[month] += 1; // Increment the count for the respective month
 			});
 
-			setMonthlyData(counts); // Update state with monthly data
+			setMonthlyData(counts); // Update state with the monthly counts
 		}
 	}, [bills]);
 
-	const [columnBasic1] = useState<IChartOptions>({
+	const chartOptions: IChartOptions = {
 		series: [
 			{
 				name: 'Bills',
-				data: monthlyData,
+				data: monthlyData, // Use the calculated monthly data
 			},
 		],
 		options: {
@@ -59,7 +57,7 @@ const TypeAnalatisk = () => {
 			xaxis: {
 				categories: [
 					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-					'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+					'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
 				],
 			},
 			yaxis: {
@@ -81,7 +79,7 @@ const TypeAnalatisk = () => {
 				},
 			},
 		},
-	});
+	};
 
 	return (
 		<div className='col-lg-6'>
@@ -93,12 +91,16 @@ const TypeAnalatisk = () => {
 					</CardLabel>
 				</CardHeader>
 				<CardBody>
-					<Chart
-						series={columnBasic1.series}
-						options={columnBasic1.options}
-						type='bar'
-						height={350}
-					/>
+					{isLoading ? (
+						<p>Loading...</p>
+					) : (
+						<Chart
+							series={chartOptions.series}
+							options={chartOptions.options}
+							type='bar'
+							height={350}
+						/>
+					)}
 				</CardBody>
 			</Card>
 		</div>

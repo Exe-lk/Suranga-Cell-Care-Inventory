@@ -7,7 +7,7 @@ import Card, {
 	CardTitle,
 } from '../components/bootstrap/Card';
 import Chart, { IChartOptions } from '../components/extras/Chart';
-import { useGetStockInOutsQuery } from '../redux/slices/stockInOutDissApiSlice';
+import { useGetStockInOutsQuery } from '../redux/slices/stockInOutAcceApiSlice';
 import moment from 'moment';
 
 const LineWithLabel = () => {

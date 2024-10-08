@@ -1,112 +1,85 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card, {
+	CardActions,
 	CardBody,
 	CardHeader,
 	CardLabel,
-	CardSubTitle,
 	CardTitle,
 } from '../components/bootstrap/Card';
 import Chart, { IChartOptions } from '../components/extras/Chart';
+import { useGetItemAccesQuery } from '../redux/slices/itemManagementAcceApiSlice';
 
-const LineWithLabel = () => {
-	const [state] = useState<IChartOptions>({
-		series: [
-			{
-				name: 'Electronic',
-				data: [28, 29, 33, 36, 32, 32, 33],
-			},
-			{
-				name: 'Accessories',
-				data: [12, 11, 14, 18, 17, 13, 13],
-			},
-			// {
-			// 	name: 'Low - 2013',
-			// 	data: [56, 11, 14, 18, 17, 13, 13],
-			// },
-		],
+const PieBasic = () => {
+	const { data: items, isLoading } = useGetItemAccesQuery(undefined); // Fetching items from API slice
+	const [chartData, setChartData] = useState<IChartOptions>({
+		series: [0, 0], // Initial values
 		options: {
 			chart: {
-				height: 350,
-				type: 'line',
-				dropShadow: {
-					enabled: true,
-					color: '#000',
-					top: 18,
-					left: 7,
-					blur: 10,
-					opacity: 0.2,
+				width: 380,
+				type: 'pie',
+			},
+			labels: ['Mobile', 'Accessory'],
+			responsive: [
+				{
+					breakpoint: 480,
+					options: {
+						chart: {
+							width: 200,
+						},
+						legend: {
+							position: 'bottom',
+						},
+					},
 				},
-				toolbar: {
-					show: false,
-				},
-			},
-			tooltip: {
-				theme: 'dark',
-			},
-			dataLabels: {
-				enabled: true,
-			},
-			stroke: {
-				curve: 'smooth',
-			},
-			title: {
-				text: 'event',
-				align: 'left',
-			},
-			grid: {
-				borderColor: '#e7e7e7',
-				row: {
-					colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
-					opacity: 0.5,
-				},
-			},
-			markers: {
-				size: 1,
-			},
-			xaxis: {
-				categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-				title: {
-					text: 'Month',
-				},
-			},
-			yaxis: {
-				title: {
-					text: '',
-				},
-				min: 5,
-				max: 40,
-			},
-			legend: {
-				position: 'top',
-				horizontalAlign: 'right',
-				floating: true,
-				offsetY: -25,
-				offsetX: -5,
-			},
+			],
 		},
 	});
+	const [totalCount, setTotalCount] = useState(0); // Total count of items
+
+	// Effect to filter and count items
+	useEffect(() => {
+		if (items && !isLoading) {
+			const mobileCount = items.filter((item: any) => item.type === 'Mobile').length;
+			const accessoryCount = items.filter((item: any) => item.type === 'Accessory').length;
+			const total = mobileCount + accessoryCount;
+
+			// Update chart series and total count
+			setChartData((prevState) => ({
+				...prevState,
+				series: [mobileCount, accessoryCount],
+			}));
+			setTotalCount(total);
+		}
+	}, [items, isLoading]);
+
 	return (
 		<div className='col-lg-6'>
 			<Card stretch>
 				<CardHeader>
-					<CardLabel icon='ShowChart' iconColor='warning'>
+					<CardLabel icon='PieChart'>
 						<CardTitle>
-							Sells Over View <small>analytics</small>
+							Type <small>analytics</small>
 						</CardTitle>
-						<CardSubTitle>Chart</CardSubTitle>
 					</CardLabel>
 				</CardHeader>
 				<CardBody>
-					<Chart
-						series={state.series}
-						options={state.options}
-						type={state.options.chart?.type}
-						height={state.options.chart?.height}
-					/>
+					{isLoading ? (
+						<p>Loading...</p>
+					) : (
+						<>
+							<Chart
+								series={chartData.series}
+								options={chartData.options}
+								type={chartData.options.chart?.type}
+								width={chartData.options.chart?.width}
+							/>
+							<p>Total Items: {totalCount}</p> {/* Display total count */}
+						</>
+					)}
 				</CardBody>
 			</Card>
 		</div>
 	);
 };
 
-export default LineWithLabel;
+export default PieBasic;
