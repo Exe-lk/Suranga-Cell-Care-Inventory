@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card, {
 	CardActions,
 	CardBody,
@@ -9,22 +9,22 @@ import Card, {
 } from './bootstrap/Card';
 import Chart, { IChartOptions } from './extras/Chart';
 import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
+import { useGetTechniciansQuery } from '../redux/slices/technicianManagementApiSlice';
+import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const TypeAnalatisk = () => {
-	const [columnBasic1] = useState<IChartOptions>({
+	// Fetch technicians from the API
+	const { data: technicians, isLoading: isLoadingTechnicians } = useGetTechniciansQuery(undefined);
+	// Fetch bills from the API
+	const { data: bills, isLoading: isLoadingBills } = useGetBillsQuery(undefined);
+
+	// Local state to store chart data
+	const [columnBasic1, setColumnBasic1] = useState<IChartOptions>({
 		series: [
 			{
 				name: 'Technicians',
-				data: [44, 55, 57, 56, ],
+				data: [], // This will be dynamically filled with bill counts
 			},
-			// {
-			// 	name: 'restore',
-			// 	data: [76, 85, 101, 98, 87,56,89,45,78],
-			// },
-			// {
-			// 	name: 'stock out',
-			// 	data: [35, 41, 36, 26, 45,25,36,98,56,],
-			// },
 		],
 		options: {
 			chart: {
@@ -35,8 +35,6 @@ const TypeAnalatisk = () => {
 				bar: {
 					horizontal: false,
 					columnWidth: '55%',
-					// @ts-ignore
-					endingShape: 'rounded',
 				},
 			},
 			dataLabels: {
@@ -48,11 +46,11 @@ const TypeAnalatisk = () => {
 				colors: ['transparent'],
 			},
 			xaxis: {
-				categories: ['Technicians A', 'Technicians B', 'Technicians C', 'Technicians D'],
+				categories: [], // This will be dynamically filled with technician names
 			},
 			yaxis: {
 				title: {
-					text: '$ (thousands)',
+					text: 'Bill Count',
 				},
 			},
 			fill: {
@@ -61,31 +59,58 @@ const TypeAnalatisk = () => {
 			tooltip: {
 				y: {
 					formatter(val) {
-						return `$ ${val} thousands`;
+						return `${val} bills`;
 					},
 				},
 			},
 		},
 	});
+
+	// Update chart data once we have the technicians and bills data
+	useEffect(() => {
+		if (!isLoadingTechnicians && !isLoadingBills && technicians && bills) {
+			// Extract technician names and their corresponding technicianNum
+			const technicianNames = technicians.map((tech: any) => tech.name);
+			const billCounts = technicians.map((tech: any) => {
+				// Count the bills for each technician by technicianNum
+				return bills.filter((bill: any) => bill.technicianNum === tech.technicianNum).length;
+			});
+
+			// Update the chart data
+			setColumnBasic1((prevState) => ({
+				...prevState,
+				series: [{ name: 'Technicians', data: billCounts }],
+				options: {
+					...prevState.options,
+					xaxis: {
+						...prevState.options.xaxis,
+						categories: technicianNames,
+					},
+				},
+			}));
+		}
+	}, [technicians, bills, isLoadingTechnicians, isLoadingBills]);
+
 	return (
 		<div className='col-lg-6'>
 			<Card stretch>
 				<CardHeader>
 					<CardLabel icon='BarChart'>
-						<CardTitle>
-						Technicians Work History
-						</CardTitle>
+						<CardTitle>Technicians Work History</CardTitle>
 						<CardSubTitle>Analytics</CardSubTitle>
 					</CardLabel>
-					
 				</CardHeader>
 				<CardBody>
-					<Chart
-						series={columnBasic1.series}
-						options={columnBasic1.options}
-						type='bar'
-						height={350}
-					/>
+					{isLoadingTechnicians || isLoadingBills ? (
+						<p>Loading...</p>
+					) : (
+						<Chart
+							series={columnBasic1.series}
+							options={columnBasic1.options}
+							type='bar'
+							height={350}
+						/>
+					)}
 				</CardBody>
 			</Card>
 		</div>
