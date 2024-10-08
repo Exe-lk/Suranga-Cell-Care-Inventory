@@ -546,7 +546,7 @@ const Index: NextPage = () => {
 																	setEditModalStatus(true),
 																	setId(bill.id)
 																)}>
-																Edit
+																
 															</Button>
 															<Button
 																className='m-2'
@@ -555,7 +555,7 @@ const Index: NextPage = () => {
 																onClick={() =>
 																	handleClickDelete(bill)
 																}>
-																Delete
+																
 															</Button>
 														</td>
 													</tr>

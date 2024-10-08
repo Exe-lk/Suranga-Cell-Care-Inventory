@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Card, {
 	CardActions,
 	CardBody,
@@ -9,22 +9,33 @@ import Card, {
 } from './bootstrap/Card';
 import Chart, { IChartOptions } from './extras/Chart';
 import CommonStoryBtn from '../common/partial/other/CommonStoryBtn';
+import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const TypeAnalatisk = () => {
+	const { data: bills } = useGetBillsQuery(undefined);
+	
+	const [monthlyData, setMonthlyData] = useState<number[]>(Array(12).fill(0)); // Initialize an array for 12 months
+
+	useEffect(() => {
+		if (bills) {
+			const counts = Array(12).fill(0); // Array to hold counts for each month (Jan-Dec)
+
+			bills.forEach((bill: { dateIn: string }) => {
+				const date = new Date(bills.dateIn); // Parse date
+				const month = date.getMonth(); // Get month index (0 for Jan, 1 for Feb, ..., 11 for Dec)
+				counts[month] += 1; // Increment the count for the respective month
+			});
+
+			setMonthlyData(counts); // Update state with monthly data
+		}
+	}, [bills]);
+
 	const [columnBasic1] = useState<IChartOptions>({
 		series: [
 			{
 				name: 'Bills',
-				data: [44, 55, 57, 56, 61,56,89,56,45,],
+				data: monthlyData,
 			},
-			// {
-			// 	name: 'restore',
-			// 	data: [76, 85, 101, 98, 87,56,89,45,78],
-			// },
-			// {
-			// 	name: 'stock out',
-			// 	data: [35, 41, 36, 26, 45,25,36,98,56,],
-			// },
 		],
 		options: {
 			chart: {
@@ -35,8 +46,6 @@ const TypeAnalatisk = () => {
 				bar: {
 					horizontal: false,
 					columnWidth: '55%',
-					// @ts-ignore
-					endingShape: 'rounded',
 				},
 			},
 			dataLabels: {
@@ -48,11 +57,17 @@ const TypeAnalatisk = () => {
 				colors: ['transparent'],
 			},
 			xaxis: {
-				categories: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+				categories: [
+					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+					'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+				],
 			},
 			yaxis: {
 				title: {
-					text: '$ (thousands)',
+					text: 'Number of Bills',
+				},
+				labels: {
+					formatter: (val) => `${val}`, // Format Y-axis labels
 				},
 			},
 			fill: {
@@ -61,23 +76,21 @@ const TypeAnalatisk = () => {
 			tooltip: {
 				y: {
 					formatter(val) {
-						return `$ ${val} thousands`;
+						return `Bills: ${val}`; // Tooltip formatter
 					},
 				},
 			},
 		},
 	});
+
 	return (
 		<div className='col-lg-6'>
 			<Card stretch>
 				<CardHeader>
 					<CardLabel icon='BarChart'>
-						<CardTitle>
-						Bills Created
-						</CardTitle>
+						<CardTitle>Bills Created</CardTitle>
 						<CardSubTitle>Analytics</CardSubTitle>
 					</CardLabel>
-					
 				</CardHeader>
 				<CardBody>
 					<Chart

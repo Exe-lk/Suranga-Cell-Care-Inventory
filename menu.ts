@@ -290,14 +290,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'model',
-				text: 'Display Stock Management',
+				text: 'Display Model Management',
 				path: 'admin/model/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'model1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Model Management',
 				path: 'admin/model/accessory',
 				icon: 'SupervisedUserCircle',
 		
@@ -313,14 +313,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'brand',
-				text: 'Display Stock Management',
+				text: 'Display Brand Management',
 				path: 'admin/brand/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'brand1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Brand Management',
 				path: 'admin/brand/accessory',
 				icon: 'SupervisedUserCircle',
 		
@@ -336,14 +336,14 @@ export const addminPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'category',
-				text: 'Display Stock Management',
+				text: 'Display Category Management',
 				path: 'admin/category/display',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
 				id: 'category1',
-				text: 'Accessory Stock Management',
+				text: 'Accessory Category Management',
 				path: 'admin/category/accessory',
 				icon: 'SupervisedUserCircle',
 		

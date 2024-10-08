@@ -230,16 +230,6 @@ function index() {
 		cid: string;
 		categoryname: string;
 	}
-	const cdata = [
-		{ status: true, categoryname: 'Modile', cid: '0bc5HUELspDzvrUdt5u6' },
-
-		{ status: true, categoryname: 'Display', cid: 'LKcV57ThRnHtE9bxBHMb' },
-
-		{ status: true, categoryname: 'Charges', cid: 'La1K7XLguIsFPZN19vp4' },
-
-		{ categoryname: 'Battery', cid: 'NowdRVU0K7hDZiMRkksn', status: true },
-	];
-	const [category, setCategory] = useState<Category[]>(cdata);
 
 	useEffect(() => {
 		// Retrieve email from local storage
@@ -262,16 +252,6 @@ function index() {
 	
 	return (
 		<PageWrapper className=''>
-			<div>
-				<div className='mt-5 ms-5'>
-					<Button className='btn btn-outline-warning '>All</Button>
-					{category.map((category, index) => (
-						<Button key={index} className='btn btn-outline-warning'>
-							{category.categoryname}
-						</Button>
-					))}
-				</div>
-			</div>
 			<div className='row m-4'>
 				<div className='col-4 mb-3 mb-sm-0'>
 					<Additem
