@@ -10,6 +10,7 @@ import { useAddStockInMutation } from '../../redux/slices/stockInOutAcceApiSlice
 import { useGetItemAcceByIdQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
+import { useGetStockInOutsQuery } from '../../redux/slices/stockInOutAcceApiSlice';
 
 interface StockAddModalProps {
   id: string;
@@ -32,6 +33,7 @@ interface StockIn {
   mobile: string;
   mobileType: string;
   cost: string;
+  code: string;
   stock: string;
   status: boolean;
 }
@@ -52,6 +54,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     mobile: '',
     mobileType: '',
     cost: '',
+    code: '',
     stock: 'stockIn',
     status: true,
   });
@@ -60,12 +63,42 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
   const [addstockIn, { isLoading }] = useAddStockInMutation();
   const [updateStockInOut] = useUpdateStockInOutMutation();
   const { refetch } = useGetItemAccesQuery(undefined);
+  const { data: stockInOuts } = useGetStockInOutsQuery(undefined);
+  console.log(stockInOuts);
+
+  const [generatedCode, setGeneratedCode] = useState('');
 
   useEffect(() => {
     if (isSuccess && stockInData) {
       setStockIn(stockInData);
     }
-  }, [isSuccess, stockInData]);
+  
+    if (stockInOuts?.length) {
+      // Find the code with the highest numeric value
+      const lastCode = stockInOuts
+        .map((item: { code: string }) => item.code) // Extract all codes
+        .filter((code: string) => code) // Ensure the code is not undefined or empty
+        .reduce((maxCode: string, currentCode: string) => {
+          const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
+          const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
+          return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
+        }, 'STK100000'); // Default starting code
+  
+      const newCode = incrementCode(lastCode); // Increment the last code
+      setGeneratedCode(newCode); // Set the new generated code in state
+    } else {
+      // No previous codes, so start from STK100000
+      setGeneratedCode('STK100000');
+    }
+  }, [isSuccess, stockInData, stockInOuts]);
+  
+  
+  // Function to increment the code
+  const incrementCode = (code: string) => {
+    const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
+    const incrementedNumericPart = (numericPart + 1).toString().padStart(6, '0'); // Increment and pad with zeros to 6 digits
+    return `STK${incrementedNumericPart}`; // Return the new code in the format STKxxxxxx
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -82,6 +115,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
       mobile: '',
       mobileType: stockIn.mobileType || '',
       cost: '',
+      code:generatedCode,
       stock: 'stockIn',
       status: true,
     },
@@ -131,7 +165,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
         try {
           const updatedQuantity = parseInt(stockInData.quantity) + parseInt(values.quantity);
-          const response: any = await addstockIn(values).unwrap();
+          const response: any = await addstockIn({ ...values, code: generatedCode }).unwrap();
           console.log(response);
 
           await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
@@ -317,6 +351,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
               onBlur={formik.handleBlur}
               isValid={formik.isValid}
               isTouched={formik.touched.cost}
+            />
+          </FormGroup>
+          <FormGroup id='code' label='Generated Code' className='col-md-6'>
+            <Input
+              type='text'
+              value={generatedCode}
+              readOnly
+              isValid={formik.isValid}
+              isTouched={formik.touched.code}
             />
           </FormGroup>
         </div>

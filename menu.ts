@@ -72,6 +72,13 @@ export const stockAccPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
+	Stockkeeperbar1: {
+		id: 'stock keeper bar1',
+		text: 'Barcode Printing',
+		path: 'accessory-stock/barcode',
+		icon: 'FormatAlignCenter',
+
+	},
 }
 export const CashierPagesMenu = {
 	bill: {
@@ -131,6 +138,13 @@ export const stockElePagesMenu = {
 		path: 'display-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,
+	},
+	Stockkeeperbar: {
+		id: 'stock keeper bar',
+		text: 'Barcode Printing',
+		path: 'display-stock/barcode',
+		icon: 'FormatAlignCenter',
+
 	},
 	Stockkeeper: {
 		id: 'stock keeper',
