@@ -7,6 +7,7 @@ const Document = () => {
 	return (
 		<Html>
 			<Head />
+			<script type="text/javascript" src="../BrowserPrint-3.1.250.min.js"></script>
 			<body className='modern-design subheader-enabled'>
 				<Main />
 				<div id='portal-root' />
