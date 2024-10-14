@@ -45,105 +45,16 @@ const Index: NextPage = () => {
 		return true; // Return all if no date range is selected
 	});
 
-	// const handlePrint = (code: string) => {
-	// 	Swal.fire({
-	// 	  title: 'Print Barcode',
-	// 	  html: `
-	// 		<div>
-	// 		  <label>Enter Quantity:</label>
-	// 		  <input type="number" id="quantityInput" class="swal2-input" placeholder="Quantity" min="1">
-	// 		</div>
-	// 	  `,
-	// 	  showCancelButton: true,
-	// 	  confirmButtonText: 'Print',
-	// 	  preConfirm: () => {
-	// 		const quantity = (document.getElementById('quantityInput') as HTMLInputElement).value;
-	// 		if (!quantity || parseInt(quantity, 10) <= 0) {
-	// 		  Swal.showValidationMessage('Please enter a valid quantity');
-	// 		} else {
-	// 		  return parseInt(quantity, 10);
-	// 		}
-	// 	  }
-	// 	}).then((result) => {
-	// 	  if (result.isConfirmed) {
-	// 		const quantity = result.value;
-	  
-	// 		// Create the print window
-	// 		const printWindow = window.open('', '_blank');
-	// 		if (!printWindow) return;
-	  
-	// 		printWindow.document.write(`
-	// 		  <html>
-	// 			<head>
-	// 			  <title>Print Barcode</title>
-	// 			  <style>
-	// 				@page {
-	// 				  size: 100mm auto;
-	// 				  margin: 0;
-	// 				}
-	// 				body {
-	// 				  width: 100mm;
-	// 				  margin: 0;
-	// 				  padding: 0;
-	// 				  display: flex;
-	// 				  flex-wrap: wrap;
-	// 				  justify-content: flex-start;
-	// 				}
-	// 				.barcode-container {
-	// 				  width: 30mm;
-	// 				  height: 20mm;
-	// 				  display: inline-block;
-	// 				  margin-right: 3mm;
-	// 				  margin-bottom: 3mm;
-	// 				  text-align: center;
-	// 				}
-	// 				.barcode-wrapper {
-	// 				  width: 100mm;
-	// 				}
-	// 			  </style>
-	// 			</head>
-	// 			<body>
-	// 			  <div id="barcodes" class="barcode-wrapper"></div>
-	// 			</body>
-	// 		  </html>
-	// 		`);
-	  
-	// 		// Render the barcodes using ReactDOM in the print window
-	// 		printWindow.document.close();
-	  
-	// 		const barcodeContainer = printWindow.document.getElementById('barcodes');
-	// 		if (barcodeContainer) {
-	// 		  ReactDOM.render(
-	// 			<div>
-	// 			  {Array.from({ length: quantity }).map((_, index) => (
-	// 				<div key={index} className="barcode-container">
-	// 				  <Barcode
-	// 					value="33"
-	// 					width={1}
-	// 					height={30}
-	// 					fontSize={16}
-	// 				  />
-	// 				</div>
-	// 			  ))}
-	// 			</div>,
-	// 			barcodeContainer
-	// 		  );
-	// 		}
-	  
-	// 		printWindow.focus();
-	// 		printWindow.print();
-	// 	  }
-	// 	});
-	//   };
+	
 
 	useEffect(() => {
 	  if (typeof window !== 'undefined') {
 		const script = document.createElement('script');
 		script.src = 'https://sdk.zebra.com/js/BrowserPrint-3.0.216.min.js';
 		script.onload = () => {
-		  if (window.BrowserPrint) {
-			setIsBrowserPrintLoaded(true);
-		  }
+		//   if (window.BrowserPrint) {
+		// 	setIsBrowserPrintLoaded(true);
+		//   }
 		};
 		document.body.appendChild(script);
 	  }
@@ -192,19 +103,19 @@ const Index: NextPage = () => {
 				const zpl = generateZPL(code, quantity);
 	
 				// Send the ZPL to the printer using Zebra Browser Print
-				window.BrowserPrint.getDefaultDevice('printer', (printer:any) => {
-					if (printer) {
-						printer.send(zpl, undefined, (error:any) => {
-							if (error) {
-								console.error('Error printing:', error);
-							} else {
-								console.log('Print successful');
-							}
-						});
-					} else {
-						console.error('No Zebra printer found');
-					}
-				});
+				// window.BrowserPrint.getDefaultDevice('printer', (printer:any) => {
+				// 	if (printer) {
+				// 		printer.send(zpl, undefined, (error:any) => {
+				// 			if (error) {
+				// 				console.error('Error printing:', error);
+				// 			} else {
+				// 				console.log('Print successful');
+				// 			}
+				// 		});
+				// 	} else {
+				// 		console.error('No Zebra printer found');
+				// 	}
+				// });
 			}
 		});
 	};
