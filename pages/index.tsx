@@ -19,7 +19,6 @@ import Input from '../components/bootstrap/forms/Input';
 import Select from '../components/bootstrap/forms/Select';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import PostDataService from '../services/postservice';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, firestore } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
