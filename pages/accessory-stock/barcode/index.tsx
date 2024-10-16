@@ -52,39 +52,40 @@ const Index: NextPage = () => {
 
 		return true; // Return all if no date range is selected
 	});
-	useEffect(() => {
+	// useEffect(() => {
 	
-		const setup = () => {
+	// 	const setup = () => {
 		
-			BrowserPrint.getDefaultDevice(
-				'printer',
-				(device: any) => {
+	// 		BrowserPrint.getDefaultDevice(
+	// 			'printer',
+	// 			(device: any) => {
 					
-					setSelectedDevice(device);
-					setDevices((prevDevices: any) => [...prevDevices, device]);
+	// 				setSelectedDevice(device);
+	// 				setDevices((prevDevices: any) => [...prevDevices, device]);
 
 				
-					BrowserPrint.getLocalDevices(
-						(deviceList: any) => {
-							const newDevices = deviceList.filter(
-								(dev: any) => dev.uid !== device.uid,
-							);
-							setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
-						},
-						() => {
-							alert('Error getting local devices');
-						},
-						'printer',
-					);
-				},
-				(error: any) => {
-					alert(error);
-				},
-			);
-		};
+	// 				BrowserPrint.getLocalDevices(
+	// 					(deviceList: any) => {
+	// 						const newDevices = deviceList.filter(
+	// 							(dev: any) => dev.uid !== device.uid,
+	// 						);
+	// 						setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
+	// 					},
+	// 					() => {
+	// 						alert('Error getting local devices');
+	// 					},
+	// 					'printer',
+	// 				);
+	// 			},
+	// 			(error: any) => {
+	// 				alert(error);
+	// 			},
+	// 		);
+	// 	};
 
-		setup();
-	}, []);
+	// 	setup();
+	// }, []);
+
 	const labelDataArray: LabelData[] = [
 		{
 			productName: 'iPhone Back Cover',
