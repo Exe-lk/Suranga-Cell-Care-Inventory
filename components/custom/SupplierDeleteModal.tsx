@@ -86,7 +86,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				await updateSupplier(values);
 
-				Swal.fire('Restory!', 'The supplier has been deleted.', 'success');
+				Swal.fire('Restored!', 'The supplier has been restored.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -116,7 +116,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				for (const supplier of suppliers) {
 					await deleteSupplier(supplier.id).unwrap();
 				}
-				Swal.fire('Deleted!', 'All supplier have been deleted.', 'success');
+				Swal.fire('Deleted!', 'All suppliers have been deleted.', 'success');
 
 				
 				refetch();
@@ -170,8 +170,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-				<table className='table table-bordered border-primary table-modern table-hover'>
-					<thead>
+			<table className='table table-bordered border-primary  table-hover'>
+								<thead className={"table-dark border-primary"}>
 						<tr>
 							<th>Supplier</th>
 

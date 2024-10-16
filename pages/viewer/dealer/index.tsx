@@ -260,7 +260,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						{/* Table for displaying user data */}
 						<Card stretch>
 						<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Dealer Management</div>
+								<div className='flex-grow-1 text-center text-primary'>Dealer Management</div>
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>
 									<Button
@@ -279,8 +279,8 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 								
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-bordered border-primary table-modern table-hover'>
-									<thead>
+                            <table className='table table-bordered border-primary  table-hover'>
+                            <thead className={"table-dark border-primary"}>
 										<tr>
 											<th>User</th>
 											<th>Items</th>

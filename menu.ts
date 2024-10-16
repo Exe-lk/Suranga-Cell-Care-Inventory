@@ -193,7 +193,7 @@ export const ViewPagesMenu = {
 		subMenu: {
 			Display: {
 				id: 'model',
-				text: 'Accesory Stock',
+				text: 'Accessory Stock',
 				path: 'viewer/Stock-Transaction/Accesories',
 				icon: 'LaptopMac',
 		
