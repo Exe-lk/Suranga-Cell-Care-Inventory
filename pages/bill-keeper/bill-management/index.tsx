@@ -114,211 +114,206 @@ const Index: NextPage = () => {
 	};
 
 	// Function to handle the download in different formats
-	const handleExport = async (format: string) => {
-		const table = document.querySelector('table');
-		if (!table) return;
+	// Function to handle the download in different formats
+const handleExport = async (format: string) => {
+    const table = document.querySelector('table');
+    if (!table) return;
 
-		const clonedTable = table.cloneNode(true) as HTMLElement;
+    // Remove borders and hide last cells before exporting
+    modifyTableForExport(table as HTMLElement, true);
 
-		// Remove Edit/Delete buttons column from cloned table
-		const rows = clonedTable.querySelectorAll('tr');
-		rows.forEach((row) => {
-			const lastCell = row.querySelector('td:last-child, th:last-child');
-			if (lastCell) {
-				lastCell.remove();
-			}
-		});
+    try {
+        // Handle export based on the format
+        switch (format) {
+            case 'svg':
+                await downloadTableAsSVG();
+                break;
+            case 'png':
+                await downloadTableAsPNG();
+                break;
+            case 'csv':
+                downloadTableAsCSV(table as HTMLElement);
+                break;
+            case 'pdf':
+                downloadTableAsPDF(table as HTMLElement);
+                break;
+            default:
+                console.warn('Unsupported export format: ', format);
+        }
+    } catch (error) {
+        console.error('Error exporting table: ', error);
+    } finally {
+        // Restore table after export
+        modifyTableForExport(table as HTMLElement, false);
+    }
+};
 
-		const clonedTableStyles = getComputedStyle(table);
-		clonedTable.setAttribute('style', clonedTableStyles.cssText);
+// Helper function to modify table by hiding last column and removing borders
+const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
+    const rows = table.querySelectorAll('tr');
+    rows.forEach((row) => {
+        const lastCell = row.querySelector('td:last-child, th:last-child');
+        if (lastCell instanceof HTMLElement) {
+            if (hide) {
+                lastCell.style.display = 'none';  
+            } else {
+                lastCell.style.display = '';  
+            }
+        }
+    });
+};
 
-		try {
-			switch (format) {
-				case 'svg':
-					await downloadTableAsSVG();
-					break;
-				case 'png':
-					await downloadTableAsPNG();
-					break;
-				case 'csv':
-					downloadTableAsCSV(clonedTable);
-					break;
-				case 'pdf':
-					await downloadTableAsPDF(clonedTable);
-					break;
-				default:
-					console.warn('Unsupported export format: ', format);
-			}
-		} catch (error) {
-			console.error('Error exporting table: ', error);
-		}
-	};
+// Function to export the table data in PNG format
+const downloadTableAsPNG = async () => {
+    try {
+        const table = document.querySelector('table');
+        if (!table) {
+            console.error('Table element not found');
+            return;
+        }
+		const originalBorderStyle = table.style.border;
+        table.style.border = '1px solid black'; 
 
-	// function to export the table data in CSV format
-	const downloadTableAsCSV = (table: any) => {
-		let csvContent = '';
-		const rows = table.querySelectorAll('tr');
-		rows.forEach((row: any) => {
-			const cols = row.querySelectorAll('td, th');
-			const rowData = Array.from(cols)
-				.map((col: any) => `"${col.innerText}"`)
-				.join(',');
-			csvContent += rowData + '\n';
-		});
+        // Convert table to PNG
+        const dataUrl = await toPng(table, {
+            cacheBust: true,
+            style: {
+                width: table.offsetWidth + 'px',
+            },
+        });
+		// Restore original border style after capture
+        table.style.border = originalBorderStyle;
 
-		const blob = new Blob([csvContent], { type: 'text/csv' });
-		const link = document.createElement('a');
-		link.href = URL.createObjectURL(blob);
-		link.download = 'table_data.csv';
-		link.click();
-	};
-	//  function for PDF export
-	const downloadTableAsPDF = (table: HTMLElement) => {
-		try {
-			const pdf = new jsPDF('p', 'pt', 'a4');
-			const rows: any[] = [];
-			const headers: any[] = [];
+        // Create link element and trigger download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'table_data.png';
+        link.click();
+    } catch (error) {
+        console.error('Error generating PNG: ', error);
+    }
+};
 
-			// Adding the title "Accessory + Report" before the table
-			pdf.setFontSize(16);
-			pdf.setFont('helvetica', 'bold'); // Make the text bold
-			const title = 'Bill Management Report';
-			const pageWidth = pdf.internal.pageSize.getWidth();
-			const titleWidth = pdf.getTextWidth(title);
-			const titleX = (pageWidth - titleWidth) / 2; // Center the title
-			pdf.text(title, titleX, 30); // Position the title
+// Function to export the table data in SVG format
+const downloadTableAsSVG = async () => {
+    try {
+        const table = document.querySelector('table');
+        if (!table) {
+            console.error('Table element not found');
+            return;
+        }
 
-			const thead = table.querySelector('thead');
-			if (thead) {
-				const headerCells = thead.querySelectorAll('th');
-				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
-			}
+        // Temporarily store the original color of each cell
+        const cells = table.querySelectorAll('th, td');
+        const originalColors: string[] = [];
+        
+        cells.forEach((cell: any, index: number) => {
+            originalColors[index] = cell.style.color;  // Save original color
+            cell.style.color = 'black';  // Set text color to black
+        });
 
-			const tbody = table.querySelector('tbody');
-			if (tbody) {
-				const bodyRows = tbody.querySelectorAll('tr');
-				bodyRows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td');
-					const rowData = Array.from(cols).map((col: any) => col.innerText);
-					rows.push(rowData);
-				});
-			}
+        // Convert table to SVG
+        const dataUrl = await toSvg(table, {
+            backgroundColor: 'white',
+            cacheBust: true,
+        });
 
-			// Generate the table below the title
-			autoTable(pdf, {
-				head: headers,
-				body: rows,
-				margin: { top: 50 },
-				styles: {
-					overflow: 'linebreak',
-					cellWidth: 'wrap',
-				},
-				theme: 'grid',
-			});
+        // Restore the original color of each cell
+        cells.forEach((cell: any, index: number) => {
+            cell.style.color = originalColors[index];  // Restore original color
+        });
 
-			pdf.save('Bill Management Report.pdf');
-		} catch (error) {
-			console.error('Error generating PDF: ', error);
-			alert('Error generating PDF. Please try again.');
-		}
-	};
-	// Helper function to hide the last cell of every row (including borders)
-	const hideLastCells = (table: HTMLElement) => {
-		const rows = table.querySelectorAll('tr');
-		rows.forEach((row) => {
-			const lastCell = row.querySelector('td:last-child, th:last-child');
-			if (lastCell instanceof HTMLElement) {
-				lastCell.style.visibility = 'hidden';
-				lastCell.style.border = 'none';
-				lastCell.style.padding = '0';
-				lastCell.style.margin = '0';
-			}
-		});
-	};
+        // Create link element and trigger download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'table_data.svg';
+        link.click();
+    } catch (error) {
+        console.error('Error generating SVG: ', error);
+    }
+};
 
-	// Helper function to restore the visibility and styles of the last cell
-	const restoreLastCells = (table: HTMLElement) => {
-		const rows = table.querySelectorAll('tr');
-		rows.forEach((row) => {
-			const lastCell = row.querySelector('td:last-child, th:last-child');
-			if (lastCell instanceof HTMLElement) {
-				lastCell.style.visibility = 'visible';
-				lastCell.style.border = '';
-				lastCell.style.padding = '';
-				lastCell.style.margin = '';
-			}
-		});
-	};
 
-	// Function to export the table data in PNG format using html-to-image without cloning the table
-	const downloadTableAsPNG = async () => {
-		try {
-			const table = document.querySelector('table');
-			if (!table) {
-				console.error('Table element not found');
-				return;
-			}
+// Function to export the table data in CSV format
+const downloadTableAsCSV = (table: HTMLElement) => {
+    let csvContent = 'Category\n';
+    const rows = table.querySelectorAll('tr');
+    rows.forEach((row: any) => {
+        const cols = row.querySelectorAll('td, th');
+        const rowData = Array.from(cols)
+            .slice(0, -1) 
+            .map((col: any) => `"${col.innerText}"`)
+            .join(',');
+        csvContent += rowData + '\n';
+    });
 
-			// Hide last cells before export
-			hideLastCells(table);
+    // Create a blob and initiate download
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'table_data.csv';
+    link.click();
+};
 
-			const dataUrl = await toPng(table, {
-				cacheBust: true,
-				style: {
-					width: table.offsetWidth + 'px',
-				},
-			});
+// Function to export the table data in PDF format
+const downloadTableAsPDF = (table: HTMLElement) => {
+    try {
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth(); 
+        const title = 'LOT Management';
+        const titleFontSize = 18;
 
-			// Restore the last cells after export
-			restoreLastCells(table);
+        // Add heading to PDF (centered)
+        pdf.setFontSize(titleFontSize);
+        const textWidth = pdf.getTextWidth(title);
+        const xPosition = (pageWidth - textWidth) / 2; 
+        pdf.text(title, xPosition, 40); 
 
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.png';
-			link.click();
-		} catch (error) {
-			console.error('Error generating PNG: ', error);
-			// Restore the last cells in case of error
-			const table = document.querySelector('table');
-			if (table) restoreLastCells(table);
-		}
-	};
+        const rows: any[] = [];
+        const headers: any[] = [];
 
-	// Function to export the table data in SVG format using html-to-image without cloning the table
-	const downloadTableAsSVG = async () => {
-		try {
-			const table = document.querySelector('table');
-			if (!table) {
-				console.error('Table element not found');
-				return;
-			}
+        // Extract table headers (exclude last cell)
+        const thead = table.querySelector('thead');
+        if (thead) {
+            const headerCells = thead.querySelectorAll('th');
+            headers.push(
+                Array.from(headerCells)
+                    .slice(0, -1) 
+                    .map((cell: any) => cell.innerText)
+            );
+        }
 
-			// Hide last cells before export
-			hideLastCells(table);
+        // Extract table rows (exclude last cell)
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+            const bodyRows = tbody.querySelectorAll('tr');
+            bodyRows.forEach((row: any) => {
+                const cols = row.querySelectorAll('td');
+                const rowData = Array.from(cols)
+                    .slice(0, -1) 
+                    .map((col: any) => col.innerText);
+                rows.push(rowData);
+            });
+        }
 
-			const dataUrl = await toSvg(table, {
-				backgroundColor: 'white',
-				cacheBust: true,
-				style: {
-					width: table.offsetWidth + 'px',
-					color: 'black',
-				},
-			});
+        // Generate PDF using autoTable
+        autoTable(pdf, {
+            head: headers,
+            body: rows,
+            margin: { top: 50 },
+            styles: {
+                overflow: 'linebreak',
+                cellWidth: 'wrap',
+            },
+            theme: 'grid',
+        });
 
-			// Restore the last cells after export
-			restoreLastCells(table);
-
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.svg';
-			link.click();
-		} catch (error) {
-			console.error('Error generating SVG: ', error);
-			// Restore the last cells in case of error
-			const table = document.querySelector('table');
-			if (table) restoreLastCells(table);
-		}
-	};
+        pdf.save('table_data.pdf');
+    } catch (error) {
+        console.error('Error generating PDF: ', error);
+        alert('Error generating PDF. Please try again.');
+    }
+};
 
 	const getStatusColorClass = (status: string) => {
 		switch (status) {
@@ -407,7 +402,7 @@ const Index: NextPage = () => {
 										<DropdownItem onClick={() => handleExport('svg')}>
 											Download SVG
 										</DropdownItem>
-										{/* <DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem> */}
+										<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
 										<DropdownItem onClick={() => handleExport('csv')}>
 											Download CSV
 										</DropdownItem>
