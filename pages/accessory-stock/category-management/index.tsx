@@ -67,7 +67,7 @@ const Index: NextPage = () => {
 				});
 
 					// Refresh the list after deletion
-					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
+					Swal.fire('Deleted!', 'Category has been deleted.', 'success');
 					refetch(); // This will refresh the list of users to reflect the changes
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
@@ -322,7 +322,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Manage Category</div>
+								<div className='flex-grow-1 text-center text-primary'>Manage Category</div>
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>
 									<Button
@@ -341,8 +341,8 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								{/* <table className='table table-modern table-hover'> */}
-								<table className='table table-modern table-bordered border-primary table-hover text-center'>
-									<thead>
+								<table className='table table-bordered border-primary table-hover text-center'>
+								<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Category name</th>	
 											<th></th>
@@ -378,7 +378,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 														<td>
 															<Button
 																icon='Edit'
-																color='info'
+																color='primary'
 																onClick={() => {
 																	setEditModalStatus(true);
 																	setId(category.id);

@@ -255,7 +255,7 @@ const Index: NextPage = () => {
 						{/* Table for displaying user data */}
 						<Card stretch>
 						<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>Displays</div>
+								<div className='flex-grow-1 text-center text-primary'>Displays</div>
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>
 									<Button
@@ -273,8 +273,8 @@ const Index: NextPage = () => {
 							</Dropdown>								
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-bordered border-primary table-modern table-hover'>
-								<thead>
+							<table className='table table-bordered border-primary  table-hover'>
+							<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Customer Name</th>
 											<th>Email</th>

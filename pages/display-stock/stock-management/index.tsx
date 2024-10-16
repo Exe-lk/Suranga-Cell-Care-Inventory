@@ -347,7 +347,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-info'>
+								<div className='flex-grow-1 text-center text-primary'>
 									Transactions
 								</div>
 								<Dropdown>
