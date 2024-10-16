@@ -15,6 +15,14 @@ import {
 import Barcode from 'react-barcode';
 import Swal from 'sweetalert2';
 import ReactDOM from 'react-dom';
+
+interface LabelData {
+	productName: string;
+	price: string;
+	supplier: string;
+	location: string;
+}
+
 const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 
@@ -23,13 +31,13 @@ const Index: NextPage = () => {
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
-
+	const [selectedDevice, setSelectedDevice] = useState<any>(null);
+	const [devices, setDevices] = useState<any>([]);
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+		const transactionDate = new Date(trans.date); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
 
-		// Apply date range filter if both start and end dates are selected
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		}
@@ -44,83 +52,95 @@ const Index: NextPage = () => {
 
 		return true; // Return all if no date range is selected
 	});
-
+	// useEffect(() => {
 	
-
-	useEffect(() => {
-	  if (typeof window !== 'undefined') {
-		const script = document.createElement('script');
-		script.src = 'https://sdk.zebra.com/js/BrowserPrint-3.0.216.min.js';
-		script.onload = () => {
-		//   if (window.BrowserPrint) {
-		// 	setIsBrowserPrintLoaded(true);
-		//   }
-		};
-		document.body.appendChild(script);
-	  }
-	}, []);
-	const generateZPL = (barcodeValue: string, quantity: number): string => {
-		let zpl = '^XA\n'; // Start of label format
-	
-		for (let i = 0; i < quantity; i++) {
+	// 	const setup = () => {
 		
+	// 		BrowserPrint.getDefaultDevice(
+	// 			'printer',
+	// 			(device: any) => {
+					
+	// 				setSelectedDevice(device);
+	// 				setDevices((prevDevices: any) => [...prevDevices, device]);
+
+				
+	// 				BrowserPrint.getLocalDevices(
+	// 					(deviceList: any) => {
+	// 						const newDevices = deviceList.filter(
+	// 							(dev: any) => dev.uid !== device.uid,
+	// 						);
+	// 						setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
+	// 					},
+	// 					() => {
+	// 						alert('Error getting local devices');
+	// 					},
+	// 					'printer',
+	// 				);
+	// 			},
+	// 			(error: any) => {
+	// 				alert(error);
+	// 			},
+	// 		);
+	// 	};
+
+	// 	setup();
+	// }, []);
+
+	const labelDataArray: LabelData[] = [
+		{
+			productName: 'iPhone Back Cover',
+			price: 'Rs 5000.00',
+			supplier: 'Suranga Cell Care',
+			location: 'Kadawatha',
+		},
+		{
+			productName: 'Samsung Galaxy Cover',
+			price: 'Rs 4500.00',
+			supplier: 'TechStore',
+			location: 'Colombo',
+		},
+		{
+			productName: 'OnePlus Case',
+			price: 'Rs 4000.00',
+			supplier: 'Mobile Hub',
+			location: 'Kandy',
+		},
+		// Add more as needed
+	];
+
+	const generateZPL = (data: LabelData[]) => {
+		let zpl = '';
+
+		data.forEach((item, index) => {
+			// Create ZPL for each label
 			zpl += `
-				^FO0,${i * 100}\n   
-				^BY2,3,30\n         
-				^BCN,50,Y,N\n      
-				^FD${barcodeValue}^FS 
-			`;
-		}
-	
-		zpl += '^XZ'; // End of label format
+  ^XA
+  ^MMT
+  ^PW815
+  ^LL208
+  ^LS2
+  ^FO${76 + (index % 3) * 270},69^A0N,14,20^FB308,1,4,C^FD${item.productName}^FS
+  ^FO${76 + (index % 3) * 270},168^A0N,23,23^FD${item.price}^FS
+  ^FO${76 + (index % 3) * 270},171^A0B,17,18^FDSupplier: ${item.supplier}^FS
+  ^FO${76 + (index % 3) * 270},140^A0B,14,15^FDLocation: ${item.location}^FS
+  ^XZ`;
+		});
+
 		return zpl;
 	};
-	
-	const handlePrint = (code: string) => {
-		Swal.fire({
-			title: 'Print Barcode',
-			html: `
-				<div>
-					<label>Enter Quantity:</label>
-					<input type="number" id="quantityInput" class="swal2-input" placeholder="Quantity" min="1">
-				</div>
-			`,
-			showCancelButton: true,
-			confirmButtonText: 'Print',
-			preConfirm: () => {
-				const quantity = (document.getElementById('quantityInput') as HTMLInputElement).value;
-				if (!quantity || parseInt(quantity, 10) <= 0) {
-					Swal.showValidationMessage('Please enter a valid quantity');
-				} else {
-					return parseInt(quantity, 10);
-				}
-			}
-		}).then((result) => {
-			if (result.isConfirmed) {
-				const quantity = result.value;
-				
-				// Generate ZPL for the barcodes
-				const zpl = generateZPL(code, quantity);
-	
-				// Send the ZPL to the printer using Zebra Browser Print
-				// window.BrowserPrint.getDefaultDevice('printer', (printer:any) => {
-				// 	if (printer) {
-				// 		printer.send(zpl, undefined, (error:any) => {
-				// 			if (error) {
-				// 				console.error('Error printing:', error);
-				// 			} else {
-				// 				console.log('Print successful');
-				// 			}
-				// 		});
-				// 	} else {
-				// 		console.error('No Zebra printer found');
-				// 	}
-				// });
-			}
-		});
-	};
-	
 
+	const printLabels = () => {
+		const zplString = generateZPL(labelDataArray);
+		writeToSelectedPrinter(zplString);
+	};
+
+	function writeToSelectedPrinter(dataToWrite: any) {
+		selectedDevice.send(dataToWrite, undefined, errorCallback);
+	}
+
+	var errorCallback = function (errorMessage: any) {
+		alert('Error: ' + errorMessage);
+	};
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -218,9 +238,7 @@ const Index: NextPage = () => {
 															<Button
 																icon='Print'
 																color='info'
-																onClick={() =>
-																	handlePrint(brand.code)
-																}>
+																onClick={() => printLabels}>
 																Print
 															</Button>
 														</td>
@@ -228,6 +246,16 @@ const Index: NextPage = () => {
 												))}
 									</tbody>
 								</table>
+								<div>
+									<h3>Select Printer</h3>
+									<select id='selected_device'>
+										{devices.map((device: any, index: any) => (
+											<option key={index} value={device.uid}>
+												{device.name}
+											</option>
+										))}
+									</select>
+								</div>
 							</CardBody>
 						</Card>
 					</div>
