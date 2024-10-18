@@ -60,14 +60,14 @@ export const stockAccPagesMenu = {
 	},
 	item: {
 		id: 'dashboard',
-		text: 'Item Management',
+		text: 'Stock Management',
 		path: 'accessory-stock/item-management',
 		icon: 'DevicesOther',
 		subMenu: null,
 	},
 	stock: {
 		id: 'dashboard',
-		text: 'Stock Management',
+		text: 'Transaction Management',
 		path: 'accessory-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,
@@ -127,14 +127,14 @@ export const stockElePagesMenu = {
 	},
 	item: {
 		id: 'dashboard',
-		text: 'Item Management',
+		text: 'Stock Management',
 		path: 'display-stock/item-management',
 		icon: 'DevicesOther',
 		subMenu: null,
 	},
 	stock: {
 		id: 'dashboard',
-		text: 'Stock Management',
+		text: 'Transaction Management',
 		path: 'display-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,

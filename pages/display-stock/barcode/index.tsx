@@ -12,7 +12,6 @@ import Barcode from 'react-barcode';
 import Swal from 'sweetalert2';
 import {
 	useGetStockInOutsQuery,
-	useUpdateStockInOutMutation,
 } from '../../../redux/slices/stockInOutDissApiSlice';
 const Index: NextPage = () => {
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
@@ -251,6 +250,7 @@ const Index: NextPage = () => {
 						placeholder='Search...'
 						onChange={(event: any) => setSearchTerm(event.target.value)}
 						value={searchTerm}
+						
 					/>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -316,7 +316,8 @@ const Index: NextPage = () => {
 												)
 												.filter((brand: any) =>
 													searchTerm
-														? brand.category
+														? brand.barcode
+																.toString()
 																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
 														: true,
@@ -357,10 +358,10 @@ const Index: NextPage = () => {
 																color='info'
 																onClick={() =>
 																	printLabels(
-																		"--",
+																		'--',
 																		brand.code,
 																		brand.barcode,
-																		brand.model,
+																		brand.brand+" "+brand.model,
 																		brand.quantity,
 																	)
 																}>

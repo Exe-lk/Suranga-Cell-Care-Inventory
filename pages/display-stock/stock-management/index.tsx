@@ -72,7 +72,7 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-	}, [stock]);
+	}, [StockInOuts]);
 
 	// Function to handle the download in different formats
 	// Function to handle the download in different formats
