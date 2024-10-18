@@ -21,23 +21,23 @@ const Index: NextPage = () => {
 	const [devices, setDevices] = useState<any>([]);
 
 	useEffect(() => {
-		if (typeof window !== 'undefined' && window.BrowserPrint) {
-			setIsBrowserPrintLoaded(true);
+		if (typeof window !== 'undefined' && (window as any).BrowserPrint) {
+		  setIsBrowserPrintLoaded(true);
 		} else {
-			console.error('BrowserPrint SDK is not loaded');
+		  console.error('BrowserPrint SDK is not loaded');
 		}
-	}, []);
+	  }, []);
 
 	// UseEffect to set up BrowserPrint and retrieve devices
 	useEffect(() => {
 		const setup = () => {
-			BrowserPrint.getDefaultDevice(
+			(window as any).BrowserPrint.getDefaultDevice(
 				'printer',
 				(device: any) => {
 					setSelectedDevice(device);
 					setDevices((prevDevices: any) => [...prevDevices, device]);
 
-					BrowserPrint.getLocalDevices(
+					(window as any).BrowserPrint.getLocalDevices(
 						(deviceList: any) => {
 							const newDevices = deviceList.filter((dev: any) => dev.uid !== device.uid)
 							console.log(deviceList)
