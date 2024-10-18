@@ -151,8 +151,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
         try {
           const updatedQuantity = parseInt(stockInData.quantity) + parseInt(values.quantity);
           // Pass all values, including the read-only fields
+          console.log(generatedbarcode);
           const response: any = await addstockIn({ ...values, code: generatedCode ,barcode:generatedbarcode}).unwrap();
-          console.log(response);
+          
 
           await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
 
