@@ -10,12 +10,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { brand,model,category,quantity,date,suppName,cost,stock ,code} = req.body;
+        console.log("hi")
+        const { brand,model,category,quantity,date,suppName,cost,stock ,code,barcode} = req.body;
         if (!brand) {
           res.status(400).json({ error: 'stock In name is required' });
           return;
         }
-        const id = await createstockIn(brand,model,category,quantity,date,suppName,cost,stock,code);
+       
+        const id = await createstockIn(brand,model,category,quantity,date,suppName,cost,stock,code,barcode);
         res.status(201).json({ message: 'stock In created', id });
         break;
       }

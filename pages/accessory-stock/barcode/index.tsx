@@ -95,6 +95,7 @@ const Index: NextPage = () => {
 	const printLabels = (
 		price: string,
 		itemCode: string,
+		barCodeNo: string,
 		itemName: string,
 		labelQuantity: number,
 	) => {
@@ -163,20 +164,23 @@ const Index: NextPage = () => {
 			^PW815
 			^LL200
 			^LS2
-			^FT83,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-			^BY2,3,52^FT43,145^BCN,,Y,N
-			^FH\\^FD>;${itemCode}^FS
-			^FT43,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+			^FT83,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT43,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT43,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT43,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 	
-			^FT347,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-			^BY2,3,52^FT307,145^BCN,,Y,N
-			^FH\\^FD>;${itemCode}^FS
-			^FT307,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+			^FT347,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT307,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT307,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT307,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 	
-			^FT610,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-			^BY2,3,52^FT570,145^BCN,,Y,N
-			^FH\\^FD>;${itemCode}^FS
-			^FT570,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+			^FT610,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT570,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT570,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT570,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 			^PQ1,0,1,Y
 			^XZ
 			`;
@@ -188,29 +192,32 @@ const Index: NextPage = () => {
 
 					// First label in the last row
 					zplString += `
-			^FT83,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-			^BY2,3,52^FT43,145^BCN,,Y,N
-			^FH\\^FD>;${itemCode}^FS
-			^FT43,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+			^FT83,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT43,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT43,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT43,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 			`;
 
 					// Second label in the last row, if available
 					if (lastRawLabelQuantity > 1) {
 						zplString += `
-				^FT347,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-				^BY2,3,52^FT307,145^BCN,,Y,N
-				^FH\\^FD>;${itemCode}^FS
-				^FT307,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+				^FT347,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+				^BY2,3,52^FT307,145^BCN,,N,N
+				^FH\^FD>;${barCodeNo}^FS
+				^FT307,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+				^FT307,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 				`;
 					}
 
 					// Third label in the last row, if available
 					if (lastRawLabelQuantity > 2) {
 						zplString += `
-				^FT610,86^A0N,28,33^FH\\^CI28^FD${price}^FS^CI27
-				^BY2,3,52^FT570,145^BCN,,Y,N
-				^FH\\^FD>;${itemCode}^FS
-				^FT570,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+				^FT610,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+				^BY2,3,52^FT570,145^BCN,,N,N
+				^FH\^FD>;${barCodeNo}^FS
+				^FT570,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+				^FT570,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
 				`;
 					}
 
@@ -351,6 +358,7 @@ const Index: NextPage = () => {
 																onClick={() =>
 																	printLabels(
 																		brand.sellingPrice,
+																		brand.code,
 																		brand.barcode,
 																		brand.model,
 																		brand.quantity,
