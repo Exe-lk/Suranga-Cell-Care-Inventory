@@ -22,6 +22,7 @@ interface StockAddModalProps {
 }
 
 interface StockIn {
+  barcode:number;
   cid: string;
   brand: string;
   model: string;
@@ -49,6 +50,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     code: '',
     stock: 'stockIn',
     status: true,
+    barcode:0
   });
 
   const { data: stockInData, isSuccess } = useGetItemDisByIdQuery(id);
@@ -60,6 +62,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
   console.log(stockInOuts);
   
   const [generatedCode, setGeneratedCode] = useState('');
+  const [generatedbarcode, setGeneratedBarcode] = useState<any>();
 
   useEffect(() => {
     if (isSuccess && stockInData) {
@@ -90,6 +93,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
   const incrementCode = (code: string) => {
     const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
     const incrementedNumericPart = (numericPart + 1).toString().padStart(6, '0'); // Increment and pad with zeros to 6 digits
+    const barcode=(numericPart + 1).toString().padStart(10, '0');
+    const value=Number (barcode)+1000000000
+    setGeneratedBarcode(value)
     return `STK${incrementedNumericPart}`; // Return the new code in the format STKxxxxxx
   };
   
@@ -107,6 +113,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
       code:generatedCode,
       stock: 'stockIn',
       status: true,
+      barcode:generatedbarcode
     },
     enableReinitialize: true, // Ensure formik values are updated when stockIn changes
     validate: (values) => {
@@ -144,8 +151,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
         try {
           const updatedQuantity = parseInt(stockInData.quantity) + parseInt(values.quantity);
           // Pass all values, including the read-only fields
-          const response: any = await addstockIn({ ...values, code: generatedCode }).unwrap();
-          console.log(response);
+          console.log(generatedbarcode);
+          const response: any = await addstockIn({ ...values, code: generatedCode ,barcode:generatedbarcode}).unwrap();
+          
 
           await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
 
@@ -159,6 +167,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
           formik.resetForm();
           setIsOpen(false); // Close the modal after successful addition
         } catch (error) {
+          console.log(error)
           await Swal.fire({
             icon: 'error',
             title: 'Error',
