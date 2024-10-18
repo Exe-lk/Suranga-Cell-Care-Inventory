@@ -330,7 +330,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
-									Manage Items
+									Manage Stock
 								</div>
 								<Dropdown>
 								<DropdownToggle hasIcon={false}>

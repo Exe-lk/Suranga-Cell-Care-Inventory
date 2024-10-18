@@ -360,7 +360,7 @@ const Index: NextPage = () => {
 																		brand.sellingPrice,
 																		brand.code,
 																		brand.barcode,
-																		brand.model,
+																		brand.brand+" "+brand.model,
 																		brand.quantity,
 																	)
 																}>
