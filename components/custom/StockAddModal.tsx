@@ -94,7 +94,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
     const incrementedNumericPart = (numericPart + 1).toString().padStart(6, '0'); // Increment and pad with zeros to 6 digits
     const barcode=(numericPart + 1).toString().padStart(10, '0');
-    const value=Number (barcode)+1000000000
+    const value=Number (barcode)+2000000000
     setGeneratedBarcode(value)
     return `STK${incrementedNumericPart}`; // Return the new code in the format STKxxxxxx
   };
