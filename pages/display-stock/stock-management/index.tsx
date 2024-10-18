@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -45,6 +45,7 @@ const Index: NextPage = () => {
 
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const inputRef = useRef<HTMLInputElement>(null);
 
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date); // Parse the transaction date
@@ -67,7 +68,11 @@ const Index: NextPage = () => {
 		return true; // Return all if no date range is selected
 	});
 	
-
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [stock]);
 
 	// Function to handle the download in different formats
 	// Function to handle the download in different formats
@@ -290,6 +295,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
