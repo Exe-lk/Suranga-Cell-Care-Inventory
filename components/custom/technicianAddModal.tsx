@@ -103,10 +103,22 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 	});
 
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
+		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+	};
+	
+
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Technician'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -148,10 +160,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						
 						
 					<FormGroup id='mobileNumber' label='Mobile Number' className='col-md-6'>
-						<Input
-							type='tel'
-							onChange={formik.handleChange}
+					<Input
+							type='text'
 							value={formik.values.mobileNumber}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
+							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
 							isTouched={formik.touched.mobileNumber}
@@ -165,8 +180,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				{/* Save button to submit the form */}
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Add Technician
 				</Button>
 			</ModalFooter>
 		</Modal>

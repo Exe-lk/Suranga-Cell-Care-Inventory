@@ -16,12 +16,12 @@ interface StockTypeAddModalProps {
 }
 
 const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addStockKeeper , {isLoading}] = useAddStockKeeperMutation();
-	const {refetch} = useGetStockKeepersQuery(undefined);
+	const [addStockKeeper, { isLoading }] = useAddStockKeeperMutation();
+	const { refetch } = useGetStockKeepersQuery(undefined);
 	const formik = useFormik({
 		initialValues: {
 			type: '',
-            description:'',
+			description: '',
 			status: true,
 		},
 		validate: (values) => {
@@ -32,7 +32,7 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 			if (!values.description) {
 				errors.description = 'Required';
 			}
-            if (!values.type) {
+			if (!values.type) {
 				errors.type = 'Required';
 			}
 
@@ -48,7 +48,7 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
 					// Add the new category
 					const response: any = await addStockKeeper(values).unwrap();
@@ -72,7 +72,6 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 						text: 'Failed to add the stock keeper. Please try again.',
 					});
 				}
-				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				Swal.close;
@@ -81,15 +80,19 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 		},
 	});
 
-
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Stock Keeper Type'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='type' label='Stock Keeper Type' className='col-md-6'>
+					<FormGroup id='type' label='Stock Keeper Type' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.type}
@@ -100,7 +103,7 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                    <FormGroup id='description' label='Description' className='col-md-6'>
+					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.description}
@@ -111,11 +114,11 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                </div>
+				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Add Stock Keeper Type
 				</Button>
 			</ModalFooter>
 		</Modal>

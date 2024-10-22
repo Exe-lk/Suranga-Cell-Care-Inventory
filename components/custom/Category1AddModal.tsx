@@ -78,7 +78,12 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Category'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -97,8 +102,8 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Add Category
 				</Button>
 			</ModalFooter>
 		</Modal>

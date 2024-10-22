@@ -89,12 +89,13 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			}
 			if (!values.email) {
 				errors.email = 'Email is required.';
-			}
-			if (!values.email.includes('@')) {
+			}else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
 			if (!values.NIC) {
-				errors.NIC = 'NIC is required.';
+				errors.NIC = 'Required';
+			} else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) {
+				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
 			}
 			if (!values.cost) {
 				errors.cost = 'Cost is required.';
@@ -151,9 +152,21 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		},
 	});
 
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
+		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+	};
+	
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Bill'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -258,9 +271,12 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						label='Customer Mobile Number'
 						className='col-md-6'>
 						<Input
-							type='tel'
-							onChange={formik.handleChange}
+							type='text'
 							value={formik.values.CustomerMobileNum}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								formik.setFieldValue('CustomerMobileNum', formatMobileNumber(input));
+							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
 							isTouched={formik.touched.CustomerMobileNum}
@@ -350,8 +366,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Add Bill
 				</Button>
 			</ModalFooter>
 		</Modal>

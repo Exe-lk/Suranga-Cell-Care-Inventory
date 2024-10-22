@@ -148,13 +148,22 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		validate: (values) => {
 			const errors: any = {};
 			if (!values.quantity) errors.quantity = 'Quantity is required';
-			if (!values.date) errors.date = 'Date is required';
+			if (!values.date) errors.date = 'Date Out is required';
 			if (!values.dateIn) errors.dateIn = 'Date In is required';
 			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
 			if (!values.customerName) errors.customerName = 'Customer Name is required';
 			if (!values.mobile) errors.mobile = 'Mobile is required';
-			if (!values.nic) errors.nic = 'NIC is required';
-			if (!values.email) errors.email = 'Email is required';
+			if (!values.nic) {
+				errors.nic = 'Required';
+			} else if (!/^\d{9}[Vv]$/.test(values.nic) && !/^\d{12}$/.test(values.nic)) {
+				errors.nic = 'NIC must be 9 digits followed by "V" or 12 digits';
+			}
+			if (!values.email) {
+				errors.email = 'Required';
+			} else if (!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			}
+			
 			// if (!values.cost) errors.cost = 'Cost is required';
 
 			return errors;
@@ -222,9 +231,21 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		}
 	});
 
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
+		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+	};
+	
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Stock Out'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -246,7 +267,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='quantity'
-							isValid={!!formik.errors.quantity && formik.touched.quantity}
+							isValid={formik.isValid}
+							isTouched={formik.touched.quantity}
+							invalidFeedback={formik.errors.quantity}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='date' label='Date Out' className='col-md-6'>
@@ -257,7 +281,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='date'
-							isValid={!!formik.errors.date && formik.touched.date}
+							isValid={formik.isValid}
+							isTouched={formik.touched.date}
+							invalidFeedback={formik.errors.date}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 
@@ -314,7 +341,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='sellingPrice'
-							isValid={!!formik.errors.sellingPrice && formik.touched.sellingPrice}
+							isValid={formik.isValid}
+							isTouched={formik.touched.sellingPrice}
+							invalidFeedback={formik.errors.sellingPrice}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='customerName' label='Customer Name' className='col-md-6'>
@@ -324,19 +354,25 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							value={formik.values.customerName}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							name='customerName'
-							isValid={!!formik.errors.customerName && formik.touched.customerName}
+							isValid={formik.isValid}
+							isTouched={formik.touched.customerName}
+							invalidFeedback={formik.errors.customerName}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile' className='col-md-6'>
-						<Input
+					<Input
 							type='text'
-							placeholder='Enter Mobile'
 							value={formik.values.mobile}
-							onChange={formik.handleChange}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								formik.setFieldValue('mobile', formatMobileNumber(input));
+							}}
 							onBlur={formik.handleBlur}
-							name='mobile'
-							isValid={!!formik.errors.mobile && formik.touched.mobile}
+							isValid={formik.isValid}
+							isTouched={formik.touched.mobile}
+							invalidFeedback={formik.errors.mobile}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='nic' label='NIC' className='col-md-6'>
@@ -347,7 +383,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='nic'
-							isValid={!!formik.errors.nic && formik.touched.nic}
+							isValid={formik.isValid}
+							isTouched={formik.touched.nic}
+							invalidFeedback={formik.errors.nic}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='email' label='Email' className='col-md-6'>
@@ -358,14 +397,17 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='email'
-							isValid={!!formik.errors.email && formik.touched.email}
+							isValid={formik.isValid}
+							isTouched={formik.touched.email}
+							invalidFeedback={formik.errors.email}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Stock Out
 				</Button>
 			</ModalFooter>
 		</Modal>

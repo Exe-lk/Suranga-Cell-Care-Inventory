@@ -1,6 +1,6 @@
 import { firestore , auth} from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, deleteUser as deleteAuthUser } from 'firebase/auth';
 
 export const createUser = async (name: string, role: any,nic : string,email : string,mobile: string) => {
   const userCredential = await createUserWithEmailAndPassword(auth, email, nic);
@@ -49,6 +49,30 @@ export const updateUser = async (id: string, name: string, role: any, nic: strin
 };
 
 export const deleteUser = async (id: string) => {
-  const userRef = doc(firestore, 'UserManagement', id);
-  await deleteDoc(userRef);
+  try {
+    // Fetch the user's email and NIC (used as password) from Firestore
+    const userRef = doc(firestore, 'UserManagement', id);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      throw new Error(`User with ID ${id} not found.`);
+    }
+
+    const { email, nic } = userSnap.data();
+
+    // Sign in the user using email and NIC as the password
+    const userCredential = await signInWithEmailAndPassword(auth, email, nic);
+    const user = userCredential.user;
+
+    // Delete the user from Firebase Authentication
+    await deleteAuthUser(user);
+
+    // Delete the user document from Firestore
+    await deleteDoc(userRef);
+
+    console.log(`User with ID ${id} deleted successfully.`);
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
 };

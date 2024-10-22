@@ -53,8 +53,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.email) {
 				errors.email = 'Email is required.';
-			}
-			if(!values.email.includes('@')) {
+			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
 			if (!values.address) {
@@ -63,13 +62,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
 			}
-			const itemErrors: string[] = values.item.map((item, index) => {
-				if (!item.trim()) {
-					return `Item ${index + 1} cannot be empty.`;
-				}
-				return '';
-			}).filter(error => error !== '');
-		
+			const itemErrors: string[] = values.item
+				.map((item, index) => {
+					if (!item.trim()) {
+						return `Item ${index + 1} cannot be empty.`;
+					}
+					return '';
+				})
+				.filter((error) => error !== '');
+
 			if (itemErrors.length > 0) {
 				errors.item = itemErrors;
 			}
@@ -132,9 +133,20 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		});
 	};
 
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
+		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+	};
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Dealer'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -163,7 +175,10 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									value={formik.values.item[index]}
 									onBlur={formik.handleBlur}
 									isValid={formik.isValid}
-									isTouched={Array.isArray(formik.touched.item) && formik.touched.item[index]} // Ensure the item is touched
+									isTouched={
+										Array.isArray(formik.touched.item) &&
+										formik.touched.item[index]
+									} // Ensure the item is touched
 									invalidFeedback={
 										formik.errors.item
 											? Array.isArray(formik.errors.item)
@@ -182,7 +197,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</div>
 						</FormGroup>
 					))}
-					
 
 					<div className='col-md-12'>
 						<Button
@@ -191,7 +205,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isDisable={formik.values.item.length >= 10}>
 							Add Item
 						</Button>
-						
 					</div>
 					<FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
@@ -216,11 +229,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='mobileNumber' label='Mobile Number' className='col-md-6'>
+					<FormGroup id='mobileNumber' label='Mobile number' className='col-md-6'>
 						<Input
-							type='tel'
-							onChange={formik.handleChange}
+							type='text'
 							value={formik.values.mobileNumber}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
+							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
 							isTouched={formik.touched.mobileNumber}
@@ -232,8 +248,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				{/* Save button to submit the form */}
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Add Dealer
 				</Button>
 			</ModalFooter>
 		</Modal>

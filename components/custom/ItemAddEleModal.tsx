@@ -57,6 +57,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
     errors.reorderLevel = 'Must be a positive number';
   }
   if (!values.boxNumber) errors.boxNumber = 'Required';
+  if (!values.touchpadNumber) errors.touchpadNumber = 'Required';
 
   // Conditionally validate fields based on the selected category
   if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
@@ -150,7 +151,12 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Item'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -334,8 +340,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='p-4'>
-				<Button color='primary' onClick={() => formik.handleSubmit()} isDisable={isLoading}>
-					Save
+				<Button color='success' onClick={() => formik.handleSubmit()} isDisable={isLoading}>
+					Add Item
 				</Button>
 			</ModalFooter>
 		</Modal>

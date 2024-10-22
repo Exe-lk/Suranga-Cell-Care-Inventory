@@ -138,6 +138,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.sellingPrice) {
 				errors.sellingPrice = 'Selling Price is required';
 			}
+			if (!values.cost) {
+				errors.cost = 'Cost is required';
+			}
 			if (!values.date) {
 				errors.date = 'Date In is required';
 			}
@@ -212,7 +215,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Stock'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -397,8 +405,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='p-4'>
-				<Button color='primary' onClick={() => formik.handleSubmit()}>
-					Save
+				<Button color='success' onClick={() => formik.handleSubmit()}>
+					Stock In
 				</Button>
 			</ModalFooter>
 		</Modal>
