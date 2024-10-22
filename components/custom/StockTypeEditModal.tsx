@@ -125,8 +125,8 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Edit Stock Keeper Type
 				</Button>
 			</ModalFooter>
 		</Modal>

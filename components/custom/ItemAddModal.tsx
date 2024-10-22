@@ -60,6 +60,9 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.brand) {
 				errors.brand = 'Brand is required';
 			}
+			if(!values.model){
+				errors.model = 'Model is required';
+			}
 			if (!values.reorderLevel) {
 				errors.reorderLevel = 'Reorder Level is required';
 			}
@@ -139,7 +142,12 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'New Item'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -265,8 +273,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='p-4'>
-				<Button color='primary' onClick={() => formik.handleSubmit()}>
-					Save
+				<Button color='success' onClick={() => formik.handleSubmit()}>
+					Add Item
 				</Button>
 			</ModalFooter>
 		</Modal>

@@ -160,7 +160,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		validate: (values) => {
 			const errors: any = {};
 			if (!values.quantity) errors.quantity = 'Quantity is required';
-			if (!values.date) errors.date = 'Date is required';
+			if (!values.date) errors.date = 'Date Out is required';
+			if (!values.dateIn) errors.dateIn = 'Date In is required';
+			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
 
 			if (selectedOption === 'Dealer') {
 				if (!values.dealerName) errors.dealerName = 'Dealer Name is required';
@@ -247,9 +249,20 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return'| 'Branch');
 	};
 
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
+		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+	};
+	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Stock Out'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -394,15 +407,18 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								label='Dealer Telephone Number'
 								className='col-md-6'>
 								<Input
-									type='text'
-									placeholder='Enter Dealer Tel Number'
-									value={formik.values.dealerTelNum}
-									onChange={formik.handleChange}
-									name='dealerTelNum'
-									isValid={
-										!!formik.errors.dealerTelNum && formik.touched.dealerTelNum
-									}
-								/>
+							type='text'
+							value={formik.values.dealerTelNum}
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								formik.setFieldValue('dealerTelNum', formatMobileNumber(input));
+							}}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.dealerTelNum}
+							invalidFeedback={formik.errors.dealerTelNum}
+							validFeedback='Looks good!'
+						/>
 							</FormGroup>
 							<FormGroup
 								id='dealerPrecentage'
@@ -491,8 +507,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				<Button color='info' onClick={formik.handleSubmit}>
-					Save
+				<Button color='success' onClick={formik.handleSubmit}>
+					Stock Out
 				</Button>
 			</ModalFooter>
 		</Modal>
