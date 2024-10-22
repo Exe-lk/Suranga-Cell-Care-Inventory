@@ -16,6 +16,8 @@ import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import Button from '../../../../components/bootstrap/Button';
+import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+
 
 const Index: NextPage = () => {
 	// Dark mode
@@ -30,12 +32,17 @@ const Index: NextPage = () => {
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
+
+		
+
+		const clonedTable = table.cloneNode(true) as HTMLElement;
+
+		
+		const clonedTableStyles = getComputedStyle(table);
+		clonedTable.setAttribute('style', clonedTableStyles.cssText);
 	
-		// Remove borders and hide last cells before exporting
-		modifyTableForExport(table as HTMLElement, true);
-	
+		
 		try {
-			// Handle export based on the format
 			switch (format) {
 				case 'svg':
 					await downloadTableAsSVG();
@@ -44,179 +51,254 @@ const Index: NextPage = () => {
 					await downloadTableAsPNG();
 					break;
 				case 'csv':
-					downloadTableAsCSV(table as HTMLElement);
+					downloadTableAsCSV(clonedTable);
 					break;
-				case 'pdf':
-					downloadTableAsPDF(table as HTMLElement);
+				case 'pdf': 
+					await downloadTableAsPDF(clonedTable);
 					break;
 				default:
 					console.warn('Unsupported export format: ', format);
 			}
 		} catch (error) {
 			console.error('Error exporting table: ', error);
-		} finally {
-			// Restore table after export
-			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
 	
-	// Helper function to modify table by hiding last column and removing borders
-	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
-		// This function will no longer hide or show any cells
-	};
-	
-	
-	// Function to export the table data in PNG format
-	const downloadTableAsPNG = async () => {
-		try {
-			const table = document.querySelector('table');
-			if (!table) {
-				console.error('Table element not found');
-				return;
-			}
-			const originalBorderStyle = table.style.border;
-			table.style.border = '1px solid black'; 
-	
-			// Convert table to PNG
-			const dataUrl = await toPng(table, {
-				cacheBust: true,
-				style: {
-					width: table.offsetWidth + 'px',
-				},
-			});
-			// Restore original border style after capture
-			table.style.border = originalBorderStyle;
-	
-			// Create link element and trigger download
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.png';
-			link.click();
-		} catch (error) {
-			console.error('Error generating PNG: ', error);
-		}
-	};
-	
-	// Function to export the table data in SVG format
-	const downloadTableAsSVG = async () => {
-		try {
-			const table = document.querySelector('table');
-			if (!table) {
-				console.error('Table element not found');
-				return;
-			}
-	
-			// Temporarily store the original color of each cell
-			const cells = table.querySelectorAll('th, td');
-			const originalColors: string[] = [];
-			
-			cells.forEach((cell: any, index: number) => {
-				originalColors[index] = cell.style.color;  // Save original color
-				cell.style.color = 'black';  // Set text color to black
-			});
-	
-			// Convert table to SVG
-			const dataUrl = await toSvg(table, {
-				backgroundColor: 'white',
-				cacheBust: true,
-			});
-	
-			// Restore the original color of each cell
-			cells.forEach((cell: any, index: number) => {
-				cell.style.color = originalColors[index];  // Restore original color
-			});
-	
-			// Create link element and trigger download
-			const link = document.createElement('a');
-			link.href = dataUrl;
-			link.download = 'table_data.svg';
-			link.click();
-		} catch (error) {
-			console.error('Error generating SVG: ', error);
-		}
-	};
-	
-	
-	// Function to export the table data in CSV format
-	const downloadTableAsCSV = (table: HTMLElement) => {
-		let csvContent = 'Category\n';
-		const rows = table.querySelectorAll('tr');
-		rows.forEach((row: any) => {
-			const cols = row.querySelectorAll('td, th');
-			const rowData = Array.from(cols)
-				.slice(0, -1) 
-				.map((col: any) => `"${col.innerText}"`)
-				.join(',');
-			csvContent += rowData + '\n';
-		});
-	
-		// Create a blob and initiate download
-		const blob = new Blob([csvContent], { type: 'text/csv' });
-		const link = document.createElement('a');
-		link.href = URL.createObjectURL(blob);
-		link.download = 'table_data.csv';
-		link.click();
-	};
-	
-	// Function to export the table data in PDF format
-	const downloadTableAsPDF = (table: HTMLElement) => {
-		try {
-			const pdf = new jsPDF('p', 'pt', 'a4');
-			const pageWidth = pdf.internal.pageSize.getWidth(); 
-			const title = 'LOT Management';
-			const titleFontSize = 18;
-	
-			// Add heading to PDF (centered)
-			pdf.setFontSize(titleFontSize);
-			const textWidth = pdf.getTextWidth(title);
-			const xPosition = (pageWidth - textWidth) / 2; 
-			pdf.text(title, xPosition, 40); 
-	
-			const rows: any[] = [];
-			const headers: any[] = [];
-	
-			// Extract table headers (exclude last cell)
-			const thead = table.querySelector('thead');
-			if (thead) {
-				const headerCells = thead.querySelectorAll('th');
-				headers.push(
-					Array.from(headerCells)
-						.slice(0, -1) 
-						.map((cell: any) => cell.innerText)
-				);
-			}
-	
-			// Extract table rows (exclude last cell)
-			const tbody = table.querySelector('tbody');
-			if (tbody) {
-				const bodyRows = tbody.querySelectorAll('tr');
-				bodyRows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td');
+
+	// function to export the table data in CSV format
+	const downloadTableAsCSV = (table: any) => {
+				let csvContent = '';
+				const rows = table.querySelectorAll('tr');
+				rows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td, th');
 					const rowData = Array.from(cols)
-						.slice(0, -1) 
-						.map((col: any) => col.innerText);
-					rows.push(rowData);
+						.map((col: any) => `"${col.innerText}"`)
+						.join(',');
+					csvContent += rowData + '\n';
 				});
-			}
-	
-			// Generate PDF using autoTable
-			autoTable(pdf, {
-				head: headers,
-				body: rows,
-				margin: { top: 50 },
-				styles: {
-					overflow: 'linebreak',
-					cellWidth: 'wrap',
-				},
-				theme: 'grid',
-			});
-	
-			pdf.save('table_data.pdf');
-		} catch (error) {
-			console.error('Error generating PDF: ', error);
-			alert('Error generating PDF. Please try again.');
-		}
+
+				const blob = new Blob([csvContent], { type: 'text/csv' });
+				const link = document.createElement('a');
+				link.href = URL.createObjectURL(blob);
+				link.download = 'table_data.csv';
+				link.click();
 	};
+	// PDF export function with table adjustments
+const downloadTableAsPDF = async (table: HTMLElement) => {
+    try {
+        const pdf = new jsPDF('p', 'pt', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const rows: any[] = [];
+        const headers: any[] = [];
+
+        // Draw a thin page border
+        pdf.setLineWidth(1);
+        pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
+
+        // Add the logo in the top-left corner
+        const logoData = await loadImage(bill); 
+        const logoWidth = 100; 
+        const logoHeight = 40; 
+        const logoX = 20; 
+        const logoY = 20; 
+        pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight); 
+
+        // Add small heading in the top left corner (below the logo)
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'bold');
+        pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
+
+        // Add the table heading (title) in the top-right corner
+        const title = 'Rapaired-phones Report';
+        pdf.setFontSize(16);
+        pdf.setFont('helvetica', 'bold');
+        const titleWidth = pdf.getTextWidth(title);
+        const titleX = pageWidth - titleWidth - 20;
+        pdf.text(title, titleX, 30); 
+
+        // Add the current date below the table heading
+        const currentDate = new Date().toLocaleDateString();
+        const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
+        pdf.setFontSize(12);
+        pdf.text(currentDate, dateX, 50); 
+
+        // Extract table headers
+        const thead = table.querySelector('thead');
+        if (thead) {
+            const headerCells = thead.querySelectorAll('th');
+            headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+        }
+
+        // Extract table rows
+        const tbody = table.querySelector('tbody');
+        if (tbody) {
+            const bodyRows = tbody.querySelectorAll('tr');
+            bodyRows.forEach((row: any) => {
+                const cols = row.querySelectorAll('td');
+                const rowData = Array.from(cols).map((col: any) => col.innerText);
+                rows.push(rowData);
+            });
+        }
+
+        // Adjust the table width and center it on the page
+        const tableWidth = pageWidth * 0.9; 
+        const tableX = (pageWidth - tableWidth) / 2; 
+
+        // Generate the table below the date
+        autoTable(pdf, {
+            head: headers,
+            body: rows,
+            startY: 100, 
+            margin: { left: 20, right: 20 }, 
+            styles: {
+                fontSize: 10, 
+                overflow: 'linebreak',
+                cellPadding: 4, 
+            },
+            headStyles: {
+                fillColor: [80, 101, 166], 
+                textColor: [255, 255, 255],
+                fontSize: 12, 
+            },
+            columnStyles: {
+                0: { cellWidth: 'auto' }, 
+                1: { cellWidth: 'auto' }, 
+                2: { cellWidth: 'auto' }, 
+                3: { cellWidth: 'auto' }, 
+            },
+            tableWidth: 'wrap',
+            theme: 'grid',
+        });
+
+        pdf.save('Rapaired-phones Report.pdf');
+    } catch (error) {
+        console.error('Error generating PDF: ', error);
+        alert('Error generating PDF. Please try again.');
+    }
+};
+
+// Helper function to load the image (logo) for the PDF
+const loadImage = (url: string): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = url;
+        img.crossOrigin = 'Anonymous';
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const dataUrl = canvas.toDataURL('image/png'); 
+                resolve(dataUrl);
+            } else {
+                reject('Failed to load the logo image.');
+            }
+        };
+        img.onerror = () => {
+            reject('Error loading logo image.');
+        };
+    });
+};
+
+	  // Helper function to hide the last cell of every row (including borders)
+const hideLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'hidden';  
+			lastCell.style.border = 'none'; 
+			lastCell.style.padding = '0';  
+			lastCell.style.margin = '0';  
+		}
+	});
+};
+
+// Helper function to restore the visibility and styles of the last cell
+const restoreLastCells = (table: HTMLElement) => {
+	const rows = table.querySelectorAll('tr');
+	rows.forEach((row) => {
+		const lastCell = row.querySelector('td:last-child, th:last-child');
+		if (lastCell instanceof HTMLElement) {
+			lastCell.style.visibility = 'visible'; 
+			lastCell.style.border = '';  
+			lastCell.style.padding = '';  
+			lastCell.style.margin = '';  
+		}
+	});
+};
+
+// Function to export the table data in PNG format
+const downloadTableAsPNG = async () => {
+    try {
+        const table = document.querySelector('table');
+        if (!table) {
+            console.error('Table element not found');
+            return;
+        }
+
+        const originalBorderStyle = table.style.border;
+        table.style.border = '1px solid black'; 
+
+        // Convert table to PNG
+        const dataUrl = await toPng(table, {
+            cacheBust: true,
+            style: {
+                width: table.offsetWidth + 'px',
+            },
+        });
+
+        // Restore original border style after capture
+        table.style.border = originalBorderStyle;
+
+        // Create link element and trigger download
+        const link = document.createElement('a');
+        link.href = dataUrl;
+        link.download = 'table_data.png';
+        link.click();
+    } catch (error) {
+        console.error('Error generating PNG: ', error);
+    }
+};
+
+// Function to export the table data in SVG format using html-to-image without cloning the table
+const downloadTableAsSVG = async () => {
+	try {
+		const table = document.querySelector('table');
+		if (!table) {
+			console.error('Table element not found');
+			return;
+		}
+
+		// Hide last cells before export
+		hideLastCells(table);
+
+		const dataUrl = await toSvg(table, {
+			backgroundColor: 'white',
+			cacheBust: true,
+			style: {
+				width: table.offsetWidth + 'px',
+				color: 'black',
+			},
+		});
+
+		// Restore the last cells after export
+		restoreLastCells(table);
+
+		const link = document.createElement('a');
+		link.href = dataUrl;
+		link.download = 'table_data.svg';
+		link.click();
+	} catch (error) {
+		console.error('Error generating SVG: ', error);
+		// Restore the last cells in case of error
+		const table = document.querySelector('table');
+		if (table) restoreLastCells(table);
+	}
+};
 
 	return (
 		<PageWrapper>
