@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -24,7 +24,7 @@ import { useGetSuppliersQuery } from '../../../redux/slices/supplierApiSlice';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
-import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import autoTable from 'jspdf-autotable';
 
 const Index: NextPage = () => {
@@ -36,6 +36,24 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const {data: suppliers,error, isLoading} = useGetSuppliersQuery(undefined);
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 
 	// Function to handle the download in different formats
 const handleExport = async (format: string) => {
@@ -329,6 +347,7 @@ try {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 			</SubHeader>

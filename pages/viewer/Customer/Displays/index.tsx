@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
@@ -34,7 +34,24 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const [status, setStatus] = useState(true);
 	const {data: Bills,error, isLoading} = useGetBillsQuery(undefined);
-
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
@@ -327,6 +344,7 @@ const downloadTableAsSVG = async () => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 			</SubHeader>

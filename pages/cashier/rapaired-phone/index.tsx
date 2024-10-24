@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -33,7 +33,7 @@ const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState(''); // State for search term
 	const { data: bills, error: billsError, isLoading: billsLoading , refetch } = useGetBillsQuery(undefined);
 	const [updateRepairedPhone] = useUpdaterepairedPhoneMutation();
-
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const filteredTransactions = bills?.filter((trans: any) => {
@@ -56,7 +56,23 @@ const Index: NextPage = () => {
 	
 		return true; // Return all if no date range is selected
 	});
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
 	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 
 	const handleStatusChange = async (id: string, newStatus: string) => {
 		try {
@@ -386,6 +402,7 @@ try {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>

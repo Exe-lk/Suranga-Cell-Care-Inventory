@@ -26,13 +26,46 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
 	const [addItemAcce, { isLoading }] = useAddItemAcceMutation();
 	const { refetch } = useGetItemAccesQuery(undefined);
+	const {data: itemAcces} = useGetItemAccesQuery(undefined);
 	const { data: brands } = useGetBrands1Query(undefined);
 	const { data: models } = useGetModels1Query(undefined);
 	const { data: categories, isLoading: categoriesLoading, isError } = useGetCategories1Query(undefined);
+	const [generatedCode, setGeneratedCode] = useState('');
+	useEffect(() => {
+	
+
+		if (itemAcces?.length) {
+			// Find the code with the highest numeric value
+			const lastCode = itemAcces
+				.map((item: { code: string }) => item.code) // Extract all codes
+				.filter((code: string) => code) // Ensure the code is not undefined or empty
+				.reduce((maxCode: string, currentCode: string) => {
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
+					return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
+				}, '1000'); // Default starting code
+
+			const newCode = incrementCode(lastCode); // Increment the last code
+			setGeneratedCode(newCode); // Set the new generated code in state
+		} else {
+			// No previous codes, so start from STK100000
+			setGeneratedCode('1000');
+		}
+	}, [itemAcces]);
+
+	const incrementCode = (code: string) => {
+		console.log(code)
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0'); // Increment and pad with zeros to 6 digits
+		
+
+		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
+	};
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
+			code:generatedCode,
 			type: '',
 			mobileType: '',
 			category: '',
@@ -63,12 +96,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if(!values.model){
 				errors.model = 'Model is required';
 			}
-			if (!values.reorderLevel) {
-				errors.reorderLevel = 'Reorder Level is required';
-			}
-			if (!values.description) {
-				errors.description = 'Description is required';
-			}
+			
+			
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -85,6 +114,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				console.log('Formik values:', values); // Debugging formik values
 				  const response:any = await addItemAcce({
 					 ...values,
+					 code:generatedCode,
 					 category: values.category,
 					 brand: values.brand,
 					 model: values.model,
@@ -152,6 +182,15 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+				<FormGroup id='code' label='Generated Code' className='col-md-6'>
+						<Input
+							type='text'
+							value={generatedCode}
+							readOnly
+							isValid={formik.isValid}
+							isTouched={formik.touched.code}
+						/>
+					</FormGroup>
 					<FormGroup id='type' label='Type' className='col-md-6'>
 						<Select
 							ariaLabel='Default select type'
@@ -247,6 +286,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 					<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
 						<Input
+						type='number'
 							onChange={formik.handleChange}
 							value={formik.values.reorderLevel}
 							name='reorderLevel'

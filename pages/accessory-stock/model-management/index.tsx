@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -45,8 +45,26 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
-		
+	const inputRef = useRef<HTMLInputElement>(null);
 	// Function to handle deletion of a category
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, [models]);
+
 	const handleClickDelete = async (model: any) => {
 		try {
 			const result = await Swal.fire({
@@ -300,6 +318,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						<Icon icon='Search' size='2x' color='primary' />
 					</label>
 					<Input
+					ref={inputRef}
 						id='searchInput'
 						type='search'
 						className='border-0 shadow-none bg-transparent'

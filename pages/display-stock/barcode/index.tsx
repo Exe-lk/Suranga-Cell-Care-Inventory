@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -22,7 +22,24 @@ const Index: NextPage = () => {
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
 	const [selectedDevice, setSelectedDevice] = useState<any>(null);
 	const [devices, setDevices] = useState<any>([]);
-
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date);
 		const start = startDate ? new Date(startDate) : null;
@@ -250,6 +267,7 @@ const Index: NextPage = () => {
 						placeholder='Search...'
 						onChange={(event: any) => setSearchTerm(event.target.value)}
 						value={searchTerm}
+						ref={inputRef}
 						
 					/>
 				</SubHeaderLeft>

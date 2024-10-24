@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
@@ -64,6 +64,24 @@ const Index: NextPage = () => {
 	];
 	const { data: users, error, isLoading, refetch } = useGetUsersQuery(undefined);
 	const [updateUser] = useUpdateUserMutation();
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 
 	//delete user
 	// Update the user's status to false instead of deleting
@@ -427,6 +445,7 @@ try {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>

@@ -261,12 +261,23 @@ const Index: NextPage = () => {
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-	// Focus on the input field when the component mounts
 	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [stock]);
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, [StockInOuts]);
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -367,8 +378,8 @@ const Index: NextPage = () => {
 								</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-bordered border-primary table-hover '>
-									<thead>
+							<table className='table  table-bordered border-primary table-hover text-center'>
+							<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Date</th>
 											<th>Category</th>

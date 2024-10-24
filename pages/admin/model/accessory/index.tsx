@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
 import useDarkMode from '../../../../hooks/useDarkMode';
@@ -46,7 +46,24 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
 	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	
 	// Function to handle deletion of a category
 	const handleClickDelete = async (model: any) => {
@@ -393,6 +410,7 @@ const downloadTableAsSVG = async () => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>

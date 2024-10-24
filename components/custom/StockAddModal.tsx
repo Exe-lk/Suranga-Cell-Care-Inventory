@@ -78,27 +78,27 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
           const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
           const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
           return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
-        }, 'STK100000'); // Default starting code
+        }, '500000'); // Default starting code
   
       const newCode = incrementCode(lastCode); // Increment the last code
       setGeneratedCode(newCode); // Set the new generated code in state
     } else {
       // No previous codes, so start from STK100000
-      setGeneratedCode('STK100000');
+      setGeneratedCode('500000');
+      setGeneratedBarcode('5000500000');
     }
   }, [isSuccess, stockInData, stockInOuts]);
   
   
   // Function to increment the code
   const incrementCode = (code: string) => {
-    const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
-    const incrementedNumericPart = (numericPart + 1).toString().padStart(6, '0'); // Increment and pad with zeros to 6 digits
-    const barcode=(numericPart + 1).toString().padStart(10, '0');
-    const value=Number (barcode)+2000000000
-    setGeneratedBarcode(value)
-    return `STK${incrementedNumericPart}`; // Return the new code in the format STKxxxxxx
-  };
-  
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0'); // Increment and pad with zeros to 6 digits
+		const barcode = (numericPart + 1).toString().padStart(10, '0');
+		const value = `${stockIn.code}${incrementedNumericPart}`;
+		setGeneratedBarcode(value);
+		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
+	};
   
   // Initialize formik for form management
   const formik = useFormik({

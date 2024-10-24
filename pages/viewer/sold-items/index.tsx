@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -46,7 +46,24 @@ const Index: NextPage = () => {
 
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
-
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	const filteredTransactions = stockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date); // Parse the transaction date
 		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
@@ -361,6 +378,7 @@ const downloadTableAsSVG = async () => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>

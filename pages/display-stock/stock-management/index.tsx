@@ -69,12 +69,24 @@ const Index: NextPage = () => {
 	
 		return true; // Return all if no date range is selected
 	});
-	
+
 	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [StockInOuts]);
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 
 // Function to handle the download in different formats
 const handleExport = async (format: string) => {
@@ -476,7 +488,7 @@ try {
 											filteredTransactions
 											.filter((stockInOut: any) =>
 												searchTerm
-													? stockInOut.category
+													? stockInOut.barcode
 															.toLowerCase()
 															.includes(searchTerm.toLowerCase())
 													: true,

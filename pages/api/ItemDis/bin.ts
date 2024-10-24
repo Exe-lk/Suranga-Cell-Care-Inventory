@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           res.status(400).json({ error: 'Item Dis model  is required' });
           return;
         }
-        const id = await createItemDis(model, brand , reorderLevel ,quantity,boxNumber,category,touchpadNumber,batteryCellNumber,displaySNumber);
+        const id = await createItemDis(req.body);
         res.status(201).json({ message: 'Item Dis created', id });
         break;
       }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -42,6 +42,24 @@ const Index: NextPage = () => {
 	const {data: itemDiss,error, isLoading,refetch} = useGetItemDissQuery(undefined);
 	const [updateItemDis] = useUpdateItemDisMutation();
 	const [quantity, setQuantity] = useState<any>();
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 
 	// Function to handle deletion of an item
 	const handleClickDelete = async (itemDis:any) => {
@@ -309,6 +327,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
@@ -380,12 +399,13 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										)}
 										{itemDiss &&
 											itemDiss
-												.filter((itemDiss: any) =>
-													searchTerm
-														? itemDiss.model
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
-														: true,
+											
+												.filter((brand: any) =>{
+													if(brand.code.includes(searchTerm)){
+														return brand
+													}
+												}
+												
 												)
 												.map((itemDiss: any) => (
 													<tr key={itemDiss.cid}>

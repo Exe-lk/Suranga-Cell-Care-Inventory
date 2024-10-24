@@ -10,13 +10,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { type, mobileType, category, model,quantity, brand, reorderLevel, description } = req.body;
+        const { type, mobileType, category, model,quantity, brand, reorderLevel, description ,code} = req.body;
+        console.log(req.body)
         if (!model) {
            res.status(400).json({ error: 'Item Acce model is required' });
            return;
         }
      
-        const id = await createItemAcce(type, mobileType, category, model,quantity, brand, reorderLevel, description);
+        const id = await createItemAcce(type, mobileType, category, model,quantity, brand, reorderLevel, description,code);
         res.status(201).json({ message: 'Item Acce created', id });
         break;
      }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
@@ -24,7 +24,24 @@ const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const { data: stockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
-
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	// Filter stockInOuts where stock is 'stockOut'
 	const filteredStockInOuts = stockInOuts?.filter((item: any) => item.stock === 'stockOut');
 
@@ -317,6 +334,7 @@ const downloadTableAsSVG = async () => {
 						placeholder='Search...'
 						onChange={(event: any) => setSearchTerm(event.target.value)}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 			</SubHeader>

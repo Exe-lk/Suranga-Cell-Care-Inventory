@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
 import useDarkMode from '../../../../hooks/useDarkMode';
@@ -48,7 +48,24 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategoryMutation();
-
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
+	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
 	// Function to handle deletion of a category
 	const handleClickDelete = async (category: any) => {
 		try {
@@ -389,6 +406,7 @@ const downloadTableAsSVG = async () => {
 							setSearchTerm(event.target.value);
 						}}
 						value={searchTerm}
+						ref={inputRef}
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>

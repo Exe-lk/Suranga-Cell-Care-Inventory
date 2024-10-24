@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -11,7 +11,7 @@ import Option from '../bootstrap/Option';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
 import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
-import { useAddItemDisMutation } from '../../redux/slices/itemManagementDisApiSlice';
+import { useAddItemDisMutation, useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
 import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 
 
@@ -30,10 +30,41 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: brands } = useGetBrandsQuery(undefined);
 	const { data: models } = useGetModelsQuery(undefined);
 	const { data: categories } = useGetCategoriesQuery(undefined);
+	const {data: itemAcces} = useGetItemDissQuery(undefined);
+	const [generatedCode, setGeneratedCode] = useState('');
+	useEffect(() => {
+	
 
+		if (itemAcces?.length) {
+			// Find the code with the highest numeric value
+			const lastCode = itemAcces
+				.map((item: { code: string }) => item.code) // Extract all codes
+				.filter((code: string) => code) // Ensure the code is not undefined or empty
+				.reduce((maxCode: string, currentCode: string) => {
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
+					return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
+				}, '5000'); // Default starting code
+
+			const newCode = incrementCode(lastCode); // Increment the last code
+			setGeneratedCode(newCode); // Set the new generated code in state
+		} else {
+			// No previous codes, so start from STK100000
+			setGeneratedCode('5000');
+		}
+	}, [itemAcces]);
+	const incrementCode = (code: string) => {
+		console.log(code)
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0'); // Increment and pad with zeros to 6 digits
+		
+
+		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
+	};
 	// Formik for form handling
 	const formik = useFormik({
 		initialValues: {
+			code:generatedCode,
 			model: '',
 			brand: '',
 			reorderLevel: '',
@@ -90,6 +121,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				try {
 					const response: any = await addItemDis({
 						...values,
+						code:generatedCode,
 						category: values.category, // Pass category name instead of ID
 						brand: values.brand, // Pass brand name instead of ID
 						model: values.model, // Pass model name instead of ID

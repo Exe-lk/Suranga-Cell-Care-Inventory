@@ -41,6 +41,7 @@ function index() {
 		minute: '2-digit',
 	});
 	const [address, setAddress] = useState('');
+	
 
 	useEffect(() => {
 		const fetchData = async () => {

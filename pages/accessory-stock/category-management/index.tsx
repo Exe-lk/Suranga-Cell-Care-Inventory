@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -44,7 +44,25 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategories1Query(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategory1Mutation();
+	const inputRef = useRef<HTMLInputElement>(null);
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
 	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, []);
+
 	// Function to handle deletion of a category
 	const handleClickDelete = async (category: any) => {
 		try {
@@ -294,6 +312,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						<Icon icon='Search' size='2x' color='primary' />
 					</label>
 					<Input
+					ref={inputRef}
 						id='searchInput'
 						type='search'
 						className='border-0 shadow-none bg-transparent'

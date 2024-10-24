@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           res.status(400).json({ error: 'stock In name is required' });
           return;
         }
-        const id = await createstockIn(brand,model,category,type,quantity,date,imi,storage,name,nic,mobile,mobileType,cost,stock,code,barcode,sellingPrice);
+        const id = await createstockIn(req.body);
         res.status(201).json({ message: 'stock In created', id });
         break;
       }
