@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return;
         }
        
-        const id = await createstockIn(brand,model,category,quantity,date,suppName,cost,stock,code,barcode);
+        const id = await createstockIn(req.body);
         res.status(201).json({ message: 'stock In created', id });
         break;
       }

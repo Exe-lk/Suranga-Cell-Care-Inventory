@@ -19,7 +19,7 @@ interface StockAddModalProps {
 }
 
 interface StockIn {
-  barcode:number;
+	barcode: number;
 	cid: string;
 	brand: string;
 	model: string;
@@ -38,7 +38,6 @@ interface StockIn {
 	stock: string;
 	status: boolean;
 	sellingPrice: Number;
-
 }
 
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
@@ -61,7 +60,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		stock: 'stockIn',
 		status: true,
 		sellingPrice: 0,
-    barcode:0
+		barcode: 0,
 	});
 
 	const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
@@ -72,7 +71,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	console.log(stockInOuts);
 
 	const [generatedCode, setGeneratedCode] = useState('');
-  const [generatedbarcode, setGeneratedBarcode] = useState<any>();
+	const [generatedbarcode, setGeneratedBarcode] = useState<any>();
 
 	useEffect(() => {
 		if (isSuccess && stockInData) {
@@ -88,13 +87,14 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
 					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
 					return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
-				}, 'STK100000'); // Default starting code
+				}, '100000'); // Default starting code
 
 			const newCode = incrementCode(lastCode); // Increment the last code
 			setGeneratedCode(newCode); // Set the new generated code in state
 		} else {
 			// No previous codes, so start from STK100000
-			setGeneratedCode('STK100000');
+			setGeneratedCode('100000');
+			setGeneratedBarcode('1000100000');
 		}
 	}, [isSuccess, stockInData, stockInOuts]);
 
@@ -102,10 +102,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const incrementCode = (code: string) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
 		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0'); // Increment and pad with zeros to 6 digits
-    const barcode=(numericPart + 1).toString().padStart(10, '0');
-    const value=Number (barcode)+1000000000
-    setGeneratedBarcode(value)
-		return `STK${incrementedNumericPart}`; // Return the new code in the format STKxxxxxx
+		const barcode = (numericPart + 1).toString().padStart(10, '0');
+		const value = `${stockIn.code}${incrementedNumericPart}`;
+		setGeneratedBarcode(value);
+		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
 	};
 
 	const formik = useFormik({
@@ -126,8 +126,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			code: generatedCode,
 			stock: 'stockIn',
 			status: true,
-			sellingPrice:0,
-      barcode:generatedbarcode
+			sellingPrice: 0,
+			barcode: generatedbarcode,
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -185,9 +185,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					const response: any = await addstockIn({
 						...values,
 						code: generatedCode,
-            barcode:generatedbarcode
+						barcode: generatedbarcode,
 					}).unwrap();
-					console.log(response);
+					console.log(generatedbarcode);
 
 					await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
 

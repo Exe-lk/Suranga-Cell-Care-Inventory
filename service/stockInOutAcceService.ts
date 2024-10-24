@@ -1,10 +1,10 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where ,Timestamp} from 'firebase/firestore';
 
-export const createstockIn = async (brand:string,model:string,category:string,type:string,quantity:string,date:string,imi:string,storage:string,name:string,nic:string,mobile:string,mobileType:string,cost:string,stock:string,code:string,barcode:any,sellingPrice:any) => {
-  const status = true;
-  const timestamp = Timestamp.now();
-  const docRef = await addDoc(collection(firestore, 'StockAcce'), { brand,model,category,type,quantity,date,imi,storage,name,nic,mobile,mobileType,cost,stock, code,status,timestamp:timestamp,barcode,sellingPrice});
+export const createstockIn = async (values:any) => {
+  values.status = true;
+  values.timestamp = Timestamp.now();
+  const docRef = await addDoc(collection(firestore, 'StockAcce'), values);
   return docRef.id;
 };
 

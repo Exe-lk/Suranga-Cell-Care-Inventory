@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createItemDis = async (model:string,brand: string,reorderLevel:string,quantity:string,boxNumber:string,category:string,touchpadNumber:string,batteryCellNumber:string,displaySNumber:string) => {
-  const status = true;
-  const docRef = await addDoc(collection(firestore, 'ItemManagementDis'), {model, brand , reorderLevel ,quantity,boxNumber,category,touchpadNumber,batteryCellNumber,displaySNumber, status });
+export const createItemDis = async (values:any) => {
+ values.status = true;
+  const docRef = await addDoc(collection(firestore, 'ItemManagementDis'), values);
   return docRef.id;
 };
 

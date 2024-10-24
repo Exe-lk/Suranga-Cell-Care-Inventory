@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import Head from 'next/head';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -42,6 +42,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const {data: itemAcces,error, isLoading,refetch} = useGetItemAccesQuery(undefined);
 	const [updateItemAcce] = useUpdateItemAcceMutation();
+	const inputRef = useRef<HTMLInputElement>(null);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const type = [
 		{ type: 'Accessory' },
@@ -52,7 +53,23 @@ const Index: NextPage = () => {
 	const [quantity, setQuantity] = useState<any>();
 
 
+	useEffect(() => {
+		const handleKeyDown = (event:any) => {
+		  if (event.key) {  // Check if the Enter key is pressed
+			if (inputRef.current) {
+			  inputRef.current.focus();
+			}
+		  }
+		};
 	
+		// Attach event listener for keydown
+		window.addEventListener('keydown', handleKeyDown);
+	
+		// Cleanup event listener on component unmount
+		return () => {
+		  window.removeEventListener('keydown', handleKeyDown);
+		};
+	  }, [itemAcces]);
 
 	// Function to handle deletion of an item
 	const handleClickDelete = async (itemAcce:any) => {
@@ -309,6 +326,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 						<Icon icon='Search' size='2x' color='primary' />
 					</label>
 					<Input
+						ref={inputRef}
 						id='searchInput'
 						type='search'
 						className='border-0 shadow-none bg-transparent'
@@ -426,17 +444,18 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										)}
 										{itemAcces &&
 											itemAcces
-											.filter((itemAcces: any) =>
-												searchTerm
-													? itemAcces.category
-															.toLowerCase()
-															.includes(searchTerm.toLowerCase())
-													: true,
-											)
+										
 											.filter((itemAcces: any) =>
 												selectedUsers.length > 0
 													? selectedUsers.includes(itemAcces.type)
 													: true,
+											)
+											.filter((brand: any) =>{
+												if(brand.code.includes(searchTerm)){
+													return brand
+												}
+											}
+											
 											)
 											.map((itemAcces: any) => (
 												<tr 
