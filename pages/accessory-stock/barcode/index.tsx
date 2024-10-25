@@ -44,30 +44,19 @@ const Index: NextPage = () => {
 		return true; // Return all if no date range is selected
 	});
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
-		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, [StockInOuts]);
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
 
+		// Attach event listener for keydown
+	}, [ ]);
 	useEffect(() => {
 		if (typeof window !== 'undefined' && (window as any).BrowserPrint) {
 			setIsBrowserPrintLoaded(true);
 		} else {
 			console.error('BrowserPrint SDK is not loaded');
 		}
-	}, []);
+	}, [StockInOuts]);
 
 	// UseEffect to set up BrowserPrint and retrieve devices
 	useEffect(() => {

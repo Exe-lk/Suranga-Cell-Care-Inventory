@@ -66,22 +66,12 @@ const Index: NextPage = () => {
 	const [updateUser] = useUpdateUserMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
+	}, [ users]);
 
 	//delete user
 	// Update the user's status to false instead of deleting

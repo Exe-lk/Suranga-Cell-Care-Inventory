@@ -37,24 +37,15 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const {data: suppliers,error, isLoading} = useGetSuppliersQuery(undefined);
 	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
 	
-		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
 
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
+		// Attach event listener for keydown
+	}, [suppliers ]);
 	// Function to handle the download in different formats
 const handleExport = async (format: string) => {
 	const table = document.querySelector('table');

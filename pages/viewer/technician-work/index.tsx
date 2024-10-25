@@ -40,23 +40,7 @@ const Index: NextPage = () => {
 
 	];
 	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
 	
-		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
 	
 	
 
@@ -90,6 +74,13 @@ const Index: NextPage = () => {
 	
 		return true; // Return all if no date range is selected
 	});
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
+		// Attach event listener for keydown
+	}, [bills ]);
 	// Function to get technician name by TechnicianNo
 	const getTechnicianName = (technicianNum: string) => {
 		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
