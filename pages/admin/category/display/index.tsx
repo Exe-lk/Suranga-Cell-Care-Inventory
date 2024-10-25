@@ -172,7 +172,7 @@ const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 				const blob = new Blob([csvContent], { type: 'text/csv' });
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
+				link.download = 'Manage Display Category Report.csv';
 				link.click();
 	};
 	// PDF export function with the logo added
@@ -249,7 +249,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
             theme: 'grid',
         });
 
-        pdf.save('Category Display Report.pdf');
+        pdf.save('Manage Display Category Report.pdf');
     } catch (error) {
         console.error('Error generating PDF: ', error);
         alert('Error generating PDF. Please try again.');
@@ -336,7 +336,7 @@ const downloadTableAsPNG = async () => {
         // Create link element and trigger download
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'table_data.png';
+        link.download = 'Manage Display Category Report.png';
         link.click();
     } catch (error) {
         console.error('Error generating PNG: ', error);
@@ -368,7 +368,7 @@ const downloadTableAsSVG = async () => {
 
 		const link = document.createElement('a');
 		link.href = dataUrl;
-		link.download = 'table_data.svg';
+		link.download = 'Manage Display Category Report.svg';
 		link.click();
 	} catch (error) {
 		console.error('Error generating SVG: ', error);

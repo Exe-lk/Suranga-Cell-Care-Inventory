@@ -194,7 +194,7 @@ const downloadTableAsCSV = (table: any) => {
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
-			link.download = 'table_data.csv';
+			link.download = 'User Report.csv';
 			link.click();
 };
 // PDF export function with table adjustments
@@ -371,7 +371,7 @@ try {
 	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.png';
+	link.download = 'User Report.png';
 	link.click();
 } catch (error) {
 	console.error('Error generating PNG: ', error);
@@ -405,7 +405,7 @@ try {
 
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.svg';
+	link.download = 'User Report.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
@@ -465,11 +465,11 @@ try {
 														setSelectedUsers(
 															(prevUsers) =>
 																checked
-																	? [...prevUsers, value] // Add category if checked
+																	? [...prevUsers, value] 
 																	: prevUsers.filter(
 																			(user) =>
 																				user !== value,
-																	  ), // Remove category if unchecked
+																	  ), 
 														);
 													}}
 												/>

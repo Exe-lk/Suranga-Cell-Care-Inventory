@@ -172,7 +172,7 @@ const Index: NextPage = () => {
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = 'table_data.csv';
+		link.download = 'Stock Keeper Type Report.csv';
 		link.click();
 	};
 	// PDF export
@@ -263,7 +263,7 @@ const Index: NextPage = () => {
 				theme: 'grid',
 			});
 
-			pdf.save('Dealer-management Report.pdf');
+			pdf.save('Stock Keeper Type Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
@@ -348,7 +348,7 @@ const Index: NextPage = () => {
 			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.png';
+			link.download = 'Stock Keeper Type Report.png';
 			link.click();
 		} catch (error) {
 			console.error('Error generating PNG: ', error);
@@ -381,7 +381,7 @@ const Index: NextPage = () => {
 
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.svg';
+			link.download = 'Stock Keeper Type Report.svg';
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);

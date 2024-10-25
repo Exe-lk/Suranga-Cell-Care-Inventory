@@ -60,6 +60,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
+			}else if (values.mobileNumber.length < 10) {
+				errors.mobileNumber = 'Mobile number must be at least 10 digits.';
 			}
 			const itemErrors: string[] = [];
 			values.item.forEach((item, index) => {

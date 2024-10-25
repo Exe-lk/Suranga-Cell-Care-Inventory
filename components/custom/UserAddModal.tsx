@@ -60,6 +60,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobile) {
 				errors.mobile = 'Required';
+			} else if (values.mobile.length !== 10) {
+				errors.mobile = 'Mobile number must be exactly 10 digits';
 			}
 			if (!values.nic) {
 				errors.nic = 'Required';
@@ -121,7 +123,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
 		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -181,7 +182,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
+					
 					<FormGroup id='nic' label='NIC' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}

@@ -286,6 +286,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
 			}
 			if (!values.mobile) {
 				errors.mobile = 'Required';
+			} else if (values.mobile.length !== 10) {
+				errors.mobile = 'Mobile number must be exactly 10 digits';
 			}
 			if (!values.nic) {
 				errors.nic = 'Required';
@@ -333,7 +335,12 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen, refetch 
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit User'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

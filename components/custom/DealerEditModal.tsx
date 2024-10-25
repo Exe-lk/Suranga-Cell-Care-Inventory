@@ -58,6 +58,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile Number is required';
+			}else if (values.mobileNumber.length !== 10) {
+				errors.mobileNumber = 'Mobile Number must be 10 digits.';
 			}
 			const itemErrors: string[] = values.item.map((item: string, index: number) => {
 				if (!item.trim()) {
@@ -144,7 +146,12 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Dealer'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -152,14 +159,19 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<FormGroup
 						id='name'
 						label='Dealer Name'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='name'
 							onChange={formik.handleChange}
 							value={formik.values.name}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.name}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.name === 'string'
+									? formik.errors.name
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -203,28 +215,38 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup
 						id='email'
 						label='Email'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='email'
 							onChange={formik.handleChange}
 							value={formik.values.email}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.email}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.email === 'string'
+									? formik.errors.email
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='address'
 						label='Address'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='address'
 							onChange={formik.handleChange}
 							value={formik.values.address}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.address}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.address === 'string'
+									? formik.errors.address
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -237,7 +259,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.mobileNumber}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.mobileNumber === 'string'
+									? formik.errors.mobileNumber
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

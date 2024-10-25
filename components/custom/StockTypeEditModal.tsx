@@ -8,7 +8,10 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import Swal from 'sweetalert2';
-import { useGetStockKeeperByIdQuery, useUpdateStockKeeperMutation } from '../../redux/slices/stockKeeperApiSlice';
+import {
+	useGetStockKeeperByIdQuery,
+	useUpdateStockKeeperMutation,
+} from '../../redux/slices/stockKeeperApiSlice';
 
 interface StockTypeEditModalProps {
 	id: string;
@@ -24,7 +27,7 @@ interface stockKeeper {
 	status?: boolean;
 }
 
-const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen , refetch }) => {
+const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen, refetch }) => {
 	const [stockKeeper, setstockKeeper] = useState<stockKeeper>({
 		cid: '',
 		type: '',
@@ -33,25 +36,22 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 	});
 
 	const { data: stockKeeperData, isSuccess } = useGetStockKeeperByIdQuery(id);
-    const [updateStockKeeper] = useUpdateStockKeeperMutation();
+	const [updateStockKeeper] = useUpdateStockKeeperMutation();
 
-	// Sync formik values with stock keeper data when available
 	useEffect(() => {
-        if (isSuccess && stockKeeperData) {
-            setstockKeeper(stockKeeperData);
-            // Update formik values
-            formik.setValues({
-                type: stockKeeperData.type || '',
-                description: stockKeeperData.description || '',
-            });
-        }
-    }, [isSuccess, stockKeeperData]);
+		if (isOpen && isSuccess && stockKeeperData) {
+			setstockKeeper(stockKeeperData);
+			formik.setValues({
+				type: stockKeeperData.type || '',
+				description: stockKeeperData.description || '',
+			});
+		}
+	}, [isOpen, isSuccess, stockKeeperData]);
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			type: stockKeeper.type,
-            description: stockKeeper.description,
+			description: stockKeeper.description,
 		},
 		validate: (values) => {
 			const errors: {
@@ -73,17 +73,17 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 					...values, // Update with form values
 				};
 				await updateStockKeeper({ id, ...updatedData }).unwrap();
-                refetch(); // Trigger refetch of stock keeper list after update
-                showNotification(
-                    <span className='d-flex align-items-center'>
-                        <Icon icon='Info' size='lg' className='me-1' />
-                        <span>Successfully Updated</span>
-                    </span>,
-                    'Stock Keeper has been updated successfully'
-                );
-                Swal.fire('Updated!', 'Stock Keeper has been updated successfully.', 'success');
-                formik.resetForm();
-                setIsOpen(false);
+				refetch(); // Trigger refetch of stock keeper list after update
+				showNotification(
+					<span className='d-flex align-items-center'>
+						<Icon icon='Info' size='lg' className='me-1' />
+						<span>Successfully Updated</span>
+					</span>,
+					'Stock Keeper has been updated successfully',
+				);
+				Swal.fire('Updated!', 'Stock Keeper has been updated successfully.', 'success');
+				formik.resetForm();
+				setIsOpen(false);
 			} catch (error) {
 				console.error('Error updating document: ', error);
 				alert('An error occurred while updating the document. Please try again later.');
@@ -93,9 +93,18 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.setValues({
+						type: stockKeeperData.type || '',
+						description: stockKeeperData.description || '',
+					});
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Stock Keeper Type'}</ModalTitle>
 			</ModalHeader>
+
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
 					<FormGroup id='type' label='Type' className='col-md-6'>
