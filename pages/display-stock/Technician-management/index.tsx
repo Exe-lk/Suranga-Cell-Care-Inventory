@@ -42,22 +42,12 @@ const Index: NextPage = () => {
 	const [updateTechnician] = useUpdateTechnicianMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
+	}, [technicians ]);
 	const handleClickDelete = async (technician: any) => {
 		try {
 			const result = await Swal.fire({

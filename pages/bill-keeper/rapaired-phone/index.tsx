@@ -48,27 +48,17 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
 	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
 	
-		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
 	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
 	const { data: technicians, error: techniciansError, isLoading: techniciansLoading } = useGetTechniciansQuery(undefined);
 	console.log('tech', technicians);
-	
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
+		// Attach event listener for keydown
+	}, [bills]);
 
 	// Function to get technician name by TechnicianNo
 	const getTechnicianName = (technicianNum: string) => {

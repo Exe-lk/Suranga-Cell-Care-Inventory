@@ -69,24 +69,13 @@ const Index: NextPage = () => {
 	
 		return true; // Return all if no date range is selected
 	});
-
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
+	}, [ StockInOuts]);
 
 // Function to handle the download in different formats
 const handleExport = async (format: string) => {

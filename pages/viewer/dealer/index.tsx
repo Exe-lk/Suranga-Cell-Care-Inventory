@@ -37,24 +37,15 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
 	
-		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
 	const {data: dealers,error, isLoading} = useGetDealersQuery(undefined);
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
+		// Attach event listener for keydown
+	}, [ dealers]);
 	//get user data from database
 	
 	// Function to handle the download in different formats

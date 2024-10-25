@@ -45,22 +45,12 @@ const Index: NextPage = () => {
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
+	}, [stockInOuts ]);
 	const filteredTransactions = stockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date); // Parse the transaction date
 		const start = startDate ? new Date(startDate) : null; // Parse start date if provided

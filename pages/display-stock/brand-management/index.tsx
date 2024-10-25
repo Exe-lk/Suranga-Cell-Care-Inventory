@@ -48,22 +48,12 @@ const Index: NextPage = () => {
 	const [updateBrand] = useUpdateBrandMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
+	}, [ brands]);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	
 	

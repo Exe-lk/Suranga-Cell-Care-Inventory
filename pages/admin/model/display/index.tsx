@@ -49,23 +49,12 @@ const Index: NextPage = () => {
 	const [updateModel] = useUpdateModelMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
-		const handleKeyDown = (event:any) => {
-		  if (event.key) {  // Check if the Enter key is pressed
-			if (inputRef.current) {
-			  inputRef.current.focus();
-			}
-		  }
-		};
-	
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+
 		// Attach event listener for keydown
-		window.addEventListener('keydown', handleKeyDown);
-	
-		// Cleanup event listener on component unmount
-		return () => {
-		  window.removeEventListener('keydown', handleKeyDown);
-		};
-	  }, []);
-	
+	}, [ models]);
 	// Function to handle deletion of a category
 	const handleClickDelete = async (model: any) => {
 		try {
