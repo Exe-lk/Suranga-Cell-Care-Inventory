@@ -158,7 +158,7 @@ const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 				const blob = new Blob([csvContent], { type: 'text/csv' });
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
+				link.download = 'Supplier Management Report.csv';
 				link.click();
 	};
 	// PDF export function with table adjustments
@@ -188,7 +188,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
         pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
         // Add the table heading (title) in the top-right corner
-        const title = 'Supplier-management Report';
+        const title = 'Supplier-Management Report';
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         const titleWidth = pdf.getTextWidth(title);
@@ -249,7 +249,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
             theme: 'grid',
         });
 
-        pdf.save('Dealer-management Report.pdf');
+        pdf.save('Supplier Management Report.pdf');
     } catch (error) {
         console.error('Error generating PDF: ', error);
         alert('Error generating PDF. Please try again.');
@@ -333,7 +333,7 @@ const downloadTableAsPNG = async () => {
         // Create link element and trigger download
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'table_data.png';
+        link.download = 'Supplier Management Report.png';
         link.click();
     } catch (error) {
         console.error('Error generating PNG: ', error);
@@ -366,7 +366,7 @@ const downloadTableAsSVG = async () => {
 
 		const link = document.createElement('a');
 		link.href = dataUrl;
-		link.download = 'table_data.svg';
+		link.download = 'Supplier Management Report.svg';
 		link.click();
 	} catch (error) {
 		console.error('Error generating SVG: ', error);

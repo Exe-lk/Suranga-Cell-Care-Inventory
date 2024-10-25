@@ -55,7 +55,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 	} = useGetCategoriesQuery(undefined);
 
 	useEffect(() => {
-		if (isSuccess && modelData) {
+		if (isOpen && isSuccess && modelData) {
 			setModel(modelData);
 			// Update formik values
 			formik.setValues({
@@ -65,7 +65,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 				description: modelData.description || '',
 			});
 		}
-	}, [isSuccess, modelData]);
+	}, [isOpen,isSuccess, modelData]);
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -136,7 +136,17 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.setValues({
+						name: modelData.name || '',
+						category: modelData.category || '',
+						brand: modelData.brand || '',
+						description: modelData.description || '',
+					});
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Model'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

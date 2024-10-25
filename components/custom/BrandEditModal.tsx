@@ -50,7 +50,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 	} = useGetCategoriesQuery(undefined);
 
 	useEffect(() => {
-        if (isSuccess && brandData) {
+        if (isOpen && isSuccess && brandData) {
             setBrand(brandData);
             // Update formik values
             formik.setValues({
@@ -59,7 +59,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
                 description: brandData.description || '',
             });
         }
-    }, [isSuccess, brandData]);
+    }, [isOpen , isSuccess, brandData]);
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -112,7 +112,16 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.setValues({
+						category: brandData.category || '',
+						name: brandData.name || '',
+						description: brandData.description || '',
+					});
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Brand'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

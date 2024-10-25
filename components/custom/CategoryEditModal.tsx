@@ -36,14 +36,14 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
     const [updateCategory] = useUpdateCategoryMutation();
 
 	useEffect(() => {
-        if (isSuccess && categoryData) {
+        if (isOpen && isSuccess && categoryData) {
             setCategory(categoryData);
             // Update formik values
             formik.setValues({
                 name: categoryData.name || '',
             });
         }
-    }, [isSuccess, categoryData]);
+    }, [isOpen , isSuccess, categoryData]);
 
 	// Initialize formik for form management
 	const formik = useFormik({
@@ -55,11 +55,12 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 			const errors: {
 				name?: string;
 			} = {};
-			if (!category.name) {
+			if (!values.name) {  // Validate values.name, not category.name
 				errors.name = 'Required';
 			}
 			return errors;
 		},
+		
 		onSubmit: async (values) => {
 			try {
 				const updatedData = {
@@ -89,7 +90,14 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.setValues({
+						name: categoryData.name || '',
+					});
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit category'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

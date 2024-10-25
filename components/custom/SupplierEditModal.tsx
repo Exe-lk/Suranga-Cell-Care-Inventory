@@ -8,7 +8,7 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { collection, addDoc } from 'firebase/firestore';
-import { firestore, storage,auth } from '../../firebaseConfig';
+import { firestore, storage, auth } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
@@ -27,7 +27,7 @@ interface UserAddModalProps {
 }
 // UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const { data: suppliers,refetch } = useGetSuppliersQuery(undefined);
+	const { data: suppliers, refetch } = useGetSuppliersQuery(undefined);
 	const [updateSupplier, { isLoading }] = useUpdateSupplierMutation();
 
 	const supplierToEdit = suppliers?.find((supplier: any) => supplier.id === id);
@@ -43,13 +43,19 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		enableReinitialize: true, // This allows the form to reinitialize when categoryToEdit changes
 		validate: (values) => {
-			const errors: { name?: string; item?: string[]; email?: string; address?: string; mobileNumber?: string; } = {};
+			const errors: {
+				name?: string;
+				item?: string[];
+				email?: string;
+				address?: string;
+				mobileNumber?: string;
+			} = {};
 			if (!values.name) {
 				errors.name = 'Name is required';
 			}
 			if (!values.email) {
 				errors.email = 'Email is required';
-			}else if(!(values.email ?? '').includes('@')) {
+			} else if (!(values.email ?? '').includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
 			if (!values.address) {
@@ -57,6 +63,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile Number is required';
+			} else if (values.mobileNumber.length < 10) {
+				errors.mobileNumber = 'Mobile Number must be at least 10 characters';
 			}
 			const itemErrors: string[] = [];
 			values.item.forEach((item: string, index: number) => {
@@ -64,7 +72,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					itemErrors[index] = `Item ${index + 1} cannot be empty.`;
 				}
 			});
-		
+
 			if (itemErrors.length > 0) {
 				errors.item = itemErrors;
 			}
@@ -86,7 +94,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					console.log(values);
 					const data = {
 						name: values.name,
-						item : values.item,
+						item: values.item,
 						email: values.email,
 						address: values.address,
 						mobileNumber: values.mobileNumber,
@@ -139,95 +147,115 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
 		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
 	};
-	
+
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Supplier'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup
-						id='name'
-						label='Supplier Name'
-						onChange={formik.handleChange}
-						className='col-md-6'>
+					<FormGroup id='name' label='Supplier Name' className='col-md-6'>
 						<Input
 							name='name'
 							onChange={formik.handleChange}
 							value={formik.values.name}
 							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
+							isTouched={!!formik.touched.name}
+							isValid={formik.isValid} // Display "Looks good!" only if no errors
+							invalidFeedback={
+								typeof formik.errors.name === 'string'
+									? formik.errors.name
+									: undefined
+							} // Show required message if field is invalid
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+
 					{formik.values.item.map((sub: any, index: any) => (
 						<FormGroup
-						key={index}
-						id={`item-${index}`}
-						label={`Item ${index + 1}`}
-						className='col-md-6'>
-						<div className='d-flex align-items-center'>
-							<Input
-								name={`item[${index}]`}
-								onChange={formik.handleChange}
-								value={formik.values.item[index]}
-								onBlur={formik.handleBlur}
-								isValid={formik.isValid}
-								isTouched={!!(Array.isArray(formik.touched.item) && formik.touched.item[index])} // Ensure the item is touched
-								invalidFeedback={
-									formik.errors.item
-										? Array.isArray(formik.errors.item)
-											? formik.errors.item[index] as string
-											: formik.errors.item as string
-										: undefined
-								}
-								validFeedback='Looks good!'
-							/>
-							<button
-								type='button'
-								onClick={() => removeItemField(index)}
-								className='btn btn-outline-danger ms-2'>
-								<Icon icon='Delete' />
-							</button>
-						</div>
-					</FormGroup>
+							key={index}
+							id={`item-${index}`}
+							label={`Item ${index + 1}`}
+							className='col-md-6'>
+							<div className='d-flex align-items-center'>
+								<Input
+									name={`item[${index}]`}
+									onChange={formik.handleChange}
+									value={formik.values.item[index]}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={
+										!!(
+											Array.isArray(formik.touched.item) &&
+											formik.touched.item[index]
+										)
+									} // Ensure the item is touched
+									invalidFeedback={
+										formik.errors.item
+											? Array.isArray(formik.errors.item)
+												? (formik.errors.item[index] as string)
+												: (formik.errors.item as string)
+											: undefined
+									}
+									validFeedback='Looks good!'
+								/>
+								<button
+									type='button'
+									onClick={() => removeItemField(index)}
+									className='btn btn-outline-danger ms-2'>
+									<Icon icon='Delete' />
+								</button>
+							</div>
+						</FormGroup>
 					))}
 					<div className='col-md-12'>
 						<Button color='info' onClick={addItemField}>
 							Add Item
 						</Button>
 					</div>
-					<FormGroup
-						id='email'
-						label='Email'
-						onChange={formik.handleChange}
-						className='col-md-6'>
+					<FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
 							name='email'
 							onChange={formik.handleChange}
 							value={formik.values.email}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.email}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.email === 'string'
+									? formik.errors.email
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='address'
 						label='Address'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='address'
 							onChange={formik.handleChange}
 							value={formik.values.address}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.address}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.address === 'string'
+									? formik.errors.address
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='mobileNumber' label='Mobile number' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobileNumber}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -235,12 +263,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
+							isTouched={!!formik.touched.mobileNumber}
 							isValid={formik.isValid}
+							invalidFeedback={
+								typeof formik.errors.mobileNumber === 'string'
+									? formik.errors.mobileNumber
+									: undefined
+							}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
-					
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
