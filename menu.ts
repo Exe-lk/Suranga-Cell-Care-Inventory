@@ -67,7 +67,7 @@ export const stockAccPagesMenu = {
 	},
 	stock: {
 		id: 'dashboard',
-		text: 'Transaction Management',
+		text: 'Transaction Log',
 		path: 'accessory-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,
@@ -134,7 +134,7 @@ export const stockElePagesMenu = {
 	},
 	stock: {
 		id: 'dashboard',
-		text: 'Transaction Management',
+		text: 'Transaction Lot',
 		path: 'display-stock/stock-management',
 		icon: 'AutoStories',
 		subMenu: null,

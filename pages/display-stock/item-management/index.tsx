@@ -390,13 +390,13 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										{itemDiss &&
 											itemDiss
 											
-												.filter((brand: any) =>{
-													if(brand.code.includes(searchTerm)){
-														return brand
-													}
+											.filter((brand: any) => {
+												if (brand.code.includes(searchTerm.slice(0, 4))) {
+													return brand;
 												}
+											})
 												
-												)
+												
 												.map((itemDiss: any) => (
 													<tr key={itemDiss.cid}>
 														<td>{itemDiss.model}</td>

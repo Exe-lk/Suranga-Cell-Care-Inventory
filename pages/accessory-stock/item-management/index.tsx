@@ -440,13 +440,11 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 													? selectedUsers.includes(itemAcces.type)
 													: true,
 											)
-											.filter((brand: any) =>{
-												if(brand.code.includes(searchTerm)){
-													return brand
+											.filter((brand: any) => {
+												if (brand.code.includes(searchTerm.slice(0, 4))) {
+													return brand;
 												}
-											}
-											
-											)
+											})
 											.map((itemAcces: any) => (
 												<tr 
 													key={itemAcces.cid}
