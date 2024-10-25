@@ -322,13 +322,11 @@ const Index: NextPage = () => {
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
-												.filter((brand: any) =>
-													searchTerm
-														? brand.category
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
-														: true,
-												)
+												.filter((brand: any) => {
+													if (brand.barcode.toString().includes(searchTerm)) {
+														return brand;
+													}
+												})
 												.filter((brand: any) =>
 													selectedUsers.length > 0
 														? selectedUsers.includes(brand.stock)
