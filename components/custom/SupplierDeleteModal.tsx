@@ -52,7 +52,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (inputText === 'DELETE') {
 				// Call the delete mutation from Redux
 				await deleteSupplier(supplier.id).unwrap();
-				Swal.fire('Deleted!', 'The supplier has been deleted.', 'success');
+				Swal.fire('Deleted!', 'The supplier has been permentaly deleted.', 'success');
 
 				refetch();
 			}
@@ -116,7 +116,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				for (const supplier of suppliers) {
 					await deleteSupplier(supplier.id).unwrap();
 				}
-				Swal.fire('Deleted!', 'All suppliers have been deleted.', 'success');
+				Swal.fire('Deleted!', 'All suppliers have been permentaly deleted.', 'success');
 
 				
 				refetch();
@@ -165,7 +165,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -208,7 +208,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						)}
 						{suppliers &&
 							suppliers.map((supplier: any) => (
-								<tr key={supplier.cid}>
+								<tr key={supplier.index}>
 									<td>{supplier.name}</td>
 
 									<td>

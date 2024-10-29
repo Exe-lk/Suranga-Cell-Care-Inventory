@@ -10,7 +10,7 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-import { useGetBrandByIdQuery, useUpdateBrandMutation } from '../../redux/slices/brandApiSlice';
+import { useGetBrandsQuery, useUpdateBrandMutation } from '../../redux/slices/brandApiSlice';
 import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 import Select from '../bootstrap/forms/Select';
 
@@ -19,28 +19,14 @@ interface BrandEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
-	refetch(...args: unknown[]): unknown;
 }
 
-interface Brand {
-	cid: string;
-	category: string;
-	name: string;
-	description?: string;
-	status?: boolean;
-}
 
-const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetch }) => {
-	const [brand, setBrand] = useState<Brand>({
-		cid: '',
-		category: '',
-		name: '',
-		description: '',
-		status: true,
-	});
 
-	const { data: brandData, isSuccess } = useGetBrandByIdQuery(id);
-    const [updateBrand] = useUpdateBrandMutation();
+const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+
+	const { data: brandData, refetch } = useGetBrandsQuery(undefined);
+    const [updateBrand , {isLoading}] = useUpdateBrandMutation();
 
 	// Fetch categories from categoryApiSlice
 	const {
@@ -49,25 +35,17 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 		isError,
 	} = useGetCategoriesQuery(undefined);
 
-	useEffect(() => {
-        if (isOpen && isSuccess && brandData) {
-            setBrand(brandData);
-            // Update formik values
-            formik.setValues({
-				category: brandData.category || '',
-                name: brandData.name || '',
-                description: brandData.description || '',
-            });
-        }
-    }, [isOpen , isSuccess, brandData]);
+	const brandToEdit = brandData?.find((brand: any) => brand.id === id);
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			category: brand.category,
-			name: brand.name,
-			description: brand.description,
+			id: '',
+			category: brandToEdit?.category || '',
+			name: brandToEdit?.name || '',
+			description: brandToEdit?.description || '',
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				category?: string;
@@ -87,39 +65,54 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 		},
 		onSubmit: async (values) => {
 			try {
-				const updatedData = {
-					...brand, // Keep existing user data
-					...values, // Update with form values
-				};
-				await updateBrand({ id, ...updatedData }).unwrap();
-				refetch(); // Trigger refetch of stock keeper list after update
-                showNotification(
-                    <span className='d-flex align-items-center'>
-                        <Icon icon='Info' size='lg' className='me-1' />
-                        <span>Successfully Updated</span>
-                    </span>,
-                    'Brand has been updated successfully'
-                );
-                Swal.fire('Updated!', 'Brand has been updated successfully.', 'success');
-                formik.resetForm();
-                setIsOpen(false);
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						category: values.category,
+						name: values.name,
+						description: values.description,
+						status: true,
+						id: id,
+					};
+					await updateBrand(data).unwrap();
+					refetch(); // Trigger refetch of stock keeper list after update
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Brand Updated Successfully',
+					});
+					formik.resetForm();
+                	setIsOpen(false);
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the brand. Please try again.',
+					});
+				}
 			} catch (error) {
-				console.error('Error updating document: ', error);
-				alert('An error occurred while updating the document. Please try again later.');
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
 	
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
-					formik.setValues({
-						category: brandData.category || '',
-						name: brandData.name || '',
-						description: brandData.description || '',
-					});
+					formik.resetForm();
 				}}
 				className='p-4'>
 				<ModalTitle id=''>{'Edit Brand'}</ModalTitle>
@@ -149,11 +142,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen, refetc
 							))}
 						</Select>
 
-						{formik.touched.category && formik.errors.category ? (
-							<div className='invalid-feedback'>{formik.errors.category}</div>
-						) : (
-							<></>
-						)}
 					</FormGroup>
 					<FormGroup id='name' label='Brand name' className='col-md-6'>
 						<Input

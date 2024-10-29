@@ -52,8 +52,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			CustomerMobileNum: billToEdit?.CustomerMobileNum || '',
 			email: billToEdit?.email || '',
 			NIC: billToEdit?.NIC || '',
-			Price: billToEdit?.Price || '',
 			cost: billToEdit?.cost || '',
+			Price: billToEdit?.Price || '',
 			Status: billToEdit?.Status || '',
 			DateOut: billToEdit?.DateOut || '',
 		},
@@ -70,34 +70,36 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				CustomerMobileNum?: string;
 				email?: string;
 				NIC?: string;
-				Price?: string;
 				cost?: string;
+				Price?: string;
 				Status?: string;
 				DateOut?: string;
 			} = {};
 			if (!values.phoneDetail) {
-				errors.phoneDetail = 'phoneDetail is required';
+				errors.phoneDetail = 'Phone Detail is required';
 			}
 			if (!values.dateIn) {
-				errors.dateIn = 'dateIn is required';
+				errors.dateIn = 'Date In is required';
 			}
 			if (!values.billNumber) {
-				errors.billNumber = 'billNumber is required';
+				errors.billNumber = 'Bill Number is required';
 			}
 			if (!values.phoneModel) {
-				errors.phoneModel = 'phoneModel is required';
+				errors.phoneModel = 'Phone Model is required';
 			}
 			if (!values.repairType) {
-				errors.repairType = 'repairType is required';
+				errors.repairType = 'Repair Type is required';
 			}
 			if (!values.technicianNum) {
-				errors.technicianNum = 'TechnicianNo is required';
+				errors.technicianNum = 'Technician No is required';
 			}
 			if (!values.CustomerName) {
-				errors.CustomerName = 'CustomerName is required';
+				errors.CustomerName = 'Customer Name is required';
 			}
 			if (!values.CustomerMobileNum) {
-				errors.CustomerMobileNum = 'CustomerMobileNum is required';
+				errors.CustomerMobileNum = 'Customer Mobile Num is required';
+			}else if (values.CustomerMobileNum.length !== 10) {
+				errors.CustomerMobileNum = 'Mobile number must be exactly 10 digits';
 			}
 			if (!values.email) {
 				errors.email = 'email is required';
@@ -111,15 +113,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.Price) {
 				errors.Price = 'Price is required';
-			}
+			}else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
 			if (!values.cost) {
 				errors.cost = 'cost is required';
-			}
+			}else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Status) {
 				errors.Status = 'Status is required';
 			}
 			if (!values.DateOut) {
-				errors.DateOut = 'DateOut is required';
+				errors.DateOut = 'Date Out is required';
 			}
 
 
@@ -149,8 +151,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						CustomerMobileNum: values.CustomerMobileNum,
 						email: values.email,
 						NIC: values.NIC,
-						Price: values.Price,
 						cost: values.cost,
+						Price: values.Price,
 						Status: values.Status,
 						DateOut: values.DateOut,
 						status: true,
@@ -188,8 +190,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Dealer'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -197,7 +204,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<FormGroup
 						id='phoneDetail'
 						label='Phone Detail'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='phoneDetail'
@@ -205,13 +211,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.phoneDetail}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.phoneDetail}
+							invalidFeedback={formik.errors.phoneDetail}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='dateIn'
 						label='Date In'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='dateIn'
@@ -219,13 +226,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.dateIn}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.dateIn}
+							invalidFeedback={formik.errors.dateIn}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='billNumber'
 						label='Bill Number'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='billNumber'
@@ -233,13 +241,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.billNumber}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.billNumber}
+							invalidFeedback={formik.errors.billNumber}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='phoneModel'
 						label='Phone Model'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='phoneModel'
@@ -247,13 +256,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.phoneModel}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.phoneModel}
+							invalidFeedback={formik.errors.phoneModel}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='repairType'
 						label='Repair Type'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='repairType'
@@ -261,6 +271,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.repairType}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.repairType}
+							invalidFeedback={formik.errors.repairType}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -272,11 +284,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.technicianNum}
 							name='technicianNum'
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.technicianNum}
+							invalidFeedback={formik.errors.technicianNum}
 							validFeedback='Looks good!'
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
 							{technicians?.map((technician: any) => (
-								<Option key={technician.id} value={technician.technicianNum}>
+								<Option key={technician.index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
 							))}
@@ -287,7 +301,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup
 						id='CustomerName'
 						label='Customer Name'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='CustomerName'
@@ -295,13 +308,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.CustomerName}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.CustomerName}
+							invalidFeedback={formik.errors.CustomerName}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='CustomerMobileNum'
 						label='Customer Mobile Num'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							type='text'
@@ -312,13 +326,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.CustomerMobileNum}
+							invalidFeedback={formik.errors.CustomerMobileNum}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='email'
 						label='Email'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='email'
@@ -326,13 +341,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.email}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.email}
+							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='NIC'
 						label='NIC'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='NIC'
@@ -340,27 +356,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.NIC}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.NIC}
+							invalidFeedback={formik.errors.NIC}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='Price'
-						label='Price'
-						onChange={formik.handleChange}
-						className='col-md-6'>
-						<Input
-							name='Price'
-							onChange={formik.handleChange}
-							value={formik.values.Price}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
+					
 					<FormGroup
 						id='cost'
 						label='Cost'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='cost'
@@ -368,6 +372,23 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.cost}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.cost}
+							invalidFeedback={formik.errors.cost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup
+						id='Price'
+						label='Price'
+						className='col-md-6'>
+						<Input
+							name='Price'
+							onChange={formik.handleChange}
+							value={formik.values.Price}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={!!formik.touched.Price}
+							invalidFeedback={formik.errors.Price}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
@@ -379,6 +400,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.Status}
 							name='Status'
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.Status}
+							invalidFeedback={formik.errors.Status}
 							validFeedback='Looks good!'
 						>
 							<Option value=''>Select the Status</Option>
@@ -392,7 +415,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup
 						id='DateOut'
 						label='Date Out'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='DateOut'
@@ -400,6 +422,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.DateOut}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={!!formik.touched.DateOut}
+							invalidFeedback={formik.errors.DateOut}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

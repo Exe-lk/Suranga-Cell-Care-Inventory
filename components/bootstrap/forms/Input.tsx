@@ -29,9 +29,9 @@ export interface IInputProps extends HTMLAttributes<HTMLInputElement>, Partial<I
 	min?: number;
 	max?: number;
 	step?: number;
-	isTouched?: boolean;
+	isTouched?: any;
 	isValid?: boolean;
-	invalidFeedback?: string;
+	invalidFeedback?: any;
 	validFeedback?: string;
 	isValidMessage?: boolean;
 	isTooltipFeedback?: boolean;

@@ -40,7 +40,7 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			await deleteUser(user.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The user has been deleted.', 'success');
+					Swal.fire('Deleted!', 'The user has been permentaly deleted.', 'success');
 					refetch();
 				})
 				.catch((error) => {
@@ -103,7 +103,7 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			for (const user of users) {
 				await deleteUser(user.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All users have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All users have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -129,7 +129,7 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -158,7 +158,7 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 							</tr>
 						)}
 						{users && users.length > 0 && users.map((user: any) => (
-							<tr key={user.cid}>
+							<tr key={user.index}>
               <td>{user.name}</td>
               <td>
                 <Button

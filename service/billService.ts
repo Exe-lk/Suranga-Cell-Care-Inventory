@@ -38,9 +38,9 @@ export const getBillById = async (id: string) => {
   }
 };
 
-export const updateBill = async (id: string, phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,technicianNum: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,Price:string,cost:string,Status:string,DateOut:string,status: any) => {
+export const updateBill = async (id: string, phoneDetail: string,dateIn: string,billNumber:string,phoneModel:string, repairType: string,technicianNum: string,CustomerName:string,CustomerMobileNum:string,email:string,NIC:string,cost:string,Price:string,Status:string,DateOut:string,status: any) => {
   const billRef = doc(firestore, 'bill', id);
-  await updateDoc(billRef, { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut,status });
+  await updateDoc(billRef, { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,cost,Price,Status,DateOut,status });
 };
 
 export const deleteBill = async (id: string) => {

@@ -25,6 +25,10 @@ import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../../components/PaginationButtons';
 
 // Define the interface for category data
 
@@ -47,6 +51,8 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModelsQuery(undefined);
 	const [updateModel] = useUpdateModelMutation();
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
@@ -465,7 +471,7 @@ const downloadTableAsSVG = async () => {
 										}
 										{
 											models &&
-											models
+											dataPagination(models, currentPage, perPage)
 												.filter((model : any) =>
 													model.status === true 
 												)
@@ -475,7 +481,7 @@ const downloadTableAsSVG = async () => {
 													: true,
 												)
 												.map((model:any) => (
-													<tr key={model.id}>
+													<tr key={model.index}>
 														<td>{model.name}</td>
 														<td>{model.category}</td>
 														<td>{model.brand}</td>
@@ -512,6 +518,14 @@ const downloadTableAsSVG = async () => {
 								Recycle Bin</Button> 
 								
 							</CardBody>
+							<PaginationButtons
+								data={models}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 						
 			
@@ -520,7 +534,7 @@ const downloadTableAsSVG = async () => {
 			</Page>
 			<ModelAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
-			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

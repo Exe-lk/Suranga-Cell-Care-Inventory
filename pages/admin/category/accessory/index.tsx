@@ -25,7 +25,10 @@ import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import autoTable from 'jspdf-autotable';
-
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../../components/PaginationButtons';
 // Define the interface for category data
 interface Category {
 	cid: string;
@@ -44,16 +47,18 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: categories, error, isLoading, refetch } = useGetCategories1Query(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateCategory] = useUpdateCategory1Mutation();
 	const inputRef = useRef<HTMLInputElement>(null);
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
 	}, [ categories]);
-	// Function to handle deletion of a category
+
+
 	const handleClickDelete = async (category: any) => {
 		try {
 			const result = await Swal.fire({
@@ -457,7 +462,7 @@ try {
 										}
 										{
 											categories &&
-											categories
+											dataPagination(categories, currentPage, perPage)
 												.filter((category : any) =>
 													category.status === true 
 												)
@@ -467,7 +472,7 @@ try {
 													: true,
 												)
 												.map((category:any) => (
-													<tr key={category.id}>
+													<tr key={category.index}>
 														<td>{category.name}</td>
 														<td>
 															<Button
@@ -501,6 +506,14 @@ try {
 								Recycle Bin</Button> 
 								
 							</CardBody>
+							<PaginationButtons
+								data={categories}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 						
 			
@@ -509,7 +522,7 @@ try {
 			</Page>
 			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch}/>
-			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

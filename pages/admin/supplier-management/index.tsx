@@ -30,10 +30,16 @@ import { useUpdateSupplierMutation} from '../../../redux/slices/supplierApiSlice
  import { DropdownItem }from '../../../components/bootstrap/Dropdown';
  import jsPDF from 'jspdf'; 
  import autoTable from 'jspdf-autotable';
+ import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	// Dark mode
 	const { darkModeStatus } = useDarkMode();
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
@@ -458,7 +464,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{suppliers &&
-											suppliers
+											dataPagination(suppliers, currentPage, perPage)
 												.filter((supplier: any) =>
 													searchTerm
 														? supplier.name
@@ -467,7 +473,7 @@ const downloadTableAsSVG = async () => {
 														: true,
 												)
 												.map((supplier: any) => (
-													<tr key={supplier.cid}>
+													<tr key={supplier.index}>
 														<td>{supplier.name}</td>
 														<td>
 															<ul>
@@ -512,6 +518,14 @@ const downloadTableAsSVG = async () => {
 								)}>
 								Recycle Bin</Button> 
 							</CardBody>
+							<PaginationButtons
+								data={suppliers}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

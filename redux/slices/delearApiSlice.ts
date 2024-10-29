@@ -46,7 +46,7 @@ export const dealerApiSlice = createApi({
 
 export const {
   useGetDealersQuery,
-  useGetDealerByIdQuery, // New hook to fetch single category
+  useGetDealerByIdQuery, 
   useGetDeleteDealersQuery,
   useAddDealerMutation,
   useUpdateDealerMutation,

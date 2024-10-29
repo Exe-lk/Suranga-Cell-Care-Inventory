@@ -20,9 +20,9 @@ interface ISelectProps extends Partial<IOptionsProps>, HTMLAttributes<HTMLSelect
 	title?: string;
 	value?: string | string[];
 	defaultValue?: string | string[];
-	isTouched?: boolean;
+	isTouched?: any;
 	isValid?: boolean;
-	invalidFeedback?: string;
+	invalidFeedback?: any;
 	validFeedback?: string;
 	isValidMessage?: boolean;
 	isTooltipFeedback?: boolean;

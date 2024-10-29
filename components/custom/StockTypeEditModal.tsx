@@ -9,7 +9,7 @@ import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import Swal from 'sweetalert2';
 import {
-	useGetStockKeeperByIdQuery,
+	useGetStockKeepersQuery,
 	useUpdateStockKeeperMutation,
 } from '../../redux/slices/stockKeeperApiSlice';
 
@@ -17,42 +17,23 @@ interface StockTypeEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
-	refetch(...args: unknown[]): unknown;
 }
 
-interface stockKeeper {
-	cid: string;
-	type: string;
-	description?: string;
-	status?: boolean;
-}
 
-const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen, refetch }) => {
-	const [stockKeeper, setstockKeeper] = useState<stockKeeper>({
-		cid: '',
-		type: '',
-		description: '',
-		status: true,
-	});
+const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}) => {
+	const { data: stockKeeperData, refetch } = useGetStockKeepersQuery(undefined);
+	const [updateStockKeeper,{isLoading}] = useUpdateStockKeeperMutation();
 
-	const { data: stockKeeperData, isSuccess } = useGetStockKeeperByIdQuery(id);
-	const [updateStockKeeper] = useUpdateStockKeeperMutation();
-
-	useEffect(() => {
-		if (isOpen && isSuccess && stockKeeperData) {
-			setstockKeeper(stockKeeperData);
-			formik.setValues({
-				type: stockKeeperData.type || '',
-				description: stockKeeperData.description || '',
-			});
-		}
-	}, [isOpen, isSuccess, stockKeeperData]);
+	const stockKeeperToEdit = stockKeeperData?.find((stockKeeper: any) => stockKeeper.id === id);
 
 	const formik = useFormik({
 		initialValues: {
-			type: stockKeeper.type,
-			description: stockKeeper.description,
+			id:'',
+			type: stockKeeperToEdit?.type || '',
+			description: stockKeeperToEdit?.description || '',
+			
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				type?: string;
@@ -68,38 +49,55 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 		},
 		onSubmit: async (values) => {
 			try {
-				const updatedData = {
-					...stockKeeper, // Keep existing stock keeper data
-					...values, // Update with form values
-				};
-				await updateStockKeeper({ id, ...updatedData }).unwrap();
-				refetch(); // Trigger refetch of stock keeper list after update
-				showNotification(
-					<span className='d-flex align-items-center'>
-						<Icon icon='Info' size='lg' className='me-1' />
-						<span>Successfully Updated</span>
-					</span>,
-					'Stock Keeper has been updated successfully',
-				);
-				Swal.fire('Updated!', 'Stock Keeper has been updated successfully.', 'success');
-				formik.resetForm();
-				setIsOpen(false);
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						type: values.type,
+						description: values.description,
+						status: true,
+						id: id,
+					};
+					await updateStockKeeper(data).unwrap();
+					refetch(); // Trigger refetch of stock keeper list after update
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Stock Type Updated Successfully',
+					});
+					formik.resetForm();
+                	setIsOpen(false);
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the stock type. Please try again.',
+					});
+				}
 			} catch (error) {
-				console.error('Error updating document: ', error);
-				alert('An error occurred while updating the document. Please try again later.');
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
+		
+	
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
-					formik.setValues({
-						type: stockKeeperData.type || '',
-						description: stockKeeperData.description || '',
-					});
+					formik.resetForm();
 				}}
 				className='p-4'>
 				<ModalTitle id=''>{'Edit Stock Keeper Type'}</ModalTitle>

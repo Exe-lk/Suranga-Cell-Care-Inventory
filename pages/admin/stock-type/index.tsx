@@ -28,6 +28,10 @@ import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 // Define the interface for category data
 interface Category {
 	cid: string;
@@ -48,6 +52,8 @@ const Index: NextPage = () => {
 	const { data: stockKeepers, error, isLoading, refetch } = useGetStockKeepersQuery(undefined);
 	const [updateStockKeeper] = useUpdateStockKeeperMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 
 	useEffect(() => {
 		if (inputRef.current) {
@@ -479,7 +485,7 @@ const Index: NextPage = () => {
 											</tr>
 										)}
 										{stockKeepers &&
-											stockKeepers
+											dataPagination(stockKeepers, currentPage, perPage)
 												.filter(
 													(stockKeeper: any) =>
 														stockKeeper.status === true,
@@ -492,7 +498,7 @@ const Index: NextPage = () => {
 														: true,
 												)
 												.map((stockKeeper: any) => (
-													<tr key={stockKeeper.id}>
+													<tr key={stockKeeper.index}>
 														<td>{stockKeeper.type}</td>
 														<td>{stockKeeper.description}</td>
 														<td>
@@ -530,6 +536,14 @@ const Index: NextPage = () => {
 									Recycle Bin
 								</Button>
 							</CardBody>
+							<PaginationButtons
+								data={stockKeepers}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
@@ -545,7 +559,6 @@ const Index: NextPage = () => {
 				setIsOpen={setEditModalStatus}
 				isOpen={editModalStatus}
 				id={id}
-				refetch={refetch}
 			/>
 		</PageWrapper>
 	);

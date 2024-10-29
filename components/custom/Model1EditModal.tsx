@@ -10,7 +10,7 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-import { useGetModel1ByIdQuery, useUpdateModel1Mutation } from '../../redux/slices/model1ApiSlice';
+import { useGetModels1Query, useUpdateModel1Mutation } from '../../redux/slices/model1ApiSlice';
 import { useGetBrands1Query } from '../../redux/slices/brand1ApiSlice';
 import Select from '../bootstrap/forms/Select';
 import { useGetCategories1Query } from '../../redux/slices/category1ApiSlice';
@@ -20,65 +20,40 @@ interface ModelEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
-	refetch(...args: unknown[]): unknown;
-}
-interface Model {
-	cid: string;
-	name: string;
-	brand: string;
-	category: string;
-	description?: string;
-	status?: boolean;
 }
 
 
-const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refetch}) => {
-	
-	const [model, setModel] = useState<Model>({
-		cid: '',
-		name: '',
-		category: '',
-		brand: '',
-		description: '',
-		status: true,
-	});
-	const { data: modelData, isSuccess } = useGetModel1ByIdQuery(id);
-    const [updateModel] = useUpdateModel1Mutation();
+
+const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+
+	const { data: modelData, refetch } = useGetModels1Query(undefined);
+    const [updateModel , {isLoading}] = useUpdateModel1Mutation();
 	const [filteredBrands, setFilteredBrands] = useState([]);
 	const {
 		data: brands,
 		isLoading: brandsLoading,
 		isError,
 	} = useGetBrands1Query(undefined);
+	
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
 		isError: categoriesError,
 	} = useGetCategories1Query(undefined);
 
-
-	useEffect(() => {
-        if (isOpen && isSuccess && modelData) {
-            setModel(modelData);
-            // Update formik values
-            formik.setValues({
-                name: modelData.name || '',
-				category: modelData.category || '',
-				brand: modelData.brand || '',
-                description: modelData.description || '',
-            });
-        }
-    }, [isOpen , isSuccess, modelData]);
+	const modelToEdit = modelData?.find((model:any) => model.id === id);
 
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			name: model.name,
-			category: model.category,
-			brand: model.brand,
-            description: model.description,
+			id: '',
+			name: modelToEdit?.name || '',
+			category: modelToEdit?.category || '',
+			brand: modelToEdit?.brand || '',
+			description: modelToEdit?.description || '',
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				name?: string;
@@ -105,30 +80,48 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 		
 		onSubmit: async (values) => {
 			try {
-				const updatedData = {
-					...model, // Keep existing user data
-					...values, // Update with form values
-				};
-				await updateModel({ id, ...updatedData }).unwrap();
-                refetch(); // Trigger refetch of stock keeper list after update
-				showNotification(
-					<span className='d-flex align-items-center'>
-						<Icon icon='Info' size='lg' className='me-1' />
-						<span>Successfully Updated</span>
-					</span>,
-					'Model has been updated successfully',
-				);
-				Swal.fire('Updated!', 'Model has been updated successfully.', 'success');
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
 
-				formik.resetForm();
-                setIsOpen(false);
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						name: values.name,
+						category: values.category,
+						brand: values.brand,
+						description: values.description,
+						status: true,
+						id: id,
+					};
+					await updateModel(data).unwrap();
+					refetch(); // Trigger refetch of stock keeper list after update
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Model Updated Successfully',
+					});
+					formik.resetForm();
+                	setIsOpen(false);
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the model. Please try again.',
+					});
+				}
 			} catch (error) {
-				console.error('Error updating document: ', error);
-				alert('An error occurred while updating the document. Please try again later.');
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
-
 	useEffect(() => {
 		if (formik.values.category) {
 			const categoryBrands = brands?.filter((brand: { category: string }) => 
@@ -142,16 +135,11 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
-					formik.setValues({
-						name: modelData.name || '',
-						category: modelData.category || '',
-						brand: modelData.brand || '',
-						description: modelData.description || '',
-					});
+					formik.resetForm();
 				}}
 				className='p-4'>
 				<ModalTitle id=''>{'Edit Model'}</ModalTitle>
@@ -181,9 +169,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 							))}
 						</Select>
 
-						{formik.touched.category && formik.errors.category ? (
-							<div className='invalid-feedback'>{formik.errors.category}</div>
-						) : <></>}
+						
 					</FormGroup>
 					
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
@@ -209,9 +195,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen , refet
 							))}
 						</Select>
 
-						{formik.touched.brand && formik.errors.brand ? (
-							<div className='invalid-feedback'>{formik.errors.brand}</div>
-						) : <></>}
+						
 					</FormGroup>
 				<FormGroup id='name' label='Name' className='col-md-6'>
 						<Input

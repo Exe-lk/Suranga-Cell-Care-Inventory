@@ -41,7 +41,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 			await deleteCategory(category.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The category has been deleted.', 'success');
+					Swal.fire('Deleted!', 'The category has been permentaly deleted.', 'success');
 					refetch();
 				})
 				.catch((error) => {
@@ -100,7 +100,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 			for (const category of categories) {
 				await deleteCategory(category.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All categories have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All categories have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -125,7 +125,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 		}
 	};
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -152,7 +152,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 							</tr>
 						)}
 						{categories && categories.length > 0 && categories.map((category: any) => (
-							<tr key={category.cid}>
+							<tr key={category.index}>
               <td>{category.name}</td>
               <td>
                 <Button

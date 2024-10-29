@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -11,6 +11,7 @@ import Option from '../bootstrap/Option';
 import { useAddBillMutation } from '../../redux/slices/billApiSlice';
 import { useGetBillsQuery } from '../../redux/slices/billApiSlice';
 import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
+import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
 
 interface CategoryEditModalProps {
 	id: string;
@@ -20,19 +21,27 @@ interface CategoryEditModalProps {
 
 const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addBill, { isLoading }] = useAddBillMutation();
-	const { refetch } = useGetBillsQuery(undefined);
-	const {
-		data: technicians,
-		isLoading: techniciansLoading,
-		isError,
-	} = useGetTechniciansQuery(undefined);
-	console.log(technicians);
+	const { refetch, data: bills } = useGetBillsQuery(undefined);
+	const { data: models, isLoading: modelsLoading, isError: modelsError } = useGetModelsQuery(undefined);
+	const { data: technicians, isLoading: techniciansLoading, isError } = useGetTechniciansQuery(undefined);
+
+	// Calculate the next bill number
+	useEffect(() => {
+		if (bills && bills.length > 0) {
+			const highestBillNumber = Math.max(
+				...bills.map((bill: any) => parseInt(bill.billNumber || '0', 10))
+			);
+			formik.setFieldValue('billNumber', (highestBillNumber + 1).toString().padStart(4, '0'));
+		} else {
+			formik.setFieldValue('billNumber', '0001');
+		}
+	}, [bills]);
 
 	const formik = useFormik({
 		initialValues: {
 			phoneDetail: '',
 			dateIn: '',
-			billNumber: '',
+			billNumber: '0001', // Default to '0001'
 			phoneModel: '',
 			repairType: '',
 			technicianNum: '',
@@ -47,74 +56,36 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			status: true,
 		},
 		validate: (values) => {
-			const errors: {
-				phoneDetail?: string;
-				dateIn?: string;
-				billNumber?: string;
-				phoneModel?: string;
-				repairType?: string;
-				technicianNum?: string;
-				CustomerName?: string;
-				CustomerMobileNum?: string;
-				email?: string;
-				NIC?: string;
-				cost?: string;
-				Price?: string;
-				Status?: string;
-				DateOut?: string;
-			} = {};
-			if (!values.phoneDetail) {
-				errors.phoneDetail = 'Phone Detail is required.';
-			}
-			if (!values.dateIn) {
-				errors.dateIn = 'Date In is required.';
-			}
-			if (!values.billNumber) {
-				errors.billNumber = 'Bill Number is required.';
-			}
-			if (!values.phoneModel) {
-				errors.phoneModel = 'Phone Model is required.';
-			}
-			if (!values.repairType) {
-				errors.repairType = 'Repair Type is required.';
-			}
-			if (!values.technicianNum) {
-				errors.technicianNum = 'Technician No is required.';
-			}
-			if (!values.CustomerName) {
-				errors.CustomerName = 'Customer Name is required.';
-			}
-			if (!values.CustomerMobileNum) {
-				errors.CustomerMobileNum = 'Customer Mobile Number is required.';
-			}
-			if (!values.email) {
-				errors.email = 'Email is required.';
-			}else if (!values.email.includes('@')) {
-				errors.email = 'Invalid email format.';
-			}
-			if (!values.NIC) {
-				errors.NIC = 'Required';
-			} else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) {
-				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
-			}
-			if (!values.cost) {
-				errors.cost = 'Cost is required.';
-			}
-			if (!values.Price) {
-				errors.Price = 'Price is required.';
-			}
-			if (!values.Status) {
-				errors.Status = 'Status is required.';
-			}
-			if (!values.DateOut) {
-				errors.DateOut = 'Date Out is required.';
-			}
+			const errors: any = {};
+
+			// Field validations as before
+			if (!values.phoneDetail) errors.phoneDetail = 'Phone Detail is required.';
+			if (!values.dateIn) errors.dateIn = 'Date In is required.';
+			if (!values.billNumber) errors.billNumber = 'Bill Number is required.';
+			if (!values.phoneModel) errors.phoneModel = 'Phone Model is required.';
+			if (!values.repairType) errors.repairType = 'Repair Type is required.';
+			if (!values.technicianNum) errors.technicianNum = 'Technician No is required.';
+			if (!values.CustomerName) errors.CustomerName = 'Customer Name is required.';
+			if (!values.CustomerMobileNum) errors.CustomerMobileNum = 'Customer Mobile Number is required.';
+			if (values.CustomerMobileNum.length !== 10) errors.CustomerMobileNum = 'Mobile Number must be 10 digits';
+			if (!values.email) errors.email = 'Email is required.';
+			else if (!values.email.includes('@')) errors.email = 'Invalid email format.';
+			if (!values.NIC) errors.NIC = 'NIC is required.';
+			else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
+
+			// Ensure cost and price are greater than zero
+			if (!values.cost) errors.cost = 'Cost is required.';
+			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
+			if (!values.Price) errors.Price = 'Price is required.';
+			else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
+
+			if (!values.Status) errors.Status = 'Status is required.';
+			if (!values.DateOut) errors.DateOut = 'Date Out is required.';
 
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -124,20 +95,15 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				});
 
 				try {
-					// Add the new category
 					const response: any = await addBill(values).unwrap();
-					console.log(response);
-
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Bill Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -160,7 +126,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 	
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
@@ -209,17 +175,27 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='phoneModel' label='Phone Model' className='col-md-6'>
-						<Input
+						<Select
+							ariaLabel='Select phoneModel'
+							placeholder='Select a Phone Model'
 							onChange={formik.handleChange}
 							value={formik.values.phoneModel}
-							onBlur={formik.handleBlur}
+							name='phoneModel'
 							isValid={formik.isValid}
 							isTouched={formik.touched.phoneModel}
 							invalidFeedback={formik.errors.phoneModel}
 							validFeedback='Looks good!'
-						/>
+							disabled={modelsLoading || isError}>
+							<Option value=''>Select a phoneModel</Option>
+							{models?.map((model: any) => (
+								<Option key={model.index} value={model.name}>
+									{model.name}
+								</Option>
+							))}
+						</Select>
+						{modelsLoading ? <p>Loading models...</p> : <></>}
+						{modelsError ? <p>Error loading models. Please try again.</p> : <></>}
 					</FormGroup>
 					<FormGroup id='repairType' label='Repair Type' className='col-md-6'>
 						<Input
@@ -246,7 +222,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
 							{technicians?.map((technician: any) => (
-								<Option key={technician.id} value={technician.technicianNum}>
+								<Option key={technician.index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
 							))}
@@ -306,8 +282,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='cost' label='Cost' className='col-md-6'>
+					<FormGroup id='cost' label='Cost (lkr)' className='col-md-6'>
 						<Input
+							type='number'
 							onChange={formik.handleChange}
 							value={formik.values.cost}
 							onBlur={formik.handleBlur}
@@ -317,8 +294,9 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='Price' label='Price' className='col-md-6'>
+					<FormGroup id='Price' label='Price (lkr)' className='col-md-6'>
 						<Input
+							type='number'
 							onChange={formik.handleChange}
 							value={formik.values.Price}
 							onBlur={formik.handleBlur}
