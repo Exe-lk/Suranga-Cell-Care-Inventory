@@ -11,30 +11,45 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       case 'POST': {
         const { email, password } = req.body;
         if (!email || !password) {
-          res.status(400).json({ error: 'Email and password are required' });
-          return;
+            return res.status(400).json({ error: 'Email and password are required' });
         }
-        const user = await SignInUser(email, password);
-        res.status(201).json({ message: 'User created', user });
-        break;
-      }
+    
+        try {
+            const userPosition = await getUserPositionByEmail(email);
+            if (!userPosition) {
+                return res.status(404).json({ error: 'Email not found' });
+            }
+    
+            const signInResult = await SignInUser(email, password);
+            if (!signInResult) {
+                return res.status(401).json({ error: 'Incorrect password' });
+            }
+    
+            return res.status(200).json({ message: 'User logged in', user: signInResult });
+    
+        } catch (error) {
+            console.error('API Error:', error);
+            return res.status(500).json({ error: 'An internal server error occurred.' });
+        }
+    }
+    
+    
+    
       case 'GET': {
-        const {email} = req.body;
-        if (!email){
-          res.status(400).json({ error: 'Email is required' });
-          return;
+        const { email } = req.body;
+        if (!email) {
+          return res.status(400).json({ error: 'Email is required' });
         }
         const user = await getUserPositionByEmail(email);
-        res.status(200).json(user);
-        break;
+        return res.status(200).json(user);
       }
-      default: {
-        res.setHeader('Allow', ['POST','GET']);
-        res.status(405).end(`Method ${req.method} Not Allowed`);
-        break;
-      }
+
+      default:
+        res.setHeader('Allow', ['POST', 'GET']);
+        return res.status(405).end(`Method ${req.method} Not Allowed`);
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    console.error('API Error:', error);
+    return res.status(500).json({ error: 'An internal server error occurred.' });
   }
 }
