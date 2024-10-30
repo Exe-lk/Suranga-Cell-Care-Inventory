@@ -473,7 +473,7 @@ const Index: NextPage = () => {
 													: true,
 												)
 												.map((category:any) => (
-													<tr key={category.id}>
+													<tr key={category.index}>
 														<td>{category.name}</td>
 														<td>
 															<Button

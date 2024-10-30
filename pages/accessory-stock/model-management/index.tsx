@@ -481,7 +481,7 @@ const downloadTableAsSVG = async () => {
 													: true,
 												)
 												.map((model:any) => (
-													<tr key={model.id}>
+													<tr key={model.index}>
 														<td>{model.category}</td>
 														<td>{model.brand}</td>
 														<td>{model.name}</td>
