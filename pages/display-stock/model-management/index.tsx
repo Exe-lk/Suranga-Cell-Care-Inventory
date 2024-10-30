@@ -25,6 +25,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 // Define the interface for category data
@@ -47,6 +51,8 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModelsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateModel] = useUpdateModelMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
@@ -466,7 +472,7 @@ try {
 										}
 										{
 											models &&
-											models
+											dataPagination(models, currentPage, perPage)
 												.filter((model : any) =>
 													model.status === true 
 												)
@@ -513,6 +519,14 @@ try {
 								Recycle Bin</Button> 
 								
 							</CardBody>
+							<PaginationButtons
+								data={models}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 						
 			
@@ -521,7 +535,7 @@ try {
 			</Page>
 			<ModelAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
-			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };
