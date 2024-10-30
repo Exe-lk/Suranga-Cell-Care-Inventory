@@ -108,18 +108,19 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 				  default:
 					break;
 				}
-			  } else {
-				await Swal.fire({
-				  icon: 'error',
-				  title: 'Invalid Credentials',
-				  text: 'Username and password do not match. Please try again.',
-				});
 			  }
-			} catch (error) {
-			  console.error('Error occurred:', error);
-			  Swal.fire('Error', 'An unexpected error occurred', 'error');
-			}
-		  },
+			} catch (error: any) {
+				console.error('Login Error:', error);
+			
+				if (error.status === 404) {
+				  await Swal.fire('Error', 'Email not found. Please try again.', 'error');
+				} else if (error.status === 401) {
+				  await Swal.fire('Error', 'Password is incorrect. Please try again.', 'error');
+				} else {
+				  await Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
+				}
+			  }
+			},
 		});
 		
 	return (

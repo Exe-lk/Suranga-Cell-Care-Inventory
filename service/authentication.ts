@@ -19,19 +19,20 @@ export const SignInUser = async (email: string, password: string) => {
 
 export const getUserPositionByEmail = async (email: string) => {
   try {
-    const q = query(collection(firestore, 'UserManagement'), where('email', '==', email)); // Firestore query
-    const querySnapshot = await getDocs(q);
+      const q = query(collection(firestore, 'UserManagement'), where('email', '==', email));
+      const querySnapshot = await getDocs(q);
 
-    if (!querySnapshot.empty) {
-      const userData = querySnapshot.docs[0].data(); // Get the first matching document
-      return userData.role; // Assuming 'position' is the field name in Firestore
-    } else {
-      throw new Error('User not found');
-    }
+      if (querySnapshot.empty) {
+          return null; // No user found with this email
+      }
+
+      const userData = querySnapshot.docs[0].data();
+      return userData.role; // Return the role/position if found
   } catch (error) {
-    console.error('Error fetching user position:', error);
-    return null;
+      console.error('Error fetching user position:', error);
+      return null;
   }
 };
+
 
 export default SignInUser;
