@@ -42,6 +42,7 @@ const Index: NextPage = () => {
 		{ Status: 'completed' },
 		{ Status: 'reject' },
 		{ Status: 'in progress to complete' },
+		{ Status: 'HandOver'},
 	];
 	const inputRef = useRef<HTMLInputElement>(null);
 
