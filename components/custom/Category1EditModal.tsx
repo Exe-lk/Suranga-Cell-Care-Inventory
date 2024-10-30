@@ -10,47 +10,30 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-import { useGetCategory1ByIdQuery, useUpdateCategory1Mutation } from '../../redux/slices/category1ApiSlice';
+import { useGetCategories1Query, useUpdateCategory1Mutation } from '../../redux/slices/category1ApiSlice';
 
 // Define the props for the CategoryEditModal component
 interface CategoryEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
-	refetch(...args: unknown[]): unknown;
+	
 }
-interface Category {
-	cid: string;
-	name: string;
-	status?: boolean;
-}
+
 // CategoryEditModal component definition
-const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen , refetch }) => {
-	const [category, setCategory] = useState<Category>({
-		cid: '',
-		name: '',
-		status: true,
-	});
+const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  }) => {
+	const { data: categoryData, refetch } = useGetCategories1Query(undefined);
+    const [updateCategory , {isLoading}] = useUpdateCategory1Mutation();
 
-	const { data: categoryData, isSuccess } = useGetCategory1ByIdQuery(id);
-    const [updateCategory] = useUpdateCategory1Mutation();
-
-	useEffect(() => {
-        if (isOpen && isSuccess && categoryData) {
-            setCategory(categoryData);
-            // Update formik values
-            formik.setValues({
-                name: categoryData.name || '',
-            });
-        }
-    }, [isOpen,isSuccess, categoryData]);
+	const categoryToEdit = categoryData?.find((category:any) => category.id === id);
 
 	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
-			name: category.name,
+			name: categoryToEdit?.name || '',
 		
 		},
+		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				name?: string;
@@ -63,39 +46,53 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 		
 		onSubmit: async (values) => {
 			try {
-				const updatedData = {
-					...category, // Keep existing user data
-					...values, // Update with form values
-				};
-				await updateCategory({ id, ...updatedData }).unwrap();
-                refetch(); // Trigger refetch of stock keeper list after update
-                showNotification(
-                    <span className='d-flex align-items-center'>
-                        <Icon icon='Info' size='lg' className='me-1' />
-                        <span>Successfully Updated</span>
-                    </span>,
-                    'Category has been updated successfully'
-                );
-                Swal.fire('Updated!', 'Category has been updated successfully.', 'success');
-                formik.resetForm();
-                setIsOpen(false);
+				const process = Swal.fire({
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+
+				try {
+					// Update the category
+					console.log(values);
+					const data = {
+						name: values.name,
+						status: true,
+						id: id,
+					};
+					await updateCategory(data).unwrap();
+					refetch(); // Trigger refetch of stock keeper list after update
+
+					// Success feedback
+					await Swal.fire({
+						icon: 'success',
+						title: 'Category Updated Successfully',
+					});
+					formik.resetForm();
+                	setIsOpen(false);
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to update the category. Please try again.',
+					});
+				}
 			} catch (error) {
-				console.error('Error updating document: ', error);
-				alert('An error occurred while updating the document. Please try again later.');
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred during file upload. Please try again later.');
 			}
 		},
 	});
-
 	
 	
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
-					formik.setValues({
-						name: categoryData.name || '',
-					});
+					formik.resetForm();
 				}}
 				className='p-4'>
 				<ModalTitle id=''>{'Edit category'}</ModalTitle>

@@ -31,8 +31,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [updateDealer, { isLoading }] = useUpdateDealerMutation();
 
 	const dealerToEdit = dealers?.find((dealer: any) => dealer.id === id);
-
-
+	
 	const formik = useFormik({
 		initialValues: {
 			id: '',
@@ -145,7 +144,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	};
 	
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);

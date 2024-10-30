@@ -30,6 +30,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	// Dark mode
@@ -41,6 +45,8 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 
 	const {data: dealers,error, isLoading} = useGetDealersQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateDealer] = useUpdateDealerMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
@@ -463,7 +469,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{dealers &&
-											dealers
+											dataPagination(dealers, currentPage, perPage)
 												.filter((dealer: any) =>
 													searchTerm
 														? dealer.name
@@ -472,7 +478,7 @@ const downloadTableAsSVG = async () => {
 														: true,
 												)
 												.map((dealer: any) => (
-													<tr key={dealer.cid}>
+													<tr key={dealer.index}>
 														<td>{dealer.name}</td>
 														<td>
 															<ul>
@@ -517,6 +523,14 @@ const downloadTableAsSVG = async () => {
 								)}>
 								Recycle Bin</Button> 
 							</CardBody>
+							<PaginationButtons
+								data={dealers}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

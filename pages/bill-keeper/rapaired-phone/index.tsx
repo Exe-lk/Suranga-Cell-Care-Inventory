@@ -26,6 +26,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 const Index: NextPage = () => {
@@ -43,6 +47,8 @@ const Index: NextPage = () => {
 	];
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
@@ -485,7 +491,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter((bill: any) =>
 													searchTerm
 														? bill.billNumber
@@ -499,7 +505,7 @@ const downloadTableAsSVG = async () => {
 														: true,
 												)
 												.map((bill: any) => (
-													<tr key={bill.cid}>
+													<tr key={bill.index}>
 														<td>{bill.dateIn}</td>
 														<td>{getTechnicianName(bill.technicianNum)}</td>
 														<td>{bill.billNumber}</td>
@@ -514,6 +520,14 @@ const downloadTableAsSVG = async () => {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

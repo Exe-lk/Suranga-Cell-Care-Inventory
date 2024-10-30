@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
 	useDeleteBrand1Mutation,
 	useUpdateBrand1Mutation,
-	useGetDeleteBrands1Query
+	useGetDeleteBrands1Query,
 } from '../../redux/slices/brand1ApiSlice';
 
 interface BrandDeleteModalProps {
@@ -16,7 +16,12 @@ interface BrandDeleteModalProps {
 	refetchMainPage: () => void;
 }
 
-const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , refetchMainPage}) => {
+const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
+	id,
+	isOpen,
+	setIsOpen,
+	refetchMainPage,
+}) => {
 	const [deleteBrand] = useDeleteBrand1Mutation();
 	const [updateBrand] = useUpdateBrand1Mutation();
 	const { data: brands, error, isLoading, refetch } = useGetDeleteBrands1Query(undefined);
@@ -32,7 +37,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -41,7 +47,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			await deleteBrand(brand.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The Brand has been deleted.', 'success');
+					Swal.fire('Deleted!', 'The Brand has been permentaly deleted.', 'success');
 					refetch();
 				})
 				.catch((error) => {
@@ -93,7 +99,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all brands.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -102,7 +109,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			for (const brand of brands) {
 				await deleteBrand(brand.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All Brands have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All Brands have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -128,7 +135,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -137,10 +144,23 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 					<thead>
 						<tr>
 							<th>Brand name</th>
-                            
+
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!brands || brands.length === 0 || isLoading}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!brands || brands.length === 0 || isLoading}>Restore All</Button>
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={!brands || brands.length === 0 || isLoading}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={!brands || brands.length === 0 || isLoading}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -155,27 +175,29 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 								<td colSpan={2}>Error fetching brands.</td>
 							</tr>
 						)}
-						{brands && brands.length > 0 && brands.map((brand: any) => (
-							<tr key={brand.cid}>
-              <td>{brand.name}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(brand)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(brand)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{brands &&
+							brands.length > 0 &&
+							brands.map((brand: any) => (
+								<tr key={brand.index}>
+									<td>{brand.name}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(brand)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(brand)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

@@ -41,7 +41,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			await deleteModel(model.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The Model has been deleted.', 'success');
+					Swal.fire('Deleted!', 'The Model has been permentaly deleted.', 'success');
 					refetch();
 				})
 				.catch((error) => {
@@ -103,7 +103,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			for (const model of models) {
 				await deleteModel(model.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All models have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All models have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -129,7 +129,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -156,7 +156,7 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 							</tr>
 						)}
 						{models && models.length > 0 && models.map((model: any) => (
-							<tr key={model.cid}>
+							<tr key={model.index}>
               <td>{model.name}</td>
               <td>
                 <Button

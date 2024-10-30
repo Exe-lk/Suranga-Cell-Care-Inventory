@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
 	useDeleteStockKeeperMutation,
 	useUpdateStockKeeperMutation,
-	useGetDeleteStockKeepersQuery
+	useGetDeleteStockKeepersQuery,
 } from '../../redux/slices/stockKeeperApiSlice';
 
 interface StockTypeDeleteModalProps {
@@ -16,10 +16,20 @@ interface StockTypeDeleteModalProps {
 	refetchMainPage: () => void;
 }
 
-const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIsOpen , refetchMainPage }) => {
+const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
+	id,
+	isOpen,
+	setIsOpen,
+	refetchMainPage,
+}) => {
 	const [deleteStockKeeper] = useDeleteStockKeeperMutation();
 	const [updateStockKeeper] = useUpdateStockKeeperMutation();
-	const { data: stockKeepers, error, isLoading, refetch } = useGetDeleteStockKeepersQuery(undefined);
+	const {
+		data: stockKeepers,
+		error,
+		isLoading,
+		refetch,
+	} = useGetDeleteStockKeepersQuery(undefined);
 
 	useEffect(() => {
 		if (isOpen && stockKeepers) {
@@ -32,7 +42,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -41,7 +52,11 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 			await deleteStockKeeper(stockKeeper.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The Stock Keeper has been deleted.', 'success');
+					Swal.fire(
+						'Deleted!',
+						'The Stock Keeper has been permentaly deleted.',
+						'success',
+					);
 					refetch();
 				})
 				.catch((error) => {
@@ -92,7 +107,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all stock keepers.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -101,7 +117,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 			for (const stockKeeper of stockKeepers) {
 				await deleteStockKeeper(stockKeeper.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All Stock Keepers have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All Stock Keepers have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -126,7 +142,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 		}
 	};
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -135,10 +151,27 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 					<thead>
 						<tr>
 							<th>Stock Keeper Type </th>
-                            
+
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!stockKeepers || stockKeepers.length === 0 || isLoading}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!stockKeepers || stockKeepers.length === 0 || isLoading}>Restore All</Button>
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={
+										!stockKeepers || stockKeepers.length === 0 || isLoading
+									}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={
+										!stockKeepers || stockKeepers.length === 0 || isLoading
+									}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -153,27 +186,29 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({ id, isOpen, setIs
 								<td colSpan={2}>Error fetching stock keepers.</td>
 							</tr>
 						)}
-						{stockKeepers && stockKeepers.length > 0 && stockKeepers.map((stockKeeper: any) => (
-							<tr key={stockKeeper.cid}>
-              <td>{stockKeeper.type}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(stockKeeper)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(stockKeeper)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{stockKeepers &&
+							stockKeepers.length > 0 &&
+							stockKeepers.map((stockKeeper: any) => (
+								<tr key={stockKeeper.index}>
+									<td>{stockKeeper.type}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(stockKeeper)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(stockKeeper)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

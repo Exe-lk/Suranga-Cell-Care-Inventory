@@ -22,13 +22,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut, status } = req.body;
+        const { phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,cost,Price,Status,DateOut, status } = req.body;
         console.log(req.body)
         if (!phoneDetail) {
           res.status(400).json({ error: 'Phone Detail is required' });
           return;
         }
-        await updateBill(id as string, phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,Price,cost,Status,DateOut,status);
+        await updateBill(id as string, phoneDetail, dateIn, billNumber,phoneModel,repairType,technicianNum,CustomerName,CustomerMobileNum,email,NIC,cost,Price,Status,DateOut,status);
         res.status(200).json({ message: 'Bill updated' });
         break;
       }

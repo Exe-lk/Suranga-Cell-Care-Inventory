@@ -107,7 +107,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					await Swal.fire({
 						icon: 'error',
 						title: 'Error',
-						text: 'Failed to add the user. Please try again.',
+						text: 'Your Email or NIC is already in use',
 					});
 				}
 			} catch (error) {
@@ -125,7 +125,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);

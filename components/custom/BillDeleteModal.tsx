@@ -44,7 +44,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			if (inputText === 'DELETE') {
 				// Call the delete mutation from Redux
 				await deleteBill(bill.id).unwrap();
-				Swal.fire('Deleted!', 'The bill has been deleted.', 'success');
+				Swal.fire('Deleted!', 'The bill has been permentaly deleted.', 'success');
 
 				// Refetch categories to update the list
 				refetch();
@@ -119,7 +119,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				for (const bill of bills) {
 					await deleteBill(bill.id).unwrap();
 				}
-				Swal.fire('Deleted!', 'All bills have been deleted.', 'success');
+				Swal.fire('Deleted!', 'All bills have been permentaly deleted.', 'success');
 
 				// Refetch categories after deletion
 				refetch();
@@ -176,7 +176,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		}
 	};
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -218,7 +218,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						)}
 						{bills &&
 							bills.map((bill: any) => (
-								<tr key={bill.cid}>
+								<tr key={bill.index}>
 									<td>{bill.phoneDetail}</td>
 
 									<td>

@@ -1,4 +1,3 @@
-// pages/api/category.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   createUser,

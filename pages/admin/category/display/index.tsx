@@ -28,6 +28,10 @@ import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../../components/PaginationButtons';
 
 // Define the interface for category data
 interface Category {
@@ -48,6 +52,8 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategoryMutation();
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
@@ -459,7 +465,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{categories &&
-											categories
+											dataPagination(categories, currentPage, perPage)
 												.filter((category: any) => category.status === true) // Only active categories
 												.filter((category: any) =>
 													searchTerm
@@ -476,7 +482,7 @@ const downloadTableAsSVG = async () => {
 														category.name === 'Displays';
 
 													return (
-														<tr key={category.id}>
+														<tr key={category.index}>
 															<td>{category.name}</td>
 															<td>
 																<Button
@@ -523,6 +529,14 @@ const downloadTableAsSVG = async () => {
 									Recycle Bin
 								</Button>
 							</CardBody>
+							<PaginationButtons
+								data={categories}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
@@ -538,7 +552,6 @@ const downloadTableAsSVG = async () => {
 				setIsOpen={setEditModalStatus}
 				isOpen={editModalStatus}
 				id={id}
-				refetch={refetch}
 			/>
 		</PageWrapper>
 	);

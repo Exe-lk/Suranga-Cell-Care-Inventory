@@ -4,6 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import Button from '../components/bootstrap/Button';
 
+
 interface LogoutButtonProps {
   onLogout: () => void;
 }
@@ -12,6 +13,7 @@ const LogoutButton: React.FC<LogoutButtonProps> = ({ onLogout }) => {
   const router = useRouter();
 
   const handleLogout = () => {
+
     // Clear user information from session
     localStorage.removeItem('user');
 

@@ -24,12 +24,16 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import UserDeleteModal from '../../../components/custom/UserDeleteModal';
 import { useGetUsersQuery } from '../../../redux/slices/userManagementApiSlice';
-import { useUpdateUserMutation} from '../../../redux/slices/userManagementApiSlice';
+import { useUpdateUserMutation } from '../../../redux/slices/userManagementApiSlice';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 
@@ -46,7 +50,8 @@ interface User {
 }
 
 const Index: NextPage = () => {
-	// Dark mode
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
@@ -73,51 +78,52 @@ const Index: NextPage = () => {
 		// Attach event listener for keydown
 	}, [ users]);
 
-	//delete user
-	// Update the user's status to false instead of deleting
-	const handleClickDelete = async (user: any) => {
+	const handleClickDelete = async (user:any) => {
 		try {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
-				text: 'You will not be able to recover this user!',
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, delete it!',
-			});
-			if (result.isConfirmed) {
-				try {
-					// Set the user's status to false (soft delete)
-					await updateUser({
-						id: user.id,
-						name: user.name,
-						role: user.role,
-						nic: user.nic,
-						email: user.email,
-						mobile: user.mobile,
-						status: false,
-					});
-
-					// Refresh the list after deletion
-					Swal.fire('Deleted!', 'User has been deleted.', 'success');
-					refetch(); // This will refresh the list of users to reflect the changes
-				} catch (error) {
-					console.error('Error during handleDelete: ', error);
-					Swal.fire(
-						'Error',
-						'An error occurred during deletion. Please try again later.',
-						'error',
-					);
-				}
+		  const result = await Swal.fire({
+			title: 'Are you sure?',
+			text: 'You will not be able to recover this user!',
+			icon: 'warning',
+			showCancelButton: true,
+			confirmButtonColor: '#3085d6',
+			cancelButtonColor: '#d33',
+			confirmButtonText: 'Yes, delete it!',
+		  });
+	  
+		  if (result.isConfirmed) {
+			try {
+			  // Call the mutation with id and updatedUser separately
+			  await updateUser({
+				id: user.id,
+				name: user.name,
+				role: user.role,
+				nic: user.nic,
+				email: user.email,
+				mobile: user.mobile,
+				status: false,
+			  }).unwrap();
+	  
+			  // Success message and refetch
+			  Swal.fire('Deleted!', 'User has been deleted.', 'success');
+			  refetch(); // Refresh the list of users
+			} catch (error) {
+			  console.error('Error during handleDelete: ', error);
+			  Swal.fire(
+				'Error',
+				'An error occurred during deletion. Please try again later.',
+				'error'
+			  );
 			}
+		  }
 		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete user.', 'error');
+		  console.error('Error deleting document: ', error);
+		  Swal.fire('Error', 'Failed to delete user.', 'error');
 		}
-	};
+	  };
+	  
 
-// Function to handle the download in different formats
+	
+	// Function to handle the download in different formats
 const handleExport = async (format: string) => {
 	const table = document.querySelector('table');
 	if (!table) return;
@@ -540,7 +546,7 @@ try {
 											</tr>
 										)}
 										{users &&
-											users
+											dataPagination(users, currentPage, perPage)
 												.filter((user: any) => user.status === true) // Only show users where status is true
 												.filter((user: any) =>
 													searchTerm
@@ -555,7 +561,7 @@ try {
 														: true,
 												)
 												.map((user: any) => (
-													<tr key={user.id}>
+													<tr key={user.index}>
 														<td>{user.name}</td>
 														<td>{user.email}</td>
 														<td>{user.mobile}</td>
@@ -595,6 +601,14 @@ try {
 									Recycle Bin
 								</Button>
 							</CardBody>
+							<PaginationButtons
+								data={users}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
@@ -604,7 +618,7 @@ try {
 				setIsOpen={setEditModalStatus}
 				isOpen={editModalStatus}
 				id={id}
-				refetch={refetch} // Pass refetch function here
+				
 			/>
 
 			<UserDeleteModal

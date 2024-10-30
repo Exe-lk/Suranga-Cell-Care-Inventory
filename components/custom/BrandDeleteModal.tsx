@@ -41,7 +41,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			await deleteBrand(brand.id)
 				.unwrap()
 				.then(() => {
-					Swal.fire('Deleted!', 'The Brand has been deleted.', 'success');
+					Swal.fire('Deleted!', 'The Brand has been permentaly deleted.', 'success');
 					refetch();
 				})
 				.catch((error) => {
@@ -102,7 +102,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			for (const brand of brands) {
 				await deleteBrand(brand.id).unwrap();
 			}
-			Swal.fire('Deleted!', 'All Brands have been deleted.', 'success');
+			Swal.fire('Deleted!', 'All Brands have been permentaly deleted.', 'success');
 			refetch();
 		}
 	};
@@ -128,7 +128,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -156,7 +156,7 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 							</tr>
 						)}
 						{brands && brands.length > 0 && brands.map((brand: any) => (
-							<tr key={brand.cid}>
+							<tr key={brand.index}>
               <td>{brand.name}</td>
               <td>
                 <Button

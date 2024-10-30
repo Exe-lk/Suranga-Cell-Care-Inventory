@@ -26,6 +26,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 // Define the functional component for the index page
@@ -40,6 +44,8 @@ const Index: NextPage = () => {
 	const [updateBill] = useUpdateBillMutation();
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
@@ -105,9 +111,9 @@ const Index: NextPage = () => {
 					CustomerMobileNum: bill.CustomerMobileNum,
 					email: bill.email,
 					NIC: bill.NIC,
+					cost: bill.cost,
 					Price: bill.Price,
 					Status: bill.Status,
-					cost: bill.cost,
 					DateOut: bill.DateOut,
 					status: false,
 				};
@@ -201,7 +207,7 @@ const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 				const blob = new Blob([csvContent], { type: 'text/csv' });
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
+				link.download = 'Bill-management Report.csv';
 				link.click();
 	};
 	// PDF export function with table adjustments
@@ -378,7 +384,7 @@ const downloadTableAsPNG = async () => {
         // Create link element and trigger download
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'table_data.png';
+        link.download = 'Bill-management Report.png';
         link.click();
     } catch (error) {
         console.error('Error generating PNG: ', error);
@@ -411,7 +417,7 @@ const downloadTableAsSVG = async () => {
 
 		const link = document.createElement('a');
 		link.href = dataUrl;
-		link.download = 'table_data.svg';
+		link.download = 'Bill-management Report.svg';
 		link.click();
 	} catch (error) {
 		console.error('Error generating SVG: ', error);
@@ -607,7 +613,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter((bill: any) =>
 													searchTerm
 														? bill.NIC.toLowerCase().includes(
@@ -616,7 +622,7 @@ const downloadTableAsSVG = async () => {
 														: true,
 												)
 												.map((bill: any) => (
-													<tr key={bill.cid}>
+													<tr key={bill.index}>
 														<td>{bill.dateIn}</td>
 														<td>{bill.DateOut}</td>
 														<td>{bill.phoneDetail}</td>
@@ -671,6 +677,14 @@ const downloadTableAsSVG = async () => {
 									Recycle Bin
 								</Button>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
