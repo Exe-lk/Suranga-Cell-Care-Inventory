@@ -25,6 +25,10 @@ import {
 	useGetStockInOutsQuery,
 	useUpdateStockInOutMutation,
 } from '../../../redux/slices/stockInOutAcceApiSlice';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -33,6 +37,8 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -393,7 +399,7 @@ const Index: NextPage = () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
@@ -412,7 +418,7 @@ const Index: NextPage = () => {
 												)
 
 												.map((brand: any) => (
-													<tr key={brand.id}>
+													<tr key={brand.index}>
 														<td>{brand.date}</td>
 														<td>{brand.category}</td>
 														<td>{brand.brand}</td>
@@ -425,6 +431,14 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

@@ -10,6 +10,10 @@ import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import Barcode from 'react-barcode';
 import Swal from 'sweetalert2';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 import {
 	useGetStockInOutsQuery,
 } from '../../../redux/slices/stockInOutDissApiSlice';
@@ -20,6 +24,8 @@ const Index: NextPage = () => {
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [selectedDevice, setSelectedDevice] = useState<any>(null);
 	const [devices, setDevices] = useState<any>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -318,7 +324,7 @@ const Index: NextPage = () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
@@ -378,6 +384,14 @@ const Index: NextPage = () => {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

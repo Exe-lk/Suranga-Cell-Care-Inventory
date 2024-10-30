@@ -29,6 +29,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import autoTable from 'jspdf-autotable';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	// Dark mode
@@ -39,6 +43,8 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const { data: technicians, error, isLoading } = useGetTechniciansQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateTechnician] = useUpdateTechnicianMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
@@ -445,7 +451,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{technicians &&
-											technicians
+											dataPagination(technicians, currentPage, perPage)
 												.filter((technician: any) =>
 													searchTerm
 														? technician.name
@@ -490,6 +496,14 @@ const downloadTableAsSVG = async () => {
 								)}>
 								Recycle Bin</Button> 
 							</CardBody>
+							<PaginationButtons
+								data={technicians}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
