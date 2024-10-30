@@ -25,6 +25,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 // Define the interface for category data
@@ -45,6 +49,8 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateBrand] = useUpdateBrandMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
@@ -465,7 +471,7 @@ const downloadTableAsSVG = async () => {
 										}
 										{
 											brands &&
-											brands
+											dataPagination(brands, currentPage, perPage)
 												.filter((brand : any) =>
 													brand.status === true 
 												)
@@ -511,6 +517,14 @@ const downloadTableAsSVG = async () => {
 								Recycle Bin</Button> 
 								
 							</CardBody>
+							<PaginationButtons
+								data={brands}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 						
 			
@@ -519,7 +533,7 @@ const downloadTableAsSVG = async () => {
 			</Page>
 			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<BrandDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
-			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

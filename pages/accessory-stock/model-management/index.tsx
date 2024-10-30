@@ -24,6 +24,10 @@ import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 // Define the interface for category data
 
@@ -45,6 +49,8 @@ const Index: NextPage = () => {
 	const [status, setStatus] = useState(true); // State for managing data fetching status
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	// Function to handle deletion of a category
 	useEffect(() => {
@@ -381,7 +387,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										}
 										{
 											models &&
-											models
+											dataPagination(models, currentPage, perPage)
 												.filter((model : any) =>
 													model.status === true 
 												)
@@ -426,13 +432,21 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 								}}>
 								Recycle Bin</Button> 								
 							</CardBody>
+							<PaginationButtons
+								data={models}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
 			</Page>
 			<ModelAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ModelDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
-			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<ModelEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

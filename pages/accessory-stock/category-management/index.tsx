@@ -24,6 +24,10 @@ import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 // Define the interface for category data
 interface Category {
@@ -44,6 +48,8 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategories1Query(undefined);
 	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategory1Mutation();
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
@@ -372,7 +378,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										}
 										{
 											categories &&
-											categories
+											dataPagination(categories, currentPage, perPage)
 												.filter((category : any) =>
 													category.status === true 
 												)
@@ -414,13 +420,21 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 								}}>
 								Recycle Bin</Button> 								
 							</CardBody>
+							<PaginationButtons
+								data={categories}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>			
 					</div>
 				</div>
 			</Page>
 			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<CategoryDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch}/>
-			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} refetch={refetch} />
+			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };
