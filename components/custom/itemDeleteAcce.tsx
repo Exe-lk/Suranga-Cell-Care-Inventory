@@ -202,7 +202,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						)}
 						{ItemAcces &&
 							ItemAcces.map((itemAcce: any) => (
-								<tr key={itemAcce.cid}>
+								<tr key={itemAcce.index}>
 									<td>{itemAcce.model}</td>
 
 									<td>

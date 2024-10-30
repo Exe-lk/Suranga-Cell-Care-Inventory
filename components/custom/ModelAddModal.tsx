@@ -83,7 +83,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						brand: values.brand,
 						category: values.category,
 					}).unwrap();
-					console.log(response);
 
 					// Refetch models to update the list
 					refetch();
@@ -164,8 +163,8 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{categoriesError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string }) => (
-								<option key={category.id} value={category.name}>
+							{categories?.map((category: { id: string; name: string },index : any) => (
+								<option key={index} value={category.name}>
 									{category.name}
 								</option>
 							))}
@@ -192,8 +191,8 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a brand</option>
 							{brandsLoading && <option>Loading brands...</option>}
 							{isError && <option>Error fetching brands</option>}
-							{filteredBrands?.map((brand: { id: string; name: string }) => (
-								<option key={brand.id} value={brand.name}>
+							{filteredBrands?.map((brand: { id: string; name: string },index : any) => (
+								<option key={index} value={brand.name}>
 									{brand.name}
 								</option>
 							))}

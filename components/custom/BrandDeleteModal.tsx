@@ -155,8 +155,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 								<td colSpan={2}>Error fetching brands.</td>
 							</tr>
 						)}
-						{brands && brands.length > 0 && brands.map((brand: any) => (
-							<tr key={brand.index}>
+						{brands && brands.length > 0 && brands.map((brand: any,index : any) => (
+							<tr key={index}>
               <td>{brand.name}</td>
               <td>
                 <Button

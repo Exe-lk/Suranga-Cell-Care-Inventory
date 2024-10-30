@@ -207,8 +207,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</tr>
 						)}
 						{suppliers &&
-							suppliers.map((supplier: any) => (
-								<tr key={supplier.index}>
+							suppliers.map((supplier: any,index : any) => (
+								<tr key={index}>
 									<td>{supplier.name}</td>
 
 									<td>

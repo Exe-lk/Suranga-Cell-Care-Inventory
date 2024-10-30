@@ -471,8 +471,8 @@ try {
 													? category.name.toLowerCase().includes(searchTerm.toLowerCase())
 													: true,
 												)
-												.map((category:any) => (
-													<tr key={category.index}>
+												.map((category:any,index : any) => (
+													<tr key={index}>
 														<td>{category.name}</td>
 														<td>
 															<Button

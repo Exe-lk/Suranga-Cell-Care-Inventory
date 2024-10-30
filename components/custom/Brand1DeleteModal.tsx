@@ -177,8 +177,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 						)}
 						{brands &&
 							brands.length > 0 &&
-							brands.map((brand: any) => (
-								<tr key={brand.index}>
+							brands.map((brand: any,index : any) => (
+								<tr key={index}>
 									<td>{brand.name}</td>
 									<td>
 										<Button

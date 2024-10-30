@@ -155,8 +155,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 								<td colSpan={2}>Error fetching models.</td>
 							</tr>
 						)}
-						{models && models.length > 0 && models.map((model: any) => (
-							<tr key={model.index}>
+						{models && models.length > 0 && models.map((model: any,index : any) => (
+							<tr key={index}>
               <td>{model.name}</td>
               <td>
                 <Button

@@ -79,6 +79,10 @@ const Index: NextPage = () => {
 	}, [ users]);
 
 	const handleClickDelete = async (user:any) => {
+		if (user.role === 'admin') {
+			Swal.fire('Error', 'Admin users cannot be deleted.', 'error');
+			return;
+		}
 		try {
 		  const result = await Swal.fire({
 			title: 'Are you sure?',
@@ -560,8 +564,8 @@ try {
 														? selectedUsers.includes(user.role)
 														: true,
 												)
-												.map((user: any) => (
-													<tr key={user.index}>
+												.map((user: any,index : any) => (
+													<tr key={index}>
 														<td>{user.name}</td>
 														<td>{user.email}</td>
 														<td>{user.mobile}</td>

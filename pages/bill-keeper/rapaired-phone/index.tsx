@@ -57,7 +57,6 @@ const Index: NextPage = () => {
 	
 	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
 	const { data: technicians, error: techniciansError, isLoading: techniciansLoading } = useGetTechniciansQuery(undefined);
-	console.log('tech', technicians);
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
@@ -504,8 +503,8 @@ const downloadTableAsSVG = async () => {
 														? selectedUsers.includes(bill.Status)
 														: true,
 												)
-												.map((bill: any) => (
-													<tr key={bill.index}>
+												.map((bill: any,index : any) => (
+													<tr key={index}>
 														<td>{bill.dateIn}</td>
 														<td>{getTechnicianName(bill.technicianNum)}</td>
 														<td>{bill.billNumber}</td>

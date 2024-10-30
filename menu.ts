@@ -170,7 +170,7 @@ export const BillKeeperPagesMenu = {
 		subMenu: null,
 	},
 	Repaired: {
-		id: 'stock',
+		id: 'stock1',
 		text: 'Repaired Phone',
 		path: 'bill-keeper/rapaired-phone',
 		icon: 'AutoStories',
@@ -209,14 +209,14 @@ export const ViewPagesMenu = {
 		}
 	},
 	technician: {
-		id: 'stock',
+		id: 'stock2',
 		text: 'Technician Work',
 		path: 'viewer/technician-work',
 		icon: 'PermContactCalendar',
 		subMenu: null,
 	},
 	Phone: {
-		id: 'stock',
+		id: 'stock3',
 		text: 'Sold Items',
 		path: 'viewer/sold-items',
 		icon: 'AutoStories',
@@ -246,14 +246,14 @@ export const ViewPagesMenu = {
 		}
 	},
 	supplier: {
-		id: 'stock',
+		id: 'stock4',
 		text: 'Suppliers',
 		path: 'viewer/supplier',
 		icon: 'SupervisedUserCircle',
 		subMenu: null,
 	},
 	dealer: {
-		id: 'stock',
+		id: 'stock5',
 		text: 'Dealers',
 		path: 'viewer/dealer',
 		icon: 'SupervisedUserCircle',
@@ -269,7 +269,7 @@ export const addminPagesMenu = {
 		subMenu: null,
 	},
 	Stocktype: {
-		id: 'stock',
+		id: 'stock6',
 		text: 'Stock Keeper Type',
 		path: 'admin/stock-type',
 		icon: 'Store',

@@ -91,7 +91,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				try {
 					// Update the category
-					console.log(values);
 					const data = {
 						name: values.name,
 						item: values.item,

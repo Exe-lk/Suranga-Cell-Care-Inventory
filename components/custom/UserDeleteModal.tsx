@@ -157,8 +157,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 								<td colSpan={2}>Error fetching users.</td>
 							</tr>
 						)}
-						{users && users.length > 0 && users.map((user: any) => (
-							<tr key={user.index}>
+						{users && users.length > 0 && users.map((user: any,index : any) => (
+							<tr key={index}>
               <td>{user.name}</td>
               <td>
                 <Button

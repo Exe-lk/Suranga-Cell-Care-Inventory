@@ -621,8 +621,8 @@ const downloadTableAsSVG = async () => {
 														  )
 														: true,
 												)
-												.map((bill: any) => (
-													<tr key={bill.index}>
+												.map((bill: any,index : any) => (
+													<tr key={index}>
 														<td>{bill.dateIn}</td>
 														<td>{bill.DateOut}</td>
 														<td>{bill.phoneDetail}</td>

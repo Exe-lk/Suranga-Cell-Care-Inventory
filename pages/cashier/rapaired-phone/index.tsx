@@ -26,7 +26,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
-
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -35,6 +38,8 @@ const Index: NextPage = () => {
 	const [updateRepairedPhone] = useUpdaterepairedPhoneMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const filteredTransactions = bills?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date); // Parse the transaction date
@@ -155,7 +160,7 @@ const downloadTableAsCSV = (table: any) => {
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
-			link.download = 'table_data.csv';
+			link.download = 'Repaired Phones Report.csv';
 			link.click();
 };
 // PDF export function with table adjustments
@@ -246,7 +251,7 @@ try {
 		theme: 'grid',
 	});
 
-	pdf.save('Repaired-Phones Report.pdf');
+	pdf.save('Repaired Phones Report.pdf');
 } catch (error) {
 	console.error('Error generating PDF: ', error);
 	alert('Error generating PDF. Please try again.');
@@ -332,7 +337,7 @@ try {
 	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.png';
+	link.download = 'Repaired Phones Report.png';
 	link.click();
 } catch (error) {
 	console.error('Error generating PNG: ', error);
@@ -365,7 +370,7 @@ try {
 
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.svg';
+	link.download = 'Repaired Phones Report.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
@@ -457,7 +462,7 @@ try {
 
 									<tbody>
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter((bill: any) =>
 													searchTerm
 														? bill.billNumber
@@ -466,8 +471,8 @@ try {
 														: true,
 												)
 
-												.map((bill: any) => (
-													<tr key={bill.id}>
+												.map((bill: any,index : any) => (
+													<tr key={index}>
 														<td>{bill.dateIn}</td>
 														<td>{bill.technicianNum}</td>
 														<td>{bill.billNumber}</td>
@@ -501,6 +506,14 @@ try {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

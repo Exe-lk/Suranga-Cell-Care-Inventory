@@ -188,8 +188,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 							disabled={modelsLoading || isError}>
 							<Option value=''>Select a phoneModel</Option>
-							{models?.map((model: any) => (
-								<Option key={model.index} value={model.name}>
+							{models?.map((model: any,index : any) => (
+								<Option key={index} value={model.name}>
 									{model.name}
 								</Option>
 							))}
@@ -221,8 +221,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
-							{technicians?.map((technician: any) => (
-								<Option key={technician.index} value={technician.technicianNum}>
+							{technicians?.map((technician: any,index : any) => (
+								<Option key={index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
 							))}

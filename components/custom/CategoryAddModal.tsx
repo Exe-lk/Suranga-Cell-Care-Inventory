@@ -47,7 +47,6 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 				try {
 					// Add the new category
 					const response: any = await addCategory(values).unwrap();
-					console.log(response);
 
 					// Refetch categories to update the list
 					refetch();

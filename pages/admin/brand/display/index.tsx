@@ -478,8 +478,8 @@ const downloadTableAsSVG = async () => {
 													? brand.name.toLowerCase().includes(searchTerm.toLowerCase())
 													: true,
 												)
-												.map((brand:any) => (
-													<tr key={brand.index}>
+												.map((brand:any,index : any) => (
+													<tr key={index}>
 														<td>{brand.category}</td>
 														<td>{brand.name}</td>
 														<td>{brand.description}</td>

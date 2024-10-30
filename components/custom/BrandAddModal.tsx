@@ -64,13 +64,11 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					console.log(values.category);
 					// Add the new brand
 					const response: any = await addBrand({
 						...values,
 						category: values.category, // Pass category name instead of ID
 					}).unwrap();
-					console.log(response);
 
 					// Refetch brands to update the list
 					refetch();
@@ -126,8 +124,8 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{isError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string }) => (
-								<option key={category.id} value={category.name}> {/* Use name as value */}
+							{categories?.map((category: { id: string; name: string },index : any) => (
+								<option key={index} value={category.name}> {/* Use name as value */}
 									{category.name}
 								</option>
 							))}

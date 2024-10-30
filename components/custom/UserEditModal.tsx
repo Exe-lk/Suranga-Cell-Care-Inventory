@@ -75,7 +75,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				try {
 					// Update the category
-					console.log(values);
 					const data = {
 						name: values.name,
 						role: values.role,

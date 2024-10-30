@@ -26,6 +26,10 @@ import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png'; 
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode(); // Dark mode
@@ -35,6 +39,8 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
 	const [id, setId] = useState<string>(''); // State for current stock item ID
 	const {data: stockInOuts,error, isLoading} = useGetStockInOutsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const stock = [
 		{ stock: 'stockOut' },
@@ -44,25 +50,23 @@ const Index: NextPage = () => {
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
 	const filteredTransactions = stockInOuts?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
+		const transactionDate = new Date(trans.date); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
 	
-		// Apply date range filter if both start and end dates are selected
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		} 
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		} 
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
 	
-		return true; // Return all if no date range is selected
+		return true; 
 	});
+	
 	
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
@@ -124,7 +128,7 @@ const downloadTableAsCSV = (table: any) => {
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
-			link.download = 'table_data.csv';
+			link.download = 'Dispaly-transaction Report.csv';
 			link.click();
 };
 // PDF export function with table adjustments
@@ -301,7 +305,7 @@ try {
 	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.png';
+	link.download = 'Dispaly-transaction Report.png';
 	link.click();
 } catch (error) {
 	console.error('Error generating PNG: ', error);
@@ -334,7 +338,7 @@ try {
 
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.svg';
+	link.download = 'Dispaly-transaction Report.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
@@ -403,8 +407,19 @@ try {
 											))}
 										</ChecksGroup>
 									</FormGroup>
-									<FormGroup label='Date' className='col-6'>
-										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									<FormGroup label='Start Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setStartDate(e.target.value)}
+											value={startDate}
+										/>
+									</FormGroup>
+									<FormGroup label='End Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setEndDate(e.target.value)}
+											value={endDate}
+										/>
 									</FormGroup>
 								</div>
 							</div>
@@ -464,7 +479,7 @@ try {
 											</tr>
 										)}
 										{filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 												.filter((stockInOut: any) =>
 													searchTerm
 														? stockInOut.category
@@ -477,8 +492,8 @@ try {
 														? selectedUsers.includes(stockInOut.stock)
 														: true,
 												)
-												.map((stockInOut: any) => (
-													<tr key={stockInOut.cid}>
+												.map((stockInOut: any,index : any) => (
+													<tr key={index}>
 														<td>{stockInOut.date}</td>
 														<td>{stockInOut.category}</td>
 														<td>{stockInOut.brand}</td>
@@ -490,6 +505,14 @@ try {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>
