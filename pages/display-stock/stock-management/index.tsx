@@ -15,7 +15,10 @@ import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import StockAddModal from '../../../components/custom/ItemAddModal';
 import StockEditModal from '../../../components/custom/StockEditModal';
-
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 
 import Swal from 'sweetalert2';
@@ -36,6 +39,8 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>(''); // State for current category ID
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -474,7 +479,7 @@ try {
 										}
 										{
 											filteredTransactions &&
-											filteredTransactions
+											dataPagination(filteredTransactions, currentPage, perPage)
 											.filter((stockInOut: any) =>
 												searchTerm
 													? stockInOut.barcode
@@ -502,6 +507,14 @@ try {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredTransactions}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

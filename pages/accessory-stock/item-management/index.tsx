@@ -26,6 +26,10 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import { useUpdateItemAcceMutation} from '../../../redux/slices/itemManagementAcceApiSlice';
@@ -41,6 +45,8 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const {data: itemAcces,error, isLoading,refetch} = useGetItemAccesQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateItemAcce] = useUpdateItemAcceMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -433,7 +439,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 											</tr>
 										)}
 										{itemAcces &&
-											itemAcces
+											dataPagination(itemAcces, currentPage, perPage)
 										
 											.filter((itemAcces: any) =>
 												selectedUsers.length > 0
@@ -447,7 +453,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 											})
 											.map((itemAcces: any) => (
 												<tr 
-													key={itemAcces.cid}
+													key={itemAcces.index}
 												>
 													<td>{itemAcces.type}</td>
 													<td>{itemAcces.category}</td>
@@ -515,6 +521,14 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 								)}>
 								Recycle Bin</Button> 
 							</CardBody>
+							<PaginationButtons
+								data={itemAcces}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

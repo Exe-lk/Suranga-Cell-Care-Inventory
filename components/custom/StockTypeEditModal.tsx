@@ -72,7 +72,7 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}
 					// Success feedback
 					await Swal.fire({
 						icon: 'success',
-						title: 'Stock Type Updated Successfully',
+						title: 'Stock Keeper Type Updated Successfully',
 					});
 					formik.resetForm();
                 	setIsOpen(false);

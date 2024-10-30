@@ -66,6 +66,8 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 
 			if (!values.email) {
 				errors.email = 'Required';
+			}else if (!values.email.includes('@')) {
+				errors.email = 'Invalid email address';
 			}
 			if (!values.password) {
 				errors.password = 'Required';
