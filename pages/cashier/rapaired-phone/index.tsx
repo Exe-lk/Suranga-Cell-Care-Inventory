@@ -41,26 +41,25 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [endDate, setEndDate] = useState<string>(''); // State for end date
-	const filteredTransactions = bills?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
 	
-		// Apply date range filter if both start and end dates are selected
+	const filteredTransactions = bills?.filter((trans: any) => {
+		const transactionDate = new Date(trans.dateIn); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
+	
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		} 
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		} 
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
 	
-		return true; // Return all if no date range is selected
+		return true; 
 	});
+	
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
@@ -412,8 +411,19 @@ try {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Date' className='col-6'>
-										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+								<FormGroup label='Start Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setStartDate(e.target.value)}
+											value={startDate}
+										/>
+									</FormGroup>
+									<FormGroup label='End Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setEndDate(e.target.value)}
+											value={endDate}
+										/>
 									</FormGroup>
 								</div>
 							</div>
@@ -467,7 +477,10 @@ try {
 													searchTerm
 														? bill.billNumber
 																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
+																.includes(searchTerm.toLowerCase()) ||
+															bill.technicianNum
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase()) 
 														: true,
 												)
 

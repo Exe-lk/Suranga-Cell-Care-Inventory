@@ -42,7 +42,8 @@ const Index: NextPage = () => {
 		{ Status: 'in progress' },
 		{ Status: 'completed' },
 		{ Status: 'reject' },
-		{ Status: 'in progress to complete' }
+		{ Status: 'in progress to complete' },
+		{Status: 'HandOver'},
 
 	];
 	const [startDate, setStartDate] = useState<string>(''); // State for start date
@@ -71,26 +72,25 @@ const Index: NextPage = () => {
 		return technician ? technician.name : 'Unknown';
 	};
 
-	const filteredTransactions = bills?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
 	
-		// Apply date range filter if both start and end dates are selected
+	const filteredTransactions = bills?.filter((trans: any) => {
+		const transactionDate = new Date(trans.dateIn); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
+	
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		} 
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		} 
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
 	
-		return true; // Return all if no date range is selected
+		return true; 
 	});
+	
 	
 
 	// Function to handle the download in different formats
@@ -427,8 +427,19 @@ const downloadTableAsSVG = async () => {
 										
 									</FormGroup>
 
-									<FormGroup label='Date' className='col-6'>
-										<Input type='date' onChange={(e: any) => setStartDate(e.target.value)} value={startDate} />
+									<FormGroup label='Start Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setStartDate(e.target.value)}
+											value={startDate}
+										/>
+									</FormGroup>
+									<FormGroup label='End Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setEndDate(e.target.value)}
+											value={endDate}
+										/>
 									</FormGroup>
 								</div>
 							</div>
@@ -491,13 +502,13 @@ const downloadTableAsSVG = async () => {
 										)}
 										{filteredTransactions &&
 											dataPagination(filteredTransactions, currentPage, perPage)
-												.filter((bill: any) =>
-													searchTerm
-														? bill.billNumber
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
-														: true,
-												)
+											.filter((bill: any) => {
+												const technicianName = getTechnicianName(bill.technicianNum).toLowerCase();
+												return searchTerm
+													? bill.billNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+													  technicianName.includes(searchTerm.toLowerCase())
+													: true;
+											})
 												.filter((bill: any) =>
 													selectedUsers.length > 0
 														? selectedUsers.includes(bill.Status)

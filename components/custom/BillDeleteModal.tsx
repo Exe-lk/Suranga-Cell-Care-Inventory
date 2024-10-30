@@ -89,7 +89,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 
 				await updateBill(values);
 
-				Swal.fire('Restory!', 'The bill has been deleted.', 'success');
+				Swal.fire('Restored!', 'The bill has been restored.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -101,7 +101,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				text: 'Please type "DELETE ALL" to confirm deleting all bills',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
@@ -135,7 +135,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'This will restore all categories.',
+				text: 'This will restore all bills.',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',

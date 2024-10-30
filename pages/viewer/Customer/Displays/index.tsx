@@ -394,9 +394,13 @@ const downloadTableAsSVG = async () => {
 													searchTerm
 														? bill.NIC
 																.toLowerCase()
+																.includes(searchTerm.toLowerCase()) ||
+														  bill.CustomerName
+																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
+												  
 												.map((stockInOut: any,index : any) => (
 													<tr key={index}>
 														<td>{stockInOut.CustomerName}</td>

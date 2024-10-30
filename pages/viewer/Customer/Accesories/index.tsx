@@ -375,7 +375,10 @@ const downloadTableAsSVG = async () => {
 												searchTerm
 													? StockItem.nic
 															.toLowerCase()
-															.includes(searchTerm.toLowerCase())
+															.includes(searchTerm.toLowerCase()) ||
+														StockItem.customerName
+															.toLowerCase()
+															.includes(searchTerm.toLowerCase()) 
 													: true,
 											)
 										.map((stock: any,index : any) => (
