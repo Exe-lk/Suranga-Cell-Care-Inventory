@@ -93,7 +93,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				try {
 					// Add the new category
 					const response: any = await addDealer(values).unwrap();
-					console.log(response);
 
 					// Refetch categories to update the list
 					refetch();

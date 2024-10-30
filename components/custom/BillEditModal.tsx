@@ -289,8 +289,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
-							{technicians?.map((technician: any) => (
-								<Option key={technician.index} value={technician.technicianNum}>
+							{technicians?.map((technician: any,index : any) => (
+								<Option key={index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
 							))}

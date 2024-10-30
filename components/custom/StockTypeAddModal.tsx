@@ -52,7 +52,6 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 				try {
 					// Add the new category
 					const response: any = await addStockKeeper(values).unwrap();
-					console.log(response);
 
 					// Refetch categories to update the list
 					refetch();

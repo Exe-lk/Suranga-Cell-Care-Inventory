@@ -26,6 +26,10 @@ import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 
 
 const Index: NextPage = () => {
@@ -34,6 +38,8 @@ const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -100,7 +106,7 @@ const Index: NextPage = () => {
 				const blob = new Blob([csvContent], { type: 'text/csv' });
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
+				link.download = 'Dealer Report.csv';
 				link.click();
 	};
 	// PDF export function with table adjustments
@@ -130,7 +136,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
         pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
         // Add the table heading (title) in the top-right corner
-        const title = 'Rapaired-phones Report';
+        const title = 'Dealer Report';
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         const titleWidth = pdf.getTextWidth(title);
@@ -191,7 +197,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
             theme: 'grid',
         });
 
-        pdf.save('Rapaired-phones Report.pdf');
+        pdf.save('Dealer Report.pdf');
     } catch (error) {
         console.error('Error generating PDF: ', error);
         alert('Error generating PDF. Please try again.');
@@ -277,7 +283,7 @@ const downloadTableAsPNG = async () => {
         // Create link element and trigger download
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'table_data.png';
+        link.download = 'Dealer Report.png';
         link.click();
     } catch (error) {
         console.error('Error generating PNG: ', error);
@@ -310,7 +316,7 @@ const downloadTableAsSVG = async () => {
 
 		const link = document.createElement('a');
 		link.href = dataUrl;
-		link.download = 'table_data.svg';
+		link.download = 'Dealer Report.svg';
 		link.click();
 	} catch (error) {
 		console.error('Error generating SVG: ', error);
@@ -392,7 +398,7 @@ const downloadTableAsSVG = async () => {
 											</tr>
 										)}
 										{dealers &&
-											dealers
+											dataPagination(dealers, currentPage, perPage)
 												.filter((dealer: any) =>
 													searchTerm
 														? dealer.name
@@ -400,8 +406,8 @@ const downloadTableAsSVG = async () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((dealer: any) => (
-													<tr key={dealer.cid}>
+												.map((dealer: any,index : any) => (
+													<tr key={index}>
 														<td>{dealer.name}</td>
 														<td>
 															<ul>
@@ -420,6 +426,14 @@ const downloadTableAsSVG = async () => {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={dealers}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

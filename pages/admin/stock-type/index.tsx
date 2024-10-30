@@ -497,8 +497,8 @@ const Index: NextPage = () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((stockKeeper: any) => (
-													<tr key={stockKeeper.index}>
+												.map((stockKeeper: any,index : any) => (
+													<tr key={index}>
 														<td>{stockKeeper.type}</td>
 														<td>{stockKeeper.description}</td>
 														<td>

@@ -59,7 +59,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}
 
 				try {
 					// Update the category
-					console.log(values);
 					const data = {
 						type: values.type,
 						description: values.description,

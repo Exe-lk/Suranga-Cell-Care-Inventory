@@ -477,8 +477,8 @@ const downloadTableAsSVG = async () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((dealer: any) => (
-													<tr key={dealer.index}>
+												.map((dealer: any,index : any) => (
+													<tr key={index}>
 														<td>{dealer.name}</td>
 														<td>
 															<ul>

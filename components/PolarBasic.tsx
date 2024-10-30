@@ -28,6 +28,9 @@ const PolarBasic = () => {
 				opacity: 0.8,
 			},
 			labels: [], // Labels for the statuses
+			dataLabels: {
+				enabled: false, // Disable data labels
+			},
 			responsive: [
 				{
 					breakpoint: 480,
@@ -43,6 +46,8 @@ const PolarBasic = () => {
 			],
 		},
 	});
+	
+
 
 	// Effect to update chart data when bills are fetched
 	useEffect(() => {

@@ -17,6 +17,10 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import Button from '../../../../components/bootstrap/Button';
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../../components/PaginationButtons';
 
 
 const Index: NextPage = () => {
@@ -24,6 +28,8 @@ const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const { data: stockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
@@ -87,7 +93,7 @@ const Index: NextPage = () => {
 				const blob = new Blob([csvContent], { type: 'text/csv' });
 				const link = document.createElement('a');
 				link.href = URL.createObjectURL(blob);
-				link.download = 'table_data.csv';
+				link.download = 'Customer Accesory Report.csv';
 				link.click();
 	};
 	// PDF export function with table adjustments
@@ -117,7 +123,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
         pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
         // Add the table heading (title) in the top-right corner
-        const title = 'Rapaired-phones Report';
+        const title = 'Customer Accesory Report';
         pdf.setFontSize(16);
         pdf.setFont('helvetica', 'bold');
         const titleWidth = pdf.getTextWidth(title);
@@ -178,7 +184,7 @@ const downloadTableAsPDF = async (table: HTMLElement) => {
             theme: 'grid',
         });
 
-        pdf.save('Rapaired-phones Report.pdf');
+        pdf.save('Customer Accesory Report.pdf');
     } catch (error) {
         console.error('Error generating PDF: ', error);
         alert('Error generating PDF. Please try again.');
@@ -264,7 +270,7 @@ const downloadTableAsPNG = async () => {
         // Create link element and trigger download
         const link = document.createElement('a');
         link.href = dataUrl;
-        link.download = 'table_data.png';
+        link.download = 'Customer Accesory Report.png';
         link.click();
     } catch (error) {
         console.error('Error generating PNG: ', error);
@@ -297,7 +303,7 @@ const downloadTableAsSVG = async () => {
 
 		const link = document.createElement('a');
 		link.href = dataUrl;
-		link.download = 'table_data.svg';
+		link.download = 'Customer Accesory Report.svg';
 		link.click();
 	} catch (error) {
 		console.error('Error generating SVG: ', error);
@@ -364,7 +370,7 @@ const downloadTableAsSVG = async () => {
 									</thead>
 									<tbody>
 									{filteredStockInOuts &&
-											filteredStockInOuts
+											dataPagination(filteredStockInOuts, currentPage, perPage)
 											.filter((StockItem: any) =>
 												searchTerm
 													? StockItem.nic
@@ -372,8 +378,8 @@ const downloadTableAsSVG = async () => {
 															.includes(searchTerm.toLowerCase())
 													: true,
 											)
-										.map((stock: any) => (
-											<tr key={stock.id}>
+										.map((stock: any,index : any) => (
+											<tr key={index}>
 												<td>{stock.customerName}</td>
 												<td>{stock.mobile}</td>
 												<td>{stock.nic}</td>
@@ -383,6 +389,14 @@ const downloadTableAsSVG = async () => {
 									</tbody>
 								</table>
 							</CardBody>
+							<PaginationButtons
+								data={filteredStockInOuts}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

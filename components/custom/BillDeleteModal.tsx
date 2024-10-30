@@ -217,8 +217,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							</tr>
 						)}
 						{bills &&
-							bills.map((bill: any) => (
-								<tr key={bill.index}>
+							bills.map((bill: any,index : any) => (
+								<tr key={index}>
 									<td>{bill.phoneDetail}</td>
 
 									<td>

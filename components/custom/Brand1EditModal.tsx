@@ -69,8 +69,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Update the category
-					console.log(values);
 					const data = {
 						category: values.category,
 						name: values.name,
@@ -131,8 +129,8 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{isError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string }) => (
-								<option key={category.id} value={category.name}> {/* Use name as value */}
+							{categories?.map((category: { id: string; name: string },index : any) => (
+								<option key={index} value={category.name}> {/* Use name as value */}
 									{category.name}
 								</option>
 							))}

@@ -474,7 +474,7 @@ const downloadTableAsSVG = async () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((category: any, index: number) => {
+												.map((category: any, index: any) => {
 													// Disable Edit/Delete for specific categories
 													const disableButtons =
 														category.name === 'Touch Pad' ||
@@ -482,7 +482,7 @@ const downloadTableAsSVG = async () => {
 														category.name === 'Displays';
 
 													return (
-														<tr key={category.index}>
+														<tr key={index}>
 															<td>{category.name}</td>
 															<td>
 																<Button

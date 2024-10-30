@@ -25,6 +25,10 @@ import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem }from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf'; 
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import PaginationButtons, {
+	dataPagination,
+	PER_COUNT,
+} from '../../../components/PaginationButtons';
 import autoTable from 'jspdf-autotable';
 
 const Index: NextPage = () => {
@@ -34,6 +38,8 @@ const Index: NextPage = () => {
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [id, setId] = useState<string>('');
 	const {data: suppliers,error, isLoading} = useGetSuppliersQuery(undefined);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -98,7 +104,7 @@ const downloadTableAsCSV = (table: any) => {
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
-			link.download = 'table_data.csv';
+			link.download = 'Supplier Report.csv';
 			link.click();
 };
 // PDF export function with table adjustments
@@ -128,7 +134,7 @@ try {
 	pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
 	// Add the table heading (title) in the top-right corner
-	const title = 'Rapaired-phones Report';
+	const title = 'Supplier Report';
 	pdf.setFontSize(16);
 	pdf.setFont('helvetica', 'bold');
 	const titleWidth = pdf.getTextWidth(title);
@@ -189,7 +195,7 @@ try {
 		theme: 'grid',
 	});
 
-	pdf.save('Rapaired-phones Report.pdf');
+	pdf.save('Supplier Report.pdf');
 } catch (error) {
 	console.error('Error generating PDF: ', error);
 	alert('Error generating PDF. Please try again.');
@@ -275,7 +281,7 @@ try {
 	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.png';
+	link.download = 'Supplier Report.png';
 	link.click();
 } catch (error) {
 	console.error('Error generating PNG: ', error);
@@ -308,7 +314,7 @@ try {
 
 	const link = document.createElement('a');
 	link.href = dataUrl;
-	link.download = 'table_data.svg';
+	link.download = 'Supplier Report.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
@@ -387,7 +393,7 @@ try {
 											</tr>
 										)}
 										{suppliers &&
-											suppliers
+											dataPagination(suppliers, currentPage, perPage)
 												.filter((supplier: any) =>
 													searchTerm
 														? supplier.name
@@ -395,14 +401,14 @@ try {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((supplier: any) => (
-													<tr key={supplier.cid}>
+												.map((supplier: any,index : any) => (
+													<tr key={index}>
 														<td>{supplier.name}</td>
 														<td>
 															<ul>
 																{supplier.item?.map(
-																	(sub: any, index: any) => (
-																		<p>{sub}</p>
+																	(sub: any, subIndex: any) => (
+																		<p key={subIndex}>{sub}</p>
 																	),
 																)}
 															</ul>
@@ -415,6 +421,14 @@ try {
 								</table>
 								
 							</CardBody>
+							<PaginationButtons
+								data={suppliers}
+								label='parts'
+								setCurrentPage={setCurrentPage}
+								currentPage={currentPage}
+								perPage={perPage}
+								setPerPage={setPerPage}
+							/>
 						</Card>
 					</div>
 				</div>

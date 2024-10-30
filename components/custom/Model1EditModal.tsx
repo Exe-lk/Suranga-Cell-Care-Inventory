@@ -90,7 +90,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 				try {
 					// Update the category
-					console.log(values);
 					const data = {
 						name: values.name,
 						category: values.category,
@@ -162,8 +161,8 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{categoriesError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string }) => (
-								<option key={category.id} value={category.name}>
+							{categories?.map((category: { id: string; name: string },index : any) => (
+								<option key={index} value={category.name}>
 									{category.name}
 								</option>
 							))}
@@ -188,8 +187,8 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a brand</option>
 							{brandsLoading && <option>Loading brands...</option>}
 							{isError && <option>Error fetching brands</option>}
-							{filteredBrands?.map((brand: { id: string; name: string }) => (
-								<option key={brand.id} value={brand.name}>
+							{filteredBrands?.map((brand: { id: string; name: string },index : any) => (
+								<option key={index} value={brand.name}>
 									{brand.name}
 								</option>
 							))}

@@ -151,8 +151,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 								<td colSpan={2}>Error fetching categories.</td>
 							</tr>
 						)}
-						{categories && categories.length > 0 && categories.map((category: any) => (
-							<tr key={category.index}>
+						{categories && categories.length > 0 && categories.map((category: any,index : any) => (
+							<tr key={index}>
               <td>{category.name}</td>
               <td>
                 <Button
