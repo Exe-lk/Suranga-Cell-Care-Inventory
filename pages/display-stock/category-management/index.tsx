@@ -483,7 +483,7 @@ try {
 														category.name === 'Displays';
 
 													return (
-														<tr key={category.id}>
+														<tr key={category.index}>
 															<td>{category.name}</td>
 															<td>
 																<Button
