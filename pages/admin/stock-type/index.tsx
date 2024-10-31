@@ -32,7 +32,6 @@ import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
-// Define the interface for category data
 interface Category {
 	cid: string;
 	stockKeeperType: string;
@@ -40,15 +39,14 @@ interface Category {
 	status: boolean;
 }
 
-// Define the functional component for the index page
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [id, setId] = useState<string>(''); // State for current category ID
-	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [id, setId] = useState<string>('');
+	const [status, setStatus] = useState(true);
 	const { data: stockKeepers, error, isLoading, refetch } = useGetStockKeepersQuery(undefined);
 	const [updateStockKeeper] = useUpdateStockKeeperMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -59,11 +57,8 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
+	}, [stockKeepers]);
 
-		// Attach event listener for keydown
-	}, [ stockKeepers]);
-
-	// Function to handle deletion of a category
 	const handleClickDelete = async (stockKeeper: any) => {
 		try {
 			const result = await Swal.fire({
@@ -77,7 +72,6 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
-					// Set the user's status to false (soft delete)
 					await updateStockKeeper({
 						id: stockKeeper.id,
 						type: stockKeeper.type,
@@ -85,9 +79,8 @@ const Index: NextPage = () => {
 						status: false,
 					});
 
-					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Stock Keeper has been deleted.', 'success');
-					refetch(); // This will refresh the list of users to reflect the changes
+					refetch();
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
 					Swal.fire(
@@ -103,16 +96,13 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-		// Remove borders and hide last cells before exporting
 		modifyTableForExport(table as HTMLElement, true);
 
 		const clonedTable = table.cloneNode(true) as HTMLElement;
 
-		// Remove Edit/Delete buttons column from cloned table
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -144,11 +134,9 @@ const Index: NextPage = () => {
 		} catch (error) {
 			console.error('Error exporting table: ', error);
 		} finally {
-			// Restore table after export
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-	// Helper function to modify table by hiding last column and removing borders
 	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -163,7 +151,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -181,7 +168,6 @@ const Index: NextPage = () => {
 		link.download = 'Stock Keeper Type Report.csv';
 		link.click();
 	};
-	// PDF export
 	const downloadTableAsPDF = async (table: HTMLElement) => {
 		try {
 			const pdf = new jsPDF('p', 'pt', 'a4');
@@ -190,11 +176,9 @@ const Index: NextPage = () => {
 			const rows: any[] = [];
 			const headers: any[] = [];
 
-			// Draw a thin page border
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
 
-			// Add the logo in the top-left corner
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
@@ -202,12 +186,10 @@ const Index: NextPage = () => {
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
 
-			// Add small heading in the top left corner (below the logo)
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
-			// Add the table heading (title) in the top-right corner
 			const title = 'Manage-Stock-Keeper Type Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
@@ -215,20 +197,17 @@ const Index: NextPage = () => {
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
 
-			// Add the current date below the table heading
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
 
-			// Extract table headers
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
 
-			// Extract table rows
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -239,11 +218,9 @@ const Index: NextPage = () => {
 				});
 			}
 
-			// Adjust the table width and center it on the page
 			const tableWidth = pageWidth * 0.9;
 			const tableX = (pageWidth - tableWidth) / 2;
 
-			// Generate the table below the date
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -276,7 +253,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Helper function to load the image (logo) for the PDF
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -300,7 +276,6 @@ const Index: NextPage = () => {
 			};
 		});
 	};
-	// Helper function to hide the last cell of every row (including borders)
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -314,7 +289,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to restore the visibility and styles of the last cell
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -328,7 +302,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Function to export the table data in PNG format
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -340,7 +313,6 @@ const Index: NextPage = () => {
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
 
-			// Convert table to PNG
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
@@ -348,10 +320,8 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore original border style after capture
 			table.style.border = originalBorderStyle;
 
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Stock Keeper Type Report.png';
@@ -361,7 +331,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to export the table data in SVG format using html-to-image without cloning the table
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -370,7 +339,6 @@ const Index: NextPage = () => {
 				return;
 			}
 
-			// Hide last cells before export
 			hideLastCells(table);
 
 			const dataUrl = await toSvg(table, {
@@ -382,7 +350,6 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore the last cells after export
 			restoreLastCells(table);
 
 			const link = document.createElement('a');
@@ -391,18 +358,15 @@ const Index: NextPage = () => {
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
-			// Restore the last cells in case of error
 			const table = document.querySelector('table');
 			if (table) restoreLastCells(table);
 		}
 	};
 
-	// JSX for rendering the page
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -421,7 +385,6 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -434,7 +397,6 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -464,7 +426,6 @@ const Index: NextPage = () => {
 							</CardTitle>
 
 							<CardBody isScrollable className='table-responsive'>
-								{/* <table className='table table-modern table-hover'> */}
 								<table className='table table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary'}>
 										<tr>
@@ -497,7 +458,7 @@ const Index: NextPage = () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((stockKeeper: any,index : any) => (
+												.map((stockKeeper: any, index: any) => (
 													<tr key={index}>
 														<td>{stockKeeper.type}</td>
 														<td>{stockKeeper.description}</td>
@@ -555,11 +516,7 @@ const Index: NextPage = () => {
 				id=''
 				refetchMainPage={refetch}
 			/>
-			<StockTypeEditModal
-				setIsOpen={setEditModalStatus}
-				isOpen={editModalStatus}
-				id={id}
-			/>
+			<StockTypeEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

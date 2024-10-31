@@ -15,36 +15,26 @@ import { useGetBrands1Query } from '../../redux/slices/brand1ApiSlice';
 import Select from '../bootstrap/forms/Select';
 import { useGetCategories1Query } from '../../redux/slices/category1ApiSlice';
 
-// Define the props for the CategoryEditModal component
 interface ModelEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
 
-
-
 const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-
 	const { data: modelData, refetch } = useGetModels1Query(undefined);
-    const [updateModel , {isLoading}] = useUpdateModel1Mutation();
+	const [updateModel, { isLoading }] = useUpdateModel1Mutation();
 	const [filteredBrands, setFilteredBrands] = useState([]);
-	const {
-		data: brands,
-		isLoading: brandsLoading,
-		isError,
-	} = useGetBrands1Query(undefined);
-	
+	const { data: brands, isLoading: brandsLoading, isError } = useGetBrands1Query(undefined);
+
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
 		isError: categoriesError,
 	} = useGetCategories1Query(undefined);
 
-	const modelToEdit = modelData?.find((model:any) => model.id === id);
+	const modelToEdit = modelData?.find((model: any) => model.id === id);
 
-
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			id: '',
@@ -61,7 +51,7 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				brand?: string;
 				description?: string;
 			} = {};
-		
+
 			if (!values.name) {
 				errors.name = 'Required';
 			}
@@ -74,10 +64,10 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.description) {
 				errors.description = 'Required';
 			}
-		
+
 			return errors;
 		},
-		
+
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -89,7 +79,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Update the category
 					const data = {
 						name: values.name,
 						category: values.category,
@@ -99,15 +88,14 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateModel(data).unwrap();
-					refetch(); // Trigger refetch of stock keeper list after update
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Model Updated Successfully',
 					});
 					formik.resetForm();
-                	setIsOpen(false);
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -123,15 +111,14 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 	useEffect(() => {
 		if (formik.values.category) {
-			const categoryBrands = brands?.filter((brand: { category: string }) => 
-				brand.category === formik.values.category
+			const categoryBrands = brands?.filter(
+				(brand: { category: string }) => brand.category === formik.values.category,
 			);
 			setFilteredBrands(categoryBrands);
 		} else {
-			setFilteredBrands(brands); // If no category selected, show all brands
+			setFilteredBrands(brands);
 		}
 	}, [formik.values.category, brands]);
-
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -145,13 +132,13 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='category' label='Category' className='col-md-6'>
+					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
 							id='category'
 							name='category'
 							ariaLabel='category'
-							onChange={formik.handleChange} // This updates the value in formik
-							value={formik.values.category} // This binds the formik value to the selected option
+							onChange={formik.handleChange}
+							value={formik.values.category}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
 								formik.touched.category && formik.errors.category
@@ -161,16 +148,16 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{categoriesError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string },index : any) => (
-								<option key={index} value={category.name}>
-									{category.name}
-								</option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<option key={index} value={category.name}>
+										{category.name}
+									</option>
+								),
+							)}
 						</Select>
-
-						
 					</FormGroup>
-					
+
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
 						<Select
 							id='brand'
@@ -180,23 +167,21 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.brand}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
-								formik.touched.brand && formik.errors.brand
-									? 'is-invalid'
-									: ''
+								formik.touched.brand && formik.errors.brand ? 'is-invalid' : ''
 							}`}>
 							<option value=''>Select a brand</option>
 							{brandsLoading && <option>Loading brands...</option>}
 							{isError && <option>Error fetching brands</option>}
-							{filteredBrands?.map((brand: { id: string; name: string },index : any) => (
-								<option key={index} value={brand.name}>
-									{brand.name}
-								</option>
-							))}
+							{filteredBrands?.map(
+								(brand: { id: string; name: string }, index: any) => (
+									<option key={index} value={brand.name}>
+										{brand.name}
+									</option>
+								),
+							)}
 						</Select>
-
-						
 					</FormGroup>
-				<FormGroup id='name' label='Name' className='col-md-6'>
+					<FormGroup id='name' label='Name' className='col-md-6'>
 						<Input
 							name='name'
 							value={formik.values.name}
@@ -220,14 +205,9 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
-					
 				</div>
-				
-				
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Edit Model
 				</Button>
@@ -235,7 +215,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for CustomerEditModal component
 ModelEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

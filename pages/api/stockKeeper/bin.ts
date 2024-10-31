@@ -1,4 +1,3 @@
-// pages/api/category.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   createstockKeeper,
@@ -11,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { type,description } = req.body;
+        const { type, description } = req.body;
         if (!type) {
           res.status(400).json({ error: 'Stock Keeper type is required' });
           return;
         }
-        const id = await createstockKeeper(type,description);
+        const id = await createstockKeeper(type, description);
         res.status(201).json({ message: 'Stock Keeper created', id });
         break;
       }
@@ -28,12 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id,type,description,status } = req.body;
+        const { id, type, description, status } = req.body;
         if (!id || !type) {
           res.status(400).json({ error: 'Stock Keeper ID and type are required' });
           return;
         }
-        await updatestockKeeper(id,type,description,status);
+        await updatestockKeeper(id, type, description, status);
         res.status(200).json({ message: 'Stock Keeper updated' });
         break;
       }
@@ -56,6 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

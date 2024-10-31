@@ -19,19 +19,17 @@ interface StockTypeEditModalProps {
 	setIsOpen(...args: unknown[]): unknown;
 }
 
-
-const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}) => {
+const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: stockKeeperData, refetch } = useGetStockKeepersQuery(undefined);
-	const [updateStockKeeper,{isLoading}] = useUpdateStockKeeperMutation();
+	const [updateStockKeeper, { isLoading }] = useUpdateStockKeeperMutation();
 
 	const stockKeeperToEdit = stockKeeperData?.find((stockKeeper: any) => stockKeeper.id === id);
 
 	const formik = useFormik({
 		initialValues: {
-			id:'',
+			id: '',
 			type: stockKeeperToEdit?.type || '',
 			description: stockKeeperToEdit?.description || '',
-			
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -58,7 +56,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}
 				});
 
 				try {
-					// Update the category
 					const data = {
 						type: values.type,
 						description: values.description,
@@ -66,15 +63,14 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}
 						id: id,
 					};
 					await updateStockKeeper(data).unwrap();
-					refetch(); // Trigger refetch of stock keeper list after update
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Stock Keeper Type Updated Successfully',
 					});
 					formik.resetForm();
-                	setIsOpen(false);
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -88,8 +84,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen,setIsOpen}
 			}
 		},
 	});
-		
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>

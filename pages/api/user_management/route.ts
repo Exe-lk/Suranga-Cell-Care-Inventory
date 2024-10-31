@@ -1,21 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-    createUser,
-    getUser,
-    updateUser,
-    deleteUser,
+  createUser,
+  getUser,
+  updateUser,
+  deleteUser,
 } from '../../../service/userManagementService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     switch (req.method) {
       case 'POST': {
-        const { name,role,nic,email,mobile } = req.body;
+        const { name, role, nic, email, mobile } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Name is required' });
           return;
         }
-        const id = await createUser(name,role,nic,email,mobile);
+        const id = await createUser(name, role, nic, email, mobile);
         res.status(201).json({ message: 'User created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, status , name,role,nic,email,mobile} = req.body;
+        const { id, status, name, role, nic, email, mobile } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'User ID and name are required' });
           return;
         }
-        await updateUser(id,status,name,role,nic,email,mobile);
+        await updateUser(id, status, name, role, nic, email, mobile);
         res.status(200).json({ message: 'User updated' });
         break;
       }
@@ -53,6 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

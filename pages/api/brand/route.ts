@@ -1,21 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-    createBrand,
-    getBrand,
-    updateBrand,
-    deleteBrand,
+  createBrand,
+  getBrand,
+  updateBrand,
+  deleteBrand,
 } from '../../../service/brandService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     switch (req.method) {
       case 'POST': {
-        const { name,description,category } = req.body;
+        const { name, description, category } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Name is required' });
           return;
         }
-        const id = await createBrand(name,description,category);
+        const id = await createBrand(name, description, category);
         res.status(201).json({ message: 'Brand created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, status , name,description,category} = req.body;
+        const { id, status, name, description, category } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Brand ID and name are required' });
           return;
         }
-        await updateBrand(id,status,name,description,category);
+        await updateBrand(id, status, name, description, category);
         res.status(200).json({ message: 'Brand updated' });
         break;
       }
@@ -53,6 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

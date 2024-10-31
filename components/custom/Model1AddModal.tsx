@@ -1,4 +1,4 @@
-import React, { FC ,useEffect, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -19,15 +19,11 @@ interface ModelAddModalProps {
 }
 
 const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addModel , {isLoading}] = useAddModel1Mutation();
-	const {refetch} = useGetModels1Query(undefined);
+	const [addModel, { isLoading }] = useAddModel1Mutation();
+	const { refetch } = useGetModels1Query(undefined);
 	const [filteredBrands, setFilteredBrands] = useState([]);
-	const {
-		data: brands,
-		isLoading: brandsLoading,
-		isError,
-	} = useGetBrands1Query(undefined);
-	
+	const { data: brands, isLoading: brandsLoading, isError } = useGetBrands1Query(undefined);
+
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -38,7 +34,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			name: '',
 			category: '',
 			brand: '',
-            description:'',
+			description: '',
 			status: true,
 		},
 		validate: (values) => {
@@ -51,7 +47,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.description) {
 				errors.description = 'Required';
 			}
-            if (!values.name) {
+			if (!values.name) {
 				errors.name = 'Required';
 			}
 			if (!values.category) {
@@ -65,7 +61,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -73,25 +68,22 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
-					// Add the new category
 					const response: any = await addModel({
 						...values,
 						brand: values.brand,
 						category: values.category,
 					}).unwrap();
 
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Model Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					console.error('Error during handleSubmit: ', error);
 					await Swal.fire({
@@ -100,7 +92,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						text: 'Failed to add the model. Please try again.',
 					});
 				}
-				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				Swal.close;
@@ -110,12 +101,12 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 	useEffect(() => {
 		if (formik.values.category) {
-			const categoryBrands = brands?.filter((brand: { category: string }) => 
-				brand.category === formik.values.category
+			const categoryBrands = brands?.filter(
+				(brand: { category: string }) => brand.category === formik.values.category,
 			);
 			setFilteredBrands(categoryBrands);
 		} else {
-			setFilteredBrands(brands); // If no category selected, show all brands
+			setFilteredBrands(brands);
 		}
 	}, [formik.values.category, brands]);
 
@@ -131,13 +122,13 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='category' label='Category' className='col-md-6'>
+					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
 							id='category'
 							name='category'
 							ariaLabel='category'
-							onChange={formik.handleChange} // This updates the value in formik
-							value={formik.values.category} // This binds the formik value to the selected option
+							onChange={formik.handleChange}
+							value={formik.values.category}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
 								formik.touched.category && formik.errors.category
@@ -147,18 +138,22 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{categoriesError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string },index : any) => (
-								<option key={index} value={category.name}>
-									{category.name}
-								</option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<option key={index} value={category.name}>
+										{category.name}
+									</option>
+								),
+							)}
 						</Select>
 
 						{formik.touched.category && formik.errors.category ? (
 							<div className='invalid-feedback'>{formik.errors.category}</div>
-						) : <></>}
+						) : (
+							<></>
+						)}
 					</FormGroup>
-					
+
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
 						<Select
 							id='brand'
@@ -168,25 +163,27 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.brand}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
-								formik.touched.brand && formik.errors.brand
-									? 'is-invalid'
-									: ''
+								formik.touched.brand && formik.errors.brand ? 'is-invalid' : ''
 							}`}>
 							<option value=''>Select a brand</option>
 							{brandsLoading && <option>Loading brands...</option>}
 							{isError && <option>Error fetching brands</option>}
-							{filteredBrands?.map((brand: { id: string; name: string },index : any) => (
-								<option key={index} value={brand.name}>
-									{brand.name}
-								</option>
-							))}
+							{filteredBrands?.map(
+								(brand: { id: string; name: string }, index: any) => (
+									<option key={index} value={brand.name}>
+										{brand.name}
+									</option>
+								),
+							)}
 						</Select>
 
 						{formik.touched.brand && formik.errors.brand ? (
 							<div className='invalid-feedback'>{formik.errors.brand}</div>
-						) : <></>}
+						) : (
+							<></>
+						)}
 					</FormGroup>
-				<FormGroup id='name' label='Model Name' className='col-md-6'>
+					<FormGroup id='name' label='Model Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}
@@ -197,7 +194,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                    <FormGroup id='description' label='Description' className='col-md-6'>
+					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.description}
@@ -208,7 +205,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-                </div>
+				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit}>

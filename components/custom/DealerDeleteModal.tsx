@@ -50,11 +50,9 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 
 			if (inputText === 'DELETE') {
-				// Call the delete mutation from Redux
 				await deleteDealer(dealer.id).unwrap();
 				Swal.fire('Deleted!', 'The dealer has been permentaly deleted.', 'success');
 
-				// Refetch categories to update the list
 				refetch();
 			}
 		} catch (error) {
@@ -101,7 +99,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				Swal.fire('Error', 'No dealers available to delete.', 'error');
 				return;
 			}
-	
+
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
 				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
@@ -117,14 +115,13 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-	
+
 			if (inputText === 'DELETE ALL') {
 				for (const dealer of dealers) {
 					await deleteDealer(dealer.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All dealers have been permentaly deleted.', 'success');
-	
-				// Refetch categories after deletion
+
 				refetch();
 			}
 		} catch (error) {
@@ -132,14 +129,14 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Swal.fire('Error', 'Failed to delete all dealers.', 'error');
 		}
 	};
-	
+
 	const handleRestoreAll = async () => {
 		try {
 			if (!dealers || dealers.length === 0) {
 				Swal.fire('Error', 'No dealers available to restore.', 'error');
 				return;
 			}
-	
+
 			const result = await Swal.fire({
 				title: 'Are you sure?',
 				text: 'This will restore all dealers.',
@@ -149,13 +146,13 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-	
+
 			if (result.isConfirmed) {
 				for (const dealer of dealers) {
 					const values = {
 						id: dealer.id,
 						name: dealer.name,
-						status: true, // Assuming restoring means setting status to true
+						status: true,
 						item: dealer.item,
 						email: dealer.email,
 						address: dealer.address,
@@ -164,8 +161,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					await updateDealer(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All dealers have been restored.', 'success');
-	
-				// Refetch categories after restoring
+
 				refetch();
 			}
 		} catch (error) {
@@ -173,7 +169,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Swal.fire('Error', 'Failed to restore all dealers.', 'error');
 		}
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -181,8 +176,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-			<table className='table table-bordered border-primary  table-hover'>
-			<thead className={"table-dark border-primary"}>
+				<table className='table table-bordered border-primary  table-hover'>
+					<thead className={'table-dark border-primary'}>
 						<tr>
 							<th>Dealer</th>
 
@@ -218,7 +213,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</tr>
 						)}
 						{dealers &&
-							dealers.map((dealer: any,index : any) => (
+							dealers.map((dealer: any, index: any) => (
 								<tr key={index}>
 									<td>{dealer.name}</td>
 
@@ -244,7 +239,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</tbody>
 				</table>
 			</ModalBody>
-			
 		</Modal>
 	);
 };

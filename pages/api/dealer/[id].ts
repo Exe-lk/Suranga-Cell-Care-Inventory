@@ -22,13 +22,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { name, email,address,mobileNumber,item, status } = req.body;
+        const { name, email, address, mobileNumber, item, status } = req.body;
         console.log(req.body)
         if (!name) {
           res.status(400).json({ error: 'Dealer name is required' });
           return;
         }
-        await updateDealer(id as string, name, email,address,mobileNumber,item, status);
+        await updateDealer(id as string, name, email, address, mobileNumber, item, status);
         res.status(200).json({ message: 'Dealer updated' });
         break;
       }

@@ -18,7 +18,7 @@ const PieBasic = () => {
 				width: 380,
 				type: 'pie',
 			},
-			labels: [' Successful', 'Failed',],
+			labels: [' Successful', 'Failed'],
 			responsive: [
 				{
 					breakpoint: 480,
@@ -40,13 +40,9 @@ const PieBasic = () => {
 				<CardHeader>
 					<CardLabel icon='PieChart'>
 						<CardTitle>
-						Successful vs Failed barcode scans.<small>analytics</small>
+							Successful vs Failed barcode scans.<small>analytics</small>
 						</CardTitle>
-						{/* <CardSubTitle>Chart</CardSubTitle> */}
 					</CardLabel>
-					{/* <CardActions>
-						<CommonStoryBtn to='/story/extra-chart-pie-donut--pie-basic' />
-					</CardActions> */}
 				</CardHeader>
 				<CardBody>
 					<Chart

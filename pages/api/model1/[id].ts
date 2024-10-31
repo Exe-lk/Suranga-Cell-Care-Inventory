@@ -1,4 +1,3 @@
-// pages/api/category/[id].ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getModelById, updateModel, deleteModel } from '../../../service/Model1Service';
 
@@ -23,12 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { name,description,brand, category, status } = req.body;
+        const { name, description, brand, category, status } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Model name is required' });
           return;
         }
-        await updateModel(id as string, name,description, brand, category,status);
+        await updateModel(id as string, name, description, brand, category, status);
         res.status(200).json({ message: 'Model updated' });
         break;
       }

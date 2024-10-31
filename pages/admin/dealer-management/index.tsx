@@ -23,11 +23,11 @@ import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import SellerDeleteModal from '../../../components/custom/DealerDeleteModal';
-import { useUpdateDealerMutation} from '../../../redux/slices/delearApiSlice';
+import { useUpdateDealerMutation } from '../../../redux/slices/delearApiSlice';
 import { useGetDealersQuery } from '../../../redux/slices/delearApiSlice';
 import { toPng, toSvg } from 'html-to-image';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
-import jsPDF from 'jspdf'; 
+import { DropdownItem } from '../../../components/bootstrap/Dropdown';
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import PaginationButtons, {
@@ -36,7 +36,6 @@ import PaginationButtons, {
 } from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
-	// Dark mode
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
@@ -44,7 +43,7 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 
-	const {data: dealers,error, isLoading} = useGetDealersQuery(undefined);
+	const { data: dealers, error, isLoading } = useGetDealersQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateDealer] = useUpdateDealerMutation();
@@ -53,15 +52,11 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
-	}, [ dealers]);
-	//delete user
+	}, [dealers]);
 	const handleClickDelete = async (dealer: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -88,19 +83,15 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete dealer.', 'error');
 		}
 	};
-	
-	// Function to handle the download in different formats
+
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
 
-		// Remove borders and hide last cells before exporting
 		modifyTableForExport(table as HTMLElement, true);
-		
 
 		const clonedTable = table.cloneNode(true) as HTMLElement;
 
-		// Remove Edit/Delete buttons column from cloned table
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -108,12 +99,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+
 		try {
 			switch (format) {
 				case 'svg':
@@ -125,7 +114,7 @@ const Index: NextPage = () => {
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
 					break;
-				case 'pdf': 
+				case 'pdf':
 					await downloadTableAsPDF(clonedTable);
 					break;
 				default:
@@ -133,265 +122,240 @@ const Index: NextPage = () => {
 			}
 		} catch (error) {
 			console.error('Error exporting table: ', error);
-		}finally {
-			// Restore table after export
+		} finally {
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-	// Helper function to modify table by hiding last column and removing borders
-const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
-    const rows = table.querySelectorAll('tr');
-    rows.forEach((row) => {
-        const lastCell = row.querySelector('td:last-child, th:last-child');
-        if (lastCell instanceof HTMLElement) {
-            if (hide) {
-                lastCell.style.display = 'none';  
-            } else {
-                lastCell.style.display = '';  
-            }
-        }
-    });
-};
-
-	// function to export the table data in CSV format
-	const downloadTableAsCSV = (table: any) => {
-				let csvContent = '';
-				const rows = table.querySelectorAll('tr');
-				rows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td, th');
-					const rowData = Array.from(cols)
-						.map((col: any) => `"${col.innerText}"`)
-						.join(',');
-					csvContent += rowData + '\n';
-				});
-
-				const blob = new Blob([csvContent], { type: 'text/csv' });
-				const link = document.createElement('a');
-				link.href = URL.createObjectURL(blob);
-				link.download = 'Dealer Management Report.csv';
-				link.click();
+	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				if (hide) {
+					lastCell.style.display = 'none';
+				} else {
+					lastCell.style.display = '';
+				}
+			}
+		});
 	};
-	// PDF export function with table adjustments
-const downloadTableAsPDF = async (table: HTMLElement) => {
-    try {
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const rows: any[] = [];
-        const headers: any[] = [];
 
-        // Draw a thin page border
-        pdf.setLineWidth(1);
-        pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-        // Add the logo in the top-left corner
-        const logoData = await loadImage(bill); 
-        const logoWidth = 100; 
-        const logoHeight = 40; 
-        const logoX = 20; 
-        const logoY = 20; 
-        pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight); 
-
-        // Add small heading in the top left corner (below the logo)
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
-        // Add the table heading (title) in the top-right corner
-        const title = 'Dealer-Management Report';
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        const titleWidth = pdf.getTextWidth(title);
-        const titleX = pageWidth - titleWidth - 20;
-        pdf.text(title, titleX, 30); 
-
-        // Add the current date below the table heading
-        const currentDate = new Date().toLocaleDateString();
-        const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
-        pdf.setFontSize(12);
-        pdf.text(currentDate, dateX, 50); 
-
-        // Extract table headers
-        const thead = table.querySelector('thead');
-        if (thead) {
-            const headerCells = thead.querySelectorAll('th');
-            headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
-        }
-
-        // Extract table rows
-        const tbody = table.querySelector('tbody');
-        if (tbody) {
-            const bodyRows = tbody.querySelectorAll('tr');
-            bodyRows.forEach((row: any) => {
-                const cols = row.querySelectorAll('td');
-                const rowData = Array.from(cols).map((col: any) => col.innerText);
-                rows.push(rowData);
-            });
-        }
-
-        // Adjust the table width and center it on the page
-        const tableWidth = pageWidth * 0.85; 
-        const tableX = (pageWidth - tableWidth) / 2; 
-
-        // Generate the table below the date
-        autoTable(pdf, {
-            head: headers,
-            body: rows,
-            startY: 100, 
-            margin: { left: 20, right: 20 }, 
-            styles: {
-                fontSize: 8.5, 
-                overflow: 'linebreak',
-                cellPadding: 4, 
-            },
-            headStyles: {
-                fillColor: [80, 101, 166], 
-                textColor: [255, 255, 255],
-                fontSize: 9, 
-            },
-            columnStyles: {
-                0: { cellWidth: 'auto' }, 
-                1: { cellWidth: 'auto' }, 
-                2: { cellWidth: 'auto' }, 
-                3: { cellWidth: 'auto' }, 
-            },
-            tableWidth: 'wrap',
-            theme: 'grid',
-        });
-
-        pdf.save('Dealer Management Report.pdf');
-    } catch (error) {
-        console.error('Error generating PDF: ', error);
-        alert('Error generating PDF. Please try again.');
-    }
-};
-
-// Helper function to load the image (logo) for the PDF
-const loadImage = (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = url;
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(img, 0, 0);
-                const dataUrl = canvas.toDataURL('image/png'); 
-                resolve(dataUrl);
-            } else {
-                reject('Failed to load the logo image.');
-            }
-        };
-        img.onerror = () => {
-            reject('Error loading logo image.');
-        };
-    });
-};
-
-	  // Helper function to hide the last cell of every row (including borders)
-const hideLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'hidden';  
-			lastCell.style.border = 'none'; 
-			lastCell.style.padding = '0';  
-			lastCell.style.margin = '0';  
-		}
-	});
-};
-
-// Helper function to restore the visibility and styles of the last cell
-const restoreLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'visible'; 
-			lastCell.style.border = '';  
-			lastCell.style.padding = '';  
-			lastCell.style.margin = '';  
-		}
-	});
-};
-
-// Function to export the table data in PNG format
-const downloadTableAsPNG = async () => {
-    try {
-        const table = document.querySelector('table');
-        if (!table) {
-            console.error('Table element not found');
-            return;
-        }
-
-        const originalBorderStyle = table.style.border;
-        table.style.border = '1px solid black'; 
-
-        // Convert table to PNG
-        const dataUrl = await toPng(table, {
-            cacheBust: true,
-            style: {
-                width: table.offsetWidth + 'px',
-            },
-        });
-
-        // Restore original border style after capture
-        table.style.border = originalBorderStyle;
-
-        // Create link element and trigger download
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'Dealer Management Report.png';
-        link.click();
-    } catch (error) {
-        console.error('Error generating PNG: ', error);
-    }
-};
-
-// Function to export the table data in SVG format using html-to-image without cloning the table
-const downloadTableAsSVG = async () => {
-	try {
-		const table = document.querySelector('table');
-		if (!table) {
-			console.error('Table element not found');
-			return;
-		}
-
-		// Hide last cells before export
-		hideLastCells(table);
-
-		const dataUrl = await toSvg(table, {
-			backgroundColor: 'white',
-			cacheBust: true,
-			style: {
-				width: table.offsetWidth + 'px',
-				color: 'black',
-			},
+	const downloadTableAsCSV = (table: any) => {
+		let csvContent = '';
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row: any) => {
+			const cols = row.querySelectorAll('td, th');
+			const rowData = Array.from(cols)
+				.map((col: any) => `"${col.innerText}"`)
+				.join(',');
+			csvContent += rowData + '\n';
 		});
 
-		// Restore the last cells after export
-		restoreLastCells(table);
-
+		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
-		link.href = dataUrl;
-		link.download = 'Dealer Management Report.svg';
+		link.href = URL.createObjectURL(blob);
+		link.download = 'Dealer Management Report.csv';
 		link.click();
-	} catch (error) {
-		console.error('Error generating SVG: ', error);
-		// Restore the last cells in case of error
-		const table = document.querySelector('table');
-		if (table) restoreLastCells(table);
-	}
-};
+	};
+	const downloadTableAsPDF = async (table: HTMLElement) => {
+		try {
+			const pdf = new jsPDF('p', 'pt', 'a4');
+			const pageWidth = pdf.internal.pageSize.getWidth();
+			const pageHeight = pdf.internal.pageSize.getHeight();
+			const rows: any[] = [];
+			const headers: any[] = [];
+
+			pdf.setLineWidth(1);
+			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
+
+			const logoData = await loadImage(bill);
+			const logoWidth = 100;
+			const logoHeight = 40;
+			const logoX = 20;
+			const logoY = 20;
+			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
+
+			pdf.setFontSize(8);
+			pdf.setFont('helvetica', 'bold');
+			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
+
+			const title = 'Dealer-Management Report';
+			pdf.setFontSize(16);
+			pdf.setFont('helvetica', 'bold');
+			const titleWidth = pdf.getTextWidth(title);
+			const titleX = pageWidth - titleWidth - 20;
+			pdf.text(title, titleX, 30);
+
+			const currentDate = new Date().toLocaleDateString();
+			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
+			pdf.setFontSize(12);
+			pdf.text(currentDate, dateX, 50);
+
+			const thead = table.querySelector('thead');
+			if (thead) {
+				const headerCells = thead.querySelectorAll('th');
+				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+			}
+
+			const tbody = table.querySelector('tbody');
+			if (tbody) {
+				const bodyRows = tbody.querySelectorAll('tr');
+				bodyRows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td');
+					const rowData = Array.from(cols).map((col: any) => col.innerText);
+					rows.push(rowData);
+				});
+			}
+
+			const tableWidth = pageWidth * 0.85;
+			const tableX = (pageWidth - tableWidth) / 2;
+
+			autoTable(pdf, {
+				head: headers,
+				body: rows,
+				startY: 100,
+				margin: { left: 20, right: 20 },
+				styles: {
+					fontSize: 8.5,
+					overflow: 'linebreak',
+					cellPadding: 4,
+				},
+				headStyles: {
+					fillColor: [80, 101, 166],
+					textColor: [255, 255, 255],
+					fontSize: 9,
+				},
+				columnStyles: {
+					0: { cellWidth: 'auto' },
+					1: { cellWidth: 'auto' },
+					2: { cellWidth: 'auto' },
+					3: { cellWidth: 'auto' },
+				},
+				tableWidth: 'wrap',
+				theme: 'grid',
+			});
+
+			pdf.save('Dealer Management Report.pdf');
+		} catch (error) {
+			console.error('Error generating PDF: ', error);
+			alert('Error generating PDF. Please try again.');
+		}
+	};
+
+	const loadImage = (url: string): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.src = url;
+			img.crossOrigin = 'Anonymous';
+			img.onload = () => {
+				const canvas = document.createElement('canvas');
+				canvas.width = img.width;
+				canvas.height = img.height;
+				const ctx = canvas.getContext('2d');
+				if (ctx) {
+					ctx.drawImage(img, 0, 0);
+					const dataUrl = canvas.toDataURL('image/png');
+					resolve(dataUrl);
+				} else {
+					reject('Failed to load the logo image.');
+				}
+			};
+			img.onerror = () => {
+				reject('Error loading logo image.');
+			};
+		});
+	};
+
+	const hideLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'hidden';
+				lastCell.style.border = 'none';
+				lastCell.style.padding = '0';
+				lastCell.style.margin = '0';
+			}
+		});
+	};
+
+	const restoreLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'visible';
+				lastCell.style.border = '';
+				lastCell.style.padding = '';
+				lastCell.style.margin = '';
+			}
+		});
+	};
+
+	const downloadTableAsPNG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+
+			const originalBorderStyle = table.style.border;
+			table.style.border = '1px solid black';
+
+			const dataUrl = await toPng(table, {
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
+			});
+
+			table.style.border = originalBorderStyle;
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'Dealer Management Report.png';
+			link.click();
+		} catch (error) {
+			console.error('Error generating PNG: ', error);
+		}
+	};
+
+	const downloadTableAsSVG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+
+			hideLastCells(table);
+
+			const dataUrl = await toSvg(table, {
+				backgroundColor: 'white',
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+					color: 'black',
+				},
+			});
+
+			restoreLastCells(table);
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'Dealer Management Report.svg';
+			link.click();
+		} catch (error) {
+			console.error('Error generating SVG: ', error);
+			const table = document.querySelector('table');
+			if (table) restoreLastCells(table);
+		}
+	};
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input  */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -402,7 +366,6 @@ const downloadTableAsSVG = async () => {
 						type='search'
 						className='border-0 shadow-none bg-transparent'
 						placeholder='Search...'
-						// onChange={formik.handleChange}
 						onChange={(event: any) => {
 							setSearchTerm(event.target.value);
 						}}
@@ -411,7 +374,6 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					
 					<Button
 						icon='PersonAdd'
 						color='success'
@@ -424,30 +386,36 @@ const downloadTableAsSVG = async () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying user data */}
 						<Card stretch>
-						<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-primary'>Dealer Management</div>
+							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
+								<div className='flex-grow-1 text-center text-primary'>
+									Dealer Management
+								</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
-								
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>
+											Download SVG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('png')}>
+											Download PNG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>
+											Download PDF
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-bordered border-primary  table-hover'>
-								<thead className={"table-dark border-primary"}>
+									<thead className={'table-dark border-primary'}>
 										<tr>
 											<th>Dealer</th>
 											<th>Items</th>
@@ -458,7 +426,7 @@ const downloadTableAsSVG = async () => {
 										</tr>
 									</thead>
 									<tbody>
-									{isLoading && (
+										{isLoading && (
 											<tr>
 												<td>Loading...</td>
 											</tr>
@@ -477,7 +445,7 @@ const downloadTableAsSVG = async () => {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((dealer: any,index : any) => (
+												.map((dealer: any, index: any) => (
 													<tr key={index}>
 														<td>{dealer.name}</td>
 														<td>
@@ -496,10 +464,10 @@ const downloadTableAsSVG = async () => {
 															<Button
 																icon='Edit'
 																color='primary'
-																onClick={() =>(
+																onClick={() => (
 																	setEditModalStatus(true),
-																	setId(dealer.id))
-																}>
+																	setId(dealer.id)
+																)}>
 																Edit
 															</Button>
 															<Button
@@ -516,12 +484,12 @@ const downloadTableAsSVG = async () => {
 												))}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-									
-								)}>
-								Recycle Bin</Button> 
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => setDeleteModalStatus(true)}>
+									Recycle Bin
+								</Button>
 							</CardBody>
 							<PaginationButtons
 								data={dealers}

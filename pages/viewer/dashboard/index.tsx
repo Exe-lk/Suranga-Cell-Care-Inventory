@@ -10,20 +10,19 @@ import LineWithLabel1 from '../../../components/sock-monthly';
 import PieBasic1 from '../../../components/QRAnalatisk';
 import LineWithLabe2 from '../../../components/SalesAnalatisk';
 const Index: NextPage = () => {
-	
 	return (
 		<PageWrapper>
 			<Page>
-			<div className='flex-grow-1 text-right text-info'>Hi Viewer</div>
+				<div className='flex-grow-1 text-right text-info'>Hi Viewer</div>
 				<div className='row'>
-				<PieBasic />
-				<TypeAnalatisk/>	
-				<TypeAnalatisk1/>
-				<PolarBasic />
-				<LineWithLabel1 />
+					<PieBasic />
+					<TypeAnalatisk />
+					<TypeAnalatisk1 />
+					<PolarBasic />
+					<LineWithLabel1 />
 					<PieBasic1 />
-					<LineWithLabe2 />				
-				</div>				
+					<LineWithLabe2 />
+				</div>
 			</Page>
 		</PageWrapper>
 	);

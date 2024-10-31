@@ -12,13 +12,13 @@ import { useGetCategoriesQuery } from '../redux/slices/categoryApiSlice';
 import { useGetCategories1Query } from '../redux/slices/category1ApiSlice';
 
 const PieBasic = () => {
-	// Fetch categories data
-	const { data: categoriesData, isLoading: isCategoriesLoading } = useGetCategoriesQuery(undefined);
-	const { data: categories1Data, isLoading: isCategories1Loading } = useGetCategories1Query(undefined);
+	const { data: categoriesData, isLoading: isCategoriesLoading } =
+		useGetCategoriesQuery(undefined);
+	const { data: categories1Data, isLoading: isCategories1Loading } =
+		useGetCategories1Query(undefined);
 
-	// State for chart options
 	const [state, setState] = useState<IChartOptions>({
-		series: [0, 0], // Default series
+		series: [0, 0],
 		options: {
 			chart: {
 				width: 380,
@@ -41,21 +41,17 @@ const PieBasic = () => {
 		},
 	});
 
-	// Compute percentages and update chart when data is fetched
 	useEffect(() => {
 		if (!isCategoriesLoading && !isCategories1Loading && categoriesData && categories1Data) {
-			const accessoryCount = categories1Data.length; // Assuming categories1Data contains Accessory items
-			const displaysCount = categoriesData.length; // Assuming categoriesData contains Display items
+			const accessoryCount = categories1Data.length;
+			const displaysCount = categoriesData.length;
 
-			// Total count
 			const totalCount = accessoryCount + displaysCount;
 
-			// Calculate percentage for each category
 			const accessoryPercentage = ((accessoryCount / totalCount) * 100).toFixed(2);
 			const displaysPercentage = ((displaysCount / totalCount) * 100).toFixed(2);
 
-			// Update chart series
-			setState(prevState => ({
+			setState((prevState) => ({
 				...prevState,
 				series: [parseFloat(accessoryPercentage), parseFloat(displaysPercentage)],
 			}));

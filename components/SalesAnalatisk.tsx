@@ -10,9 +10,9 @@ import Chart, { IChartOptions } from '../components/extras/Chart';
 import { useGetItemAccesQuery } from '../redux/slices/itemManagementAcceApiSlice';
 
 const PieBasic = () => {
-	const { data: items, isLoading } = useGetItemAccesQuery(undefined); // Fetching items from API slice
+	const { data: items, isLoading } = useGetItemAccesQuery(undefined);
 	const [chartData, setChartData] = useState<IChartOptions>({
-		series: [0, 0], // Initial values
+		series: [0, 0],
 		options: {
 			chart: {
 				width: 380,
@@ -34,16 +34,14 @@ const PieBasic = () => {
 			],
 		},
 	});
-	const [totalCount, setTotalCount] = useState(0); // Total count of items
+	const [totalCount, setTotalCount] = useState(0);
 
-	// Effect to filter and count items
 	useEffect(() => {
 		if (items && !isLoading) {
 			const mobileCount = items.filter((item: any) => item.type === 'Mobile').length;
 			const accessoryCount = items.filter((item: any) => item.type === 'Accessory').length;
 			const total = mobileCount + accessoryCount;
 
-			// Update chart series and total count
 			setChartData((prevState) => ({
 				...prevState,
 				series: [mobileCount, accessoryCount],
@@ -73,7 +71,7 @@ const PieBasic = () => {
 								type={chartData.options.chart?.type}
 								width={chartData.options.chart?.width}
 							/>
-							<p>Total Items: {totalCount}</p> {/* Display total count */}
+							<p>Total Items: {totalCount}</p>
 						</>
 					)}
 				</CardBody>

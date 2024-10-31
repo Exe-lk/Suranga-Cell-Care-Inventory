@@ -1,4 +1,3 @@
-// pages/api/category/[id].ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getstockKeeperById, updatestockKeeper, deletestockKeeper } from '../../../service/stockKeeperService';
 
@@ -23,12 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { type,description, status } = req.body;
+        const { type, description, status } = req.body;
         if (!type) {
           res.status(400).json({ error: 'Stock Keeper type is required' });
           return;
         }
-        await updatestockKeeper(id as string, type,description, status);
+        await updatestockKeeper(id as string, type, description, status);
         res.status(200).json({ message: 'Stock Keeper updated' });
         break;
       }

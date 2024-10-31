@@ -22,13 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { type, mobileType , category , model,quantity,brand,reorderLevel,description, status } = req.body;
-        console.log(req.body)
+        const { type, mobileType, category, model, quantity, brand, reorderLevel, description, status } = req.body;
         if (!model) {
           res.status(400).json({ error: 'Model  is required' });
           return;
         }
-        await updateItemAcce(id as string,type, mobileType , category , model,quantity,brand,reorderLevel,description, status);
+        await updateItemAcce(id as string, type, mobileType, category, model, quantity, brand, reorderLevel, description, status);
         res.status(200).json({ message: 'Item Acce updated' });
         break;
       }

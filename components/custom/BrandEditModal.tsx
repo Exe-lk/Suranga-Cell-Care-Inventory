@@ -14,21 +14,16 @@ import { useGetBrandsQuery, useUpdateBrandMutation } from '../../redux/slices/br
 import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 import Select from '../bootstrap/forms/Select';
 
-// Define the props for the CategoryEditModal component
 interface BrandEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
 
-
-
 const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-
 	const { data: brandData, refetch } = useGetBrandsQuery(undefined);
-    const [updateBrand , {isLoading}] = useUpdateBrandMutation();
+	const [updateBrand, { isLoading }] = useUpdateBrandMutation();
 
-	// Fetch categories from categoryApiSlice
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -37,7 +32,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 
 	const brandToEdit = brandData?.find((brand: any) => brand.id === id);
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			id: '',
@@ -74,7 +68,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Update the category
 					const data = {
 						category: values.category,
 						name: values.name,
@@ -83,15 +76,14 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateBrand(data).unwrap();
-					refetch(); // Trigger refetch of stock keeper list after update
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Brand Updated Successfully',
 					});
 					formik.resetForm();
-                	setIsOpen(false);
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -105,7 +97,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
-	
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -118,13 +110,13 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='category' label='Category' className='col-md-6'>
+					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
 							id='category'
 							name='category'
 							ariaLabel='Category'
-							onChange={formik.handleChange} // This updates the value in formik
-							value={formik.values.category} // This binds the formik value to the selected option
+							onChange={formik.handleChange}
+							value={formik.values.category}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
 								formik.touched.category && formik.errors.category
@@ -134,13 +126,14 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{isError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string },index : any) => (
-								<option key={index} value={category.name}> {/* Use name as value */}
-									{category.name}
-								</option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<option key={index} value={category.name}>
+										{category.name}
+									</option>
+								),
+							)}
 						</Select>
-
 					</FormGroup>
 					<FormGroup id='name' label='Brand name' className='col-md-6'>
 						<Input
@@ -169,7 +162,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Edit Brand
 				</Button>
@@ -178,7 +170,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	);
 };
 
-// Prop types definition for CustomerEditModal component
 BrandEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

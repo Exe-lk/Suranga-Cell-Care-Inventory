@@ -10,23 +10,19 @@ import Button from '../bootstrap/Button';
 import Swal from 'sweetalert2';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
-import {
-	useGetUsersQuery,
-	useUpdateUserMutation,
-} from '../../redux/slices/userManagementApiSlice';
+import { useGetUsersQuery, useUpdateUserMutation } from '../../redux/slices/userManagementApiSlice';
 
 interface UserEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
-	
 }
 
 const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const{data:users,refetch}=useGetUsersQuery(undefined);
-	const [updateUser,{isLoading}] = useUpdateUserMutation();
+	const { data: users, refetch } = useGetUsersQuery(undefined);
+	const [updateUser, { isLoading }] = useUpdateUserMutation();
 
-	const userToEdit = users?.find((user:any) => user.id === id);
+	const userToEdit = users?.find((user: any) => user.id === id);
 
 	const formik = useFormik({
 		initialValues: {
@@ -39,7 +35,13 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		enableReinitialize: true,
 		validate: (values) => {
-			const errors: {name?: string; role?: string; mobile?: string; email?: string; nic?: string} = {};
+			const errors: {
+				name?: string;
+				role?: string;
+				mobile?: string;
+				email?: string;
+				nic?: string;
+			} = {};
 			if (!values.role) {
 				errors.role = 'Required';
 			}
@@ -74,7 +76,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Update the category
 					const data = {
 						name: values.name,
 						role: values.role,
@@ -85,15 +86,14 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateUser(data).unwrap();
-					refetch(); // Trigger refetch of stock keeper list after update
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'User Updated Successfully',
 					});
 					formik.resetForm();
-                	setIsOpen(false);
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -109,11 +109,10 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -161,11 +160,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						</Select>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobile}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, '');
 								formik.setFieldValue('mobile', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}

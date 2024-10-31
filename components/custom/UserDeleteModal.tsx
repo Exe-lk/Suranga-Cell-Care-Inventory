@@ -5,7 +5,7 @@ import Button from '../bootstrap/Button';
 import {
 	useDeleteUserMutation,
 	useUpdateUserMutation,
-	useGetDeleteUsersQuery
+	useGetDeleteUsersQuery,
 } from '../../redux/slices/userManagementApiSlice';
 
 interface UserDeleteModalProps {
@@ -31,7 +31,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -94,7 +95,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all users.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -134,15 +136,26 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-				<table className="table table-bordered border-primary table-modern table-hover">
+				<table className='table table-bordered border-primary table-modern table-hover'>
 					<thead>
 						<tr>
 							<th>User</th>
 							<th>
-								
-									<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!users || users.length === 0 || isLoading}>Delete All</Button>
-									<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!users || users.length === 0 || isLoading}>Restore All</Button>
-							
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={!users || users.length === 0 || isLoading}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={!users || users.length === 0 || isLoading}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -157,27 +170,29 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 								<td colSpan={2}>Error fetching users.</td>
 							</tr>
 						)}
-						{users && users.length > 0 && users.map((user: any,index : any) => (
-							<tr key={index}>
-              <td>{user.name}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(user)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(user)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{users &&
+							users.length > 0 &&
+							users.map((user: any, index: any) => (
+								<tr key={index}>
+									<td>{user.name}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(user)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(user)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

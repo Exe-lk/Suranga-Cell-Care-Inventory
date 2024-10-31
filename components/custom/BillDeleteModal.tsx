@@ -42,11 +42,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			});
 
 			if (inputText === 'DELETE') {
-				// Call the delete mutation from Redux
 				await deleteBill(bill.id).unwrap();
 				Swal.fire('Deleted!', 'The bill has been permentaly deleted.', 'success');
 
-				// Refetch categories to update the list
 				refetch();
 			}
 		} catch (error) {
@@ -84,7 +82,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					Status: bill.Status,
 					DateOut: bill.DateOut,
 					status: true,
-					
 				};
 
 				await updateBill(values);
@@ -121,7 +118,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				}
 				Swal.fire('Deleted!', 'All bills have been permentaly deleted.', 'success');
 
-				// Refetch categories after deletion
 				refetch();
 			}
 		} catch (error) {
@@ -130,7 +126,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		}
 	};
 
-	// Handle restore all categories
 	const handleRestoreAll = async () => {
 		try {
 			const result = await Swal.fire({
@@ -167,7 +162,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				}
 				Swal.fire('Restored!', 'All bills have been restored.', 'success');
 
-				// Refetch categories after restoring
 				refetch();
 			}
 		} catch (error) {
@@ -217,7 +211,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							</tr>
 						)}
 						{bills &&
-							bills.map((bill: any,index : any) => (
+							bills.map((bill: any, index: any) => (
 								<tr key={index}>
 									<td>{bill.phoneDetail}</td>
 

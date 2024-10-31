@@ -1,4 +1,3 @@
-// pages/api/category.ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   createBrand,
@@ -11,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { name,description,category } = req.body;
+        const { name, description, category } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Brand name is required' });
           return;
         }
-        const id = await createBrand(name,description,category);
+        const id = await createBrand(name, description, category);
         res.status(201).json({ message: 'Brand created', id });
         break;
       }
@@ -28,12 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id,name,description ,category,status } = req.body;
+        const { id, name, description, category, status } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Brand ID and name are required' });
           return;
         }
-        await updateBrand(id, name,description,category,status);
+        await updateBrand(id, name, description, category, status);
         res.status(200).json({ message: 'Brand updated' });
         break;
       }
@@ -56,6 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

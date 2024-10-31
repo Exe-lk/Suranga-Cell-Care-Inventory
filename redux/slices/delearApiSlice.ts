@@ -5,12 +5,10 @@ export const dealerApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Dealer'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getDealers: builder.query({
       query: () => 'dealer/route',
       providesTags: ['Dealer'],
     }),
-    // Fetch a single category by ID
     getDealerById: builder.query({
       query: (id) => `dealer/${id}`,
       providesTags: ['Dealer'],
@@ -46,7 +44,7 @@ export const dealerApiSlice = createApi({
 
 export const {
   useGetDealersQuery,
-  useGetDealerByIdQuery, 
+  useGetDealerByIdQuery,
   useGetDeleteDealersQuery,
   useAddDealerMutation,
   useUpdateDealerMutation,

@@ -1,49 +1,43 @@
 import { firestore } from '../firebaseConfig';
-import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where ,Timestamp} from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where, Timestamp } from 'firebase/firestore';
 
-export const createModel = async (name: string, description: string,brand:string, category:string) => {
+export const createModel = async (name: string, description: string, brand: string, category: string) => {
   const status = true;
   const timestamp = Timestamp.now();
-  const docRef = await addDoc(collection(firestore, 'ModelAccessory'), { name,description , brand, category,status,timestamp:timestamp });
+  const docRef = await addDoc(collection(firestore, 'ModelAccessory'), { name, description, brand, category, status, timestamp: timestamp });
   return docRef.id;
 };
 
 export const getModel = async () => {
-  // Create a query to get categories where status == true
   const q = query(collection(firestore, 'ModelAccessory'), where('status', '==', true));
 
-  // Execute the query and get the documents
   const querySnapshot = await getDocs(q);
 
-  // Map over the documents and return the data
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteModel = async () => {
-  // Create a query to get categories where status == true
   const q = query(collection(firestore, 'ModelAccessory'), where('status', '==', false));
 
-  // Execute the query and get the documents
   const querySnapshot = await getDocs(q);
 
-  // Map over the documents and return the data
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getModelById = async (id: string) => {
-  const ModelRef = doc(firestore, 'ModelAccessory', id); // Get the document reference
-  const ModelSnap = await getDoc(ModelRef); // Get the document snapshot
+  const ModelRef = doc(firestore, 'ModelAccessory', id);
+  const ModelSnap = await getDoc(ModelRef);
 
   if (ModelSnap.exists()) {
-    return { id: ModelSnap.id, ...ModelSnap.data() }; // Return the category data if it exists
+    return { id: ModelSnap.id, ...ModelSnap.data() };
   } else {
-    return null; // Return null if the category doesn't exist
+    return null;
   }
 };
 
-export const updateModel = async (id: string, name: string,description: string,brand:string, category:string,status:boolean) => {
+export const updateModel = async (id: string, name: string, description: string, brand: string, category: string, status: boolean) => {
   const ModelRef = doc(firestore, 'ModelAccessory', id);
-  await updateDoc(ModelRef, { name, description,brand, category, status });
+  await updateDoc(ModelRef, { name, description, brand, category, status });
 };
 
 export const deleteModel = async (id: string) => {

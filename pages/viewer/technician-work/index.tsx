@@ -32,8 +32,8 @@ import PaginationButtons, {
 } from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState('');
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const Status = [
@@ -42,13 +42,13 @@ const Index: NextPage = () => {
 		{ Status: 'completed' },
 		{ Status: 'reject' },
 		{ Status: 'in progress to complete' },
-		{ Status: 'HandOver'},
+		{ Status: 'HandOver' },
 	];
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [id, setId] = useState<string>(''); // State for current stock item ID
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [id, setId] = useState<string>('');
 
 	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
 	const {
@@ -59,26 +59,24 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 
-	const [startDate, setStartDate] = useState<string>(''); 
-	const [endDate, setEndDate] = useState<string>(''); 
+	const [startDate, setStartDate] = useState<string>('');
+	const [endDate, setEndDate] = useState<string>('');
 	const filteredTransactions = bills?.filter((trans: any) => {
-		const transactionDate = new Date(trans.dateIn); 
-		const start = startDate ? new Date(startDate) : null; 
-		const end = endDate ? new Date(endDate) : null; 
-	
+		const transactionDate = new Date(trans.dateIn);
+		const start = startDate ? new Date(startDate) : null;
+		const end = endDate ? new Date(endDate) : null;
+
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
-		} 
-		else if (start) {
+		} else if (start) {
 			return transactionDate >= start;
-		} 
-		else if (end) {
+		} else if (end) {
 			return transactionDate <= end;
 		}
-	
-		return true; 
+
+		return true;
 	});
-	
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
@@ -121,7 +119,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -139,7 +136,6 @@ const Index: NextPage = () => {
 		link.download = 'Technician Work Report.csv';
 		link.click();
 	};
-	// PDF export function with table adjustments
 	const downloadTableAsPDF = async (table: HTMLElement) => {
 		try {
 			const pdf = new jsPDF('p', 'pt', 'a4');
@@ -148,11 +144,9 @@ const Index: NextPage = () => {
 			const rows: any[] = [];
 			const headers: any[] = [];
 
-			// Draw a thin page border
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
 
-			// Add the logo in the top-left corner
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
@@ -160,12 +154,10 @@ const Index: NextPage = () => {
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
 
-			// Add small heading in the top left corner (below the logo)
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
-			// Add the table heading (title) in the top-right corner
 			const title = 'Technician Work Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
@@ -173,20 +165,17 @@ const Index: NextPage = () => {
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
 
-			// Add the current date below the table heading
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
 
-			// Extract table headers
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
 
-			// Extract table rows
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -197,11 +186,9 @@ const Index: NextPage = () => {
 				});
 			}
 
-			// Adjust the table width and center it on the page
 			const tableWidth = pageWidth * 0.9;
 			const tableX = (pageWidth - tableWidth) / 2;
 
-			// Generate the table below the date
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -234,7 +221,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Helper function to load the image (logo) for the PDF
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -259,7 +245,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to hide the last cell of every row (including borders)
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -273,7 +258,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to restore the visibility and styles of the last cell
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -287,7 +271,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Function to export the table data in PNG format
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -299,7 +282,6 @@ const Index: NextPage = () => {
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
 
-			// Convert table to PNG
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
@@ -307,10 +289,8 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore original border style after capture
 			table.style.border = originalBorderStyle;
 
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Technician Work Report.png';
@@ -320,7 +300,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to export the table data in SVG format using html-to-image without cloning the table
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -329,7 +308,6 @@ const Index: NextPage = () => {
 				return;
 			}
 
-			// Hide last cells before export
 			hideLastCells(table);
 
 			const dataUrl = await toSvg(table, {
@@ -341,7 +319,6 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore the last cells after export
 			restoreLastCells(table);
 
 			const link = document.createElement('a');
@@ -350,7 +327,6 @@ const Index: NextPage = () => {
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
-			// Restore the last cells in case of error
 			const table = document.querySelector('table');
 			if (table) restoreLastCells(table);
 		}
@@ -360,7 +336,6 @@ const Index: NextPage = () => {
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -402,14 +377,12 @@ const Index: NextPage = () => {
 													checked={selectedUsers.includes(bill.Status)}
 													onChange={(event: any) => {
 														const { checked, value } = event.target;
-														setSelectedUsers(
-															(prevUsers) =>
-																checked
-																	? [...prevUsers, value] // Add category if checked
-																	: prevUsers.filter(
-																			(bill) =>
-																				bill !== value,
-																	  ), // Remove category if unchecked
+														setSelectedUsers((prevUsers) =>
+															checked
+																? [...prevUsers, value]
+																: prevUsers.filter(
+																		(bill) => bill !== value,
+																  ),
 														);
 													}}
 												/>
@@ -434,14 +407,11 @@ const Index: NextPage = () => {
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-
-					{/* Button to open  New Item modal */}
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -509,7 +479,7 @@ const Index: NextPage = () => {
 														? selectedUsers.includes(bill.Status)
 														: true,
 												)
-												.map((bill: any,index : any) => (
+												.map((bill: any, index: any) => (
 													<tr key={index}>
 														<td>{bill.dateIn}</td>
 														<td>

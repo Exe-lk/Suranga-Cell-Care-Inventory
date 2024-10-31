@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-    createCategory,
-    getCategory,
-    updateCategory,
-    deleteCategory,
+  createCategory,
+  getCategory,
+  updateCategory,
+  deleteCategory,
 } from '../../../service/category1Service';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, status , name} = req.body;
+        const { id, status, name } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Category ID and name are required' });
           return;
         }
-        await updateCategory(id,status,name);
+        await updateCategory(id, status, name);
         res.status(200).json({ message: 'Category updated' });
         break;
       }
@@ -53,6 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

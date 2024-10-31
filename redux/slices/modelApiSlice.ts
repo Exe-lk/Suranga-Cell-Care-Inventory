@@ -5,21 +5,18 @@ export const modelApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Model'],
   endpoints: (builder) => ({
-    // Read: Fetch all users
     getModels: builder.query({
       query: () => 'model/route',
-      providesTags: ['Model'], 
+      providesTags: ['Model'],
     }),
-    // Get a user by ID
     getModelById: builder.query({
-      query: (id) => `model/${id}`, // Call endpoint with ID
-      providesTags: (result, error, id) => [{ type: 'Model', id }], // Cache invalidation
+      query: (id) => `model/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Model', id }],
     }),
     getDeleteModels: builder.query({
       query: () => 'model/bin',
       providesTags: ['Model'],
     }),
-    // Create: Add a new user
     addModel: builder.mutation({
       query: (newModel) => ({
         url: 'model/route',
@@ -28,7 +25,6 @@ export const modelApiSlice = createApi({
       }),
       invalidatesTags: ['Model'],
     }),
-    // Update: Update an existing user
     updateModel: builder.mutation({
       query: ({ id, ...updatedModel }) => ({
         url: `model/${id}`,
@@ -37,7 +33,6 @@ export const modelApiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Model', id }],
     }),
-    // Delete: Delete a user
     deleteModel: builder.mutation({
       query: (id) => ({
         url: `model/${id}`,
@@ -51,7 +46,7 @@ export const modelApiSlice = createApi({
 export const {
   useGetModelsQuery,
   useGetModelByIdQuery,
-  useGetDeleteModelsQuery,  // Export the hook for fetching by ID
+  useGetDeleteModelsQuery,
   useAddModelMutation,
   useUpdateModelMutation,
   useDeleteModelMutation,

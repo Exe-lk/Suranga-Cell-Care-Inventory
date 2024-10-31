@@ -8,27 +8,22 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { collection, addDoc } from 'firebase/firestore';
-import { firestore, storage,auth } from '../../firebaseConfig';
+import { firestore, storage, auth } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import {
-	useUpdateBillMutation,
-	useGetBillsQuery,
-} from '../../redux/slices/billApiSlice';
+import { useUpdateBillMutation, useGetBillsQuery } from '../../redux/slices/billApiSlice';
 import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
 
-// Define the props for the UserAddModal component
 interface UserAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-// UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const { data: bills ,refetch} = useGetBillsQuery(undefined);
+	const { data: bills, refetch } = useGetBillsQuery(undefined);
 	const [updateBill, { isLoading }] = useUpdateBillMutation();
 	const {
 		data: technicians,
@@ -57,9 +52,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Status: billToEdit?.Status || '',
 			DateOut: billToEdit?.DateOut || '',
 		},
-		enableReinitialize: true, // This allows the form to reinitialize when categoryToEdit changes
+		enableReinitialize: true,
 		validate: (values) => {
-			const errors: { 
+			const errors: {
 				phoneDetail?: string;
 				dateIn?: string;
 				billNumber?: string;
@@ -98,12 +93,12 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.CustomerMobileNum) {
 				errors.CustomerMobileNum = 'Customer Mobile Num is required';
-			}else if (values.CustomerMobileNum.length !== 10) {
+			} else if (values.CustomerMobileNum.length !== 10) {
 				errors.CustomerMobileNum = 'Mobile number must be exactly 10 digits';
 			}
 			if (!values.email) {
 				errors.email = 'email is required';
-			}else if(!values.email.includes('@')) {
+			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
 			if (!values.NIC) {
@@ -113,17 +108,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.Price) {
 				errors.Price = 'Price is required';
-			}else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
+			} else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
 			if (!values.cost) {
 				errors.cost = 'cost is required';
-			}else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
+			} else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Status) {
 				errors.Status = 'Status is required';
 			}
 			if (!values.DateOut) {
 				errors.DateOut = 'Date Out is required';
 			}
-
 
 			return errors;
 		},
@@ -138,7 +132,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Update the category
 					console.log(values);
 					const data = {
 						phoneDetail: values.phoneDetail,
@@ -159,15 +152,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateBill(data).unwrap();
-					refetch(); // Refetch the data to update the UI
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Bill Updated Successfully',
 					});
-					formik.resetForm(); // Reset the form
-					setIsOpen(false); // Close the modal after successful update
+					formik.resetForm();
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -183,11 +175,10 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -201,10 +192,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup
-						id='phoneDetail'
-						label='Phone Detail'
-						className='col-md-6'>
+					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
 						<Input
 							name='phoneDetail'
 							onChange={formik.handleChange}
@@ -216,10 +204,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='dateIn'
-						label='Date In'
-						className='col-md-6'>
+					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
 						<Input
 							name='dateIn'
 							onChange={formik.handleChange}
@@ -231,10 +216,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='billNumber'
-						label='Bill Number'
-						className='col-md-6'>
+					<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
 						<Input
 							name='billNumber'
 							onChange={formik.handleChange}
@@ -246,10 +228,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='phoneModel'
-						label='Phone Model'
-						className='col-md-6'>
+					<FormGroup id='phoneModel' label='Phone Model' className='col-md-6'>
 						<Input
 							name='phoneModel'
 							onChange={formik.handleChange}
@@ -261,10 +240,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='repairType'
-						label='Repair Type'
-						className='col-md-6'>
+					<FormGroup id='repairType' label='Repair Type' className='col-md-6'>
 						<Input
 							name='repairType'
 							onChange={formik.handleChange}
@@ -289,7 +265,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
-							{technicians?.map((technician: any,index : any) => (
+							{technicians?.map((technician: any, index: any) => (
 								<Option key={index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
@@ -298,10 +274,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						{techniciansLoading ? <p>Loading technicians...</p> : <></>}
 						{isError ? <p>Error loading technicians. Please try again.</p> : <></>}
 					</FormGroup>
-					<FormGroup
-						id='CustomerName'
-						label='Customer Name'
-						className='col-md-6'>
+					<FormGroup id='CustomerName' label='Customer Name' className='col-md-6'>
 						<Input
 							name='CustomerName'
 							onChange={formik.handleChange}
@@ -321,8 +294,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							type='text'
 							value={formik.values.CustomerMobileNum}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
-								formik.setFieldValue('CustomerMobileNum', formatMobileNumber(input));
+								const input = e.target.value.replace(/\D/g, '');
+								formik.setFieldValue(
+									'CustomerMobileNum',
+									formatMobileNumber(input),
+								);
 							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
@@ -331,10 +307,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='email'
-						label='Email'
-						className='col-md-6'>
+					<FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
 							name='email'
 							onChange={formik.handleChange}
@@ -346,10 +319,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='NIC'
-						label='NIC'
-						className='col-md-6'>
+					<FormGroup id='NIC' label='NIC' className='col-md-6'>
 						<Input
 							name='NIC'
 							onChange={formik.handleChange}
@@ -361,11 +331,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
-					<FormGroup
-						id='cost'
-						label='Cost'
-						className='col-md-6'>
+
+					<FormGroup id='cost' label='Cost' className='col-md-6'>
 						<Input
 							name='cost'
 							onChange={formik.handleChange}
@@ -377,10 +344,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup
-						id='Price'
-						label='Price'
-						className='col-md-6'>
+					<FormGroup id='Price' label='Price' className='col-md-6'>
 						<Input
 							name='Price'
 							onChange={formik.handleChange}
@@ -402,8 +366,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={!!formik.touched.Status}
 							invalidFeedback={formik.errors.Status}
-							validFeedback='Looks good!'
-						>
+							validFeedback='Looks good!'>
 							<Option value=''>Select the Status</Option>
 							<Option value='waiting to in progress'>waiting to in progress</Option>
 							<Option value='in progress'>in progress</Option>
@@ -412,10 +375,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value='in progress to complete'>Hand Over to cashier</Option>
 						</Select>
 					</FormGroup>
-					<FormGroup
-						id='DateOut'
-						label='Date Out'
-						className='col-md-6'>
+					<FormGroup id='DateOut' label='Date Out' className='col-md-6'>
 						<Input
 							name='DateOut'
 							onChange={formik.handleChange}
@@ -427,13 +387,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
-					
-					
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Edit Bill
 				</Button>
@@ -441,7 +397,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for UserAddModal component
 UserAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

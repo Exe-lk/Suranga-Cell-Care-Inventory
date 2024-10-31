@@ -5,21 +5,18 @@ export const category1ApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Category1'],
   endpoints: (builder) => ({
-    // Read: Fetch all users
     getCategories1: builder.query({
       query: () => 'category1/route',
-      providesTags: ['Category1'], 
+      providesTags: ['Category1'],
     }),
-    // Get a user by ID
     getCategory1ById: builder.query({
-      query: (id) => `category1/${id}`, // Call endpoint with ID
-      providesTags: (result, error, id) => [{ type: 'Category1', id }], // Cache invalidation
+      query: (id) => `category1/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Category1', id }],
     }),
     getDeleteCategories1: builder.query({
       query: () => 'category1/bin',
       providesTags: ['Category1'],
     }),
-    // Create: Add a new user
     addCategory1: builder.mutation({
       query: (newCategory1) => ({
         url: 'category1/route',
@@ -28,7 +25,6 @@ export const category1ApiSlice = createApi({
       }),
       invalidatesTags: ['Category1'],
     }),
-    // Update: Update an existing user
     updateCategory1: builder.mutation({
       query: ({ id, ...updatedCategory1 }) => ({
         url: `category1/${id}`,
@@ -37,7 +33,6 @@ export const category1ApiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Category1', id }],
     }),
-    // Delete: Delete a user
     deleteCategory1: builder.mutation({
       query: (id) => ({
         url: `category1/${id}`,
@@ -51,7 +46,7 @@ export const category1ApiSlice = createApi({
 export const {
   useGetCategories1Query,
   useGetCategory1ByIdQuery,
-  useGetDeleteCategories1Query,  // Export the hook for fetching by ID
+  useGetDeleteCategories1Query,
   useAddCategory1Mutation,
   useUpdateCategory1Mutation,
   useDeleteCategory1Mutation,

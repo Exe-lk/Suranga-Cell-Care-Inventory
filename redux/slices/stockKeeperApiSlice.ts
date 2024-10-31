@@ -5,21 +5,18 @@ export const stockKeeperApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['StockKeeper'],
   endpoints: (builder) => ({
-    // Read: Fetch all users
     getStockKeepers: builder.query({
       query: () => 'stockKeeper/route',
-      providesTags: ['StockKeeper'], // Cache invalidation
+      providesTags: ['StockKeeper'],
     }),
-    // Get a user by ID
     getStockKeeperById: builder.query({
-      query: (id) => `stockKeeper/${id}`, // Call endpoint with ID
-      providesTags: (result, error, id) => [{ type: 'StockKeeper', id }], // Cache invalidation
+      query: (id) => `stockKeeper/${id}`,
+      providesTags: (result, error, id) => [{ type: 'StockKeeper', id }],
     }),
     getDeleteStockKeepers: builder.query({
       query: () => 'stockKeeper/bin',
       providesTags: ['StockKeeper'],
     }),
-    // Create: Add a new user
     addStockKeeper: builder.mutation({
       query: (newStockKeeper) => ({
         url: 'stockKeeper/route',
@@ -28,7 +25,6 @@ export const stockKeeperApiSlice = createApi({
       }),
       invalidatesTags: ['StockKeeper'],
     }),
-    // Update: Update an existing user
     updateStockKeeper: builder.mutation({
       query: ({ id, ...updatedStockKeeper }) => ({
         url: `stockKeeper/${id}`,
@@ -37,7 +33,6 @@ export const stockKeeperApiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'StockKeeper', id }],
     }),
-    // Delete: Delete a user
     deleteStockKeeper: builder.mutation({
       query: (id) => ({
         url: `stockKeeper/${id}`,
@@ -51,7 +46,7 @@ export const stockKeeperApiSlice = createApi({
 export const {
   useGetStockKeepersQuery,
   useGetStockKeeperByIdQuery,
-  useGetDeleteStockKeepersQuery,  // Export the hook for fetching by ID
+  useGetDeleteStockKeepersQuery,
   useAddStockKeeperMutation,
   useUpdateStockKeeperMutation,
   useDeleteStockKeeperMutation,
