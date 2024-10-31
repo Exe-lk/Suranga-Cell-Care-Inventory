@@ -35,7 +35,6 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -43,21 +42,18 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
+
 				try {
-					// Add the new category
 					const response: any = await addCategory(values).unwrap();
 
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Category Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					console.error('Error during handleSubmit: ', error);
 					await Swal.fire({
@@ -66,7 +62,6 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 						text: 'Failed to add the category. Please try again.',
 					});
 				}
-				
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
 				Swal.close;
@@ -87,7 +82,7 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Category Name' className='col-md-6'>
+					<FormGroup id='name' label='Category Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}

@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
 	useDeleteBrandMutation,
 	useUpdateBrandMutation,
-	useGetDeleteBrandsQuery
+	useGetDeleteBrandsQuery,
 } from '../../redux/slices/brandApiSlice';
 
 interface BrandDeleteModalProps {
@@ -16,7 +16,12 @@ interface BrandDeleteModalProps {
 	refetchMainPage: () => void;
 }
 
-const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , refetchMainPage}) => {
+const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
+	id,
+	isOpen,
+	setIsOpen,
+	refetchMainPage,
+}) => {
 	const [deleteBrand] = useDeleteBrandMutation();
 	const [updateBrand] = useUpdateBrandMutation();
 	const { data: brands, error, isLoading, refetch } = useGetDeleteBrandsQuery(undefined);
@@ -32,7 +37,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -93,7 +99,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all brands.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -137,10 +144,23 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 					<thead>
 						<tr>
 							<th>Brand name</th>
-                            
+
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!brands || brands.length === 0 || isLoading}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!brands || brands.length === 0 || isLoading}>Restore All</Button>
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={!brands || brands.length === 0 || isLoading}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={!brands || brands.length === 0 || isLoading}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -155,27 +175,29 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 								<td colSpan={2}>Error fetching brands.</td>
 							</tr>
 						)}
-						{brands && brands.length > 0 && brands.map((brand: any,index : any) => (
-							<tr key={index}>
-              <td>{brand.name}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(brand)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(brand)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{brands &&
+							brands.length > 0 &&
+							brands.map((brand: any, index: any) => (
+								<tr key={index}>
+									<td>{brand.name}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(brand)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(brand)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

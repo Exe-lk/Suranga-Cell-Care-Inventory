@@ -6,17 +6,14 @@ import PieBasic from '../../../components/top-product-chart';
 import TypeAnalatisk from '../../../components/TypeAnalatisk';
 
 const Index: NextPage = () => {
-	
 	return (
 		<PageWrapper>
 			<Page>
-			<div className='flex-grow-1 text-right text-info'></div>
+				<div className='flex-grow-1 text-right text-info'></div>
 				<div className='row'>
-				<PieBasic />
-				<TypeAnalatisk/>	
+					<PieBasic />
+					<TypeAnalatisk />
 				</div>
-				
-				
 			</Page>
 		</PageWrapper>
 	);

@@ -15,21 +15,18 @@ import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAddSupplierMutation } from '../../redux/slices/supplierApiSlice';
-import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice'; // Import the query
+import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice';
 import { stringOrDate } from 'react-big-calendar';
 
-// Define the props for the UserAddModal component
 interface UserAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-// UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addSupplier, { isLoading }] = useAddSupplierMutation();
 	const { refetch } = useGetSuppliersQuery(undefined);
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -60,7 +57,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
-			}else if (values.mobileNumber.length < 10) {
+			} else if (values.mobileNumber.length < 10) {
 				errors.mobileNumber = 'Mobile number must be at least 10 digits.';
 			}
 			const itemErrors: string[] = [];
@@ -78,7 +75,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -88,19 +84,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Add the new category
 					const response: any = await addSupplier(values).unwrap();
 
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Supplier Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -132,11 +125,10 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	};
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -173,11 +165,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									onChange={formik.handleChange}
 									value={formik.values.item[index]}
 									onBlur={formik.handleBlur}
-									isValid={formik.touched.item && !formik.errors.item?.[index]} // Check for individual item errors
+									isValid={formik.touched.item && !formik.errors.item?.[index]}
 									isTouched={
 										Array.isArray(formik.touched.item) &&
 										formik.touched.item[index]
-									} // Ensure the item is touched
+									}
 									invalidFeedback={
 										formik.errors.item
 											? Array.isArray(formik.errors.item)
@@ -225,11 +217,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						/>
 					</FormGroup>
 					<FormGroup id='mobileNumber' label='Mobile number' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobileNumber}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, '');
 								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
@@ -242,7 +234,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Add Supplier
 				</Button>
@@ -250,7 +241,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for UserAddModal component
 UserAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

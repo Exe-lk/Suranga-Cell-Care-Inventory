@@ -40,7 +40,6 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -50,19 +49,16 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 				});
 
 				try {
-					// Add the new category
 					const response: any = await addStockKeeper(values).unwrap();
 
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Stock Keeper Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					console.error('Error during handleSubmit: ', error);
 					await Swal.fire({

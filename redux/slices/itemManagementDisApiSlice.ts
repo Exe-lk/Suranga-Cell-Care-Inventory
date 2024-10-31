@@ -5,12 +5,10 @@ export const ItemDisApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['ItemDis'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getItemDiss: builder.query({
       query: () => 'ItemDis/route',
       providesTags: ['ItemDis'],
     }),
-    // Fetch a single category by ID
     getItemDisById: builder.query({
       query: (id) => `ItemDis/${id}`,
       providesTags: ['ItemDis'],
@@ -46,7 +44,7 @@ export const ItemDisApiSlice = createApi({
 
 export const {
   useGetItemDissQuery,
-  useGetItemDisByIdQuery, // New hook to fetch single category
+  useGetItemDisByIdQuery,
   useGetDeleteItemDissQuery,
   useAddItemDisMutation,
   useUpdateItemDisMutation,

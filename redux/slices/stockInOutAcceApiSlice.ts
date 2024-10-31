@@ -5,12 +5,10 @@ export const stockInOutAcceApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['StockInOutAcce'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getStockInOuts: builder.query({
       query: () => 'stockInOutAcce/route',
       providesTags: ['StockInOutAcce'],
     }),
-    // Fetch a single category by ID
     getStockInOutById: builder.query({
       query: (id) => `stockInOutAcce/${id}`,
       providesTags: ['StockInOutAcce'],
@@ -54,7 +52,7 @@ export const stockInOutAcceApiSlice = createApi({
 
 export const {
   useGetStockInOutsQuery,
-  useGetStockInOutByIdQuery, // New hook to fetch single category
+  useGetStockInOutByIdQuery,
   useGetDeleteStockInOutsQuery,
   useAddStockInMutation,
   useAddStockOutMutation,

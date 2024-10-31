@@ -22,12 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { name,role,nic,email,mobile, status } = req.body;
+        const { name, role, nic, email, mobile, status } = req.body;
         if (!name) {
           res.status(400).json({ error: 'User name is required' });
           return;
         }
-        await updateUser(id as string, name,role,nic,email,mobile, status);
+        await updateUser(id as string, name, role, nic, email, mobile, status);
         res.status(200).json({ message: 'User updated' });
         break;
       }

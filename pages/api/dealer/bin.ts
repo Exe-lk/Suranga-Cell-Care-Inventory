@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { name, email,address,mobileNumber,item } = req.body;
+        const { name, email, address, mobileNumber, item } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Dealer name is required' });
           return;
         }
-        const id = await createDealer(name, email,address,mobileNumber,item);
+        const id = await createDealer(name, email, address, mobileNumber, item);
         res.status(201).json({ message: 'Dealer created', id });
         break;
       }
@@ -27,12 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id, name, email,address,mobileNumber,item, status } = req.body;
+        const { id, name, email, address, mobileNumber, item, status } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Dealer ID and name are required' });
           return;
         }
-        await updateDealer(id, name, email,address,mobileNumber,item, status);
+        await updateDealer(id, name, email, address, mobileNumber, item, status);
         res.status(200).json({ message: 'Dealer updated' });
         break;
       }
@@ -55,6 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

@@ -2,24 +2,21 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const brandApiSlice = createApi({
   reducerPath: 'brandApi',
-  baseQuery: fetchBaseQuery({ baseUrl:'https://suranga-cellcare-inventory.netlify.app/api/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Brand'],
   endpoints: (builder) => ({
-    // Read: Fetch all users
     getBrands: builder.query({
       query: () => 'brand/route',
-      providesTags: ['Brand'], 
+      providesTags: ['Brand'],
     }),
-    // Get a user by ID
     getBrandById: builder.query({
-      query: (id) => `brand/${id}`, // Call endpoint with ID
-      providesTags: (result, error, id) => [{ type: 'Brand', id }], // Cache invalidation
+      query: (id) => `brand/${id}`,
+      providesTags: (result, error, id) => [{ type: 'Brand', id }],
     }),
     getDeleteBrands: builder.query({
       query: () => 'brand/bin',
       providesTags: ['Brand'],
     }),
-    // Create: Add a new user
     addBrand: builder.mutation({
       query: (newBrand) => ({
         url: 'brand/route',
@@ -28,7 +25,6 @@ export const brandApiSlice = createApi({
       }),
       invalidatesTags: ['Brand'],
     }),
-    // Update: Update an existing user
     updateBrand: builder.mutation({
       query: ({ id, ...updatedBrand }) => ({
         url: `brand/${id}`,
@@ -37,7 +33,6 @@ export const brandApiSlice = createApi({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Brand', id }],
     }),
-    // Delete: Delete a user
     deleteBrand: builder.mutation({
       query: (id) => ({
         url: `brand/${id}`,
@@ -51,7 +46,7 @@ export const brandApiSlice = createApi({
 export const {
   useGetBrandsQuery,
   useGetBrandByIdQuery,
-  useGetDeleteBrandsQuery,  // Export the hook for fetching by ID
+  useGetDeleteBrandsQuery,
   useAddBrandMutation,
   useUpdateBrandMutation,
   useDeleteBrandMutation,

@@ -50,7 +50,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 
 			if (inputText === 'DELETE') {
-				// Call the delete mutation from Redux
 				await deleteSupplier(supplier.id).unwrap();
 				Swal.fire('Deleted!', 'The supplier has been permentaly deleted.', 'success');
 
@@ -118,7 +117,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				}
 				Swal.fire('Deleted!', 'All suppliers have been permentaly deleted.', 'success');
 
-				
 				refetch();
 			}
 		} catch (error) {
@@ -126,7 +124,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			Swal.fire('Error', 'Failed to delete all suppliers.', 'error');
 		}
 	};
-
 
 	const handleRestoreAll = async () => {
 		try {
@@ -145,7 +142,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					const values = {
 						id: supplier.id,
 						name: supplier.name,
-						status: true, // Assuming restoring means setting status to true
+						status: true,
 						item: supplier.item,
 						email: supplier.email,
 						address: supplier.address,
@@ -155,7 +152,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				}
 				Swal.fire('Restored!', 'All suppliers have been restored.', 'success');
 
-				
 				refetch();
 			}
 		} catch (error) {
@@ -170,8 +166,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-			<table className='table table-bordered border-primary  table-hover'>
-								<thead className={"table-dark border-primary"}>
+				<table className='table table-bordered border-primary  table-hover'>
+					<thead className={'table-dark border-primary'}>
 						<tr>
 							<th>Supplier</th>
 
@@ -207,7 +203,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</tr>
 						)}
 						{suppliers &&
-							suppliers.map((supplier: any,index : any) => (
+							suppliers.map((supplier: any, index: any) => (
 								<tr key={index}>
 									<td>{supplier.name}</td>
 
@@ -233,7 +229,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</tbody>
 				</table>
 			</ModalBody>
-			
 		</Modal>
 	);
 };

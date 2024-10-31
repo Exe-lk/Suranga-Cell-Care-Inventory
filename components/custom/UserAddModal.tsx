@@ -17,20 +17,17 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAddUserMutation } from '../../redux/slices/userManagementApiSlice';
 import { useGetUsersQuery } from '../../redux/slices/userManagementApiSlice';
 
-// Define the props for the UserAddModal component
 interface UserAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-// UserAddModal component definition
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [imageurl, setImageurl] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [addUser, { isLoading }] = useAddUserMutation();
 	const { refetch } = useGetUsersQuery(undefined);
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -78,7 +75,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -88,19 +84,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Add the new category
 					const response: any = await addUser(values).unwrap();
 
-					// Refetch categories to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'User Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					console.error('Error during handleSubmit: ', error);
 					await Swal.fire({
@@ -118,9 +111,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
 
 	return (
@@ -167,11 +160,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</FormGroup>
 
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobile}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, '');
 								formik.setFieldValue('mobile', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
@@ -181,7 +174,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
+
 					<FormGroup id='nic' label='NIC' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -207,7 +200,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Add User
 				</Button>
@@ -215,7 +207,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for UserAddModal component
 UserAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

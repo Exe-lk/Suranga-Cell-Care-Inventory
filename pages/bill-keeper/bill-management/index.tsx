@@ -31,20 +31,19 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 
-// Define the functional component for the index page
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [id, setId] = useState<string>(''); // State for ID
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [id, setId] = useState<string>('');
 	const { data: bills, error, isLoading } = useGetBillsQuery(undefined);
 	const [updateBill] = useUpdateBillMutation();
-	const [dateInStart, setDateInStart] = useState<string>(''); // Start date for Date In
-	const [dateInEnd, setDateInEnd] = useState<string>(''); // End date for Date In
-	const [dateOutStart, setDateOutStart] = useState<string>(''); // Start date for Date Out
-	const [dateOutEnd, setDateOutEnd] = useState<string>(''); // End date for Date Out
+	const [dateInStart, setDateInStart] = useState<string>('');
+	const [dateInEnd, setDateInEnd] = useState<string>('');
+	const [dateOutStart, setDateOutStart] = useState<string>('');
+	const [dateOutEnd, setDateOutEnd] = useState<string>('');
 
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
@@ -53,8 +52,6 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
 	}, [bills]);
 
 	const filteredTransactions = bills?.filter((trans: any) => {
@@ -66,26 +63,22 @@ const Index: NextPage = () => {
 		const dateOutStartObj = dateOutStart ? new Date(dateOutStart) : null;
 		const dateOutEndObj = dateOutEnd ? new Date(dateOutEnd) : null;
 
-		// Date In filtering
 		const isDateInValid =
 			(!dateInStartObj || transactionDateIn >= dateInStartObj) &&
 			(!dateInEndObj || transactionDateIn <= dateInEndObj);
 
-		// Date Out filtering
 		const isDateOutValid = transactionDateOut
 			? (!dateOutStartObj || transactionDateOut >= dateOutStartObj) &&
 			  (!dateOutEndObj || transactionDateOut <= dateOutEndObj)
-			: true; // If DateOut is null, it passes the filter
+			: true;
 
 		return isDateInValid && isDateOutValid;
 	});
 
-	//delete user
 	const handleClickDelete = async (bill: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -122,17 +115,14 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
 
-		// Remove borders and hide last cells before exporting
 		modifyTableForExport(table as HTMLElement, true);
 
 		const clonedTable = table.cloneNode(true) as HTMLElement;
 
-		// Remove Edit/Delete buttons column from cloned table
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -164,11 +154,9 @@ const Index: NextPage = () => {
 		} catch (error) {
 			console.error('Error exporting table: ', error);
 		} finally {
-			// Restore table after export
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-	// Helper function to modify table by hiding last column and removing borders
 	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -183,7 +171,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -201,7 +188,6 @@ const Index: NextPage = () => {
 		link.download = 'Bill-management Report.csv';
 		link.click();
 	};
-	// PDF export function with table adjustments
 	const downloadTableAsPDF = async (table: HTMLElement) => {
 		try {
 			const pdf = new jsPDF('p', 'pt', 'a4');
@@ -210,11 +196,9 @@ const Index: NextPage = () => {
 			const rows: any[] = [];
 			const headers: any[] = [];
 
-			// Draw a thin page border
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
 
-			// Add the logo in the top-left corner
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
@@ -222,12 +206,10 @@ const Index: NextPage = () => {
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
 
-			// Add small heading in the top left corner (below the logo)
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
-			// Add the table heading (title) in the top-right corner
 			const title = 'Bill-management Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
@@ -235,20 +217,17 @@ const Index: NextPage = () => {
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
 
-			// Add the current date below the table heading
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
 
-			// Extract table headers
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
 
-			// Extract table rows
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -259,11 +238,9 @@ const Index: NextPage = () => {
 				});
 			}
 
-			// Adjust the table width and center it on the page
 			const tableWidth = pageWidth * 0.9;
 			const tableX = (pageWidth - tableWidth) / 2;
 
-			// Generate the table below the date
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -296,7 +273,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Helper function to load the image (logo) for the PDF
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -321,7 +297,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to hide the last cell of every row (including borders)
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -335,7 +310,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to restore the visibility and styles of the last cell
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -349,7 +323,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Function to export the table data in PNG format
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -361,7 +334,6 @@ const Index: NextPage = () => {
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
 
-			// Convert table to PNG
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
@@ -369,10 +341,8 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore original border style after capture
 			table.style.border = originalBorderStyle;
 
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Bill-management Report.png';
@@ -382,7 +352,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to export the table data in SVG format using html-to-image without cloning the table
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -391,7 +360,6 @@ const Index: NextPage = () => {
 				return;
 			}
 
-			// Hide last cells before export
 			hideLastCells(table);
 
 			const dataUrl = await toSvg(table, {
@@ -403,7 +371,6 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore the last cells after export
 			restoreLastCells(table);
 
 			const link = document.createElement('a');
@@ -412,7 +379,6 @@ const Index: NextPage = () => {
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
-			// Restore the last cells in case of error
 			const table = document.querySelector('table');
 			if (table) restoreLastCells(table);
 		}
@@ -421,17 +387,17 @@ const Index: NextPage = () => {
 	const getStatusColorClass = (status: string) => {
 		switch (status) {
 			case 'waiting to in progress':
-				return 'bg-success'; // green
+				return 'bg-success';
 			case 'in progress':
-				return 'bg-info'; // blue
+				return 'bg-info';
 			case 'completed':
-				return 'bg-warning'; // yellow
+				return 'bg-warning';
 			case 'reject':
-				return 'bg-danger'; // red
+				return 'bg-danger';
 			case 'in progress to complete':
-				return 'bg-lo50-primary'; // dark blue or whatever color you prefer
+				return 'bg-lo50-primary';
 			case 'HandOver':
-				return 'bg-lo50-info'; // yellow
+				return 'bg-lo50-info';
 		}
 	};
 
@@ -439,7 +405,6 @@ const Index: NextPage = () => {
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -484,7 +449,6 @@ const Index: NextPage = () => {
 										/>
 									</FormGroup>
 
-									{/* Date Out Range */}
 									<FormGroup label='Date Out Start' className='col-6'>
 										<Input
 											type='date'
@@ -504,7 +468,6 @@ const Index: NextPage = () => {
 						</DropdownMenu>
 					</Dropdown>
 					<SubheaderSeparator />
-					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -517,7 +480,6 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -547,59 +509,46 @@ const Index: NextPage = () => {
 							</CardTitle>
 							<center>
 								<div className='d-flex justify-content-center mb-3'>
-									{/* Added horizontal margin */}
 									<div
 										className='rounded-circle bg-success d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>waiting to in progress</div>{' '}
 									<div
 										className='rounded-circle bg-info d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>in progress</div>{' '}
-									{/* Added horizontal margin */}
 									<div
 										className='rounded-circle bg-warning d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>completed</div>{' '}
-									{/* Added horizontal margin */}
 									<div
 										className='rounded-circle bg-danger d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>reject</div>{' '}
-									{/* Added horizontal margin */}
 									<div
 										className='rounded-circle bg-lo50-primary d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>in progress to complete</div>{' '}
-									{/* Added horizontal margin */}
 									<div
 										className='rounded-circle bg-lo50-info d-flex mx-2 '
-										style={{ width: '15px', height: '15px', padding: '2px' }} // Added padding
-									>
+										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-white'></span>
 									</div>
 									<div className='mx-2'>HandOver</div>{' '}
-									{/* Added horizontal margin */}
 								</div>
 							</center>
 
 							<CardBody isScrollable className='table-responsive'>
-								{/* <table className='table table-modern table-hover'> */}
 								<table className='table  table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary'}>
 										<tr>
@@ -646,12 +595,14 @@ const Index: NextPage = () => {
 														  bill.CustomerName.toLowerCase().includes(
 																searchTerm.toLowerCase(),
 														  ) ||
-														  bill.billNumber.toLowerCase().includes(
-																searchTerm.toLowerCase(),
-														  ) ||
-														  bill.technicianNum.toLowerCase().includes(
-																searchTerm.toLowerCase(),
-														  ) 
+														  bill.billNumber
+																.toLowerCase()
+																.includes(
+																	searchTerm.toLowerCase(),
+																) ||
+														  bill.technicianNum
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
 														: true,
 												)
 												.map((bill: any, index: any) => (
@@ -678,7 +629,6 @@ const Index: NextPage = () => {
 															</span>
 														</td>
 
-														{/* Show Status text */}
 														<td>
 															<Button
 																icon='Edit'

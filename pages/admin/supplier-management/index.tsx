@@ -36,7 +36,6 @@ import PaginationButtons, {
 } from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
-	// Dark mode
 	const { darkModeStatus } = useDarkMode();
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
@@ -52,14 +51,11 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
 	}, [suppliers]);
 	const handleClickDelete = async (supplier: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				// text: 'You will not be able to recover this user!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -87,16 +83,13 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-		// Remove borders and hide last cells before exporting
 		modifyTableForExport(table as HTMLElement, true);
 
 		const clonedTable = table.cloneNode(true) as HTMLElement;
 
-		// Remove Edit/Delete buttons column from cloned table
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -128,11 +121,9 @@ const Index: NextPage = () => {
 		} catch (error) {
 			console.error('Error exporting table: ', error);
 		} finally {
-			// Restore table after export
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-	// Helper function to modify table by hiding last column and removing borders
 	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -147,7 +138,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// function to export the table data in CSV format
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -165,7 +155,6 @@ const Index: NextPage = () => {
 		link.download = 'Supplier Management Report.csv';
 		link.click();
 	};
-	// PDF export function with table adjustments
 	const downloadTableAsPDF = async (table: HTMLElement) => {
 		try {
 			const pdf = new jsPDF('p', 'pt', 'a4');
@@ -174,11 +163,9 @@ const Index: NextPage = () => {
 			const rows: any[] = [];
 			const headers: any[] = [];
 
-			// Draw a thin page border
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
 
-			// Add the logo in the top-left corner
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
@@ -186,12 +173,10 @@ const Index: NextPage = () => {
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
 
-			// Add small heading in the top left corner (below the logo)
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
 
-			// Add the table heading (title) in the top-right corner
 			const title = 'Supplier-Management Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
@@ -199,20 +184,17 @@ const Index: NextPage = () => {
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
 
-			// Add the current date below the table heading
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
 
-			// Extract table headers
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
 
-			// Extract table rows
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -223,11 +205,9 @@ const Index: NextPage = () => {
 				});
 			}
 
-			// Adjust the table width and center it on the page
 			const tableWidth = pageWidth * 0.85;
 			const tableX = (pageWidth - tableWidth) / 2;
 
-			// Generate the table below the date
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -260,7 +240,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Helper function to load the image (logo) for the PDF
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -284,7 +263,6 @@ const Index: NextPage = () => {
 			};
 		});
 	};
-	// Helper function to hide the last cell of every row (including borders)
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -298,7 +276,6 @@ const Index: NextPage = () => {
 		});
 	};
 
-	// Helper function to restore the visibility and styles of the last cell
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -311,7 +288,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-	// Function to export the table data in PNG format
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -323,7 +299,6 @@ const Index: NextPage = () => {
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
 
-			// Convert table to PNG
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
@@ -331,10 +306,8 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore original border style after capture
 			table.style.border = originalBorderStyle;
 
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Supplier Management Report.png';
@@ -344,7 +317,6 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to export the table data in SVG format using html-to-image without cloning the table
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -353,7 +325,6 @@ const Index: NextPage = () => {
 				return;
 			}
 
-			// Hide last cells before export
 			hideLastCells(table);
 
 			const dataUrl = await toSvg(table, {
@@ -365,7 +336,6 @@ const Index: NextPage = () => {
 				},
 			});
 
-			// Restore the last cells after export
 			restoreLastCells(table);
 
 			const link = document.createElement('a');
@@ -374,7 +344,6 @@ const Index: NextPage = () => {
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
-			// Restore the last cells in case of error
 			const table = document.querySelector('table');
 			if (table) restoreLastCells(table);
 		}
@@ -384,7 +353,6 @@ const Index: NextPage = () => {
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input  */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -395,7 +363,6 @@ const Index: NextPage = () => {
 						type='search'
 						className='border-0 shadow-none bg-transparent'
 						placeholder='Search...'
-						// onChange={formik.handleChange}
 						onChange={(event: any) => {
 							setSearchTerm(event.target.value);
 						}}
@@ -416,7 +383,6 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying user data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>

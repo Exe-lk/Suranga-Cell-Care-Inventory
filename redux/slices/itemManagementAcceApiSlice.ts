@@ -5,12 +5,10 @@ export const ItemAcceApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['ItemAcce'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getItemAcces: builder.query({
       query: () => 'itemManagementAcce/route',
       providesTags: ['ItemAcce'],
     }),
-    // Fetch a single category by ID
     getItemAcceById: builder.query({
       query: (id) => `itemManagementAcce/${id}`,
       providesTags: ['ItemAcce'],
@@ -46,7 +44,7 @@ export const ItemAcceApiSlice = createApi({
 
 export const {
   useGetItemAccesQuery,
-  useGetItemAcceByIdQuery, // New hook to fetch single category
+  useGetItemAcceByIdQuery,
   useGetDeleteItemAccesQuery,
   useAddItemAcceMutation,
   useUpdateItemAcceMutation,

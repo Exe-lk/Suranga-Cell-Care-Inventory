@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
 	useDeleteCategory1Mutation,
 	useUpdateCategory1Mutation,
-	useGetDeleteCategories1Query
+	useGetDeleteCategories1Query,
 } from '../../redux/slices/category1ApiSlice';
 
 interface CategoryEditModalProps {
@@ -16,7 +16,12 @@ interface CategoryEditModalProps {
 	refetchMainPage: () => void;
 }
 
-const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen , refetchMainPage}) => {
+const CategoryEditModal: FC<CategoryEditModalProps> = ({
+	id,
+	isOpen,
+	setIsOpen,
+	refetchMainPage,
+}) => {
 	const [deleteCategory] = useDeleteCategory1Mutation();
 	const [updateCategory] = useUpdateCategory1Mutation();
 	const { data: categories, error, isLoading, refetch } = useGetDeleteCategories1Query(undefined);
@@ -32,7 +37,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -91,7 +97,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all categories.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -135,8 +142,21 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 						<tr>
 							<th>Category name</th>
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!categories || categories.length === 0 || isLoading}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!categories || categories.length === 0 || isLoading}>Restore All</Button>
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={!categories || categories.length === 0 || isLoading}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={!categories || categories.length === 0 || isLoading}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -151,27 +171,29 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen ,
 								<td colSpan={2}>Error fetching categories.</td>
 							</tr>
 						)}
-						{categories && categories.length > 0 && categories.map((category: any,index : any) => (
-							<tr key={index}>
-              <td>{category.name}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(category)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(category)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{categories &&
+							categories.length > 0 &&
+							categories.map((category: any, index: any) => (
+								<tr key={index}>
+									<td>{category.name}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(category)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(category)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

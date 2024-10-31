@@ -12,19 +12,19 @@ import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const TypeAnalatisk = () => {
 	const { data: bills, isLoading } = useGetBillsQuery(undefined);
-	const [monthlyData, setMonthlyData] = useState<number[]>(Array(12).fill(0)); // Initialize an array for 12 months
+	const [monthlyData, setMonthlyData] = useState<number[]>(Array(12).fill(0));
 
 	useEffect(() => {
 		if (bills) {
-			const counts = Array(12).fill(0); // Array to hold counts for each month (Jan-Dec)
+			const counts = Array(12).fill(0);
 
 			bills.forEach((bill: { dateIn: string }) => {
-				const date = new Date(bill.dateIn); // Parse the `dateIn` field of each bill
-				const month = date.getMonth(); // Get month index (0 for Jan, 1 for Feb, ..., 11 for Dec)
-				counts[month] += 1; // Increment the count for the respective month
+				const date = new Date(bill.dateIn);
+				const month = date.getMonth();
+				counts[month] += 1;
 			});
 
-			setMonthlyData(counts); // Update state with the monthly counts
+			setMonthlyData(counts);
 		}
 	}, [bills]);
 
@@ -32,7 +32,7 @@ const TypeAnalatisk = () => {
 		series: [
 			{
 				name: 'Bills',
-				data: monthlyData, // Use the calculated monthly data
+				data: monthlyData,
 			},
 		],
 		options: {
@@ -56,8 +56,18 @@ const TypeAnalatisk = () => {
 			},
 			xaxis: {
 				categories: [
-					'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-					'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+					'Jan',
+					'Feb',
+					'Mar',
+					'Apr',
+					'May',
+					'Jun',
+					'Jul',
+					'Aug',
+					'Sep',
+					'Oct',
+					'Nov',
+					'Dec',
 				],
 			},
 			yaxis: {
@@ -65,7 +75,7 @@ const TypeAnalatisk = () => {
 					text: 'Number of Bills',
 				},
 				labels: {
-					formatter: (val) => `${val}`, // Format Y-axis labels
+					formatter: (val) => `${val}`,
 				},
 			},
 			fill: {
@@ -74,7 +84,7 @@ const TypeAnalatisk = () => {
 			tooltip: {
 				y: {
 					formatter(val) {
-						return `Bills: ${val}`; // Tooltip formatter
+						return `Bills: ${val}`;
 					},
 				},
 			},

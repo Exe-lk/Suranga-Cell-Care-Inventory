@@ -23,7 +23,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { auth, firestore } from '../firebaseConfig';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Logo from '../components/Logo';
-import {useAddUserMutation}  from '../redux/slices/userApiSlice'
+import { useAddUserMutation } from '../redux/slices/userApiSlice';
 import { useGetUsersQuery } from '../redux/slices/userApiSlice';
 
 interface ILoginHeaderProps {
@@ -54,7 +54,6 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 	const { setUser } = useContext(AuthContext);
 	const [addUser] = useAddUserMutation();
 
-	//login
 	const formik = useFormik({
 		enableReinitialize: true,
 		initialValues: {
@@ -66,7 +65,7 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 
 			if (!values.email) {
 				errors.email = 'Required';
-			}else if (!values.email.includes('@')) {
+			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email address';
 			}
 			if (!values.password) {
@@ -77,57 +76,58 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 
 		onSubmit: async (values) => {
 			try {
-			  const response = await addUser(values).unwrap();
-			  const email = response.user.email;
-			  localStorage.setItem('email', email);
-			  if (response.user) {
-				await Swal.fire({
-				  icon: 'success',
-				  title: 'Login Successful',
-				  text: 'You have successfully logged in!',
-				});
-				switch (response.user.position) {
-				  case 'admin':
-					router.push('/admin/dashboard');
-					break;
-				  case 'Viewer':
-					router.push('/viewer/dashboard');
-					break;
-				  case 'display stock keeper':
-					router.push('/display-stock/dashboard');
-					break;
-				  case 'accessosry stock keeper':
-					router.push('/accessory-stock/dashboard');
-					break;
-				  case 'bill keeper':
-					router.push('/bill-keeper/bill-management');
-					break;
-				  case 'cashier':
-					router.push('/cashier/rapaired-phone');
-					break;
-				  default:
-					break;
+				const response = await addUser(values).unwrap();
+				const email = response.user.email;
+				localStorage.setItem('email', email);
+				if (response.user) {
+					await Swal.fire({
+						icon: 'success',
+						title: 'Login Successful',
+						text: 'You have successfully logged in!',
+					});
+					switch (response.user.position) {
+						case 'admin':
+							router.push('/admin/dashboard');
+							break;
+						case 'Viewer':
+							router.push('/viewer/dashboard');
+							break;
+						case 'display stock keeper':
+							router.push('/display-stock/dashboard');
+							break;
+						case 'accessosry stock keeper':
+							router.push('/accessory-stock/dashboard');
+							break;
+						case 'bill keeper':
+							router.push('/bill-keeper/bill-management');
+							break;
+						case 'cashier':
+							router.push('/cashier/rapaired-phone');
+							break;
+						default:
+							break;
+					}
 				}
-			  }
 			} catch (error: any) {
 				console.error('Login Error:', error);
-			
+
 				if (error.status === 404) {
-				  await Swal.fire('Error', 'Email not found. Please try again.', 'error');
+					await Swal.fire('Error', 'Email not found. Please try again.', 'error');
 				} else if (error.status === 401) {
-				  await Swal.fire('Error', 'Password is incorrect. Please try again.', 'error');
+					await Swal.fire('Error', 'Password is incorrect. Please try again.', 'error');
 				} else {
-				  await Swal.fire('Error', 'An unexpected error occurred. Please try again.', 'error');
+					await Swal.fire(
+						'Error',
+						'An unexpected error occurred. Please try again.',
+						'error',
+					);
 				}
-			  }
-			},
-		});
-		
+			}
+		},
+	});
+
 	return (
-		<PageWrapper
-			isProtected={false}
-			// className={classNames({ 'bg-dark': !singUpStatus, 'bg-light': singUpStatus })}
-		>
+		<PageWrapper isProtected={false}>
 			<Head>
 				<title> Login</title>
 			</Head>

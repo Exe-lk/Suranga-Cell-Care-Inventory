@@ -1,21 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import {
-    createstockKeeper,
-    getstockKeeper,
-    updatestockKeeper,
-    deletestockKeeper,
+  createstockKeeper,
+  getstockKeeper,
+  updatestockKeeper,
+  deletestockKeeper,
 } from '../../../service/stockKeeperService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
     switch (req.method) {
       case 'POST': {
-        const { type,description } = req.body;
+        const { type, description } = req.body;
         if (!type) {
           res.status(400).json({ error: 'Type is required' });
           return;
         }
-        const id = await createstockKeeper(type,description);
+        const id = await createstockKeeper(type, description);
         res.status(201).json({ message: 'Stock Keeper created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, status , type,description} = req.body;
+        const { id, status, type, description } = req.body;
         if (!id || !type) {
           res.status(400).json({ error: 'Stock Keeper ID and type are required' });
           return;
         }
-        await updatestockKeeper(id,status,type,description);
+        await updatestockKeeper(id, status, type, description);
         res.status(200).json({ message: 'Stock Keeper updated' });
         break;
       }
@@ -53,6 +53,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

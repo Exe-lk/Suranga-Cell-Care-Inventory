@@ -5,12 +5,10 @@ export const repairedPhoneApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['repairedPhone'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getrepairedPhones: builder.query({
       query: () => 'repairedPhone/route',
       providesTags: ['repairedPhone'],
     }),
-    // Fetch a single category by ID
     getrepairedPhoneById: builder.query({
       query: (id) => `repairedPhone/${id}`,
       providesTags: ['repairedPhone'],
@@ -23,12 +21,12 @@ export const repairedPhoneApiSlice = createApi({
       }),
       invalidatesTags: ['repairedPhone'],
     }),
-    }),
-  });
+  }),
+});
 
 
 export const {
   useGetrepairedPhonesQuery,
-  useGetrepairedPhoneByIdQuery, // New hook to fetch single category
+  useGetrepairedPhoneByIdQuery,
   useUpdaterepairedPhoneMutation,
 } = repairedPhoneApiSlice;

@@ -1,4 +1,3 @@
-// pages/api/category/[id].ts
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getCategoryById, updateCategory, deleteCategory } from '../../../service/categoryService';
 

@@ -5,21 +5,18 @@ export const userManagementApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['User'],
   endpoints: (builder) => ({
-    // Read: Fetch all users
     getUsers: builder.query({
       query: () => 'user_management/route',
-      providesTags: ['User'], 
+      providesTags: ['User'],
     }),
-    // Get a user by ID
     getUserById: builder.query({
-      query: (id) => `user_management/${id}`, 
+      query: (id) => `user_management/${id}`,
       providesTags: ['User'],
     }),
     getDeleteUsers: builder.query({
       query: () => 'user_management/bin',
       providesTags: ['User'],
     }),
-    // Create: Add a new user
     addUser: builder.mutation({
       query: (newUser) => ({
         url: 'user_management/route',
@@ -28,7 +25,6 @@ export const userManagementApiSlice = createApi({
       }),
       invalidatesTags: ['User'],
     }),
-    // Update: Update an existing user
     updateUser: builder.mutation({
       query: ({ id, ...updatedUser }) => ({
         url: `user_management/${id}`,
@@ -36,8 +32,7 @@ export const userManagementApiSlice = createApi({
         body: updatedUser,
       }),
       invalidatesTags: ['User'],
-    }),    
-    // Delete: Delete a user
+    }),
     deleteUser: builder.mutation({
       query: (id) => ({
         url: `user_management/${id}`,

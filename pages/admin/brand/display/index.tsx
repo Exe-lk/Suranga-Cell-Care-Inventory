@@ -19,10 +19,10 @@ import BrandAddModal from '../../../../components/custom/BrandAddModal';
 import BrandDeleteModal from '../../../../components/custom/BrandDeleteModal';
 import BrandEditModal from '../../../../components/custom/BrandEditModal';
 import Swal from 'sweetalert2';
-import { useGetBrandsQuery , useUpdateBrandMutation } from '../../../../redux/slices/brandApiSlice';
+import { useGetBrandsQuery, useUpdateBrandMutation } from '../../../../redux/slices/brandApiSlice';
 import { toPng, toSvg } from 'html-to-image';
-import { DropdownItem }from '../../../../components/bootstrap/Dropdown';
-import jsPDF from 'jspdf'; 
+import { DropdownItem } from '../../../../components/bootstrap/Dropdown';
+import jsPDF from 'jspdf';
 import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import autoTable from 'jspdf-autotable';
 import PaginationButtons, {
@@ -30,38 +30,32 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../../components/PaginationButtons';
 
-// Define the interface for category data
 interface Category {
 	cid: string;
 	name: string;
 	description: string;
 	status: boolean;
 }
-// Define the functional component for the index page
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [category, setcategory] = useState<Category[]>([]); // State for category data
-	const [id, setId] = useState<string>(''); // State for current category ID
-	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [category, setcategory] = useState<Category[]>([]);
+	const [id, setId] = useState<string>('');
+	const [status, setStatus] = useState(true);
 	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateBrand] = useUpdateBrandMutation();
-	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
+	}, [brands]);
 
-		// Attach event listener for keydown
-	}, [ brands]);
-	
-	// Function to handle deletion of a category
 	const handleClickDelete = async (brand: any) => {
 		try {
 			const result = await Swal.fire({
@@ -75,17 +69,15 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
-					// Set the user's status to false (soft delete)
 					await updateBrand({
-						id:brand.id,
-						name:brand.name,
-						description:brand.description,
-						category:brand.category,
-						status:false,
-				});
-					// Refresh the list after deletion
+						id: brand.id,
+						name: brand.name,
+						description: brand.description,
+						category: brand.category,
+						status: false,
+					});
 					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
-					refetch(); // This will refresh the list of users to reflect the changes
+					refetch();
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
 					Swal.fire(
@@ -101,17 +93,14 @@ const Index: NextPage = () => {
 		}
 	};
 
-	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
 
-		 // Remove borders and hide last cells before exporting
-		 modifyTableForExport(table as HTMLElement, true);
+		modifyTableForExport(table as HTMLElement, true);
 
 		const clonedTable = table.cloneNode(true) as HTMLElement;
 
-		// Remove Edit/Delete buttons column from cloned table
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -119,12 +108,10 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-	
-		
+
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-	
-		
+
 		try {
 			switch (format) {
 				case 'svg':
@@ -136,7 +123,7 @@ const Index: NextPage = () => {
 				case 'csv':
 					downloadTableAsCSV(clonedTable);
 					break;
-				case 'pdf': 
+				case 'pdf':
 					await downloadTableAsPDF(clonedTable);
 					break;
 				default:
@@ -144,252 +131,227 @@ const Index: NextPage = () => {
 			}
 		} catch (error) {
 			console.error('Error exporting table: ', error);
-		}finally {
-			// Restore table after export
+		} finally {
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-	// Helper function to modify table by hiding last column and removing borders
-const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
-    const rows = table.querySelectorAll('tr');
-    rows.forEach((row) => {
-        const lastCell = row.querySelector('td:last-child, th:last-child');
-        if (lastCell instanceof HTMLElement) {
-            if (hide) {
-                lastCell.style.display = 'none';  
-            } else {
-                lastCell.style.display = '';  
-            }
-        }
-    });
-};
-
-	// function to export the table data in CSV format
-	const downloadTableAsCSV = (table: any) => {
-				let csvContent = '';
-				const rows = table.querySelectorAll('tr');
-				rows.forEach((row: any) => {
-					const cols = row.querySelectorAll('td, th');
-					const rowData = Array.from(cols)
-						.map((col: any) => `"${col.innerText}"`)
-						.join(',');
-					csvContent += rowData + '\n';
-				});
-
-				const blob = new Blob([csvContent], { type: 'text/csv' });
-				const link = document.createElement('a');
-				link.href = URL.createObjectURL(blob);
-				link.download = 'Manage Display Brand Report.csv';
-				link.click();
+	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				if (hide) {
+					lastCell.style.display = 'none';
+				} else {
+					lastCell.style.display = '';
+				}
+			}
+		});
 	};
-	// PDF export function with the logo added
-const downloadTableAsPDF = async (table: HTMLElement) => {
-    try {
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const rows: any[] = [];
-        const headers: any[] = [];
 
-        // Draw a thin page border
-        pdf.setLineWidth(1);
-        pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-        // Add the logo in the top-left corner
-        const logoData = await loadImage(bill); 
-        const logoWidth = 100; 
-        const logoHeight = 40; 
-        const logoX = 20; 
-        const logoY = 20; 
-        pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight); 
-
-        // Add small heading in the top left corner (below the logo)
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
-        // Add the table heading (title) in the top-right corner
-        const title = 'Manage Display Brand Report';
-        pdf.setFontSize(16);
-        pdf.setFont('helvetica', 'bold');
-        const titleWidth = pdf.getTextWidth(title);
-        const titleX = pageWidth - titleWidth - 20;
-        pdf.text(title, titleX, 30); 
-
-        // Add the current date below the table heading
-        const currentDate = new Date().toLocaleDateString();
-        const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
-        pdf.setFontSize(12);
-        pdf.text(currentDate, dateX, 50); 
-
-        // Extract table headers
-        const thead = table.querySelector('thead');
-        if (thead) {
-            const headerCells = thead.querySelectorAll('th');
-            headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
-        }
-
-        // Extract table rows
-        const tbody = table.querySelector('tbody');
-        if (tbody) {
-            const bodyRows = tbody.querySelectorAll('tr');
-            bodyRows.forEach((row: any) => {
-                const cols = row.querySelectorAll('td');
-                const rowData = Array.from(cols).map((col: any) => col.innerText);
-                rows.push(rowData);
-            });
-        }
-
-        // Generate the table below the date
-        autoTable(pdf, {
-            head: headers,
-            body: rows,
-            margin: { top: 100 }, 
-            styles: {
-                overflow: 'linebreak',
-                cellWidth: 'wrap',
-            },
-            headStyles: {
-                fillColor: [80, 101, 166], 
-                textColor: [255, 255, 255], 
-            },
-            theme: 'grid',
-        });
-
-        pdf.save('Manage Display Brand Report.pdf');
-    } catch (error) {
-        console.error('Error generating PDF: ', error);
-        alert('Error generating PDF. Please try again.');
-    }
-};
-
-// Helper function to load the image (logo) for the PDF
-const loadImage = (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.src = url;
-        img.crossOrigin = 'Anonymous';
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            if (ctx) {
-                ctx.drawImage(img, 0, 0);
-                const dataUrl = canvas.toDataURL('image/png'); // Base64 URL
-                resolve(dataUrl);
-            } else {
-                reject('Failed to load the logo image.');
-            }
-        };
-        img.onerror = () => {
-            reject('Error loading logo image.');
-        };
-    });
-};
-
-	  // Helper function to hide the last cell of every row (including borders)
-const hideLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'hidden';  
-			lastCell.style.border = 'none'; 
-			lastCell.style.padding = '0';  
-			lastCell.style.margin = '0';  
-		}
-	});
-};
-
-// Helper function to restore the visibility and styles of the last cell
-const restoreLastCells = (table: HTMLElement) => {
-	const rows = table.querySelectorAll('tr');
-	rows.forEach((row) => {
-		const lastCell = row.querySelector('td:last-child, th:last-child');
-		if (lastCell instanceof HTMLElement) {
-			lastCell.style.visibility = 'visible'; 
-			lastCell.style.border = '';  
-			lastCell.style.padding = '';  
-			lastCell.style.margin = '';  
-		}
-	});
-};
-
-
-// Function to export the table data in PNG format
-const downloadTableAsPNG = async () => {
-    try {
-        const table = document.querySelector('table');
-        if (!table) {
-            console.error('Table element not found');
-            return;
-        }
-
-        const originalBorderStyle = table.style.border;
-        table.style.border = '1px solid black'; 
-
-        // Convert table to PNG
-        const dataUrl = await toPng(table, {
-            cacheBust: true,
-            style: {
-                width: table.offsetWidth + 'px',
-            },
-        });
-
-        // Restore original border style after capture
-        table.style.border = originalBorderStyle;
-
-        // Create link element and trigger download
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'Manage Display Brand Report.png';
-        link.click();
-    } catch (error) {
-        console.error('Error generating PNG: ', error);
-    }
-};
-
-// Function to export the table data in SVG format using html-to-image without cloning the table
-const downloadTableAsSVG = async () => {
-	try {
-		const table = document.querySelector('table');
-		if (!table) {
-			console.error('Table element not found');
-			return;
-		}
-
-		// Hide last cells before export
-		hideLastCells(table);
-
-		const dataUrl = await toSvg(table, {
-			backgroundColor: 'white',
-			cacheBust: true,
-			style: {
-				width: table.offsetWidth + 'px',
-				color: 'black',
-			},
+	const downloadTableAsCSV = (table: any) => {
+		let csvContent = '';
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row: any) => {
+			const cols = row.querySelectorAll('td, th');
+			const rowData = Array.from(cols)
+				.map((col: any) => `"${col.innerText}"`)
+				.join(',');
+			csvContent += rowData + '\n';
 		});
 
-		// Restore the last cells after export
-		restoreLastCells(table);
-
+		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
-		link.href = dataUrl;
-		link.download = 'Manage Display Brand Report.svg';
+		link.href = URL.createObjectURL(blob);
+		link.download = 'Manage Display Brand Report.csv';
 		link.click();
-	} catch (error) {
-		console.error('Error generating SVG: ', error);
-		// Restore the last cells in case of error
-		const table = document.querySelector('table');
-		if (table) restoreLastCells(table);
-	}
-};
+	};
+	const downloadTableAsPDF = async (table: HTMLElement) => {
+		try {
+			const pdf = new jsPDF('p', 'pt', 'a4');
+			const pageWidth = pdf.internal.pageSize.getWidth();
+			const pageHeight = pdf.internal.pageSize.getHeight();
+			const rows: any[] = [];
+			const headers: any[] = [];
+
+			pdf.setLineWidth(1);
+			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
+
+			const logoData = await loadImage(bill);
+			const logoWidth = 100;
+			const logoHeight = 40;
+			const logoX = 20;
+			const logoY = 20;
+			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
+
+			pdf.setFontSize(8);
+			pdf.setFont('helvetica', 'bold');
+			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
+
+			const title = 'Manage Display Brand Report';
+			pdf.setFontSize(16);
+			pdf.setFont('helvetica', 'bold');
+			const titleWidth = pdf.getTextWidth(title);
+			const titleX = pageWidth - titleWidth - 20;
+			pdf.text(title, titleX, 30);
+
+			const currentDate = new Date().toLocaleDateString();
+			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
+			pdf.setFontSize(12);
+			pdf.text(currentDate, dateX, 50);
+
+			const thead = table.querySelector('thead');
+			if (thead) {
+				const headerCells = thead.querySelectorAll('th');
+				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
+			}
+
+			const tbody = table.querySelector('tbody');
+			if (tbody) {
+				const bodyRows = tbody.querySelectorAll('tr');
+				bodyRows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td');
+					const rowData = Array.from(cols).map((col: any) => col.innerText);
+					rows.push(rowData);
+				});
+			}
+
+			autoTable(pdf, {
+				head: headers,
+				body: rows,
+				margin: { top: 100 },
+				styles: {
+					overflow: 'linebreak',
+					cellWidth: 'wrap',
+				},
+				headStyles: {
+					fillColor: [80, 101, 166],
+					textColor: [255, 255, 255],
+				},
+				theme: 'grid',
+			});
+
+			pdf.save('Manage Display Brand Report.pdf');
+		} catch (error) {
+			console.error('Error generating PDF: ', error);
+			alert('Error generating PDF. Please try again.');
+		}
+	};
+
+	const loadImage = (url: string): Promise<string> => {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			img.src = url;
+			img.crossOrigin = 'Anonymous';
+			img.onload = () => {
+				const canvas = document.createElement('canvas');
+				canvas.width = img.width;
+				canvas.height = img.height;
+				const ctx = canvas.getContext('2d');
+				if (ctx) {
+					ctx.drawImage(img, 0, 0);
+					const dataUrl = canvas.toDataURL('image/png');
+					resolve(dataUrl);
+				} else {
+					reject('Failed to load the logo image.');
+				}
+			};
+			img.onerror = () => {
+				reject('Error loading logo image.');
+			};
+		});
+	};
+
+	const hideLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'hidden';
+				lastCell.style.border = 'none';
+				lastCell.style.padding = '0';
+				lastCell.style.margin = '0';
+			}
+		});
+	};
+
+	const restoreLastCells = (table: HTMLElement) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const lastCell = row.querySelector('td:last-child, th:last-child');
+			if (lastCell instanceof HTMLElement) {
+				lastCell.style.visibility = 'visible';
+				lastCell.style.border = '';
+				lastCell.style.padding = '';
+				lastCell.style.margin = '';
+			}
+		});
+	};
+
+	const downloadTableAsPNG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+
+			const originalBorderStyle = table.style.border;
+			table.style.border = '1px solid black';
+
+			const dataUrl = await toPng(table, {
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
+			});
+
+			table.style.border = originalBorderStyle;
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'Manage Display Brand Report.png';
+			link.click();
+		} catch (error) {
+			console.error('Error generating PNG: ', error);
+		}
+	};
+
+	const downloadTableAsSVG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+
+			hideLastCells(table);
+
+			const dataUrl = await toSvg(table, {
+				backgroundColor: 'white',
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+					color: 'black',
+				},
+			});
+
+			restoreLastCells(table);
+
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'Manage Display Brand Report.svg';
+			link.click();
+		} catch (error) {
+			console.error('Error generating SVG: ', error);
+			const table = document.querySelector('table');
+			if (table) restoreLastCells(table);
+		}
+	};
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -408,8 +370,6 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					
-					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -422,31 +382,37 @@ const downloadTableAsSVG = async () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-primary'>Manage Display Brand</div>
+								<div className='flex-grow-1 text-center text-primary'>
+									Manage Display Brand
+								</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>
+											Download SVG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('png')}>
+											Download PNG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>
+											Download PDF
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 
 							<CardBody isScrollable className='table-responsive'>
-								{/* <table className='table table-modern table-hover'> */}
 								<table className='table  table-bordered border-primary table-hover text-center'>
-								<thead className={"table-dark border-primary"}>
+									<thead className={'table-dark border-primary'}>
 										<tr>
 											<th>Category</th>
 											<th>Brand name</th>
@@ -455,30 +421,27 @@ const downloadTableAsSVG = async () => {
 										</tr>
 									</thead>
 									<tbody>
-										{isLoading &&(
+										{isLoading && (
 											<tr>
 												<td>Loadning...</td>
 											</tr>
 										)}
-										{
-											error && (
-												<tr>
-													<td>Error fetching brands.</td>
-												</tr>
-											)
-										}
-										{
-											brands &&
+										{error && (
+											<tr>
+												<td>Error fetching brands.</td>
+											</tr>
+										)}
+										{brands &&
 											dataPagination(brands, currentPage, perPage)
-												.filter((brand : any) =>
-													brand.status === true 
+												.filter((brand: any) => brand.status === true)
+												.filter((brand: any) =>
+													searchTerm
+														? brand.name
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase())
+														: true,
 												)
-												.filter((brand : any) => 
-													searchTerm 
-													? brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-													: true,
-												)
-												.map((brand:any,index : any) => (
+												.map((brand: any, index: any) => (
 													<tr key={index}>
 														<td>{brand.category}</td>
 														<td>{brand.name}</td>
@@ -497,23 +460,25 @@ const downloadTableAsSVG = async () => {
 																icon='Delete'
 																className='m-2'
 																color='danger'
-																onClick={() => handleClickDelete(brand)}>
+																onClick={() =>
+																	handleClickDelete(brand)
+																}>
 																Delete
 															</Button>
 														</td>
 													</tr>
-												))
-										}
+												))}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => {
-									refetch();
-									setDeleteModalStatus(true)
-									
-								}}>
-								Recycle Bin</Button> 
-								
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => {
+										refetch();
+										setDeleteModalStatus(true);
+									}}>
+									Recycle Bin
+								</Button>
 							</CardBody>
 							<PaginationButtons
 								data={brands}
@@ -524,13 +489,16 @@ const downloadTableAsSVG = async () => {
 								setPerPage={setPerPage}
 							/>
 						</Card>
-						
-			
 					</div>
 				</div>
 			</Page>
 			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<BrandDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' refetchMainPage={refetch} />
+			<BrandDeleteModal
+				setIsOpen={setDeleteModalStatus}
+				isOpen={deleteModalStatus}
+				id=''
+				refetchMainPage={refetch}
+			/>
 			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);

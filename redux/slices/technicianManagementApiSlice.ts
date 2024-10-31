@@ -5,12 +5,10 @@ export const technicianApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Technician'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getTechnicians: builder.query({
       query: () => 'technicianManagement/route',
       providesTags: ['Technician'],
     }),
-    // Fetch a single category by ID
     getTechnicianById: builder.query({
       query: (id) => `technicianManagement/${id}`,
       providesTags: ['Technician'],
@@ -46,7 +44,7 @@ export const technicianApiSlice = createApi({
 
 export const {
   useGetTechniciansQuery,
-  useGetTechnicianByIdQuery, // New hook to fetch single category
+  useGetTechnicianByIdQuery,
   useGetDeleteTechniciansQuery,
   useAddTechnicianMutation,
   useUpdateTechnicianMutation,

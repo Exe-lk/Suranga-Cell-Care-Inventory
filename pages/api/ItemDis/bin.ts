@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { model, brand , reorderLevel ,quantity,boxNumber,category,touchpadNumber,batteryCellNumber,displaySNumber} = req.body;
+        const { model, brand, reorderLevel, quantity, boxNumber, category, touchpadNumber, batteryCellNumber, displaySNumber } = req.body;
         if (!model) {
           res.status(400).json({ error: 'Item Dis model  is required' });
           return;
@@ -27,12 +27,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id, model, brand , reorderLevel ,quantity,boxNumber,category,touchpadNumber,batteryCellNumber,displaySNumber, status } = req.body;
+        const { id, model, brand, reorderLevel, quantity, boxNumber, category, touchpadNumber, batteryCellNumber, displaySNumber, status } = req.body;
         if (!id || !model) {
           res.status(400).json({ error: 'Item Dis ID and model  are required' });
           return;
         }
-        await updateItemDis(id, model, brand , reorderLevel ,quantity,boxNumber,category,touchpadNumber,batteryCellNumber,displaySNumber, status);
+        await updateItemDis(id, model, brand, reorderLevel, quantity, boxNumber, category, touchpadNumber, batteryCellNumber, displaySNumber, status);
         res.status(200).json({ message: 'Item Dis updated' });
         break;
       }
@@ -55,6 +55,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

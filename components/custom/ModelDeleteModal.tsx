@@ -6,7 +6,7 @@ import Swal from 'sweetalert2';
 import {
 	useDeleteModelMutation,
 	useUpdateModelMutation,
-	useGetDeleteModelsQuery
+	useGetDeleteModelsQuery,
 } from '../../redux/slices/modelApiSlice';
 
 interface ModelDeleteModalProps {
@@ -16,7 +16,12 @@ interface ModelDeleteModalProps {
 	refetchMainPage: () => void;
 }
 
-const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , refetchMainPage}) => {
+const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
+	id,
+	isOpen,
+	setIsOpen,
+	refetchMainPage,
+}) => {
 	const [deleteModel] = useDeleteModelMutation();
 	const [updateModel] = useUpdateModelMutation();
 	const { data: models, error, isLoading, refetch } = useGetDeleteModelsQuery(undefined);
@@ -32,7 +37,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Please type "DELETE" to confirm.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE' ? 'You need to type "DELETE" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
@@ -94,7 +100,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 			title: 'Are you sure?',
 			text: 'Type "DELETE ALL" to confirm deleting all models.',
 			input: 'text',
-			inputValidator: (value) => value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
+			inputValidator: (value) =>
+				value !== 'DELETE ALL' ? 'You need to type "DELETE ALL" to confirm!' : null,
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
@@ -139,8 +146,21 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 						<tr>
 							<th>Model name</th>
 							<th>
-							<Button icon="Delete" color="danger" onClick={handleDeleteAll} isDisable={!models || models.length === 0 || isLoading}>Delete All</Button>
-							<Button icon="Restore" color="info" className='ms-3' onClick={handleRestoreAll} isDisable={!models || models.length === 0 || isLoading}>Restore All</Button>
+								<Button
+									icon='Delete'
+									color='danger'
+									onClick={handleDeleteAll}
+									isDisable={!models || models.length === 0 || isLoading}>
+									Delete All
+								</Button>
+								<Button
+									icon='Restore'
+									color='info'
+									className='ms-3'
+									onClick={handleRestoreAll}
+									isDisable={!models || models.length === 0 || isLoading}>
+									Restore All
+								</Button>
 							</th>
 						</tr>
 					</thead>
@@ -155,27 +175,29 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({ id, isOpen, setIsOpen , r
 								<td colSpan={2}>Error fetching models.</td>
 							</tr>
 						)}
-						{models && models.length > 0 && models.map((model: any,index : any) => (
-							<tr key={index}>
-              <td>{model.name}</td>
-              <td>
-                <Button
-                  icon='Restore'
-                  tag='a'
-                  color='info'
-                  onClick={() => handleClickRestore(model)}>
-                  Restore
-                </Button>
-                <Button
-                  className='m-2'
-                  icon='Delete'
-                  color='danger'
-                  onClick={() => handleClickDelete(model)}>
-                  Delete
-                </Button>
-              </td>
-            </tr>
-						))}
+						{models &&
+							models.length > 0 &&
+							models.map((model: any, index: any) => (
+								<tr key={index}>
+									<td>{model.name}</td>
+									<td>
+										<Button
+											icon='Restore'
+											tag='a'
+											color='info'
+											onClick={() => handleClickRestore(model)}>
+											Restore
+										</Button>
+										<Button
+											className='m-2'
+											icon='Delete'
+											color='danger'
+											onClick={() => handleClickDelete(model)}>
+											Delete
+										</Button>
+									</td>
+								</tr>
+							))}
 					</tbody>
 				</table>
 			</ModalBody>

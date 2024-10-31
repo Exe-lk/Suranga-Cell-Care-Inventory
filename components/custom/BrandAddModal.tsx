@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import Select from '../bootstrap/forms/Select'; // Adjust the import path as necessary
+import Select from '../bootstrap/forms/Select';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -7,7 +7,7 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { useAddBrandMutation } from '../../redux/slices/brandApiSlice';
-import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice'; // Import the category query
+import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 import Swal from 'sweetalert2';
 
 interface BrandAddModalProps {
@@ -18,9 +18,8 @@ interface BrandAddModalProps {
 
 const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addBrand, { isLoading }] = useAddBrandMutation();
-	const { refetch } = useGetCategoriesQuery(undefined); // Refetch brands
+	const { refetch } = useGetCategoriesQuery(undefined);
 
-	// Fetch categories from categoryApiSlice
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -54,7 +53,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -64,22 +62,19 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 
 				try {
-					// Add the new brand
 					const response: any = await addBrand({
 						...values,
-						category: values.category, // Pass category name instead of ID
+						category: values.category,
 					}).unwrap();
 
-					// Refetch brands to update the list
 					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Brand Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					console.error('Error during handleSubmit: ', error);
 					await Swal.fire({
@@ -113,8 +108,8 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							id='category'
 							name='category'
 							ariaLabel='Category'
-							onChange={formik.handleChange} // This updates the value in formik
-							value={formik.values.category} // This binds the formik value to the selected option
+							onChange={formik.handleChange}
+							value={formik.values.category}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
 								formik.touched.category && formik.errors.category
@@ -124,11 +119,13 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{isError && <option>Error fetching categories</option>}
-							{categories?.map((category: { id: string; name: string },index : any) => (
-								<option key={index} value={category.name}> {/* Use name as value */}
-									{category.name}
-								</option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<option key={index} value={category.name}>
+										{category.name}
+									</option>
+								),
+							)}
 						</Select>
 
 						{formik.touched.category && formik.errors.category ? (

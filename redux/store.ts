@@ -1,4 +1,3 @@
-// redux/store.ts
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { userManagementApiSlice } from './slices/userManagementApiSlice';
@@ -13,12 +12,12 @@ import { stockKeeperApiSlice } from './slices/stockKeeperApiSlice';
 import { dealerApiSlice } from './slices/delearApiSlice';
 import { supplierApiSlice } from './slices/supplierApiSlice';
 import { billApiSlice } from './slices/billApiSlice';
-import {technicianApiSlice} from './slices/technicianManagementApiSlice';
-import {ItemAcceApiSlice} from './slices/itemManagementAcceApiSlice';
-import {stockInOutApiSlice} from './slices/stockInOutDissApiSlice';
-import {ItemDisApiSlice} from './slices/itemManagementDisApiSlice';
-import {stockInOutAcceApiSlice} from './slices/stockInOutAcceApiSlice';
-import {repairedPhoneApiSlice} from './slices/repairedPhoneApiSlice';
+import { technicianApiSlice } from './slices/technicianManagementApiSlice';
+import { ItemAcceApiSlice } from './slices/itemManagementAcceApiSlice';
+import { stockInOutApiSlice } from './slices/stockInOutDissApiSlice';
+import { ItemDisApiSlice } from './slices/itemManagementDisApiSlice';
+import { stockInOutAcceApiSlice } from './slices/stockInOutAcceApiSlice';
+import { repairedPhoneApiSlice } from './slices/repairedPhoneApiSlice';
 
 
 const store = configureStore({

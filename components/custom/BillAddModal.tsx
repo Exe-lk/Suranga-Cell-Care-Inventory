@@ -22,14 +22,21 @@ interface CategoryEditModalProps {
 const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addBill, { isLoading }] = useAddBillMutation();
 	const { refetch, data: bills } = useGetBillsQuery(undefined);
-	const { data: models, isLoading: modelsLoading, isError: modelsError } = useGetModelsQuery(undefined);
-	const { data: technicians, isLoading: techniciansLoading, isError } = useGetTechniciansQuery(undefined);
+	const {
+		data: models,
+		isLoading: modelsLoading,
+		isError: modelsError,
+	} = useGetModelsQuery(undefined);
+	const {
+		data: technicians,
+		isLoading: techniciansLoading,
+		isError,
+	} = useGetTechniciansQuery(undefined);
 
-	// Calculate the next bill number
 	useEffect(() => {
 		if (bills && bills.length > 0) {
 			const highestBillNumber = Math.max(
-				...bills.map((bill: any) => parseInt(bill.billNumber || '0', 10))
+				...bills.map((bill: any) => parseInt(bill.billNumber || '0', 10)),
 			);
 			formik.setFieldValue('billNumber', (highestBillNumber + 1).toString().padStart(4, '0'));
 		} else {
@@ -41,7 +48,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		initialValues: {
 			phoneDetail: '',
 			dateIn: '',
-			billNumber: '0001', // Default to '0001'
+			billNumber: '0001',
 			phoneModel: '',
 			repairType: '',
 			technicianNum: '',
@@ -58,7 +65,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		validate: (values) => {
 			const errors: any = {};
 
-			// Field validations as before
 			if (!values.phoneDetail) errors.phoneDetail = 'Phone Detail is required.';
 			if (!values.dateIn) errors.dateIn = 'Date In is required.';
 			if (!values.billNumber) errors.billNumber = 'Bill Number is required.';
@@ -66,14 +72,16 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.repairType) errors.repairType = 'Repair Type is required.';
 			if (!values.technicianNum) errors.technicianNum = 'Technician No is required.';
 			if (!values.CustomerName) errors.CustomerName = 'Customer Name is required.';
-			if (!values.CustomerMobileNum) errors.CustomerMobileNum = 'Customer Mobile Number is required.';
-			if (values.CustomerMobileNum.length !== 10) errors.CustomerMobileNum = 'Mobile Number must be 10 digits';
+			if (!values.CustomerMobileNum)
+				errors.CustomerMobileNum = 'Customer Mobile Number is required.';
+			if (values.CustomerMobileNum.length !== 10)
+				errors.CustomerMobileNum = 'Mobile Number must be 10 digits';
 			if (!values.email) errors.email = 'Email is required.';
 			else if (!values.email.includes('@')) errors.email = 'Invalid email format.';
 			if (!values.NIC) errors.NIC = 'NIC is required.';
-			else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
+			else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC))
+				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
 
-			// Ensure cost and price are greater than zero
 			if (!values.cost) errors.cost = 'Cost is required.';
 			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Price) errors.Price = 'Price is required.';
@@ -119,11 +127,10 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -188,7 +195,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 							disabled={modelsLoading || isError}>
 							<Option value=''>Select a phoneModel</Option>
-							{models?.map((model: any,index : any) => (
+							{models?.map((model: any, index: any) => (
 								<Option key={index} value={model.name}>
 									{model.name}
 								</Option>
@@ -221,7 +228,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 							disabled={techniciansLoading || isError}>
 							<Option value=''>Select a Technician</Option>
-							{technicians?.map((technician: any,index : any) => (
+							{technicians?.map((technician: any, index: any) => (
 								<Option key={index} value={technician.technicianNum}>
 									{technician.technicianNum}
 								</Option>
@@ -250,8 +257,11 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							type='text'
 							value={formik.values.CustomerMobileNum}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
-								formik.setFieldValue('CustomerMobileNum', formatMobileNumber(input));
+								const input = e.target.value.replace(/\D/g, '');
+								formik.setFieldValue(
+									'CustomerMobileNum',
+									formatMobileNumber(input),
+								);
 							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}

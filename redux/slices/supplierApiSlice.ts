@@ -5,12 +5,10 @@ export const supplierApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
   tagTypes: ['Supplier'],
   endpoints: (builder) => ({
-    // Read: Fetch all categories
     getSuppliers: builder.query({
       query: () => 'supplier/route',
       providesTags: ['Supplier'],
     }),
-    // Fetch a single category by ID
     getSupplierById: builder.query({
       query: (id) => `supplier/${id}`,
       providesTags: ['Supplier'],
@@ -46,7 +44,7 @@ export const supplierApiSlice = createApi({
 
 export const {
   useGetSuppliersQuery,
-  useGetSupplierByIdQuery, // New hook to fetch single category
+  useGetSupplierByIdQuery,
   useGetDeleteSuppliersQuery,
   useAddSupplierMutation,
   useUpdateSupplierMutation,

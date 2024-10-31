@@ -10,41 +10,39 @@ import Button from '../bootstrap/Button';
 import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { firestore, storage } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
-import { useGetCategoriesQuery, useUpdateCategoryMutation } from '../../redux/slices/categoryApiSlice';
+import {
+	useGetCategoriesQuery,
+	useUpdateCategoryMutation,
+} from '../../redux/slices/categoryApiSlice';
 
-// Define the props for the CategoryEditModal component
 interface CategoryEditModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
 
-
-const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  }) => {
-	
-	const { data: categoryData,refetch } = useGetCategoriesQuery(undefined);
-    const [updateCategory,{isLoading}] = useUpdateCategoryMutation();
+const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const { data: categoryData, refetch } = useGetCategoriesQuery(undefined);
+	const [updateCategory, { isLoading }] = useUpdateCategoryMutation();
 
 	const categoryToEdit = categoryData?.find((category: any) => category.id === id);
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			id: '',
 			name: categoryToEdit?.name || '',
-		
 		},
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				name?: string;
 			} = {};
-			if (!values.name) {  // Validate values.name, not category.name
+			if (!values.name) {
 				errors.name = 'Required';
 			}
 			return errors;
 		},
-		
+
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -56,22 +54,20 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  
 				});
 
 				try {
-					// Update the category
 					const data = {
 						name: values.name,
 						status: true,
 						id: id,
 					};
 					await updateCategory(data).unwrap();
-					refetch(); // Trigger refetch of stock keeper list after update
+					refetch();
 
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Category Updated Successfully',
 					});
 					formik.resetForm();
-                	setIsOpen(false);
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -86,8 +82,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  
 		},
 	});
 
-	
-	
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -100,7 +94,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='name' label='Name' className='col-md-6'>
+					<FormGroup id='name' label='Name' className='col-md-6'>
 						<Input
 							name='name'
 							value={formik.values.name}
@@ -112,13 +106,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
 				</div>
-				
-				
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Edit Category
 				</Button>
@@ -126,7 +116,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen  
 		</Modal>
 	);
 };
-// Prop types definition for CustomerEditModal component
 CategoryEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

@@ -10,13 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        console.log(req.body)
-        const { brand,model,category,quantity,date,suppName,cost,stock,code,barcode} = req.body;
+        const { brand, model, category, quantity, date, suppName, cost, stock, code, barcode } = req.body;
         if (!brand) {
           res.status(400).json({ error: 'stock In name is required' });
           return;
         }
-       
+
         const id = await createstockIn(req.body);
         res.status(201).json({ message: 'stock In created', id });
         break;
@@ -29,12 +28,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       case 'PUT': {
-        const { id,quantity} = req.body;
+        const { id, quantity } = req.body;
         if (!id || !quantity) {
           res.status(400).json({ error: 'stock In ID and name are required' });
           return;
         }
-        await updatestockIn(id,quantity);
+        await updatestockIn(id, quantity);
         res.status(200).json({ message: 'stock In updated' });
         break;
       }
@@ -46,6 +45,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
   } catch (error) {
-    res.status(500).json({ error: 'An error occurred',});
+    res.status(500).json({ error: 'An error occurred', });
   }
 }

@@ -11,10 +11,8 @@ import Chart, { IChartOptions } from './extras/Chart';
 import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const PolarBasic = () => {
-	// Fetch bills data
 	const { data: bills } = useGetBillsQuery(undefined);
 
-	// State to hold chart options and series
 	const [state, setState] = useState<IChartOptions>({
 		series: [],
 		options: {
@@ -27,9 +25,9 @@ const PolarBasic = () => {
 			fill: {
 				opacity: 0.8,
 			},
-			labels: [], // Labels for the statuses
+			labels: [],
 			dataLabels: {
-				enabled: false, // Disable data labels
+				enabled: false,
 			},
 			responsive: [
 				{
@@ -46,35 +44,29 @@ const PolarBasic = () => {
 			],
 		},
 	});
-	
 
-
-	// Effect to update chart data when bills are fetched
 	useEffect(() => {
 		if (bills) {
-			// Initialize an object to count statuses
 			const statusCounts = {
 				'in progress to complete': 0,
-				'reject': 0,
-				'completed': 0,
+				reject: 0,
+				completed: 0,
 				'in progress': 0,
 				'waiting to in progress': 0,
-				'HandOver': 0,
+				HandOver: 0,
 			};
 
-			// Iterate through bills to count the statuses
 			bills.forEach((bill: { Status: keyof typeof statusCounts }) => {
 				if (statusCounts[bill.Status] !== undefined) {
-					statusCounts[bill.Status]++; // Increment count based on status
+					statusCounts[bill.Status]++;
 				}
 			});
 
-			// Update chart data (series and labels)
 			setState({
-				series: Object.values(statusCounts), // Counts for each status
+				series: Object.values(statusCounts),
 				options: {
 					...state.options,
-					labels: Object.keys(statusCounts), // Status labels for the chart
+					labels: Object.keys(statusCounts),
 				},
 			});
 		}
@@ -91,10 +83,10 @@ const PolarBasic = () => {
 				</CardHeader>
 				<CardBody>
 					<Chart
-						series={state.series} // Status counts
-						options={state.options} // Chart options including labels
-						type={state.options.chart?.type} // Polar chart type
-						width={state.options.chart?.width} // Chart width (adjustable for responsiveness)
+						series={state.series}
+						options={state.options}
+						type={state.options.chart?.type}
+						width={state.options.chart?.width}
 					/>
 				</CardBody>
 			</Card>

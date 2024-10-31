@@ -188,7 +188,7 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 						)}
 						{stockKeepers &&
 							stockKeepers.length > 0 &&
-							stockKeepers.map((stockKeeper: any,index : any) => (
+							stockKeepers.map((stockKeeper: any, index: any) => (
 								<tr key={index}>
 									<td>{stockKeeper.type}</td>
 									<td>
