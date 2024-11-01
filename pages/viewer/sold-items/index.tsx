@@ -399,6 +399,12 @@ const Index: NextPage = () => {
 													searchTerm
 														? StockItem.category
 																.toLowerCase()
+																.includes(searchTerm.toLowerCase())||
+															StockItem.model
+																.toLowerCase()
+																.includes(searchTerm.toLowerCase()) ||
+															StockItem.brand
+																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)

@@ -80,11 +80,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					mobileNumber: technician.mobileNumber,
 				};
 				await updateTechnician(values);
-				Swal.fire('Deleted!', 'The technician has been deleted.', 'success');
+				Swal.fire('Restored!', 'The technician has been restored.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete technician.', 'error');
+			Swal.fire('Error', 'Failed to restore technician.', 'error');
 		}
 	};
 

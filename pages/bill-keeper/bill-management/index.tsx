@@ -412,7 +412,6 @@ const Index: NextPage = () => {
 											value={dateInEnd}
 										/>
 									</FormGroup>
-
 									<FormGroup label='Date Out Start' className='col-6'>
 										<Input
 											type='date'
