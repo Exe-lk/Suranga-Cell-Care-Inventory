@@ -25,45 +25,41 @@ import ItemDeleteModal from '../../../components/custom/itemDeleteAcce';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { toPng, toSvg } from 'html-to-image';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
+import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
-import jsPDF from 'jspdf'; 
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { useUpdateItemAcceMutation} from '../../../redux/slices/itemManagementAcceApiSlice';
-import { useGetItemAccesQuery} from '../../../redux/slices/itemManagementAcceApiSlice';
+import { useUpdateItemAcceMutation } from '../../../redux/slices/itemManagementAcceApiSlice';
+import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
 
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode();
-	const [searchTerm, setSearchTerm] = useState(''); 
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
-    const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false); 
-	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); 
+	const [searchTerm, setSearchTerm] = useState('');
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false);
+	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
-	const {data: itemAcces,error, isLoading,refetch} = useGetItemAccesQuery(undefined);
+	const { data: itemAcces, error, isLoading, refetch } = useGetItemAccesQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateItemAcce] = useUpdateItemAcceMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-	const type = [
-		{ type: 'Accessory' },
-		{ type: 'Mobile' },
-
-	];
+	const type = [{ type: 'Accessory' }, { type: 'Mobile' }];
 	const [quantity, setQuantity] = useState<any>();
 
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-	}, [itemAcces ]);
+	}, [itemAcces]);
 
-	const handleClickDelete = async (itemAcce:any) => {
+	const handleClickDelete = async (itemAcce: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -95,168 +91,168 @@ const Index: NextPage = () => {
 		}
 	};
 
-const handleExport = async (format: string) => {
-    const table = document.querySelector('table');
-    if (!table) return;
-    modifyTableForExport(table as HTMLElement, true);
-    try {
-        switch (format) {
-            case 'svg':
-                await downloadTableAsSVG();
-                break;
-            case 'png':
-                await downloadTableAsPNG();
-                break;
-            case 'csv':
-                downloadTableAsCSV(table as HTMLElement);
-                break;
-            case 'pdf':
-                downloadTableAsPDF(table as HTMLElement);
-                break;
-            default:
-                console.warn('Unsupported export format: ', format);
-        }
-    } catch (error) {
-        console.error('Error exporting table: ', error);
-    } finally {
-        modifyTableForExport(table as HTMLElement, false);
-    }
-};
-const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
-    const rows = table.querySelectorAll('tr');
-    rows.forEach((row) => {
-        const cells = row.querySelectorAll('td, th');
-        const totalCells = cells.length;
-        for (let i = totalCells - 4; i < totalCells; i++) {
-            const cell = cells[i];
-            if (cell instanceof HTMLElement) {
-                if (hide) {
-                    cell.style.display = 'none';  
-                } else {
-                    cell.style.display = '';  
-                }
-            }
-        }
-    });
-};
-const downloadTableAsPNG = async () => {
-    try {
-        const table = document.querySelector('table');
-        if (!table) {
-            console.error('Table element not found');
-            return;
-        }
-		const originalBorderStyle = table.style.border;
-        table.style.border = '1px solid black'; 
-        const dataUrl = await toPng(table, {
-            cacheBust: true,
-            style: {
-                width: table.offsetWidth + 'px',
-            },
-        });
-        table.style.border = originalBorderStyle;
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'table_data.png';
-        link.click();
-    } catch (error) {
-        console.error('Error generating PNG: ', error);
-    }
-};
-const downloadTableAsSVG = async () => {
-    try {
-        const table = document.querySelector('table');
-        if (!table) {
-            console.error('Table element not found');
-            return;
-        }
-        const cells = table.querySelectorAll('th, td');
-        const originalColors: string[] = [];
-        cells.forEach((cell: any, index: number) => {
-            originalColors[index] = cell.style.color;  
-            cell.style.color = 'black'; 
-        });
-        const dataUrl = await toSvg(table, {
-            backgroundColor: 'white',
-            cacheBust: true,
-        });
-        cells.forEach((cell: any, index: number) => {
-            cell.style.color = originalColors[index];  
-        });
-        const link = document.createElement('a');
-        link.href = dataUrl;
-        link.download = 'table_data.svg';
-        link.click();
-    } catch (error) {
-        console.error('Error generating SVG: ', error);
-    }
-};
-const downloadTableAsCSV = (table: HTMLElement) => {
-    let csvContent = 'Category\n';
-    const rows = table.querySelectorAll('tr');
-    rows.forEach((row: any) => {
-        const cols = row.querySelectorAll('td, th');
-        const rowData = Array.from(cols)
-            .slice(0, -1) 
-            .map((col: any) => `"${col.innerText}"`)
-            .join(',');
-        csvContent += rowData + '\n';
-    });
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = 'table_data.csv';
-    link.click();
-};
-const downloadTableAsPDF = (table: HTMLElement) => {
-    try {
-        const pdf = new jsPDF('p', 'pt', 'a4');
-        const pageWidth = pdf.internal.pageSize.getWidth(); 
-        const title = 'LOT Management';
-        const titleFontSize = 18;
-        pdf.setFontSize(titleFontSize);
-        const textWidth = pdf.getTextWidth(title);
-        const xPosition = (pageWidth - textWidth) / 2; 
-        pdf.text(title, xPosition, 40); 
-        const rows: any[] = [];
-        const headers: any[] = [];
-        const thead = table.querySelector('thead');
-        if (thead) {
-            const headerCells = thead.querySelectorAll('th');
-            headers.push(
-                Array.from(headerCells)
-                    .slice(0, -1) 
-                    .map((cell: any) => cell.innerText)
-            );
-        }
-        const tbody = table.querySelector('tbody');
-        if (tbody) {
-            const bodyRows = tbody.querySelectorAll('tr');
-            bodyRows.forEach((row: any) => {
-                const cols = row.querySelectorAll('td');
-                const rowData = Array.from(cols)
-                    .slice(0, -1) 
-                    .map((col: any) => col.innerText);
-                rows.push(rowData);
-            });
-        }
-        autoTable(pdf, {
-            head: headers,
-            body: rows,
-            margin: { top: 50 },
-            styles: {
-                overflow: 'linebreak',
-                cellWidth: 'wrap',
-            },
-            theme: 'grid',
-        });
-        pdf.save('table_data.pdf');
-    } catch (error) {
-        console.error('Error generating PDF: ', error);
-        alert('Error generating PDF. Please try again.');
-    }
-};
-	
+	const handleExport = async (format: string) => {
+		const table = document.querySelector('table');
+		if (!table) return;
+		modifyTableForExport(table as HTMLElement, true);
+		try {
+			switch (format) {
+				case 'svg':
+					await downloadTableAsSVG();
+					break;
+				case 'png':
+					await downloadTableAsPNG();
+					break;
+				case 'csv':
+					downloadTableAsCSV(table as HTMLElement);
+					break;
+				case 'pdf':
+					downloadTableAsPDF(table as HTMLElement);
+					break;
+				default:
+					console.warn('Unsupported export format: ', format);
+			}
+		} catch (error) {
+			console.error('Error exporting table: ', error);
+		} finally {
+			modifyTableForExport(table as HTMLElement, false);
+		}
+	};
+	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row) => {
+			const cells = row.querySelectorAll('td, th');
+			const totalCells = cells.length;
+			for (let i = totalCells - 4; i < totalCells; i++) {
+				const cell = cells[i];
+				if (cell instanceof HTMLElement) {
+					if (hide) {
+						cell.style.display = 'none';
+					} else {
+						cell.style.display = '';
+					}
+				}
+			}
+		});
+	};
+	const downloadTableAsPNG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+			const originalBorderStyle = table.style.border;
+			table.style.border = '1px solid black';
+			const dataUrl = await toPng(table, {
+				cacheBust: true,
+				style: {
+					width: table.offsetWidth + 'px',
+				},
+			});
+			table.style.border = originalBorderStyle;
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.png';
+			link.click();
+		} catch (error) {
+			console.error('Error generating PNG: ', error);
+		}
+	};
+	const downloadTableAsSVG = async () => {
+		try {
+			const table = document.querySelector('table');
+			if (!table) {
+				console.error('Table element not found');
+				return;
+			}
+			const cells = table.querySelectorAll('th, td');
+			const originalColors: string[] = [];
+			cells.forEach((cell: any, index: number) => {
+				originalColors[index] = cell.style.color;
+				cell.style.color = 'black';
+			});
+			const dataUrl = await toSvg(table, {
+				backgroundColor: 'white',
+				cacheBust: true,
+			});
+			cells.forEach((cell: any, index: number) => {
+				cell.style.color = originalColors[index];
+			});
+			const link = document.createElement('a');
+			link.href = dataUrl;
+			link.download = 'table_data.svg';
+			link.click();
+		} catch (error) {
+			console.error('Error generating SVG: ', error);
+		}
+	};
+	const downloadTableAsCSV = (table: HTMLElement) => {
+		let csvContent = 'Category\n';
+		const rows = table.querySelectorAll('tr');
+		rows.forEach((row: any) => {
+			const cols = row.querySelectorAll('td, th');
+			const rowData = Array.from(cols)
+				.slice(0, -1)
+				.map((col: any) => `"${col.innerText}"`)
+				.join(',');
+			csvContent += rowData + '\n';
+		});
+		const blob = new Blob([csvContent], { type: 'text/csv' });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'table_data.csv';
+		link.click();
+	};
+	const downloadTableAsPDF = (table: HTMLElement) => {
+		try {
+			const pdf = new jsPDF('p', 'pt', 'a4');
+			const pageWidth = pdf.internal.pageSize.getWidth();
+			const title = 'LOT Management';
+			const titleFontSize = 18;
+			pdf.setFontSize(titleFontSize);
+			const textWidth = pdf.getTextWidth(title);
+			const xPosition = (pageWidth - textWidth) / 2;
+			pdf.text(title, xPosition, 40);
+			const rows: any[] = [];
+			const headers: any[] = [];
+			const thead = table.querySelector('thead');
+			if (thead) {
+				const headerCells = thead.querySelectorAll('th');
+				headers.push(
+					Array.from(headerCells)
+						.slice(0, -1)
+						.map((cell: any) => cell.innerText),
+				);
+			}
+			const tbody = table.querySelector('tbody');
+			if (tbody) {
+				const bodyRows = tbody.querySelectorAll('tr');
+				bodyRows.forEach((row: any) => {
+					const cols = row.querySelectorAll('td');
+					const rowData = Array.from(cols)
+						.slice(0, -1)
+						.map((col: any) => col.innerText);
+					rows.push(rowData);
+				});
+			}
+			autoTable(pdf, {
+				head: headers,
+				body: rows,
+				margin: { top: 50 },
+				styles: {
+					overflow: 'linebreak',
+					cellWidth: 'wrap',
+				},
+				theme: 'grid',
+			});
+			pdf.save('table_data.pdf');
+		} catch (error) {
+			console.error('Error generating PDF: ', error);
+			alert('Error generating PDF. Please try again.');
+		}
+	};
+
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -279,7 +275,7 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-				<Dropdown>
+					<Dropdown>
 						<DropdownToggle hasIcon={false}>
 							<Button
 								icon='FilterAlt'
@@ -287,11 +283,11 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 								isLight
 								className='btn-only-icon position-relative'></Button>
 						</DropdownToggle>
-				<DropdownMenu isAlignmentEnd size='lg'>
+						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
 									<FormGroup label='Type' className='col-12'>
-									<ChecksGroup>
+										<ChecksGroup>
 											{type.map((itemAcces, index) => (
 												<Checks
 													key={itemAcces.type}
@@ -302,14 +298,13 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 													checked={selectedUsers.includes(itemAcces.type)}
 													onChange={(event: any) => {
 														const { checked, value } = event.target;
-														setSelectedUsers(
-															(prevUsers) =>
-																checked
-																	? [...prevUsers, value] 
-																	: prevUsers.filter(
-																			(itemAcces) =>
-																				itemAcces !== value,
-																	  ), 
+														setSelectedUsers((prevUsers) =>
+															checked
+																? [...prevUsers, value]
+																: prevUsers.filter(
+																		(itemAcces) =>
+																			itemAcces !== value,
+																  ),
 														);
 													}}
 												/>
@@ -338,25 +333,32 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 									Manage Stock
 								</div>
 								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('svg')}>
+											Download SVG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('png')}>
+											Download PNG
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+										<DropdownItem onClick={() => handleExport('pdf')}>
+											Download PDF
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table  table-bordered border-primary table-hover text-center'>
-								<thead className={"table-dark border-primary"}>
+									<thead className={'table-dark border-primary'}>
 										<tr>
+											<th>Code</th>
 											<th>Type</th>
 											<th>Category</th>
 											<th>Model</th>
@@ -367,11 +369,11 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 											<th></th>
 											<th></th>
 											<th></th>
-											<th></th>											
+											<th></th>
 										</tr>
 									</thead>
 									<tbody>
-									{isLoading && (
+										{isLoading && (
 											<tr>
 												<td>Loading...</td>
 											</tr>
@@ -383,76 +385,79 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 										)}
 										{itemAcces &&
 											dataPagination(itemAcces, currentPage, perPage)
-											.filter((itemAcces: any) =>
-												selectedUsers.length > 0
-													? selectedUsers.includes(itemAcces.type)
-													: true,
-											)
-											.filter((brand: any) => {
-												if (brand.code.includes(searchTerm.slice(0, 4))) {
-													return brand;
-												}
-											})
-											.map((itemAcces: any, index: any) => (
+												.filter((itemAcces: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(itemAcces.type)
+														: true,
+												)
+												.filter((brand: any) => {
+													if (
+														brand.code.includes(searchTerm.slice(0, 4))
+													) {
+														return brand;
+													}
+												})
+												.map((itemAcces: any, index: any) => (
 													<tr key={index}>
-													<td>{itemAcces.type}</td>
-													<td>{itemAcces.category}</td>
-													<td>{itemAcces.model}</td>
-													<td>{itemAcces.brand}</td>
-													<td>{itemAcces.quantity}</td>
-													<td>{itemAcces.reorderLevel}</td>
-													<td>{itemAcces.description}</td>
+														<td>{itemAcces.code}</td>
+														<td>{itemAcces.type}</td>
+														<td>{itemAcces.category}</td>
+														<td>{itemAcces.model}</td>
+														<td>{itemAcces.brand}</td>
+														<td>{itemAcces.quantity}</td>
+														<td>{itemAcces.reorderLevel}</td>
+														<td>{itemAcces.description}</td>
 														<td>
 															<Button
 																icon='CallReceived'
 																tag='a'
 																color='success'
-																onClick={() =>(
+																onClick={() => (
 																	setAddstockModalStatus(true),
-																	setId(itemAcces.id))
-																	
-																}></Button>
+																	setId(itemAcces.id)
+																)}></Button>
 														</td>
 														<td>
 															<Button
 																icon='CallMissedOutgoing'
 																tag='a'
 																color='warning'
-																onClick={() =>(
+																onClick={() => (
 																	refetch(),
 																	setEditstockModalStatus(true),
 																	setId(itemAcces.id),
 																	setQuantity(itemAcces.quantity)
-																)
-																}></Button>
+																)}></Button>
 														</td>
 														<td>
 															<Button
 																icon='Edit'
 																tag='a'
 																color='info'
-																onClick={() =>(
+																onClick={() => (
 																	setEditModalStatus(true),
-																	setId(itemAcces.id))
-																}></Button>
+																	setId(itemAcces.id)
+																)}></Button>
 														</td>
 														<td>
 															<Button
 																className='m-2'
 																icon='Delete'
 																color='danger'
-																onClick={() => handleClickDelete(itemAcces)}></Button>
+																onClick={() =>
+																	handleClickDelete(itemAcces)
+																}></Button>
 														</td>
-														
 													</tr>
 												))}
 									</tbody>
 								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-								)}>
-								Recycle Bin</Button> 
+								<Button
+									icon='Delete'
+									className='mb-5'
+									onClick={() => setDeleteModalStatus(true)}>
+									Recycle Bin
+								</Button>
 							</CardBody>
 							<PaginationButtons
 								data={itemAcces}
@@ -466,11 +471,20 @@ const downloadTableAsPDF = (table: HTMLElement) => {
 					</div>
 				</div>
 			</Page>
-			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id= ''/>
-			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id}/>
-            <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id}/>
-			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} quantity={quantity}/>
-			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id=''/>
+			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
+			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			<StockAddModal
+				setIsOpen={setAddstockModalStatus}
+				isOpen={addstockModalStatus}
+				id={id}
+			/>
+			<StockOutModal
+				setIsOpen={setEditstockModalStatus}
+				isOpen={editstockModalStatus}
+				id={id}
+				quantity={quantity}
+			/>
+			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 		</PageWrapper>
 	);
 };

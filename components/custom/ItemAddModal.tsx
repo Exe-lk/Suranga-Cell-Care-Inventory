@@ -12,7 +12,10 @@ import Option from '../bootstrap/Option';
 import { useGetCategories1Query } from '../../redux/slices/category1ApiSlice';
 import { useGetBrands1Query } from '../../redux/slices/brand1ApiSlice';
 import { useGetModels1Query } from '../../redux/slices/model1ApiSlice';
-import { useAddItemAcceMutation, useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
+import {
+	useAddItemAcceMutation,
+	useGetItemAccesQuery,
+} from '../../redux/slices/itemManagementAcceApiSlice';
 
 interface ItemAddModalProps {
 	id: string;
@@ -25,23 +28,27 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
 	const [addItemAcce, { isLoading }] = useAddItemAcceMutation();
 	const { refetch } = useGetItemAccesQuery(undefined);
-	const {data: itemAcces} = useGetItemAccesQuery(undefined);
+	const { data: itemAcces } = useGetItemAccesQuery(undefined);
 	const { data: brands } = useGetBrands1Query(undefined);
 	const { data: models } = useGetModels1Query(undefined);
-	const { data: categories, isLoading: categoriesLoading, isError } = useGetCategories1Query(undefined);
+	const {
+		data: categories,
+		isLoading: categoriesLoading,
+		isError,
+	} = useGetCategories1Query(undefined);
 	const [generatedCode, setGeneratedCode] = useState('');
 
 	useEffect(() => {
 		if (itemAcces?.length) {
 			const lastCode = itemAcces
-				.map((item: { code: string }) => item.code) 
-				.filter((code: string) => code) 
+				.map((item: { code: string }) => item.code)
+				.filter((code: string) => code)
 				.reduce((maxCode: string, currentCode: string) => {
-					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); 
-					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); 
-					return currentNumericPart > maxNumericPart ? currentCode : maxCode; 
-				}, '1000'); 
-			const newCode = incrementCode(lastCode); 
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
+					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
+				}, '1000');
+			const newCode = incrementCode(lastCode);
 			setGeneratedCode(newCode);
 		} else {
 			setGeneratedCode('1000');
@@ -49,14 +56,14 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	}, [itemAcces]);
 
 	const incrementCode = (code: string) => {
-		const numericPart = parseInt(code.replace(/\D/g, ''), 10); 
-		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0'); 
-		return incrementedNumericPart; 
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0');
+		return incrementedNumericPart;
 	};
 
 	const formik = useFormik({
 		initialValues: {
-			code:generatedCode,
+			code: generatedCode,
 			type: '',
 			mobileType: '',
 			category: '',
@@ -84,7 +91,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.brand) {
 				errors.brand = 'Brand is required';
 			}
-			if(!values.model){
+			if (!values.model) {
 				errors.model = 'Model is required';
 			}
 			return errors;
@@ -92,39 +99,38 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
-				  title: 'Processing...',
-				  html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
-				  allowOutsideClick: false,
-				  showCancelButton: false,
-				  showConfirmButton: false,
-			   });
-			   try {
-				  const response:any = await addItemAcce({
-					 ...values,
-					 code:generatedCode,
-					 category: values.category,
-					 brand: values.brand,
-					 model: values.model,
-				  }).unwrap(); 
-				  refetch(); 
-				  await Swal.fire({
-					 icon: 'success',
-					 title: 'Item Created Successfully',
-				  });
-				  formik.resetForm();
-				  setIsOpen(false); 
-			   } catch (error) {
-				  await Swal.fire({
-					 icon: 'error',
-					 title: 'Error',
-					 text: 'Failed to add the item. Please try again.',
-				  });
-			   }
+					title: 'Processing...',
+					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+					allowOutsideClick: false,
+					showCancelButton: false,
+					showConfirmButton: false,
+				});
+				try {
+					const response: any = await addItemAcce({
+						...values,
+						code: generatedCode,
+						category: values.category,
+						brand: values.brand,
+						model: values.model,
+					}).unwrap();
+					refetch();
+					await Swal.fire({
+						icon: 'success',
+						title: 'Item Created Successfully',
+					});
+					formik.resetForm();
+					setIsOpen(false);
+				} catch (error) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Error',
+						text: 'Failed to add the item. Please try again.',
+					});
+				}
 			} catch (error) {
-			   console.error('Error: ', error);
+				console.error('Error: ', error);
 			}
-		 },
-		 
+		},
 	});
 
 	const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -132,21 +138,22 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		formik.setFieldValue('category', e.target.value);
 		setSelectedBrand('');
 		formik.setFieldValue('brand', '');
-		formik.setFieldValue('model', ''); 
+		formik.setFieldValue('model', '');
 	};
 
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
 		formik.setFieldValue('brand', e.target.value);
-		formik.setFieldValue('model', ''); 
+		formik.setFieldValue('model', '');
 	};
 
 	const filteredBrands = brands?.filter(
-		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other'
+		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other',
 	);
 	const filteredModels = models?.filter(
 		(model: any) =>
-			model.brand === selectedBrand && (model.category === selectedCategory || selectedCategory === 'Other')
+			model.brand === selectedBrand &&
+			(model.category === selectedCategory || selectedCategory === 'Other'),
 	);
 
 	return (
@@ -161,7 +168,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='code' label='Generated Code' className='col-md-6'>
+					<FormGroup id='code' label='Generated Code' className='col-md-6'>
 						<Input
 							type='text'
 							value={generatedCode}
@@ -180,8 +187,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={formik.touched.type}
 							invalidFeedback={formik.errors.type}
-							validFeedback='Looks good!'
-						>
+							validFeedback='Looks good!'>
 							<Option value=''>Select the Type</Option>
 							<Option value='Mobile'>Mobile</Option>
 							<Option value='Accessory'>Accessory</Option>
@@ -197,8 +203,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								isValid={formik.isValid}
 								isTouched={formik.touched.mobileType}
 								invalidFeedback={formik.errors.mobileType}
-								validFeedback='Looks good!'
-							>
+								validFeedback='Looks good!'>
 								<Option value=''>Select Mobile Type</Option>
 								<Option value='Brand New'>Brand New</Option>
 								<Option value='Used'>Used</Option>
@@ -210,16 +215,19 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							ariaLabel='Category'
 							onChange={handleCategoryChange}
 							value={selectedCategory}
-							onBlur={formik.handleBlur}
-						>
+							onBlur={formik.handleBlur}>
 							<Option value=''>Select a category</Option>
-							{categoriesLoading && <Option value='loading'>Loading categories...</Option>}
+							{categoriesLoading && (
+								<Option value='loading'>Loading categories...</Option>
+							)}
 							{isError && <Option value='error'>Error fetching categories</Option>}
-							{categories?.map((category: { id: string; name: string }, index: any) => (
-								<Option key={index} value={category.name}>
-									{category.name}
-								</Option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<Option key={index} value={category.name}>
+										{category.name}
+									</Option>
+								),
+							)}
 						</Select>
 					</FormGroup>
 					{selectedCategory && (
@@ -228,8 +236,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								ariaLabel='Select brand'
 								onChange={handleBrandChange}
 								value={selectedBrand}
-								onBlur={formik.handleBlur}
-							>
+								onBlur={formik.handleBlur}>
 								<Option value=''>Select Brand</Option>
 								{filteredBrands?.map((brand: any, index: any) => (
 									<Option key={index} value={brand.name}>
@@ -246,9 +253,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								onChange={formik.handleChange}
 								value={formik.values.model}
 								onBlur={formik.handleBlur}
-								name='model'
-							>
-								 <Option value=''>Select Model</Option>
+								name='model'>
+								<Option value=''>Select Model</Option>
 								{filteredModels?.map((model: any, index: any) => (
 									<Option key={index} value={model.name}>
 										{model.name}
@@ -259,7 +265,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					)}
 					<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
 						<Input
-						type='number'
+							type='number'
+							min={1}
 							onChange={formik.handleChange}
 							value={formik.values.reorderLevel}
 							name='reorderLevel'

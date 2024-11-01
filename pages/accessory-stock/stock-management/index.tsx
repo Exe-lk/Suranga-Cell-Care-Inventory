@@ -356,10 +356,7 @@ const Index: NextPage = () => {
 												)
 												.filter((brand: any) =>
 													searchTerm
-														? brand.barcode
-																.toString()
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
+														? brand.barcode?.includes(searchTerm)
 														: true,
 												)
 												.filter((brand: any) =>

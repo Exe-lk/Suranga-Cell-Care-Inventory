@@ -133,7 +133,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			if (!values.dateIn) errors.dateIn = 'Date In is required';
 			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
 			if (!values.customerName) errors.customerName = 'Customer Name is required';
-			if (!values.mobile) errors.mobile = 'Mobile is required';
+			if (!values.mobile) {
+				errors.mobile = 'Required';
+			} else if (values.mobile.length !== 10) {
+				errors.mobile = 'Mobile number must be exactly 10 digits';
+			}
 			if (!values.nic) {
 				errors.nic = 'Required';
 			} else if (!/^\d{9}[Vv]$/.test(values.nic) && !/^\d{12}$/.test(values.nic)) {
@@ -143,6 +147,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			return errors;
 		},
@@ -220,6 +226,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
 						<Input
 							type='number'
+							min={1}
 							placeholder='Enter Quantity'
 							value={formik.values.quantity}
 							onChange={formik.handleChange}
@@ -234,6 +241,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					<FormGroup id='date' label='Date Out' className='col-md-6'>
 						<Input
 							type='date'
+							max={new Date().toISOString().split('T')[0]}
 							placeholder='Enter Date'
 							value={formik.values.date}
 							onChange={formik.handleChange}
@@ -289,7 +297,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					)}
 					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
 						<Input
-							type='text'
+							type='number'
+							min={0}
 							placeholder='Enter Selling Price'
 							value={formik.values.sellingPrice}
 							onChange={formik.handleChange}

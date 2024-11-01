@@ -49,7 +49,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [updateItemAcce, { isLoading }] = useUpdateItemAcceMutation();
 
 	const formik = useFormik({
-		enableReinitialize: true, 
+		enableReinitialize: true,
 		initialValues: {
 			id: '',
 			type: itemAcceToEdit?.type || '',
@@ -105,13 +105,13 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					description: values.description,
 				};
 				await updateItemAcce(data).unwrap();
-				await refetch(); 
+				await refetch();
 				await Swal.fire({
 					icon: 'success',
 					title: 'Item Acce Updated Successfully',
 				});
 				formik.resetForm();
-				setIsOpen(false); 
+				setIsOpen(false);
 			} catch (error) {
 				await Swal.fire({
 					icon: 'error',
@@ -125,15 +125,15 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedCategory(e.target.value);
 		formik.setFieldValue('category', e.target.value);
-		setSelectedBrand(''); 
-		formik.setFieldValue('brand', ''); 
-		formik.setFieldValue('model', ''); 
+		setSelectedBrand('');
+		formik.setFieldValue('brand', '');
+		formik.setFieldValue('model', '');
 	};
 
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
 		formik.setFieldValue('brand', e.target.value);
-		formik.setFieldValue('model', ''); 
+		formik.setFieldValue('model', '');
 	};
 
 	const filteredBrands = brands?.filter(
@@ -172,14 +172,14 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						</Select>
 					</FormGroup>
 					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
-								<Input
-									type='number'
-									onChange={formik.handleChange}
-									value={formik.values.quantity}
-									onBlur={formik.handleBlur}
-									name='quantity'
-									readOnly
-								/>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.quantity}
+							onBlur={formik.handleBlur}
+							name='quantity'
+							readOnly
+						/>
 					</FormGroup>
 					{formik.values.type === 'Mobile' && (
 						<FormGroup id='mobileType' label='Mobile Type' className='col-md-6'>
@@ -207,11 +207,13 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								<Option value='loading'>Loading categories...</Option>
 							)}
 							{isError && <Option value='error'>Error fetching categories</Option>}
-							{categories?.map((category: { id: string; name: string }, index: any) => (
-								<Option key={index} value={category.name}>
-									{category.name}
-								</Option>
-							))}
+							{categories?.map(
+								(category: { id: string; name: string }, index: any) => (
+									<Option key={index} value={category.name}>
+										{category.name}
+									</Option>
+								),
+							)}
 						</Select>
 					</FormGroup>
 					{selectedCategory && (
@@ -249,6 +251,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					)}
 					<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
 						<Input
+							type='number'
+							min={1}
 							onChange={formik.handleChange}
 							value={formik.values.reorderLevel}
 							name='reorderLevel'

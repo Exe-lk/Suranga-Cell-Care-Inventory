@@ -319,7 +319,7 @@ const Index: NextPage = () => {
 													(StockInOut: any) => StockInOut.status === true,
 												)
 												.filter((brand: any) => {
-													if (brand.barcode.toString().includes(searchTerm)) {
+													if (brand.barcode?.toString().includes(searchTerm)) {
 														return brand;
 													}
 												})
