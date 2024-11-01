@@ -12,10 +12,8 @@ export const createUser = async (name: string, role: any, nic: string, email: st
     collection(firestore, 'UserManagement'),
     where('email', '==', email)
   );
-
   const nicSnapshot = await getDocs(q);
   const emailSnapshot = await getDocs(q2);
-
   if (!nicSnapshot.empty) {
     await Swal.fire({
       icon: 'error',
@@ -24,7 +22,6 @@ export const createUser = async (name: string, role: any, nic: string, email: st
     });
     throw new Error('NIC already exists');
   }
-
   if (!emailSnapshot.empty) {
     await Swal.fire({
       icon: 'error',
@@ -33,7 +30,6 @@ export const createUser = async (name: string, role: any, nic: string, email: st
     });
     throw new Error('Email already exists');
   }
-
   const userCredential = await createUserWithEmailAndPassword(auth, email, nic);
   const user = userCredential.user;
   const status = true;
@@ -43,24 +39,19 @@ export const createUser = async (name: string, role: any, nic: string, email: st
 
 export const getUser = async () => {
   const q = query(collection(firestore, 'UserManagement'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteUser = async () => {
   const q = query(collection(firestore, 'UserManagement'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getUserById = async (id: string) => {
   const userRef = doc(firestore, 'UserManagement', id);
   const userSnap = await getDoc(userRef);
-
   if (userSnap.exists()) {
     return { id: userSnap.id, ...userSnap.data() };
   } else {
@@ -77,20 +68,14 @@ export const deleteUser = async (id: string) => {
   try {
     const userRef = doc(firestore, 'UserManagement', id);
     const userSnap = await getDoc(userRef);
-
     if (!userSnap.exists()) {
       throw new Error(`User with ID ${id} not found.`);
     }
-
     const { email, nic } = userSnap.data();
-
     const userCredential = await signInWithEmailAndPassword(auth, email, nic);
     const user = userCredential.user;
-
     await deleteAuthUser(user);
-
     await deleteDoc(userRef);
-
     console.log(`User with ID ${id} deleted successfully.`);
   } catch (error) {
     console.error('Error deleting user:', error);

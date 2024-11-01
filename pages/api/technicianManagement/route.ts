@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'Technician created', id });
         break;
       }
-
       case 'GET': {
         const technicians = await getTechnicians();
         res.status(200).json(technicians);
         break;
       }
-
       case 'PUT': {
         const { id, technicianNum, name, status, type, mobileNumber } = req.body;
         if (!id || !name) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Technician updated' });
         break;
       }
-
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
@@ -47,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Technician deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

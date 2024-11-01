@@ -10,24 +10,19 @@ export const createModel = async (name: string, description: string, brand: stri
 
 export const getModel = async () => {
   const q = query(collection(firestore, 'ModelAccessory'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteModel = async () => {
   const q = query(collection(firestore, 'ModelAccessory'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getModelById = async (id: string) => {
   const ModelRef = doc(firestore, 'ModelAccessory', id);
   const ModelSnap = await getDoc(ModelRef);
-
   if (ModelSnap.exists()) {
     return { id: ModelSnap.id, ...ModelSnap.data() };
   } else {

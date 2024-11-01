@@ -23,12 +23,12 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { refetch } = useGetModels1Query(undefined);
 	const [filteredBrands, setFilteredBrands] = useState([]);
 	const { data: brands, isLoading: brandsLoading, isError } = useGetBrands1Query(undefined);
-
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
 		isError: categoriesError,
 	} = useGetCategories1Query(undefined);
+
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -56,7 +56,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.brand) {
 				errors.brand = 'Required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -68,16 +67,13 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addModel({
 						...values,
 						brand: values.brand,
 						category: values.category,
 					}).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Model Created Successfully',
@@ -99,6 +95,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
+
 	useEffect(() => {
 		if (formik.values.category) {
 			const categoryBrands = brands?.filter(
@@ -146,14 +143,12 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								),
 							)}
 						</Select>
-
 						{formik.touched.category && formik.errors.category ? (
 							<div className='invalid-feedback'>{formik.errors.category}</div>
 						) : (
 							<></>
 						)}
 					</FormGroup>
-
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
 						<Select
 							id='brand'
@@ -215,7 +210,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 ModelAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

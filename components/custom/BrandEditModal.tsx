@@ -23,13 +23,11 @@ interface BrandEditModalProps {
 const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: brandData, refetch } = useGetBrandsQuery(undefined);
 	const [updateBrand, { isLoading }] = useUpdateBrandMutation();
-
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
 		isError,
 	} = useGetCategoriesQuery(undefined);
-
 	const brandToEdit = brandData?.find((brand: any) => brand.id === id);
 
 	const formik = useFormik({
@@ -66,7 +64,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						category: values.category,
@@ -77,7 +74,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateBrand(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Brand Updated Successfully',
@@ -169,7 +165,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 BrandEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

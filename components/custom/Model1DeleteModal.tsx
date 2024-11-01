@@ -42,7 +42,6 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
-
 		if (confirmation.value === 'DELETE') {
 			await deleteModel(model.id)
 				.unwrap()
@@ -56,13 +55,11 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 				});
 		}
 	};
-
 	const handleClickRestore = async (model: any) => {
 		if (!models) {
 			console.error('No models to restore.');
 			return;
 		}
-
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -72,7 +69,6 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore it!',
 			});
-
 			if (result.isConfirmed) {
 				const values = {
 					id: model.id,
@@ -82,10 +78,8 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 					description: model.description,
 					status: true,
 				};
-
 				await updateModel(values);
 				Swal.fire('Restored!', 'The Model has been restored.', 'success');
-
 				refetch();
 				refetchMainPage();
 			}
@@ -105,7 +99,6 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
-
 		if (confirmation.value === 'DELETE ALL') {
 			for (const model of models) {
 				await deleteModel(model.id).unwrap();
@@ -122,14 +115,12 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});
-
 		if (confirmation.isConfirmed) {
 			for (const model of models) {
 				const updatedModel = { ...model, status: true };
 				await updateModel(updatedModel).unwrap();
 			}
 			Swal.fire('Restored!', 'All Model have been restored.', 'success');
-
 			refetch();
 			refetchMainPage();
 		}
@@ -204,7 +195,6 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 		</Modal>
 	);
 };
-
 ModelDeleteModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

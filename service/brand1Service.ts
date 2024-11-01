@@ -10,24 +10,19 @@ export const createBrand = async (category: string, name: string, description: s
 
 export const getBrand = async () => {
   const q = query(collection(firestore, 'BrandAccessory'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteBrand = async () => {
   const q = query(collection(firestore, 'BrandAccessory'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getBrandById = async (id: string) => {
   const brandRef = doc(firestore, 'BrandAccessory', id);
   const brandSnap = await getDoc(brandRef);
-
   if (brandSnap.exists()) {
     return { id: brandSnap.id, ...brandSnap.data() };
   } else {

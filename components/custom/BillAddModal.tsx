@@ -64,7 +64,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		},
 		validate: (values) => {
 			const errors: any = {};
-
 			if (!values.phoneDetail) errors.phoneDetail = 'Phone Detail is required.';
 			if (!values.dateIn) errors.dateIn = 'Date In is required.';
 			if (!values.billNumber) errors.billNumber = 'Bill Number is required.';
@@ -76,20 +75,22 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				errors.CustomerMobileNum = 'Customer Mobile Number is required.';
 			if (values.CustomerMobileNum.length !== 10)
 				errors.CustomerMobileNum = 'Mobile Number must be 10 digits';
-			if (!values.email) errors.email = 'Email is required.';
-			else if (!values.email.includes('@')) errors.email = 'Invalid email format.';
+			if (!values.email) {
+				errors.email = 'Required';
+			} else if (!values.email.includes('@')) {
+				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
+			}
 			if (!values.NIC) errors.NIC = 'NIC is required.';
 			else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC))
 				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
-
 			if (!values.cost) errors.cost = 'Cost is required.';
 			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Price) errors.Price = 'Price is required.';
 			else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
-
 			if (!values.Status) errors.Status = 'Status is required.';
 			if (!values.DateOut) errors.DateOut = 'Date Out is required.';
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -101,7 +102,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addBill(values).unwrap();
 					refetch();
@@ -237,7 +237,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 						{techniciansLoading ? <p>Loading technicians...</p> : <></>}
 						{isError ? <p>Error loading technicians. Please try again.</p> : <></>}
 					</FormGroup>
-
 					<FormGroup id='CustomerName' label='Customer Name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -361,7 +360,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		</Modal>
 	);
 };
-
 BillAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

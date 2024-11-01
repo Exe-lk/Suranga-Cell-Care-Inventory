@@ -36,7 +36,6 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
-
 		if (confirmation.value === 'DELETE') {
 			await deleteUser(user.id)
 				.unwrap()
@@ -56,7 +55,6 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			console.error('No users to restore.');
 			return;
 		}
-
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -66,7 +64,6 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore it!',
 			});
-
 			if (result.isConfirmed) {
 				const values = {
 					id: user.id,
@@ -77,10 +74,8 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 					email: user.email,
 					nic: user.nic,
 				};
-
 				await updateUser(values);
 				Swal.fire('Restored!', 'The user has been restored.', 'success');
-
 				refetch();
 				refetchMainPage();
 			}
@@ -100,7 +95,6 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
-
 		if (confirmation.value === 'DELETE ALL') {
 			for (const user of users) {
 				await deleteUser(user.id).unwrap();
@@ -117,14 +111,12 @@ const UserDeleteModal: FC<UserDeleteModalProps> = ({ id, isOpen, setIsOpen, refe
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});
-
 		if (confirmation.isConfirmed) {
 			for (const user of users) {
 				const updatedUser = { ...user, status: true };
 				await updateUser(updatedUser).unwrap();
 			}
 			Swal.fire('Restored!', 'All users have been restored.', 'success');
-
 			refetch();
 			refetchMainPage();
 		}

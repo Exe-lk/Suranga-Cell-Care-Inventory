@@ -22,18 +22,17 @@ interface BrandEditModalProps {
 
 const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: brandData, refetch } = useGetBrands1Query(undefined);
-	const [updateBrand, { isLoading }] = useUpdateBrand1Mutation();
+    const [updateBrand , {isLoading}] = useUpdateBrand1Mutation();
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
 		isError,
 	} = useGetCategories1Query(undefined);
-
 	const brandToEdit = brandData?.find((brand: any) => brand.id === id);
 
 	const formik = useFormik({
 		initialValues: {
-			id: '',
+			id:'',
 			category: brandToEdit?.category || '',
 			name: brandToEdit?.name || '',
 			description: brandToEdit?.description || '',
@@ -65,7 +64,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						category: values.category,
@@ -75,14 +73,13 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 						id: id,
 					};
 					await updateBrand(data).unwrap();
-					refetch();
-
+					refetch(); 
 					await Swal.fire({
 						icon: 'success',
 						title: 'Brand Updated Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false);
+                	setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -96,7 +93,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
-
+	
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -109,13 +106,13 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='category' label='Category' className='col-md-6'>
+				<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
 							id='category'
 							name='category'
 							ariaLabel='Category'
-							onChange={formik.handleChange}
-							value={formik.values.category}
+							onChange={formik.handleChange} 
+							value={formik.values.category} 
 							onBlur={formik.handleBlur}
 							className={`form-control ${
 								formik.touched.category && formik.errors.category
@@ -125,13 +122,11 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<option value=''>Select a category</option>
 							{categoriesLoading && <option>Loading categories...</option>}
 							{isError && <option>Error fetching categories</option>}
-							{categories?.map(
-								(category: { id: string; name: string }, index: any) => (
-									<option key={index} value={category.name}>
-										{category.name}
-									</option>
-								),
-							)}
+							{categories?.map((category: { id: string; name: string },index : any) => (
+								<option key={index} value={category.name}> 
+									{category.name}
+								</option>
+							))}
 						</Select>
 					</FormGroup>
 					<FormGroup id='name' label='Brand Name' className='col-md-6'>
@@ -168,7 +163,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 BrandEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

@@ -3,12 +3,10 @@ import { getstockInById, updatestockIn } from '../../../service/stockInOutAcceSe
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-
   if (!id) {
     res.status(400).json({ error: 'Dealer ID is required' });
     return;
   }
-
   try {
     switch (req.method) {
       case 'GET': {
@@ -20,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         break;
       }
-
       case 'PUT': {
         const { quantity } = req.body;
         if (!quantity) {
@@ -31,7 +28,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Dealer updated' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['GET', 'PUT']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

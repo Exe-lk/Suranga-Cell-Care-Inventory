@@ -40,7 +40,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete it!',
 			});
-
 			if (inputText === 'DELETE') {
 				await deleteBill(bill.id).unwrap();
 				Swal.fire('Deleted!', 'The bill has been permentaly deleted.', 'success');
@@ -57,7 +56,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -83,9 +81,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					DateOut: bill.DateOut,
 					status: true,
 				};
-
 				await updateBill(values);
-
 				Swal.fire('Restored!', 'The bill has been restored.', 'success');
 			}
 		} catch (error) {
@@ -111,13 +107,11 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-
 			if (inputText === 'DELETE ALL') {
 				for (const bill of bills) {
 					await deleteBill(bill.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All bills have been permentaly deleted.', 'success');
-
 				refetch();
 			}
 		} catch (error) {
@@ -137,7 +131,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-
 			if (result.isConfirmed) {
 				for (const bill of bills) {
 					const values = {
@@ -161,7 +154,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					await updateBill(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All bills have been restored.', 'success');
-
 				refetch();
 			}
 		} catch (error) {
@@ -169,6 +161,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			Swal.fire('Error', 'Failed to restore all bills.', 'error');
 		}
 	};
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -214,7 +207,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							bills.map((bill: any, index: any) => (
 								<tr key={index}>
 									<td>{bill.phoneDetail}</td>
-
 									<td>
 										<Button
 											icon='Restore'
@@ -223,7 +215,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 											onClick={() => handleClickRestore(bill)}>
 											Restore
 										</Button>
-
 										<Button
 											className='m-2'
 											icon='Delete'
@@ -240,7 +231,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		</Modal>
 	);
 };
-
 CategoryEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

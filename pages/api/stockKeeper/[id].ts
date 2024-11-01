@@ -3,12 +3,10 @@ import { getstockKeeperById, updatestockKeeper, deletestockKeeper } from '../../
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-
   if (!id) {
     res.status(400).json({ error: 'Stock Keeper ID is required' });
     return;
   }
-
   try {
     switch (req.method) {
       case 'GET': {
@@ -20,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         break;
       }
-
       case 'PUT': {
         const { type, description, status } = req.body;
         if (!type) {
@@ -31,13 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Stock Keeper updated' });
         break;
       }
-
       case 'DELETE': {
         await deletestockKeeper(id as string);
         res.status(200).json({ message: 'Stock Keeper deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

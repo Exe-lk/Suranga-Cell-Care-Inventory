@@ -12,7 +12,6 @@ import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const PolarBasic = () => {
 	const { data: bills } = useGetBillsQuery(undefined);
-
 	const [state, setState] = useState<IChartOptions>({
 		series: [],
 		options: {
@@ -55,13 +54,11 @@ const PolarBasic = () => {
 				'waiting to in progress': 0,
 				HandOver: 0,
 			};
-
 			bills.forEach((bill: { Status: keyof typeof statusCounts }) => {
 				if (statusCounts[bill.Status] !== undefined) {
 					statusCounts[bill.Status]++;
 				}
 			});
-
 			setState({
 				series: Object.values(statusCounts),
 				options: {

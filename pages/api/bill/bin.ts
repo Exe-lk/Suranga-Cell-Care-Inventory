@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'Bill created', id });
         break;
       }
-
       case 'GET': {
         const bills = await getDeleteBills();
         res.status(200).json(bills);
         break;
       }
-
       case 'PUT': {
         const { id, phoneDetail, status, dateIn, billNumber, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, email, NIC, cost, Price, Status, DateOut } = req.body;
         if (!id || !phoneDetail) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Bill updated' });
         break;
       }
-
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
@@ -47,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Bill deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

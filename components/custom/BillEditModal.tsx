@@ -22,6 +22,7 @@ interface UserAddModalProps {
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
+
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: bills, refetch } = useGetBillsQuery(undefined);
 	const [updateBill, { isLoading }] = useUpdateBillMutation();
@@ -30,8 +31,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		isLoading: techniciansLoading,
 		isError,
 	} = useGetTechniciansQuery(undefined);
-	console.log(technicians);
-
 	const billToEdit = bills?.find((bill: any) => bill.id === id);
 
 	const formik = useFormik({
@@ -97,9 +96,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.CustomerMobileNum = 'Mobile number must be exactly 10 digits';
 			}
 			if (!values.email) {
-				errors.email = 'email is required';
+				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			if (!values.NIC) {
 				errors.NIC = 'Required';
@@ -118,7 +119,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.DateOut) {
 				errors.DateOut = 'Date Out is required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -130,7 +130,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					console.log(values);
 					const data = {
@@ -153,7 +152,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateBill(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Bill Updated Successfully',
@@ -331,7 +329,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='cost' label='Cost' className='col-md-6'>
 						<Input
 							name='cost'
@@ -402,4 +399,5 @@ UserAddModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default UserAddModal;

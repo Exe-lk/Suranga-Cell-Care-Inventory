@@ -20,7 +20,6 @@ interface BrandAddModalProps {
 const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addBrand, { isLoading }] = useAddBrand1Mutation();
 	const { refetch } = useGetBrands1Query(undefined);
-
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -49,7 +48,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.name) {
 				errors.name = 'Required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -61,15 +59,12 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addBrand({
 						...values,
 						category: values.category,
 					}).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Brand Created Successfully',
@@ -128,7 +123,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								),
 							)}
 						</Select>
-
 						{formik.touched.category && formik.errors.category ? (
 							<div className='invalid-feedback'>{formik.errors.category}</div>
 						) : (
@@ -167,7 +161,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 BrandAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

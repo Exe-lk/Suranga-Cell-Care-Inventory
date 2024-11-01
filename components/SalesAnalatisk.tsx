@@ -41,7 +41,6 @@ const PieBasic = () => {
 			const mobileCount = items.filter((item: any) => item.type === 'Mobile').length;
 			const accessoryCount = items.filter((item: any) => item.type === 'Accessory').length;
 			const total = mobileCount + accessoryCount;
-
 			setChartData((prevState) => ({
 				...prevState,
 				series: [mobileCount, accessoryCount],

@@ -14,7 +14,6 @@ import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
 import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 
-// Define the props for the StockAddModal component
 interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
@@ -23,10 +22,7 @@ interface StockAddModalProps {
 }
 
 const formatTimestamp = (seconds: number, nanoseconds: number): string => {
-	// Convert the seconds to milliseconds
 	const date = new Date(seconds * 1000);
-
-	// Use Intl.DateTimeFormat to format the date
 	const formattedDate = new Intl.DateTimeFormat('en-US', {
 		year: 'numeric',
 		month: 'long',
@@ -37,7 +33,6 @@ const formatTimestamp = (seconds: number, nanoseconds: number): string => {
 		hour12: true,
 		timeZoneName: 'short',
 	}).format(date);
-
 	return formattedDate;
 };
 
@@ -59,7 +54,6 @@ interface StockOut {
 	status: boolean;
 }
 
-// StockAddModal component definition
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
@@ -78,16 +72,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		stock: 'stockOut',
 		status: true,
 	});
-
 	const [selectedCost, setSelectedCost] = useState<string | null>(null);
-
 	const {
 		data: stockInData,
 		isLoading: stockInLoading,
 		isError: stockInError,
 	} = useGetStockInOutsQuery(undefined);
-	console.log(stockInData);
-
 	const [addstockOut] = useAddStockOutMutation();
 	const { data: stockOutData, isSuccess } = useGetItemAcceByIdQuery(id);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
@@ -102,15 +92,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 	const filteredStockIn = stockInData?.filter(
 		(item: { stock: string }) => item.stock === 'stockIn',
 	);
-
-	console.log(filteredStockIn);
-
-	// Function to handle dateIn selection change
 	const handleDateInChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedTimestamp = e.target.value;
 		formik.setFieldValue('dateIn', selectedTimestamp);
-
-		// Find the selected stockIn entry based on the selected timestamp
 		const selectedStock = filteredStockIn?.find(
 			(item: { timestamp: { seconds: number; nanoseconds: number } }) => {
 				const formattedDate = formatTimestamp(
@@ -120,13 +104,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 				return formattedDate === selectedTimestamp;
 			},
 		);
-
-		// Set the cost from the selected stockIn entry
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
-
 	const stockInQuantity = quantity;
-	// Initialize formik for form management
+
 	const formik = useFormik({
 		initialValues: {
 			brand: stockOut.brand,
@@ -163,14 +144,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			}
-			
-			// if (!values.cost) errors.cost = 'Cost is required';
-
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-
 				Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -178,49 +155,31 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-		
-				// Previous Swal logic...
 				await refetch();
-				
-				console.log(stockInQuantity); // Check the quantity coming from props
-	
-				// Parse the submitted stock out quantity
 				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
-	
-				// Check if stock quantities are valid numbers
 				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
 					Swal.fire({
 						icon: 'error',
 						title: 'Invalid Quantity',
 						text: 'Quantity must be a valid number.',
 					});
-					return; // Exit early if quantities are invalid
+					return; 
 				}
-	
-				// Subtract the stock out quantity from stock in quantity
 				const updatedQuantity = stockInQuantity - stockOutQuantity;
-	
 				if (updatedQuantity < 0) {
 					Swal.fire({
 						icon: 'error',
 						title: 'Insufficient Stock',
 						text: 'The stock out quantity exceeds available stock.',
 					});
-					return; // Prevent stock from going below zero
+					return; 
 				}
-	
-				// Proceed to add stock out and update the stock in...
 				const response = await addstockOut(values).unwrap();
-				console.log(response);
-	
 				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-	
-				// Refetch data to update UI
 				refetch();
-	
 				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
 				formik.resetForm();
-				setIsOpen(false); // Close the modal after successful addition
+				setIsOpen(false);
 			} catch (error) {
 				await Swal.fire({
 					icon: 'error',
@@ -232,12 +191,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, ''); 
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; 
+		return sanitized.slice(0, 10); 
 	};
 	
-
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -287,7 +245,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
 						<Select
 							id='dateIn'
@@ -306,9 +263,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								(item: {
 									id: string;
 									timestamp: { seconds: number; nanoseconds: number };
-								}) => (
+								}, index: any) => (
 									<option
-										key={item.id}
+										key={index}
 										value={formatTimestamp(
 											item.timestamp.seconds,
 											item.timestamp.nanoseconds,
@@ -325,14 +282,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							)}
 						</Select>
 					</FormGroup>
-
-					{/* Display cost field if selectedCost is available */}
 					{selectedCost && (
 						<FormGroup id='cost' label='Cost(Per Unit)' className='col-md-6'>
 							<Input type='text' value={selectedCost} readOnly />
 						</FormGroup>
 					)}
-
 					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
 						<Input
 							type='text'
@@ -365,7 +319,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							type='text'
 							value={formik.values.mobile}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, '');
 								formik.setFieldValue('mobile', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
@@ -413,7 +367,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		</Modal>
 	);
 };
-
 StockAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

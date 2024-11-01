@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'Item Dis created', id });
         break;
       }
-
       case 'GET': {
         const ItemDiss = await getDeleteItemDiss();
         res.status(200).json(ItemDiss);
         break;
       }
-
       case 'PUT': {
         const { id, model, brand, reorderLevel, quantity, boxNumber, category, touchpadNumber, batteryCellNumber, displaySNumber, status } = req.body;
         if (!id || !model) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Item Dis updated' });
         break;
       }
-
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
@@ -47,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Item Dis deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

@@ -24,7 +24,6 @@ interface UserAddModalProps {
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: dealers, refetch } = useGetDealersQuery(undefined);
 	const [updateDealer, { isLoading }] = useUpdateDealerMutation();
-
 	const dealerToEdit = dealers?.find((dealer: any) => dealer.id === id);
 
 	const formik = useFormik({
@@ -49,9 +48,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.name = 'Name is required';
 			}
 			if (!values.email) {
-				errors.email = 'Email is required';
-			} else if (!(values.email ?? '').includes('@')) {
+				errors.email = 'Required';
+			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			if (!values.address) {
 				errors.address = 'Address is required';
@@ -69,11 +70,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					return '';
 				})
 				.filter((error: string) => error !== '');
-
 			if (itemErrors.length > 0) {
 				errors.item = itemErrors;
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -85,7 +84,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						name: values.name,
@@ -98,7 +96,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateDealer(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Dealer Updated Successfully',
@@ -277,4 +274,5 @@ UserAddModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default UserAddModal;

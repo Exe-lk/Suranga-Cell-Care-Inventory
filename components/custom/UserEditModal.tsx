@@ -21,7 +21,6 @@ interface UserEditModalProps {
 const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: users, refetch } = useGetUsersQuery(undefined);
 	const [updateUser, { isLoading }] = useUpdateUserMutation();
-
 	const userToEdit = users?.find((user: any) => user.id === id);
 
 	const formik = useFormik({
@@ -62,6 +61,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			return errors;
 		},
@@ -74,7 +75,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						name: values.name,
@@ -87,7 +87,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateUser(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'User Updated Successfully',
@@ -174,7 +173,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
 							name='email'
@@ -209,7 +207,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 UserEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

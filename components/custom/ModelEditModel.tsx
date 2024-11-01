@@ -31,7 +31,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		isLoading: categoriesLoading,
 		isError: categoriesError,
 	} = useGetCategoriesQuery(undefined);
-
 	const modelToEdit = modelData?.find((model: any) => model.id === id);
 
 	const formik = useFormik({
@@ -50,7 +49,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				brand?: string;
 				description?: string;
 			} = {};
-
 			if (!values.name) {
 				errors.name = 'Required';
 			}
@@ -74,7 +72,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						name: values.name,
@@ -86,7 +83,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					};
 					await updateModel(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Model Updated Successfully',
@@ -167,7 +163,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							)}
 						</Select>
 					</FormGroup>
-
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
 						<Select
 							id='brand'
@@ -191,7 +186,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							)}
 						</Select>
 					</FormGroup>
-
 					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							name='description'
@@ -219,4 +213,5 @@ ModelEditModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default ModelEditModal;

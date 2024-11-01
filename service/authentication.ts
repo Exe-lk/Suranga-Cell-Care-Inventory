@@ -6,7 +6,6 @@ export const SignInUser = async (email: string, password: string) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
-
     const userPosition = await getUserPositionByEmail(email);
     return { user, position: userPosition };
   } catch (error) {
@@ -19,11 +18,9 @@ export const getUserPositionByEmail = async (email: string) => {
   try {
     const q = query(collection(firestore, 'UserManagement'), where('email', '==', email));
     const querySnapshot = await getDocs(q);
-
     if (querySnapshot.empty) {
       return null;
     }
-
     const userData = querySnapshot.docs[0].data();
     return userData.role;
   } catch (error) {
@@ -31,6 +28,5 @@ export const getUserPositionByEmail = async (email: string) => {
     return null;
   }
 };
-
 
 export default SignInUser;

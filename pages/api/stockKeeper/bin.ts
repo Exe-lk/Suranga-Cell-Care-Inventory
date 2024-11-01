@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'Stock Keeper created', id });
         break;
       }
-
       case 'GET': {
         const stockKeepers = await getDeletestockKeeper();
         res.status(200).json(stockKeepers);
         break;
       }
-
       case 'PUT': {
         const { id, type, description, status } = req.body;
         if (!id || !type) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Stock Keeper updated' });
         break;
       }
-
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
@@ -47,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Stock Keeper deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

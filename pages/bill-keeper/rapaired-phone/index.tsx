@@ -48,18 +48,17 @@ const Index: NextPage = () => {
 	const [endDate, setEndDate] = useState<string>('');
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);
-
 	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
 	const {
 		data: technicians,
 		error: techniciansError,
 		isLoading: techniciansLoading,
 	} = useGetTechniciansQuery(undefined);
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
@@ -75,7 +74,6 @@ const Index: NextPage = () => {
 		const transactionDate = new Date(trans.dateIn);
 		const start = startDate ? new Date(startDate) : null;
 		const end = endDate ? new Date(endDate) : null;
-
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		} else if (start) {
@@ -83,19 +81,15 @@ const Index: NextPage = () => {
 		} else if (end) {
 			return transactionDate <= end;
 		}
-
 		return true;
 	});
 
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-
 		const clonedTable = table.cloneNode(true) as HTMLElement;
-
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-
 		try {
 			switch (format) {
 				case 'svg':
@@ -117,7 +111,6 @@ const Index: NextPage = () => {
 			console.error('Error exporting table: ', error);
 		}
 	};
-
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -128,7 +121,6 @@ const Index: NextPage = () => {
 				.join(',');
 			csvContent += rowData + '\n';
 		});
-
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
@@ -142,39 +134,32 @@ const Index: NextPage = () => {
 			const pageHeight = pdf.internal.pageSize.getHeight();
 			const rows: any[] = [];
 			const headers: any[] = [];
-
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
 			const logoX = 20;
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
-
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
 			const title = 'Rapaired-phones Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
-
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
-
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
-
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -184,10 +169,8 @@ const Index: NextPage = () => {
 					rows.push(rowData);
 				});
 			}
-
 			const tableWidth = pageWidth * 0.9;
 			const tableX = (pageWidth - tableWidth) / 2;
-
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -212,14 +195,12 @@ const Index: NextPage = () => {
 				tableWidth: 'wrap',
 				theme: 'grid',
 			});
-
 			pdf.save('Rapaired-phones Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -243,7 +224,6 @@ const Index: NextPage = () => {
 			};
 		});
 	};
-
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -256,7 +236,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -269,7 +248,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -277,19 +255,15 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
-
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
 					width: table.offsetWidth + 'px',
 				},
 			});
-
 			table.style.border = originalBorderStyle;
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'table_data.png';
@@ -306,9 +280,7 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			hideLastCells(table);
-
 			const dataUrl = await toSvg(table, {
 				backgroundColor: 'white',
 				cacheBust: true,
@@ -317,9 +289,7 @@ const Index: NextPage = () => {
 					color: 'black',
 				},
 			});
-
 			restoreLastCells(table);
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'table_data.svg';
@@ -388,7 +358,6 @@ const Index: NextPage = () => {
 											))}
 										</ChecksGroup>
 									</FormGroup>
-
 									<FormGroup label='Start Date' className='col-6'>
 										<Input
 											type='date'

@@ -27,4 +27,5 @@ const Index: NextPage = () => {
 		</PageWrapper>
 	);
 };
+
 export default Index;

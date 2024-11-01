@@ -11,19 +11,16 @@ import { useGetStockInOutsQuery } from '../redux/slices/stockInOutAcceApiSlice';
 import moment from 'moment';
 
 const LineWithLabel = () => {
-	// Fetch stock data from API
 	const { data: stocksData, isLoading: isstocksLoading } = useGetStockInOutsQuery(undefined);
-
-	// Initial chart state
 	const [state, setState] = useState<IChartOptions>({
 		series: [
 			{
 				name: 'Stock Out',
-				data: Array(12).fill(0), // Data for 12 months (Jan-Dec)
+				data: Array(12).fill(0),
 			},
 			{
 				name: 'Stock In',
-				data: Array(12).fill(0), // Data for 12 months (Jan-Dec)
+				data: Array(12).fill(0),
 			},
 		],
 		options: {
@@ -58,7 +55,7 @@ const LineWithLabel = () => {
 			grid: {
 				borderColor: '#e7e7e7',
 				row: {
-					colors: ['#f3f3f3', 'transparent'], // alternating row colors
+					colors: ['#f3f3f3', 'transparent'],
 					opacity: 0.5,
 				},
 			},
@@ -66,7 +63,20 @@ const LineWithLabel = () => {
 				size: 1,
 			},
 			xaxis: {
-				categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+				categories: [
+					'Jan',
+					'Feb',
+					'Mar',
+					'Apr',
+					'May',
+					'Jun',
+					'Jul',
+					'Aug',
+					'Sep',
+					'Oct',
+					'Nov',
+					'Dec',
+				],
 				title: {
 					text: 'Month',
 				},
@@ -86,33 +96,27 @@ const LineWithLabel = () => {
 			},
 		},
 	});
-
-	// Function to group stock data by month
 	const groupByMonth = (data: { date: string; stock: string }[]) => {
-		// Create an array for 12 months with 0 as initial value
 		const monthlyData = Array(12).fill(0);
 
-		// Loop through the data and increment the corresponding month count
 		data.forEach((item) => {
-			const month = moment(item.date).month(); // Get month (0-11 index)
-			monthlyData[month] += 1; // Increment the count for the month
+			const month = moment(item.date).month();
+			monthlyData[month] += 1;
 		});
 
 		return monthlyData;
 	};
 
-	// Compute the chart data
 	useEffect(() => {
 		if (!isstocksLoading && stocksData) {
-			// Filter stockIn and stockOut data
-			const stockInData = stocksData.filter((item: { date: string; stock: string }) => item.stock === 'stockIn'); // Filter stockIn
-			const stockOutData = stocksData.filter((item: { date: string; stock: string }) => item.stock === 'stockOut'); // Filter stockOut
-
-			// Group data by month for stockIn and stockOut
+			const stockInData = stocksData.filter(
+				(item: { date: string; stock: string }) => item.stock === 'stockIn',
+			);
+			const stockOutData = stocksData.filter(
+				(item: { date: string; stock: string }) => item.stock === 'stockOut',
+			);
 			const stockInMonthly = groupByMonth(stockInData);
 			const stockOutMonthly = groupByMonth(stockOutData);
-
-			// Update the chart data with monthly values
 			setState((prevState) => ({
 				...prevState,
 				series: [

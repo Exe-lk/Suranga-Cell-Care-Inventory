@@ -33,26 +33,23 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 
-// Define the interface for category data
 interface Category {
 	cid: string;
 	name: string;
 	status: boolean;
 }
-// Define the functional component for the index page
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState(''); 
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); // State for edit modal status
-	const [category, setcategory] = useState<Category[]>([]); // State for category data
-	const [id, setId] = useState<string>(''); // State for current category ID
-	const [status, setStatus] = useState(true); // State for managing data fetching status
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
+	const [category, setcategory] = useState<Category[]>([]); 
+	const [id, setId] = useState<string>(''); 
+	const [status, setStatus] = useState(true); 
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	// Fetch category data from Firestore on component mount or when add/edit modals are toggled
 	const [updateCategory] = useUpdateCategoryMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	
@@ -61,9 +58,8 @@ const Index: NextPage = () => {
 			inputRef.current.focus();
 		}
 
-		// Attach event listener for keydown
 	}, [ categories]);
-	// Function to handle deletion of a category
+
 	const handleClickDelete = async (category: any) => {
 		try {
 			const result = await Swal.fire({
@@ -77,16 +73,13 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
-					// Set the user's status to false (soft delete)
 					await updateCategory({
 						id: category.id,
 						name: category.name,
 						status: false,
 					});
-
-					// Refresh the list after deletion
 					Swal.fire('Deleted!', 'Category has been deleted.', 'success');
-					refetch(); // This will refresh the list of users to reflect the changes
+					refetch(); 
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
 					Swal.fire(
@@ -101,16 +94,12 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete brand.', 'error');
 		}
 	};
-// Function to handle the download in different formats
-const handleExport = async (format: string) => {
+
+	const handleExport = async (format: string) => {
 	const table = document.querySelector('table');
 	if (!table) return;
-	 // Remove borders and hide last cells before exporting
 	 modifyTableForExport(table as HTMLElement, true);
-
 	const clonedTable = table.cloneNode(true) as HTMLElement;
-
-	// Remove Edit/Delete buttons column from cloned table
 	const rows = clonedTable.querySelectorAll('tr');
 	rows.forEach((row) => {
 		const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -118,12 +107,8 @@ const handleExport = async (format: string) => {
 			lastCell.remove();
 		}
 	});
-
-	
 	const clonedTableStyles = getComputedStyle(table);
 	clonedTable.setAttribute('style', clonedTableStyles.cssText);
-
-	
 	try {
 		switch (format) {
 			case 'svg':
@@ -144,11 +129,9 @@ const handleExport = async (format: string) => {
 	} catch (error) {
 		console.error('Error exporting table: ', error);
 	}finally {
-		// Restore table after export
 		modifyTableForExport(table as HTMLElement, false);
 	}
 };
-// Helper function to modify table by hiding last column and removing borders
 const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 const rows = table.querySelectorAll('tr');
 rows.forEach((row) => {
@@ -162,8 +145,6 @@ rows.forEach((row) => {
 	}
 });
 };
-
-// function to export the table data in CSV format
 const downloadTableAsCSV = (table: any) => {
 			let csvContent = '';
 			const rows = table.querySelectorAll('tr');
@@ -174,14 +155,12 @@ const downloadTableAsCSV = (table: any) => {
 					.join(',');
 				csvContent += rowData + '\n';
 			});
-
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
 			link.download = 'Manage Display Category Report.csv';
 			link.click();
 };
-// PDF export function with the logo added
 const downloadTableAsPDF = async (table: HTMLElement) => {
 try {
 	const pdf = new jsPDF('p', 'pt', 'a4');
@@ -189,46 +168,32 @@ try {
 	const pageHeight = pdf.internal.pageSize.getHeight();
 	const rows: any[] = [];
 	const headers: any[] = [];
-
-	// Draw a thin page border
 	pdf.setLineWidth(1);
 	pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-	// Add the logo in the top-left corner
 	const logoData = await loadImage(bill); 
 	const logoWidth = 100; 
 	const logoHeight = 40; 
 	const logoX = 20; 
 	const logoY = 20; 
 	pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight); 
-
-	// Add small heading in the top left corner (below the logo)
 	pdf.setFontSize(8);
 	pdf.setFont('helvetica', 'bold');
 	pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
-	// Add the table heading (title) in the top-right corner
 	const title = 'Category Display Report';
 	pdf.setFontSize(16);
 	pdf.setFont('helvetica', 'bold');
 	const titleWidth = pdf.getTextWidth(title);
 	const titleX = pageWidth - titleWidth - 20;
 	pdf.text(title, titleX, 30); 
-
-	// Add the current date below the table heading
 	const currentDate = new Date().toLocaleDateString();
 	const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 	pdf.setFontSize(12);
 	pdf.text(currentDate, dateX, 50); 
-
-	// Extract table headers
 	const thead = table.querySelector('thead');
 	if (thead) {
 		const headerCells = thead.querySelectorAll('th');
 		headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 	}
-
-	// Extract table rows
 	const tbody = table.querySelector('tbody');
 	if (tbody) {
 		const bodyRows = tbody.querySelectorAll('tr');
@@ -238,8 +203,6 @@ try {
 			rows.push(rowData);
 		});
 	}
-
-	// Generate the table below the date
 	autoTable(pdf, {
 		head: headers,
 		body: rows,
@@ -254,15 +217,12 @@ try {
 		},
 		theme: 'grid',
 	});
-
 	pdf.save('Manage Display Category Report.pdf');
 } catch (error) {
 	console.error('Error generating PDF: ', error);
 	alert('Error generating PDF. Please try again.');
 }
 };
-
-// Helper function to load the image (logo) for the PDF
 const loadImage = (url: string): Promise<string> => {
 return new Promise((resolve, reject) => {
 	const img = new Image();
@@ -275,7 +235,7 @@ return new Promise((resolve, reject) => {
 		const ctx = canvas.getContext('2d');
 		if (ctx) {
 			ctx.drawImage(img, 0, 0);
-			const dataUrl = canvas.toDataURL('image/png'); // Base64 URL
+			const dataUrl = canvas.toDataURL('image/png');
 			resolve(dataUrl);
 		} else {
 			reject('Failed to load the logo image.');
@@ -285,9 +245,7 @@ return new Promise((resolve, reject) => {
 		reject('Error loading logo image.');
 	};
 });
-};
-		
-  // Helper function to hide the last cell of every row (including borders)
+};	
 const hideLastCells = (table: HTMLElement) => {
 const rows = table.querySelectorAll('tr');
 rows.forEach((row) => {
@@ -300,8 +258,6 @@ rows.forEach((row) => {
 	}
 });
 };
-
-// Helper function to restore the visibility and styles of the last cell
 const restoreLastCells = (table: HTMLElement) => {
 const rows = table.querySelectorAll('tr');
 rows.forEach((row) => {
@@ -314,9 +270,6 @@ rows.forEach((row) => {
 	}
 });
 };
-
-
-// Function to export the table data in PNG format
 const downloadTableAsPNG = async () => {
 try {
 	const table = document.querySelector('table');
@@ -324,22 +277,15 @@ try {
 		console.error('Table element not found');
 		return;
 	}
-
 	const originalBorderStyle = table.style.border;
 	table.style.border = '1px solid black'; 
-
-	// Convert table to PNG
 	const dataUrl = await toPng(table, {
 		cacheBust: true,
 		style: {
 			width: table.offsetWidth + 'px',
 		},
 	});
-
-	// Restore original border style after capture
 	table.style.border = originalBorderStyle;
-
-	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
 	link.download = 'Manage Display Category Report.png';
@@ -348,7 +294,6 @@ try {
 	console.error('Error generating PNG: ', error);
 }
 };
-// Function to export the table data in SVG format using html-to-image without cloning the table
 const downloadTableAsSVG = async () => {
 try {
 	const table = document.querySelector('table');
@@ -356,10 +301,7 @@ try {
 		console.error('Table element not found');
 		return;
 	}
-
-	// Hide last cells before export
 	hideLastCells(table);
-
 	const dataUrl = await toSvg(table, {
 		backgroundColor: 'white',
 		cacheBust: true,
@@ -368,26 +310,22 @@ try {
 			color: 'black',
 		},
 	});
-
-	// Restore the last cells after export
 	restoreLastCells(table);
-
 	const link = document.createElement('a');
 	link.href = dataUrl;
 	link.download = 'Manage Display Category Report.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
-	// Restore the last cells in case of error
 	const table = document.querySelector('table');
 	if (table) restoreLastCells(table);
 }
 };
+
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -407,8 +345,6 @@ try {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					
-					{/* Button to open New category */}
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -421,7 +357,6 @@ try {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -443,14 +378,11 @@ try {
 								</DropdownMenu>
 							</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
-								{/* <table className='table table-modern table-hover'> */}
 								<table className='table  table-bordered border-primary table-hover text-center'>
 								<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Category name</th>
-
 											<th></th>
 										</tr>
 									</thead>
@@ -467,7 +399,7 @@ try {
 										)}
 										{categories &&
 											dataPagination(categories, currentPage, perPage)
-												.filter((category: any) => category.status === true) // Only active categories
+												.filter((category: any) => category.status === true) 
 												.filter((category: any) =>
 													searchTerm
 														? category.name
@@ -475,21 +407,19 @@ try {
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((category: any, index: number) => {
-													// Disable Edit/Delete for specific categories
+												.map((category: any, index: any) => {
 													const disableButtons =
 														category.name === 'Touch Pad' ||
 														category.name === 'Battery Cell' ||
 														category.name === 'Displays';
-
 													return (
-														<tr key={category.index}>
+														<tr key={index}>
 															<td>{category.name}</td>
 															<td>
 																<Button
 																	icon='Edit'
 																	color='info'
-																	isDisable={disableButtons} // Disable edit button for specific categories
+																	isDisable={disableButtons} 
 																	onClick={() => {
 																		if (!disableButtons) {
 																			setEditModalStatus(
@@ -504,7 +434,7 @@ try {
 																	icon='Delete'
 																	className='m-2'
 																	color='danger'
-																	isDisable={disableButtons} // Disable delete button for specific categories
+																	isDisable={disableButtons} 
 																	onClick={() => {
 																		if (!disableButtons) {
 																			handleClickDelete(
@@ -557,4 +487,5 @@ try {
 		</PageWrapper>
 	);
 };
+
 export default Index;

@@ -3,12 +3,10 @@ import { getDealerById, updateDealer, deleteDealer } from '../../../service/deal
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-
   if (!id) {
     res.status(400).json({ error: 'Dealer ID is required' });
     return;
   }
-
   try {
     switch (req.method) {
       case 'GET': {
@@ -20,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         break;
       }
-
       case 'PUT': {
         const { name, email, address, mobileNumber, item, status } = req.body;
         console.log(req.body)
@@ -32,13 +29,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Dealer updated' });
         break;
       }
-
       case 'DELETE': {
         await deleteDealer(id as string);
         res.status(200).json({ message: 'Dealer deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

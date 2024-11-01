@@ -12,7 +12,6 @@ import moment from 'moment';
 
 const LineWithLabel = () => {
 	const { data: stocksData, isLoading: isstocksLoading } = useGetStockInOutsQuery(undefined);
-
 	const [state, setState] = useState<IChartOptions>({
 		series: [
 			{
@@ -97,15 +96,12 @@ const LineWithLabel = () => {
 			},
 		},
 	});
-
 	const groupByMonth = (data: { date: string; stock: string }[]) => {
 		const monthlyData = Array(12).fill(0);
-
 		data.forEach((item) => {
 			const month = moment(item.date).month();
 			monthlyData[month] += 1;
 		});
-
 		return monthlyData;
 	};
 
@@ -117,10 +113,8 @@ const LineWithLabel = () => {
 			const stockOutData = stocksData.filter(
 				(item: { date: string; stock: string }) => item.stock === 'stockOut',
 			);
-
 			const stockInMonthly = groupByMonth(stockInData);
 			const stockOutMonthly = groupByMonth(stockOutData);
-
 			setState((prevState) => ({
 				...prevState,
 				series: [

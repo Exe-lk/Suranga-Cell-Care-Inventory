@@ -22,7 +22,6 @@ interface StockTypeEditModalProps {
 const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: stockKeeperData, refetch } = useGetStockKeepersQuery(undefined);
 	const [updateStockKeeper, { isLoading }] = useUpdateStockKeeperMutation();
-
 	const stockKeeperToEdit = stockKeeperData?.find((stockKeeper: any) => stockKeeper.id === id);
 
 	const formik = useFormik({
@@ -54,7 +53,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						type: values.type,
@@ -64,7 +62,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 					};
 					await updateStockKeeper(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Stock Keeper Type Updated Successfully',
@@ -95,7 +92,6 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 				className='p-4'>
 				<ModalTitle id=''>{'Edit Stock Keeper Type'}</ModalTitle>
 			</ModalHeader>
-
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
 					<FormGroup id='type' label='Type' className='col-md-6'>
@@ -132,10 +128,10 @@ const StockTypeEditModal: FC<StockTypeEditModalProps> = ({ id, isOpen, setIsOpen
 		</Modal>
 	);
 };
-
 StockTypeEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default StockTypeEditModal;

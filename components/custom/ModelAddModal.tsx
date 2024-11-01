@@ -22,9 +22,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addModel, { isLoading }] = useAddModelMutation();
 	const { refetch } = useGetModelsQuery(undefined);
 	const [filteredBrands, setFilteredBrands] = useState([]);
-
 	const { data: brands, isLoading: brandsLoading, isError } = useGetBrandsQuery(undefined);
-
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -58,7 +56,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.name) {
 				errors.name = 'Required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -70,16 +67,13 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addModel({
 						...values,
 						brand: values.brand,
 						category: values.category,
 					}).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Model Created Successfully',
@@ -136,7 +130,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
 							id='category'
@@ -161,14 +154,12 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								),
 							)}
 						</Select>
-
 						{formik.touched.category && formik.errors.category ? (
 							<div className='invalid-feedback'>{formik.errors.category}</div>
 						) : (
 							<></>
 						)}
 					</FormGroup>
-
 					<FormGroup id='brand' label='Brand Name' className='col-md-6'>
 						<Select
 							id='brand'
@@ -191,14 +182,12 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								),
 							)}
 						</Select>
-
 						{formik.touched.brand && formik.errors.brand ? (
 							<div className='invalid-feedback'>{formik.errors.brand}</div>
 						) : (
 							<></>
 						)}
 					</FormGroup>
-
 					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -220,7 +209,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 ModelAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

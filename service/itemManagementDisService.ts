@@ -9,24 +9,19 @@ export const createItemDis = async (values: any) => {
 
 export const getItemDiss = async () => {
   const q = query(collection(firestore, 'ItemManagementDis'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteItemDiss = async () => {
   const q = query(collection(firestore, 'ItemManagementDis'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getItemDisById = async (id: string) => {
   const ItemDisRef = doc(firestore, 'ItemManagementDis', id);
   const ItemDisSnap = await getDoc(ItemDisRef);
-
   if (ItemDisSnap.exists()) {
     return { id: ItemDisSnap.id, ...ItemDisSnap.data() };
   } else {

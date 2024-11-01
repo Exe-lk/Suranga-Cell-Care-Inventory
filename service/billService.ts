@@ -9,24 +9,19 @@ export const createBill = async (phoneDetail: string, dateIn: string, billNumber
 
 export const getBills = async () => {
   const q = query(collection(firestore, 'bill'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteBills = async () => {
   const q = query(collection(firestore, 'bill'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getBillById = async (id: string) => {
   const billRef = doc(firestore, 'bill', id);
   const billSnap = await getDoc(billRef);
-
   if (billSnap.exists()) {
     return { id: billSnap.id, ...billSnap.data() };
   } else {

@@ -8,36 +8,33 @@ import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
 import { collection, addDoc } from 'firebase/firestore';
-import { firestore, storage,auth } from '../../firebaseConfig';
+import { firestore, storage, auth } from '../../firebaseConfig';
 import Swal from 'sweetalert2';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import Select from '../bootstrap/forms/Select';
 import Option from '../bootstrap/Option';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useAddTechnicianMutation } from '../../redux/slices/technicianManagementApiSlice';
-import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice'; // Import the query
+import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
 import { stringOrDate } from 'react-big-calendar';
 
-// Define the props for the UserAddModal component
 interface UserAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-// UserAddModal component definition
-const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [addTechnician , {isLoading}] = useAddTechnicianMutation();
-	const {refetch} = useGetTechniciansQuery(undefined);
 
-	// Initialize formik for form management
+const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+	const [addTechnician, { isLoading }] = useAddTechnicianMutation();
+	const { refetch } = useGetTechniciansQuery(undefined);
+
 	const formik = useFormik({
 		initialValues: {
-			technicianNum:'',
+			technicianNum: '',
 			name: '',
 			type: '',
 			mobileNumber: '',
-			
-			status:true
+			status: true,
 		},
 		validate: (values) => {
 			const errors: {
@@ -46,7 +43,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				type?: string;
 				mobileNumber?: string;
 				item?: string;
-				
 			} = {};
 			if (!values.technicianNum) {
 				errors.technicianNum = 'Technician number is required.';
@@ -60,12 +56,10 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile number is required.';
 			}
-			
 			return errors;
 		},
 		onSubmit: async (values) => {
 			try {
-				// Show a processing modal
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
@@ -73,22 +67,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				
 				try {
-					// Add the new category
 					const response: any = await addTechnician(values).unwrap();
-					console.log(response);
-
-					// Refetch categories to update the list
 					refetch();
-
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Technician Created Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful addition
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -104,15 +91,13 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
-
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
@@ -134,7 +119,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-				<FormGroup id='name' label='Technician name' className='col-md-6'>
+					<FormGroup id='name' label='Technician name' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.name}
@@ -157,14 +142,12 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-						
-						
 					<FormGroup id='mobileNumber' label='Mobile Number' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobileNumber}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, ''); 
 								formik.setFieldValue('mobileNumber', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
@@ -174,12 +157,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					
-					
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Add Technician
 				</Button>
@@ -187,10 +167,10 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for UserAddModal component
 UserAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default UserAddModal;

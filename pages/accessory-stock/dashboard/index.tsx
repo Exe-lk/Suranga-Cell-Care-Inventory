@@ -9,7 +9,7 @@ const Index: NextPage = () => {
 	return (
 		<PageWrapper>
 			<Page>
-			<div className='flex-grow-1 text-right text-info'>Welcome to Accessory Stock</div>
+				<div className='flex-grow-1 text-right text-info'>Welcome to Accessory Stock</div>
 				<div className='row'>
 					{/* <StockAnalatisk/> */}
 					<LineWithLabel1 />

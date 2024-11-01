@@ -19,7 +19,6 @@ import { ItemDisApiSlice } from './slices/itemManagementDisApiSlice';
 import { stockInOutAcceApiSlice } from './slices/stockInOutAcceApiSlice';
 import { repairedPhoneApiSlice } from './slices/repairedPhoneApiSlice';
 
-
 const store = configureStore({
 	reducer: {
 		[userManagementApiSlice.reducerPath]: userManagementApiSlice.reducer,
@@ -63,7 +62,6 @@ const store = configureStore({
 			repairedPhoneApiSlice.middleware,
 		),
 });
-
 setupListeners(store.dispatch);
 
 export default store;

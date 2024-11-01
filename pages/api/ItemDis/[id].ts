@@ -3,12 +3,10 @@ import { getItemDisById, updateItemDis, deleteItemDis } from '../../../service/i
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-
   if (!id) {
     res.status(400).json({ error: 'Item Dis ID is required' });
     return;
   }
-
   try {
     switch (req.method) {
       case 'GET': {
@@ -20,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         break;
       }
-
       case 'PUT': {
         const { model, brand, reorderLevel, quantity, boxNumber, category, touchpadNumber, batteryCellNumber, displaySNumber, status } = req.body;
         if (!model) {
@@ -31,13 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Item Dis updated' });
         break;
       }
-
       case 'DELETE': {
         await deleteItemDis(id as string);
         res.status(200).json({ message: 'Item Dis deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

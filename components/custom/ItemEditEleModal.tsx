@@ -22,7 +22,6 @@ import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
 import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
 import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
 
-// Define the props for the ItemAddModal component
 interface ItemAddModalProps {
 	id: string;
 	isOpen: boolean;
@@ -33,7 +32,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [imageurl, setImageurl] = useState<any>(null);
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
 	const [selectedOption, setSelectedOption] = useState<string>('');
-	const { data: itemDiss ,refetch} = useGetItemDissQuery(undefined);
+	const { data: itemDiss, refetch } = useGetItemDissQuery(undefined);
 	const [updateItemDis, { isLoading }] = useUpdateItemDisMutation();
 	const itemDisToEdit = itemDiss?.find((itemDis: any) => itemDis.id === id);
 	const { data: brands } = useGetBrandsQuery(undefined);
@@ -43,7 +42,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
 	const [customCategory, setCustomCategory] = useState<string>('');
 	const divRef: any = useRef(null);
-	// Initialize formik for form management
+
 	const formik = useFormik({
 		initialValues: {
 			id: '',
@@ -76,29 +75,23 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.model) errors.model = 'Required';
 			if (!values.brand) errors.brand = 'Required';
 			if (!values.reorderLevel) {
-			  errors.reorderLevel = 'Required';
+				errors.reorderLevel = 'Required';
 			} else if (Number(values.reorderLevel) <= 0) {
-			  errors.reorderLevel = 'Must be a positive number';
+				errors.reorderLevel = 'Must be a positive number';
 			}
 			if (!values.boxNumber) errors.boxNumber = 'Required';
-		  
-			// Conditionally validate fields based on the selected category
 			if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
-			  errors.touchpadNumber = 'Touchpad Number is required';
+				errors.touchpadNumber = 'Touchpad Number is required';
 			}
 			if (selectedCategory === 'Displays' && !values.displaySNumber) {
-			  errors.displaySNumber = 'Display Serial Number is required';
+				errors.displaySNumber = 'Display Serial Number is required';
 			}
 			if (selectedCategory === 'Battery Cell' && !values.batteryCellNumber) {
-			  errors.batteryCellNumber = 'Battery Cell Number is required';
+				errors.batteryCellNumber = 'Battery Cell Number is required';
 			}
-		  
-			// Validate "Other" category input
 			if (selectedCategory === 'Other' && !values.otherCategory) {
-			  errors.otherCategory = 'Please specify the category';
+				errors.otherCategory = 'Please specify the category';
 			}
-		  
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -110,10 +103,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
-					// Update the category
-					console.log(values);
 					const data = {
 						status: true,
 						id: id,
@@ -129,15 +119,13 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						otherCategory: values.otherCategory,
 					};
 					await updateItemDis(data).unwrap();
-					await refetch(); // Refresh the data
-
-					// Success feedback
+					await refetch();
 					await Swal.fire({
 						icon: 'success',
 						title: 'Item Dis Updated Successfully',
 					});
 					formik.resetForm();
-					setIsOpen(false); // Close the modal after successful update
+					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -151,39 +139,37 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
+
 	const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSelectedCategory(e.target.value);
 		formik.setFieldValue('category', e.target.value);
-		setSelectedBrand(''); // Reset brand selection
-		formik.setFieldValue('brand', ''); // Clear selected brand in formik
-		formik.setFieldValue('model', ''); // Clear selected model in formik
-		setCustomCategory(''); // Reset custom category if changed
+		setSelectedBrand('');
+		formik.setFieldValue('brand', '');
+		formik.setFieldValue('model', '');
+		setCustomCategory('');
 	};
 
-	// Handle custom category input change
 	const handleCustomCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCustomCategory(e.target.value);
-		formik.setFieldValue('otherCategory', e.target.value); // Update the custom category in formik values
+		formik.setFieldValue('otherCategory', e.target.value);
 	};
 
-	// Handle brand selection
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
 		formik.setFieldValue('brand', e.target.value);
-		formik.setFieldValue('model', ''); // Clear selected model when changing brand
+		formik.setFieldValue('model', '');
 	};
 
-	// Filter brands based on selected category
 	const filteredBrands = brands?.filter(
 		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other',
 	);
 
-	// Filter models based on selected brand and category
 	const filteredModels = models?.filter(
 		(model: any) =>
 			model.brand === selectedBrand &&
 			(model.category === selectedCategory || selectedCategory === 'Other'),
 	);
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -191,7 +177,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					{/* Radio buttons for Category selection */}
 					<FormGroup id='categorySelect' label='Category' className='col-md-12'>
 						<ChecksGroup isInline>
 							<Checks
@@ -232,8 +217,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 						</ChecksGroup>
 					</FormGroup>
-
-					{/* Conditionally show custom category input if "Other" is selected */}
 					{selectedCategory === 'Other' && (
 						<FormGroup
 							id='categorySelectDropdown'
@@ -260,8 +243,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Conditionally show brand dropdown if a category is selected */}
 					{selectedCategory && (
 						<FormGroup id='brandSelect' label='Brand' className='col-md-6'>
 							<Select
@@ -278,8 +259,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Conditionally show model dropdown if a brand is selected */}
 					{selectedBrand && (
 						<FormGroup id='modelSelect' label='Model' className='col-md-6'>
 							<Select
@@ -297,8 +276,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Show additional fields after brand and model are selected */}
 					{formik.values.model && (
 						<>
 							<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
@@ -329,9 +306,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									name='boxNumber'
 								/>
 							</FormGroup>
-							
-
-							{/* Conditionally show fields based on the selected category */}
 							{selectedCategory === 'Touch Pad' && (
 								<FormGroup
 									id='touchpadNumber'
@@ -346,7 +320,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
-
 							{selectedCategory === 'Displays' && (
 								<FormGroup
 									id='displaySNumber'
@@ -361,7 +334,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
-
 							{selectedCategory === 'Battery Cell' && (
 								<FormGroup
 									id='batteryCellNumber'
@@ -381,7 +353,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='success' onClick={formik.handleSubmit}>
 					Edit Item
 				</Button>
@@ -389,10 +360,10 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-// Prop types definition for ItemAddModal component
 ItemAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default ItemAddModal;

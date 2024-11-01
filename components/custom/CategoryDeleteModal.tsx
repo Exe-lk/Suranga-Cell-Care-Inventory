@@ -42,7 +42,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
-
 		if (confirmation.value === 'DELETE') {
 			await deleteCategory(category.id)
 				.unwrap()
@@ -62,7 +61,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 			console.error('No categories to restore.');
 			return;
 		}
-
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -72,17 +70,14 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore it!',
 			});
-
 			if (result.isConfirmed) {
 				const values = {
 					id: category.id,
 					name: category.name,
 					status: true,
 				};
-
 				await updateCategory(values);
 				Swal.fire('Restored!', 'The category has been restored.', 'success');
-
 				refetch();
 				refetchMainPage();
 			}
@@ -102,7 +97,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
-
 		if (confirmation.value === 'DELETE ALL') {
 			for (const category of categories) {
 				await deleteCategory(category.id).unwrap();
@@ -119,18 +113,17 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});
-
 		if (confirmation.isConfirmed) {
 			for (const category of categories) {
 				const updatedCategory = { ...category, status: true };
 				await updateCategory(updatedCategory).unwrap();
 			}
 			Swal.fire('Restored!', 'All categories have been restored.', 'success');
-
 			refetch();
 			refetchMainPage();
 		}
 	};
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -200,7 +193,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({
 		</Modal>
 	);
 };
-
 CategoryEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
