@@ -282,11 +282,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						</Select>
 					</FormGroup>
 					{selectedCost && (
-						<FormGroup id="cost" label="Cost(Per Unit)" className="col-md-6">
+						<FormGroup id="cost" label="Cost(lkr)" className="col-md-6">
 							<Input type="text" value={selectedCost} readOnly />
 						</FormGroup>
 					)}
-					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
+					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
 						<Input
 							type='text'
 							placeholder='Enter Selling Price'
@@ -426,10 +426,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						</FormGroup>
 					)}
 					{selectedOption === 'Return' && (
-						<FormGroup id='sellerName' label='Seller Name' className='col-md-6'>
+						<FormGroup id='sellerName' label='Supplier Name' className='col-md-6'>
 							<Input
 								type='text'
-								placeholder='Enter Seller Name'
+								placeholder='Enter supplier Name'
 								value={formik.values.sellerName}
 								onChange={formik.handleChange}
 								name='sellerName'

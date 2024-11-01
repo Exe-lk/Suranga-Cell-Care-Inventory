@@ -49,7 +49,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			Price: '',
 			Status: '',
 			DateOut: '',
-			status: true,	
+			status: true,
 		},
 		validate: (values) => {
 			const errors: {
@@ -69,7 +69,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				DateOut?: string;
 			} = {};
 			if (!values.phoneDetail) errors.phoneDetail = 'Phone Detail is required.';
-			if (!values.dateIn) errors.dateIn = 'Date In is required.';
 			if (!values.billNumber) errors.billNumber = 'Bill Number is required.';
 			if (!values.phoneModel) errors.phoneModel = 'Phone Model is required.';
 			if (!values.repairType) errors.repairType = 'Repair Type is required.';
@@ -90,15 +89,19 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}else if (/[A-Z]/.test(values.email)) {
+			} else if (/[A-Z]/.test(values.email)) {
 				errors.email = 'Email should be in lowercase only.';
-			}	
+			}
 			if (!values.cost) errors.cost = 'Cost is required.';
 			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Price) errors.Price = 'Price is required.';
 			else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
 			if (!values.Status) errors.Status = 'Status is required.';
+			if (!values.dateIn) errors.dateIn = 'Date In is required.';
 			if (!values.DateOut) errors.DateOut = 'Date Out is required.';
+			else if (new Date(values.DateOut) <= new Date(values.dateIn)) {
+				errors.DateOut = 'Date Out must be after Date In.';
+			}
 			return errors;
 		},
 		enableReinitialize: true,
@@ -137,14 +140,14 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 
 	useEffect(() => {
 		if (isOpen && bills) {
-			const lastBillNumber = bills.length > 0
-				? Math.max(...bills.map((bill: any) => parseInt(bill.billNumber, 10)))
-				: 0;
+			const lastBillNumber =
+				bills.length > 0
+					? Math.max(...bills.map((bill: any) => parseInt(bill.billNumber, 10)))
+					: 0;
 			const nextBillNumber = (lastBillNumber + 1).toString().padStart(4, '0');
 			formik.setFieldValue('billNumber', nextBillNumber);
 		}
 	}, [isOpen, bills]);
-	
 
 	const formatMobileNumber = (value: string) => {
 		let sanitized = value.replace(/\D/g, '');
@@ -164,7 +167,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
+					<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
 							value={formik.values.billNumber}
@@ -176,10 +179,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							readOnly
 						/>
 					</FormGroup>
-					<FormGroup
-						id='dateIn'
-						label='Date In'
-						className='col-md-6'>
+					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
 							onChange={formik.handleChange}

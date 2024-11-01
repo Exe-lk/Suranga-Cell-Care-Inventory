@@ -271,7 +271,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<></>
 						)}
 					</FormGroup>
-					<FormGroup id='cost' label='Cost(Per Unit)' className='col-md-6'>
+					<FormGroup id='cost' label='Cost(lkr)' className='col-md-6'>
 						<Input
 							type='number'
 							placeholder='Enter Cost'
