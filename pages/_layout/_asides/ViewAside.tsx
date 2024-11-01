@@ -1,45 +1,39 @@
-import React, { useContext, useState } from 'react';
-import classNames from 'classnames';
-import { useTranslation } from 'next-i18next';
+import React, { useContext, useEffect, useState } from 'react';
 import { GetStaticProps } from 'next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import Brand from '../../../layout/Brand/Brand';
-import Navigation, { NavigationLine } from '../../../layout/Navigation/Navigation';
-import User from '../../../layout/User/User';
-import {
-
-  ViewPagesMenu,
-   logoutmenu
-} from '../../../menu';
+import Navigation from '../../../layout/Navigation/Navigation';
+import { addminPagesMenu, logoutmenu, ViewPagesMenu } from '../../../menu';
 import ThemeContext from '../../../context/themeContext';
-import Card, { CardBody } from '../../../components/bootstrap/Card';
-
-import Hand from '../../../assets/img/hand.png';
-import Icon from '../../../components/icon/Icon';
-import Button from '../../../components/bootstrap/Button';
-import useDarkMode from '../../../hooks/useDarkMode';
 import Aside, { AsideBody, AsideFoot, AsideHead } from '../../../layout/Aside/Aside';
-
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, firestore } from '../../../firebaseConfig';
+import { useRouter } from 'next/router';
 
 const DefaultAside = () => {
-	// Context for theme
 	const { asideStatus, setAsideStatus } = useContext(ThemeContext);
+	const [isAuthorized, setIsAuthorized] = useState(false);
+	const router = useRouter();
+	const getUserRole = () => {
+		return localStorage.getItem('userRole');
+	};
 
-	// State to manage document status
-	const [doc, setDoc] = useState(
-		(typeof window !== 'undefined' &&
-			localStorage.getItem('facit_asideDocStatus') === 'true') ||
-			false,
-	);
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, async (user) => {
+			if (user) {
+				const role = getUserRole();
+				if (role == 'Viewer') {
+					setIsAuthorized(true);
+				} else {
+					router.push('/');
+				}
+			} else {
+				router.push('/');
+			}
+		});
 
-	// Translation hook
-	const { t } = useTranslation(['common', 'menu']);
-
-	// Dark mode hook
-	const { darkModeStatus } = useDarkMode();
-
-	// Function to handle logout button click
-
+		return () => unsubscribe();
+	}, [router]);
 
 	return (
 		<Aside>
@@ -47,17 +41,10 @@ const DefaultAside = () => {
 				<Brand asideStatus={asideStatus} setAsideStatus={setAsideStatus} />
 			</AsideHead>
 			<AsideBody>
-				 {/* Navigation menu for 'My Pages' */}
 				<Navigation menu={ViewPagesMenu} id='aside-dashboard' />
-				
 			</AsideBody>
 			<AsideFoot>
-				
-					<Navigation  menu={logoutmenu} id='aside-dashboard' />
-			
-
-
-			
+				<Navigation menu={logoutmenu} id='aside-dashboard' />
 			</AsideFoot>
 		</Aside>
 	);

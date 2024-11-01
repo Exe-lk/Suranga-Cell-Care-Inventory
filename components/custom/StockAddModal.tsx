@@ -88,7 +88,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
 		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0');
 		const barcode = (numericPart + 1).toString().padStart(10, '0');
-		const value = `${ stockInData.code}${incrementedNumericPart}`;
+		const value = `${stockInData?.code}${incrementedNumericPart}`;
 		setGeneratedBarcode(value);
 		return incrementedNumericPart;
 	};
@@ -181,6 +181,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup id='code' label='Generated Code' className='col-md-6'>
+						<Input
+							type='text'
+							value={generatedbarcode}
+							readOnly
+							isValid={formik.isValid}
+							isTouched={formik.touched.code}
+						/>
+					</FormGroup>
 					<FormGroup id='brand' label='Brand' className='col-md-6'>
 						<Input
 							type='text'
@@ -273,15 +282,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.cost}
 							invalidFeedback={formik.errors.cost}
 							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='code' label='Generated Code' className='col-md-6'>
-						<Input
-							type='text'
-							value={generatedCode}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.code}
 						/>
 					</FormGroup>
 				</div>
