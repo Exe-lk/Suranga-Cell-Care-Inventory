@@ -72,25 +72,33 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				displaySNumber?: string;
 				otherCategory?: string;
 			} = {};
-			if (!values.model) errors.model = 'Required';
-			if (!values.brand) errors.brand = 'Required';
+			if (!values.model) {
+				errors.model = 'Model is required';
+			}
+			if (!values.brand) {
+				errors.brand = 'Brand is required';
+			}
+			if (!values.category) {
+				errors.category = 'Category is required';
+			}
 			if (!values.reorderLevel) {
-				errors.reorderLevel = 'Required';
-			} else if (Number(values.reorderLevel) <= 0) {
-				errors.reorderLevel = 'Must be a positive number';
+				errors.reorderLevel = 'Reorder Level is required';
+			} 
+			if (values.category === 'Touch Pad' && !values.touchpadNumber) {
+				errors.touchpadNumber = 'Touchpad Number is required for Touch Pad category';
 			}
-			if (!values.boxNumber) errors.boxNumber = 'Required';
-			if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
-				errors.touchpadNumber = 'Touchpad Number is required';
+			if (values.category === 'Displays' && !values.displaySNumber) {
+				errors.displaySNumber = 'Display Serial Number is required for Displays category';
 			}
-			if (selectedCategory === 'Displays' && !values.displaySNumber) {
-				errors.displaySNumber = 'Display Serial Number is required';
+			if (values.category === 'Battery Cell' && !values.batteryCellNumber) {
+				errors.batteryCellNumber =
+					'Battery Cell Number is required for Battery Cell category';
 			}
-			if (selectedCategory === 'Battery Cell' && !values.batteryCellNumber) {
-				errors.batteryCellNumber = 'Battery Cell Number is required';
+			if (values.category === 'Other' && !values.otherCategory) {
+				errors.otherCategory = 'Custom category name is required for "Other"';
 			}
-			if (selectedCategory === 'Other' && !values.otherCategory) {
-				errors.otherCategory = 'Please specify the category';
+			if (!values.boxNumber) {
+				errors.boxNumber = 'Box Number is required';
 			}
 			return errors;
 		},
