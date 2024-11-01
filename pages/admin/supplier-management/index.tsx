@@ -5,7 +5,6 @@ import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
-	SubheaderSeparator,
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
@@ -14,15 +13,9 @@ import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import UserAddModal from '../../../components/custom/SupplierAddModal';
 import UserEditModal from '../../../components/custom/SupplierEditModal';
-import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
-import { firestore } from '../../../firebaseConfig';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
-import { getColorNameWithIndex } from '../../../common/data/enumColors';
-import { getFirstLetter } from '../../../helpers/helpers';
 import Swal from 'sweetalert2';
-import FormGroup from '../../../components/bootstrap/forms/FormGroup';
-import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import SellerDeleteModal from '../../../components/custom/SupplierDeleteModal';
 import { useUpdateSupplierMutation } from '../../../redux/slices/supplierApiSlice';
 import { useGetSuppliersQuery } from '../../../redux/slices/supplierApiSlice';

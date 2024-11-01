@@ -170,9 +170,9 @@ export const DropdownMenu: FC<IDropdownMenuProps> = ({
 							className,
 						)}
 						data-bs-popper={breakpoint ? 'static' : null}
-						onMouseLeave={
-							isCloseAfterLeave && setIsOpen ? () => setIsOpen(false) : undefined
-						}
+						// onMouseLeave={
+						// 	isCloseAfterLeave && setIsOpen ? () => setIsOpen(false) : undefined
+						// }
 						// eslint-disable-next-line react/jsx-props-no-spreading
 						{...props}>
 						{children}

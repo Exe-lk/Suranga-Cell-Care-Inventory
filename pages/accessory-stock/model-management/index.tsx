@@ -1,20 +1,16 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import useDarkMode from '../../../hooks/useDarkMode';
 import Page from '../../../layout/Page/Page';
-import { firestore } from '../../../firebaseConfig';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
-	SubheaderSeparator,
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../components/bootstrap/Dropdown';
 import Button from '../../../components/bootstrap/Button';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
-import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import ModelAddModal from '../../../components/custom/Model1AddModal';
 import ModelDeleteModal from '../../../components/custom/Model1DeleteModal';
@@ -30,21 +26,12 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 
-interface Model {
-	cid: string;
-	modelname: string;
-	description: string;
-	status: boolean;
-}
-
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); 
 	const [searchTerm, setSearchTerm] = useState(''); 
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
 	const [id, setId] = useState<string>(''); 
-	const [status, setStatus] = useState(true); 
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -236,7 +223,7 @@ const loadImage = (url: string): Promise<string> => {
             const ctx = canvas.getContext('2d');
             if (ctx) {
                 ctx.drawImage(img, 0, 0);
-                const dataUrl = canvas.toDataURL('image/png'); // Base64 URL
+                const dataUrl = canvas.toDataURL('image/png'); 
                 resolve(dataUrl);
             } else {
                 reject('Failed to load the logo image.');

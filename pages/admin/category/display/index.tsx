@@ -1,20 +1,17 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
 import useDarkMode from '../../../../hooks/useDarkMode';
 import Page from '../../../../layout/Page/Page';
-import { firestore } from '../../../../firebaseConfig';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
-	SubheaderSeparator,
 } from '../../../../layout/SubHeader/SubHeader';
 import Icon from '../../../../components/icon/Icon';
 import Input from '../../../../components/bootstrap/forms/Input';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../../components/bootstrap/Dropdown';
 import Button from '../../../../components/bootstrap/Button';
 import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
-import { collection, deleteDoc, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import CategoryAddModal from '../../../../components/custom/CategoryAddModal';
 import CategoryDeleteModal from '../../../../components/custom/CategoryDeleteModal';
 import CategoryEditModal from '../../../../components/custom/CategoryEditModal';
@@ -33,20 +30,12 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../../components/PaginationButtons';
 
-interface Category {
-	cid: string;
-	name: string;
-	status: boolean;
-}
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-	const [category, setcategory] = useState<Category[]>([]);
 	const [id, setId] = useState<string>('');
-	const [status, setStatus] = useState(true);
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	const [updateCategory] = useUpdateCategoryMutation();
 	const [currentPage, setCurrentPage] = useState<number>(1);

@@ -182,7 +182,7 @@ const Modal: FC<IModalProps> = ({
 			setIsOpen(false);
 		}
 	};
-	useEventListener('mousedown', closeModal);
+	// useEventListener('mousedown', closeModal);
 	useEventListener('touchstart', closeModal); // Touchscreen
 
 	// Backdrop static function
