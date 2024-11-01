@@ -88,7 +88,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
 		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0');
 		const barcode = (numericPart + 1).toString().padStart(10, '0');
-		const value = `${stockIn.code}${incrementedNumericPart}`;
+		const value = `${ stockInData.code}${incrementedNumericPart}`;
 		setGeneratedBarcode(value);
 		return incrementedNumericPart;
 	};

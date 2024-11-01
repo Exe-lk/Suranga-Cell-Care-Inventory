@@ -77,27 +77,27 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		if (stockInOuts?.length) {
 			const lastCode = stockInOuts
 				.map((item: { code: string }) => item.code)
-				.filter((code: string) => code) 
+				.filter((code: string) => code)
 				.reduce((maxCode: string, currentCode: string) => {
-					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); 
-					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); 
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
 					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
-				}, '100000'); 
-			const newCode = incrementCode(lastCode); 
-			setGeneratedCode(newCode); 
+				}, '100000');
+			const newCode = incrementCode(lastCode);
+			setGeneratedCode(newCode);
 		} else {
 			setGeneratedCode('100000');
 			setGeneratedBarcode('1000100000');
 		}
-	}, [isSuccess, stockInData, stockInOuts]);
+	}, [isSuccess, stockInData, stockInOuts,isOpen]);
 
 	const incrementCode = (code: string) => {
-		const numericPart = parseInt(code.replace(/\D/g, ''), 10); 
-		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0'); 
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0');
 		const barcode = (numericPart + 1).toString().padStart(10, '0');
-		const value = `${stockIn.code}${incrementedNumericPart}`;
+		const value = `${stockInData?.code}${incrementedNumericPart}`;
 		setGeneratedBarcode(value);
-		return incrementedNumericPart; 
+		return incrementedNumericPart;
 	};
 
 	const formik = useFormik({
@@ -211,6 +211,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup id='code' label='Generated Code' className='col-md-6'>
+						<Input
+							type='text'
+							value={generatedbarcode}
+							readOnly
+							isValid={formik.isValid}
+							isTouched={formik.touched.code}
+						/>
+					</FormGroup>
 					<FormGroup id='brand' label='Brand' className='col-md-6'>
 						<Input
 							type='text'
@@ -320,6 +329,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
 						<Input
 							type='number'
+							min={1}
 							placeholder='Enter Quantity'
 							value={formik.values.quantity}
 							onChange={formik.handleChange}
@@ -333,6 +343,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup id='date' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
+							max={new Date().toISOString().split('T')[0]}
 							placeholder='Enter Date'
 							value={formik.values.date}
 							onChange={formik.handleChange}
@@ -346,6 +357,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup id='cost' label='Cost' className='col-md-6'>
 						<Input
 							type='number'
+							min={0}
 							placeholder='Enter Cost'
 							value={formik.values.cost}
 							onChange={formik.handleChange}
@@ -357,6 +369,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
 						<Input
 							type='number'
+							min={0}
 							placeholder='Enter Cost'
 							value={formik.values.sellingPrice}
 							onChange={formik.handleChange}
@@ -365,15 +378,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.sellingPrice}
 							invalidFeedback={formik.errors.sellingPrice}
 							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='code' label='Generated Code' className='col-md-6'>
-						<Input
-							type='text'
-							value={generatedCode}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.code}
 						/>
 					</FormGroup>
 				</div>
