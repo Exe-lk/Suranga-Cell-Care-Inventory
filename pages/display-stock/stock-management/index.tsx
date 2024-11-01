@@ -412,9 +412,7 @@ try {
 											dataPagination(filteredTransactions, currentPage, perPage)
 											.filter((stockInOut: any) =>
 												searchTerm
-													? stockInOut.barcode
-															.toLowerCase()
-															.includes(searchTerm.toLowerCase())
+													? stockInOut.barcode?.includes(searchTerm)
 													: true,
 											)
 											.filter((stockInOut: any) =>
