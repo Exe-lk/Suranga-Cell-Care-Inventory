@@ -149,7 +149,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}
+			}else if (/[A-Z]/.test(values.email)) {
+				errors.email = 'Email should be in lowercase only.';
+			}	
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -295,7 +297,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							<Input type='text' value={selectedCost} readOnly />
 						</FormGroup>
 					)}
-					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
+					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
 						<Input
 							type='number'
 							min={0}

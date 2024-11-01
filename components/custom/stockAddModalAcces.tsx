@@ -27,7 +27,6 @@ interface StockIn {
 	type: string;
 	quantity: string;
 	date: string;
-	imi: string;
 	storage: string;
 	name: string;
 	nic: string;
@@ -49,7 +48,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		type: '',
 		quantity: '',
 		date: '',
-		imi: '',
 		storage: '',
 		name: '',
 		nic: '',
@@ -108,7 +106,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			type: stockIn.type || '',
 			quantity: '',
 			date: '',
-			imi: '',
 			storage: '',
 			name: '',
 			nic: '',
@@ -137,9 +134,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.date = 'Date In is required';
 			}
 			if (values.type === 'Mobile') {
-				if (!values.imi) {
-					errors.imi = 'IMI is required';
-				}
 				if (!values.storage) {
 					errors.storage = 'Storage is required';
 				}
@@ -207,7 +201,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					formik.resetForm();
 				}}
 				className='p-4'>
-				<ModalTitle id=''>{'New Stock'}</ModalTitle>
+				<ModalTitle id=''>{'Stock In'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
@@ -258,16 +252,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</FormGroup>
 					{formik.values.type === 'Mobile' && (
 						<>
-							<FormGroup id='imi' label='IMI' className='col-md-6'>
-								<Input
-									type='text'
-									value={formik.values.imi}
-									onChange={formik.handleChange}
-									onBlur={formik.handleBlur}
-									isValid={formik.isValid}
-									isTouched={formik.touched.imi}
-								/>
-							</FormGroup>
 							<FormGroup id='storage' label='Storage' className='col-md-6'>
 								<Input
 									type='text'
@@ -354,7 +338,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='cost' label='Cost' className='col-md-6'>
+					<FormGroup id='cost' label='Cost(lkr)' className='col-md-6'>
 						<Input
 							type='number'
 							min={0}
@@ -363,10 +347,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							invalidFeedback={formik.errors.cost}
 							isTouched={formik.touched.cost}
 						/>
 					</FormGroup>
-					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
+					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
 						<Input
 							type='number'
 							min={0}

@@ -52,6 +52,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		enableReinitialize: true,
 		initialValues: {
 			id: '',
+			code: itemAcceToEdit?.code || '',
 			type: itemAcceToEdit?.type || '',
 			mobileType: itemAcceToEdit?.mobileType || '',
 			category: itemAcceToEdit?.category || '',
@@ -64,6 +65,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		validate: (values) => {
 			const errors: {
+				code?: string;
 				type?: string;
 				mobileType?: string;
 				category?: string;
@@ -73,6 +75,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				reorderLevel?: string;
 				description?: string;
 			} = {};
+			if (!values.code) errors.code = 'Code is required';
 			if (!values.type) errors.type = 'Type is required';
 			if (values.type === 'Mobile' && !values.mobileType)
 				errors.mobileType = 'Mobile Type is required';
@@ -95,6 +98,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				const data = {
 					status: true,
 					id: id,
+					code: values.code,
 					type: values.type,
 					mobileType: values.mobileType,
 					category: values.category,
@@ -157,6 +161,18 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
+					<FormGroup id='code' label='Code' className='col-md-6'>
+						<Input
+							onChange={formik.handleChange}
+							value={formik.values.code}
+							name='code'
+							placeholder='Enter Code'
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							validFeedback='Looks good!'
+							readOnly
+						/>
+					</FormGroup>
 					<FormGroup id='type' label='Type' className='col-md-6'>
 						<Select
 							ariaLabel='Default select type'
@@ -200,7 +216,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						<Select
 							ariaLabel='Category'
 							onChange={handleCategoryChange}
-							value={selectedCategory}
+							value={formik.values.category}
 							onBlur={formik.handleBlur}>
 							<Option value=''>Select a category</Option>
 							{categoriesLoading && (
