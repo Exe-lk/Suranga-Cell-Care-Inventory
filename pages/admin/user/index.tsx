@@ -64,6 +64,8 @@ const Index: NextPage = () => {
 		{ role: 'accessosry stock keeper' },
 		{ role: 'display stock keeper' },
 		{ role: 'cashier' },
+		{ role: 'admin' },
+		{ role: 'Viewer' },
 	];
 	const { data: users, error, isLoading, refetch } = useGetUsersQuery(undefined);
 	const [updateUser] = useUpdateUserMutation();

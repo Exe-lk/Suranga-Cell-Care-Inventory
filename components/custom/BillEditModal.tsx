@@ -36,9 +36,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const formik = useFormik({
 		initialValues: {
 			id: '',
-			phoneDetail: billToEdit?.phoneDetail || '',
-			dateIn: billToEdit?.dateIn || '',
 			billNumber: billToEdit?.billNumber || '',
+			dateIn: billToEdit?.dateIn || '',
+			phoneDetail: billToEdit?.phoneDetail || '',
 			phoneModel: billToEdit?.phoneModel || '',
 			repairType: billToEdit?.repairType || '',
 			technicianNum: billToEdit?.technicianNum || '',
@@ -133,9 +133,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				try {
 					console.log(values);
 					const data = {
-						phoneDetail: values.phoneDetail,
-						dateIn: values.dateIn,
 						billNumber: values.billNumber,
+						dateIn: values.dateIn,
+						phoneDetail: values.phoneDetail,
 						phoneModel: values.phoneModel,
 						repairType: values.repairType,
 						technicianNum: values.technicianNum,
@@ -190,16 +190,17 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
+				<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
 						<Input
-							name='phoneDetail'
+							name='billNumber'
 							onChange={formik.handleChange}
-							value={formik.values.phoneDetail}
+							value={formik.values.billNumber}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={!!formik.touched.phoneDetail}
-							invalidFeedback={formik.errors.phoneDetail}
+							isTouched={!!formik.touched.billNumber}
+							invalidFeedback={formik.errors.billNumber}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
@@ -214,15 +215,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
+					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
 						<Input
-							name='billNumber'
+							name='phoneDetail'
 							onChange={formik.handleChange}
-							value={formik.values.billNumber}
+							value={formik.values.phoneDetail}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={!!formik.touched.billNumber}
-							invalidFeedback={formik.errors.billNumber}
+							isTouched={!!formik.touched.phoneDetail}
+							invalidFeedback={formik.errors.phoneDetail}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

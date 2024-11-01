@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -26,7 +26,7 @@ interface UserAddModalProps {
 
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addTechnician, { isLoading }] = useAddTechnicianMutation();
-	const { refetch } = useGetTechniciansQuery(undefined);
+	const { data:technicians,refetch } = useGetTechniciansQuery(undefined);
 
 	const formik = useFormik({
 		initialValues: {
@@ -96,6 +96,16 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		return sanitized.slice(0, 10);
 	};
 
+	useEffect(() => {
+		if (isOpen && technicians) {
+			const lastTechnicianNum = technicians.length > 0
+				? Math.max(...technicians.map((tech: any) => parseInt(tech.technicianNum.replace('T', ''), 10)))
+				: 0;
+			const nextTechnicianNum = `T${(lastTechnicianNum + 1).toString()}`;
+			formik.setFieldValue('technicianNum', nextTechnicianNum);
+		}
+	}, [isOpen, technicians]);	
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -117,6 +127,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.technicianNum}
 							invalidFeedback={formik.errors.technicianNum}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup id='name' label='Technician name' className='col-md-6'>

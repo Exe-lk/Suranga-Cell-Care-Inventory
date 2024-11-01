@@ -52,6 +52,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.mobileNumber) {
 				errors.mobileNumber = 'Mobile Number is required';
+			}else if(values.mobileNumber.length !== 10){
+				errors.mobileNumber = 'Mobile Number must be 10 digits';
 			}
 			return errors;
 		},
@@ -103,7 +105,12 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
+			<ModalHeader
+				setIsOpen={() => {
+					setIsOpen(false);
+					formik.resetForm();
+				}}
+				className='p-4'>
 				<ModalTitle id=''>{'Edit Technician'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -119,13 +126,15 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.technicianNum}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.technicianNum}
+							invalidFeedback={formik.errors.technicianNum}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 				<FormGroup
 						id='name'
 						label='Technician Name'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='name'
@@ -133,13 +142,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.name}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.name}
+							invalidFeedback={formik.errors.name}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='type'
 						label='Type'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							name='type'
@@ -147,13 +157,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.type}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.type}
+							invalidFeedback={formik.touched.type}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup
 						id='mobileNumber'
 						label='Mobile Number'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							type='text'
@@ -164,6 +175,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							}}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
+							isTouched={formik.touched.mobileNumber}
+							invalidFeedback={formik.errors.mobileNumber}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
