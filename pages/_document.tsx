@@ -6,8 +6,12 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 const Document = () => {
 	return (
 		<Html>
-			<Head />
-			<script type="text/javascript" src="../browser-print/BrowserPrint-3.1.250.min.js"></script>
+			<Head>
+				<meta name='robots' content='noindex, nofollow' />
+			</Head>
+			<script
+				type='text/javascript'
+				src='../browser-print/BrowserPrint-3.1.250.min.js'></script>
 			<body className='modern-design subheader-enabled'>
 				<Main />
 				<div id='portal-root' />
