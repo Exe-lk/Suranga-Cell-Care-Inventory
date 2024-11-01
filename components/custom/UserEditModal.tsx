@@ -155,7 +155,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							ariaLabel={''}>
 							<Option>Select the role</Option>
 							<Option value={'bill keeper'}>bill keeper</Option>
-							<Option value={'accessory stock keeper'}>accessory stock keeper</Option>
+							<Option value={'accessosry stock keeper'}>accessory stock keeper</Option>
 							<Option value={'display stock keeper'}>display stock keeper</Option>
 							<Option value={'cashier'}>cashier</Option>
 							<Option value={'Viewer'}>Viewer</Option>

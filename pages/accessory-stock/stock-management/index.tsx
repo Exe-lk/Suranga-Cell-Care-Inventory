@@ -1,65 +1,48 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import SubHeader, {
-	SubHeaderLeft,
-	SubHeaderRight,
-	SubheaderSeparator,
-} from '../../../layout/SubHeader/SubHeader';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
-import Swal from 'sweetalert2';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import {
-	useGetStockInOutsQuery,
-	useUpdateStockInOutMutation,
-} from '../../../redux/slices/stockInOutAcceApiSlice';
+import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); 
-	const [searchTerm, setSearchTerm] = useState(''); 
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-	const [id, setId] = useState<string>(''); 
-	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
+	const [searchTerm, setSearchTerm] = useState('');
+	const { data: StockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	const [startDate, setStartDate] = useState<string>(''); 
-	const [endDate, setEndDate] = useState<string>(''); 
+	const [startDate, setStartDate] = useState<string>('');
+	const [endDate, setEndDate] = useState<string>('');
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const stock = [{ stock: 'stockOut' }, { stock: 'stockIn' }];
-	const [updateStockInOut] = useUpdateStockInOutMutation();
 
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); 
-		const start = startDate ? new Date(startDate) : null; 
-		const end = endDate ? new Date(endDate) : null; 
+		const transactionDate = new Date(trans.date);
+		const start = startDate ? new Date(startDate) : null;
+		const end = endDate ? new Date(endDate) : null;
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
-		}
-		else if (start) {
+		} else if (start) {
 			return transactionDate >= start;
-		}
-		else if (end) {
+		} else if (end) {
 			return transactionDate <= end;
 		}
-		return true; 
+		return true;
 	});
 
 	const handleExport = async (format: string) => {
@@ -136,15 +119,15 @@ const Index: NextPage = () => {
 			const cells = table.querySelectorAll('th, td');
 			const originalColors: string[] = [];
 			cells.forEach((cell: any, index: number) => {
-				originalColors[index] = cell.style.color; 
-				cell.style.color = 'black'; 
+				originalColors[index] = cell.style.color;
+				cell.style.color = 'black';
 			});
 			const dataUrl = await toSvg(table, {
 				backgroundColor: 'white',
 				cacheBust: true,
 			});
 			cells.forEach((cell: any, index: number) => {
-				cell.style.color = originalColors[index]; 
+				cell.style.color = originalColors[index];
 			});
 			const link = document.createElement('a');
 			link.href = dataUrl;
@@ -224,9 +207,7 @@ const Index: NextPage = () => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-
-	  }, [StockInOuts]);
+	}, [StockInOuts]);
 
 	return (
 		<PageWrapper>
@@ -270,13 +251,12 @@ const Index: NextPage = () => {
 												checked={selectedUsers.includes(brand.stock)}
 												onChange={(event: any) => {
 													const { checked, value } = event.target;
-													setSelectedUsers(
-														(prevUsers) =>
-															checked
-																? [...prevUsers, value]
-																: prevUsers.filter(
-																		(brand) => brand !== value,
-																  ), 
+													setSelectedUsers((prevUsers) =>
+														checked
+															? [...prevUsers, value]
+															: prevUsers.filter(
+																	(brand) => brand !== value,
+															  ),
 													);
 												}}
 											/>
@@ -326,8 +306,8 @@ const Index: NextPage = () => {
 								</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-							<table className='table  table-bordered border-primary table-hover text-center'>
-							<thead className={"table-dark border-primary"}>
+								<table className='table  table-bordered border-primary table-hover text-center'>
+									<thead className={'table-dark border-primary'}>
 										<tr>
 											<th>Date</th>
 											<th>Category</th>
@@ -350,7 +330,11 @@ const Index: NextPage = () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											dataPagination(filteredTransactions, currentPage, perPage)
+											dataPagination(
+												filteredTransactions,
+												currentPage,
+												perPage,
+											)
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)

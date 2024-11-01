@@ -1,11 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC,} from 'react';
 import PropTypes from 'prop-types';
-import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
+import Modal, { ModalBody, ModalHeader, ModalTitle } from '../bootstrap/Modal';
 import Button from '../bootstrap/Button';
 import Swal from 'sweetalert2';
 import {
 	useDeleteItemDisMutation,
-	useGetItemDissQuery,
 	useGetDeleteItemDissQuery,
 	useUpdateItemDisMutation,
 } from '../../redux/slices/itemManagementDisApiSlice';

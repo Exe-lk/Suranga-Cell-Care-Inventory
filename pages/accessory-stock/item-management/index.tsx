@@ -1,12 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
-import Head from 'next/head';
-import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
-	SubheaderSeparator,
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
@@ -15,8 +12,6 @@ import Page from '../../../layout/Page/Page';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import ItemAddModal from '../../../components/custom/ItemAddModal';
 import ItemEditModal from '../../../components/custom/ItemEditModal';
-import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
-import { firestore } from '../../../firebaseConfig';
 import StockAddModal from '../../../components/custom/stockAddModalAcces';
 import StockOutModal from '../../../components/custom/StockOutModal';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
@@ -38,7 +33,6 @@ import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10
 
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);

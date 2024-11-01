@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
-import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
@@ -14,17 +13,13 @@ import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
-import {
-	useGetStockInOutsQuery,
-	useUpdateStockInOutMutation,
-} from '../../../redux/slices/stockInOutAcceApiSlice';
-import index from '../../cashier/bill';
+import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 
 const Index: NextPage = () => {
-	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [startDate, setStartDate] = useState<string>(''); // State for start date
-	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const { data: StockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
+	const [searchTerm, setSearchTerm] = useState('');
+	const [startDate, setStartDate] = useState<string>('');
+	const [endDate, setEndDate] = useState<string>('');
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -39,25 +34,20 @@ const Index: NextPage = () => {
 
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
-		}
-		// If only start date is selected
-		else if (start) {
+		} else if (start) {
 			return transactionDate >= start;
-		}
-		// If only end date is selected
-		else if (end) {
+		} else if (end) {
 			return transactionDate <= end;
 		}
-
-		return true; // Return all if no date range is selected
+		return true;
 	});
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
+	}, []);
 
-		// Attach event listener for keydown
-	}, [ ]);
 	useEffect(() => {
 		if (typeof window !== 'undefined' && (window as any).BrowserPrint) {
 			setIsBrowserPrintLoaded(true);
@@ -81,28 +71,22 @@ const Index: NextPage = () => {
 								(dev: any) => dev.uid !== device.uid,
 							);
 							setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
-
-							// Automatically select Zebra Technologies printer if available
 							const zebraDevice = newDevices.find(
 								(dev: any) => dev.manufacturer === 'Zebra Technologies',
 							);
 							if (zebraDevice) {
-								setSelectedDevice(zebraDevice); // Set Zebra printer as default
+								setSelectedDevice(zebraDevice);
 							}
 						},
-						() => {
-							// alert('Error getting local devices');
-						},
+						() => {},
 						'printer',
 					);
 				},
-				(error: any) => {
-					// alert(error);
-				},
+				(error: any) => {},
 			);
 		};
 
-		if (isBrowserPrintLoaded) setup(); // Ensure BrowserPrint is loaded
+		if (isBrowserPrintLoaded) setup();
 	}, [isBrowserPrintLoaded]);
 
 	const printLabels = (
@@ -113,7 +97,6 @@ const Index: NextPage = () => {
 		labelQuantity: number,
 	) => {
 		if (!selectedDevice) {
-			// alert('Please select a printer device.');
 			Swal.fire('Error', 'Please select a printer device', 'error');
 			return;
 		}
@@ -122,9 +105,7 @@ const Index: NextPage = () => {
 			title: 'Bar Code Print!',
 			html: `
 			  <div>
-			
-				
-				<label>Enter Quantity:</label>
+			<label>Enter Quantity:</label>
 				<input type="number" id="quantityInput" class="swal2-input" placeholder="Quantity" value=${labelQuantity}>
 			  </div>
 			`,
@@ -265,7 +246,6 @@ const Index: NextPage = () => {
 						placeholder='Search...'
 						onChange={(event: any) => setSearchTerm(event.target.value)}
 						value={searchTerm}
-						
 					/>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -279,8 +259,8 @@ const Index: NextPage = () => {
 								</div>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-							<table className='table  table-bordered border-primary table-hover text-center'>
-							<thead className={"table-dark border-primary"}>
+								<table className='table  table-bordered border-primary table-hover text-center'>
+									<thead className={'table-dark border-primary'}>
 										<tr>
 											<th>Date</th>
 											<th>Item Code</th>
@@ -325,12 +305,20 @@ const Index: NextPage = () => {
 											</tr>
 										)}
 										{filteredTransactions &&
-											dataPagination(filteredTransactions, currentPage, perPage)
+											dataPagination(
+												filteredTransactions,
+												currentPage,
+												perPage,
+											)
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
 												.filter((brand: any) => {
-													if (brand.barcode?.toString().includes(searchTerm)) {
+													if (
+														brand.barcode
+															?.toString()
+															.includes(searchTerm)
+													) {
 														return brand;
 													}
 												})
@@ -373,7 +361,9 @@ const Index: NextPage = () => {
 																		brand.sellingPrice,
 																		brand.code,
 																		brand.barcode,
-																		brand.brand+" "+brand.model,
+																		brand.brand +
+																			' ' +
+																			brand.model,
 																		brand.quantity,
 																	)
 																}>
