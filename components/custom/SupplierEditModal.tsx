@@ -56,6 +56,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
+			}else if (/[A-Z]/.test(values.email)) {
+				errors.email = 'Email should be in lowercase only.';
 			}
 			if (!values.address) {
 				errors.address = 'Address is required';

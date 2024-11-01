@@ -63,7 +63,9 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}
+			} else if (/[A-Z]/.test(values.email)) {
+				errors.email = 'Email should be in lowercase only.';
+			}			
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -156,6 +158,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value={'accessory stock keeper'}>accessory stock keeper</Option>
 							<Option value={'display stock keeper'}>display stock keeper</Option>
 							<Option value={'cashier'}>cashier</Option>
+							<Option value={'Viewer'}>Viewer</Option>
 						</Select>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
@@ -183,6 +186,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.email}
 							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup id='nic' label='NIC' className='col-md-6'>

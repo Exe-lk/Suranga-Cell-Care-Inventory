@@ -65,9 +65,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			if (result.isConfirmed) {
 				const values = await {
 					id: bill.id,
-					phoneDetail: bill.phoneDetail,
-					dateIn: bill.dateIn,
 					billNumber: bill.billNumber,
+					dateIn: bill.dateIn,
+					phoneDetail: bill.phoneDetail,
 					phoneModel: bill.phoneModel,
 					repairType: bill.repairType,
 					technicianNum: bill.technicianNum,
@@ -135,9 +135,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				for (const bill of bills) {
 					const values = {
 						id: bill.id,
-						phoneDetail: bill.phoneDetail,
-						dateIn: bill.dateIn,
 						billNumber: bill.billNumber,
+						dateIn: bill.dateIn,
+						phoneDetail: bill.phoneDetail,
 						phoneModel: bill.phoneModel,
 						repairType: bill.repairType,
 						technicianNum: bill.technicianNum,

@@ -33,22 +33,11 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		isError,
 	} = useGetTechniciansQuery(undefined);
 
-	useEffect(() => {
-		if (bills && bills.length > 0) {
-			const highestBillNumber = Math.max(
-				...bills.map((bill: any) => parseInt(bill.billNumber || '0', 10)),
-			);
-			formik.setFieldValue('billNumber', (highestBillNumber + 1).toString().padStart(4, '0'));
-		} else {
-			formik.setFieldValue('billNumber', '0001');
-		}
-	}, [bills]);
-
 	const formik = useFormik({
 		initialValues: {
-			phoneDetail: '',
+			billNumber: '',
 			dateIn: '',
-			billNumber: '0001',
+			phoneDetail: '',
 			phoneModel: '',
 			repairType: '',
 			technicianNum: '',
@@ -60,10 +49,25 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			Price: '',
 			Status: '',
 			DateOut: '',
-			status: true,
+			status: true,	
 		},
 		validate: (values) => {
-			const errors: any = {};
+			const errors: {
+				phoneDetail?: string;
+				dateIn?: string;
+				billNumber?: string;
+				phoneModel?: string;
+				repairType?: string;
+				technicianNum?: string;
+				CustomerName?: string;
+				CustomerMobileNum?: string;
+				email?: string;
+				NIC?: string;
+				cost?: string;
+				Price?: string;
+				Status?: string;
+				DateOut?: string;
+			} = {};
 			if (!values.phoneDetail) errors.phoneDetail = 'Phone Detail is required.';
 			if (!values.dateIn) errors.dateIn = 'Date In is required.';
 			if (!values.billNumber) errors.billNumber = 'Bill Number is required.';
@@ -75,16 +79,20 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				errors.CustomerMobileNum = 'Customer Mobile Number is required.';
 			if (values.CustomerMobileNum.length !== 10)
 				errors.CustomerMobileNum = 'Mobile Number must be 10 digits';
+			if (!values.NIC) {
+				errors.NIC = 'Required';
+			} else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) {
+				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
+			}
 			if (!values.email) {
 				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}
-			if (!values.NIC) errors.NIC = 'NIC is required.';
-			else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC))
-				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
+			}else if (/[A-Z]/.test(values.email)) {
+				errors.email = 'Email should be in lowercase only.';
+			}	
 			if (!values.cost) errors.cost = 'Cost is required.';
 			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
 			if (!values.Price) errors.Price = 'Price is required.';
@@ -93,6 +101,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			if (!values.DateOut) errors.DateOut = 'Date Out is required.';
 			return errors;
 		},
+		enableReinitialize: true,
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -126,6 +135,17 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		},
 	});
 
+	useEffect(() => {
+		if (isOpen && bills) {
+			const lastBillNumber = bills.length > 0
+				? Math.max(...bills.map((bill: any) => parseInt(bill.billNumber, 10)))
+				: 0;
+			const nextBillNumber = (lastBillNumber + 1).toString().padStart(4, '0');
+			formik.setFieldValue('billNumber', nextBillNumber);
+		}
+	}, [isOpen, bills]);
+	
+
 	const formatMobileNumber = (value: string) => {
 		let sanitized = value.replace(/\D/g, '');
 		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
@@ -144,21 +164,21 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
+				<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
-							value={formik.values.phoneDetail}
+							value={formik.values.billNumber}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.phoneDetail}
-							invalidFeedback={formik.errors.phoneDetail}
+							isTouched={formik.touched.billNumber}
+							invalidFeedback={formik.errors.billNumber}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup
 						id='dateIn'
 						label='Date In'
-						onChange={formik.handleChange}
 						className='col-md-6'>
 						<Input
 							type='date'
@@ -171,14 +191,14 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
+					<FormGroup id='phoneDetail' label='Phone Detail' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
-							value={formik.values.billNumber}
+							value={formik.values.phoneDetail}
 							onBlur={formik.handleBlur}
 							isValid={formik.isValid}
-							isTouched={formik.touched.billNumber}
-							invalidFeedback={formik.errors.billNumber}
+							isTouched={formik.touched.phoneDetail}
+							invalidFeedback={formik.errors.phoneDetail}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

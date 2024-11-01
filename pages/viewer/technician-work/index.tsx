@@ -439,8 +439,11 @@ const Index: NextPage = () => {
 													searchTerm
 														? bill.repairType
 																.toLowerCase()
+																.includes(searchTerm.toLowerCase()) ||
+															getTechnicianName(bill.technicianNum)
+																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
-														: true,
+														: true, 
 												)
 												.filter((bill: any) =>
 													selectedUsers.length > 0

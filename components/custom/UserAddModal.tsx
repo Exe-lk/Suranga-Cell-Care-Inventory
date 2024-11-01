@@ -68,7 +68,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}
+			} else if (/[A-Z]/.test(values.email)) {
+				errors.email = 'Email should be in lowercase only.';
+			}			
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -150,6 +152,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Option>
 							<Option value={'display stock keeper'}>Display Stock Keeper</Option>
 							<Option value={'cashier'}>Cashier</Option>
+							<Option value={'Viewer'}>Viewer</Option>
 						</Select>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
