@@ -10,6 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, firestore } from '../../../firebaseConfig';
 import { useRouter } from 'next/router';
 
+
 const DefaultAside = () => {
 	const { asideStatus, setAsideStatus } = useContext(ThemeContext);
 	const [isAuthorized, setIsAuthorized] = useState(false);

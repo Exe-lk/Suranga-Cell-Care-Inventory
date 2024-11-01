@@ -18,15 +18,21 @@ const DefaultAside = () => {
 	useEffect(() => {
 		const validateUser = async () => {
 			const email = localStorage.getItem('userRole');
-			const response = await fetch('/api/validateUser', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ email }),
-			});
-
-			await response.json();
-			if (response.ok && email === 'accessosry stock keeper') {
+			if (email == 'accessosry stock keeper') {
 				setIsAuthorized(true);
+
+				const response = await fetch('/api/validateUser', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({ email }),
+				});
+
+				await response.json();
+				if (response.ok) {
+					setIsAuthorized(true);
+				} else {
+					router.push('/');
+				}
 			} else {
 				router.push('/');
 			}
