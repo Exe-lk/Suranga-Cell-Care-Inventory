@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'stock In created', id });
         break;
       }
-
       case 'GET': {
         const stockIns = await getstockIns();
         res.status(200).json(stockIns);
         break;
       }
-
       case 'PUT': {
         const { id, quantity } = req.body;
         if (!id || !quantity) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'stock In updated' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

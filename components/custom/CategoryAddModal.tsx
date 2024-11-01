@@ -18,6 +18,7 @@ interface CategoryEditModalProps {
 const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addCategory, { isLoading }] = useAddCategoryMutation();
 	const { refetch } = useGetCategoriesQuery(undefined);
+
 	const formik = useFormik({
 		initialValues: {
 			name: '',
@@ -30,7 +31,6 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 			if (!values.name) {
 				errors.name = 'Required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -42,12 +42,9 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addCategory(values).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Category Created Successfully',
@@ -103,7 +100,6 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 		</Modal>
 	);
 };
-
 CategoryAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

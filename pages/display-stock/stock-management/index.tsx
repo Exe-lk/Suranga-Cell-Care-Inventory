@@ -33,69 +33,52 @@ import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10
 
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode(); 
+	const [searchTerm, setSearchTerm] = useState(''); 
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-	const [id, setId] = useState<string>(''); // State for current category ID
+	const [id, setId] = useState<string>(''); 
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const stock = [
 		{ stock: 'stockOut' },
 		{ stock: 'stockIn' },
-
 	];
-
-	const [startDate, setStartDate] = useState<string>(''); // State for start date
-	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [startDate, setStartDate] = useState<string>(''); 
+	const [endDate, setEndDate] = useState<string>(''); 
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
-	
-		// Apply date range filter if both start and end dates are selected
+		const transactionDate = new Date(trans.date); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		} 
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		} 
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
-	
-		return true; // Return all if no date range is selected
+		return true; 
 	});
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
 	}, [ StockInOuts]);
 
-// Function to handle the download in different formats
 const handleExport = async (format: string) => {
 	const table = document.querySelector('table');
 	if (!table) return;
-
-	
-
 	const clonedTable = table.cloneNode(true) as HTMLElement;
-
-	
 	const clonedTableStyles = getComputedStyle(table);
 	clonedTable.setAttribute('style', clonedTableStyles.cssText);
-
-	
 	try {
 		switch (format) {
 			case 'svg':
@@ -117,9 +100,6 @@ const handleExport = async (format: string) => {
 		console.error('Error exporting table: ', error);
 	}
 };
-
-
-// function to export the table data in CSV format
 const downloadTableAsCSV = (table: any) => {
 			let csvContent = '';
 			const rows = table.querySelectorAll('tr');
@@ -130,14 +110,12 @@ const downloadTableAsCSV = (table: any) => {
 					.join(',');
 				csvContent += rowData + '\n';
 			});
-
 			const blob = new Blob([csvContent], { type: 'text/csv' });
 			const link = document.createElement('a');
 			link.href = URL.createObjectURL(blob);
 			link.download = 'table_data.csv';
 			link.click();
 };
-// PDF export function with table adjustments
 const downloadTableAsPDF = async (table: HTMLElement) => {
 try {
 	const pdf = new jsPDF('p', 'pt', 'a4');
@@ -145,46 +123,32 @@ try {
 	const pageHeight = pdf.internal.pageSize.getHeight();
 	const rows: any[] = [];
 	const headers: any[] = [];
-
-	// Draw a thin page border
 	pdf.setLineWidth(1);
 	pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
-	// Add the logo in the top-left corner
 	const logoData = await loadImage(bill); 
 	const logoWidth = 100; 
 	const logoHeight = 40; 
 	const logoX = 20; 
 	const logoY = 20; 
 	pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight); 
-
-	// Add small heading in the top left corner (below the logo)
 	pdf.setFontSize(8);
 	pdf.setFont('helvetica', 'bold');
 	pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
-	// Add the table heading (title) in the top-right corner
 	const title = 'Accesory-transaction Report';
 	pdf.setFontSize(16);
 	pdf.setFont('helvetica', 'bold');
 	const titleWidth = pdf.getTextWidth(title);
 	const titleX = pageWidth - titleWidth - 20;
 	pdf.text(title, titleX, 30); 
-
-	// Add the current date below the table heading
 	const currentDate = new Date().toLocaleDateString();
 	const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 	pdf.setFontSize(12);
 	pdf.text(currentDate, dateX, 50); 
-
-	// Extract table headers
 	const thead = table.querySelector('thead');
 	if (thead) {
 		const headerCells = thead.querySelectorAll('th');
 		headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 	}
-
-	// Extract table rows
 	const tbody = table.querySelector('tbody');
 	if (tbody) {
 		const bodyRows = tbody.querySelectorAll('tr');
@@ -194,12 +158,8 @@ try {
 			rows.push(rowData);
 		});
 	}
-
-	// Adjust the table width and center it on the page
 	const tableWidth = pageWidth * 0.9; 
 	const tableX = (pageWidth - tableWidth) / 2; 
-
-	// Generate the table below the date
 	autoTable(pdf, {
 		head: headers,
 		body: rows,
@@ -224,15 +184,12 @@ try {
 		tableWidth: 'wrap',
 		theme: 'grid',
 	});
-
 	pdf.save('Accesory-transaction Report.pdf');
 } catch (error) {
 	console.error('Error generating PDF: ', error);
 	alert('Error generating PDF. Please try again.');
 }
 };
-
-// Helper function to load the image (logo) for the PDF
 const loadImage = (url: string): Promise<string> => {
 return new Promise((resolve, reject) => {
 	const img = new Image();
@@ -256,8 +213,6 @@ return new Promise((resolve, reject) => {
 	};
 });
 };
-
-  // Helper function to hide the last cell of every row (including borders)
 const hideLastCells = (table: HTMLElement) => {
 const rows = table.querySelectorAll('tr');
 rows.forEach((row) => {
@@ -270,8 +225,6 @@ rows.forEach((row) => {
 	}
 });
 };
-
-// Helper function to restore the visibility and styles of the last cell
 const restoreLastCells = (table: HTMLElement) => {
 const rows = table.querySelectorAll('tr');
 rows.forEach((row) => {
@@ -284,8 +237,6 @@ rows.forEach((row) => {
 	}
 });
 };
-
-// Function to export the table data in PNG format
 const downloadTableAsPNG = async () => {
 try {
 	const table = document.querySelector('table');
@@ -293,22 +244,15 @@ try {
 		console.error('Table element not found');
 		return;
 	}
-
 	const originalBorderStyle = table.style.border;
 	table.style.border = '1px solid black'; 
-
-	// Convert table to PNG
 	const dataUrl = await toPng(table, {
 		cacheBust: true,
 		style: {
 			width: table.offsetWidth + 'px',
 		},
 	});
-
-	// Restore original border style after capture
 	table.style.border = originalBorderStyle;
-
-	// Create link element and trigger download
 	const link = document.createElement('a');
 	link.href = dataUrl;
 	link.download = 'table_data.png';
@@ -317,8 +261,6 @@ try {
 	console.error('Error generating PNG: ', error);
 }
 };
-
-// Function to export the table data in SVG format using html-to-image without cloning the table
 const downloadTableAsSVG = async () => {
 try {
 	const table = document.querySelector('table');
@@ -326,10 +268,7 @@ try {
 		console.error('Table element not found');
 		return;
 	}
-
-	// Hide last cells before export
 	hideLastCells(table);
-
 	const dataUrl = await toSvg(table, {
 		backgroundColor: 'white',
 		cacheBust: true,
@@ -338,17 +277,13 @@ try {
 			color: 'black',
 		},
 	});
-
-	// Restore the last cells after export
 	restoreLastCells(table);
-
 	const link = document.createElement('a');
 	link.href = dataUrl;
 	link.download = 'table_data.svg';
 	link.click();
 } catch (error) {
 	console.error('Error generating SVG: ', error);
-	// Restore the last cells in case of error
 	const table = document.querySelector('table');
 	if (table) restoreLastCells(table);
 }
@@ -358,7 +293,6 @@ try {
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -403,11 +337,11 @@ try {
 														setSelectedUsers(
 															(prevUsers) =>
 																checked
-																	? [...prevUsers, value] // Add category if checked
+																	? [...prevUsers, value] 
 																	: prevUsers.filter(
 																			(stockInOut) =>
 																				stockInOut !== value,
-																	  ), // Remove category if unchecked
+																	  ), 
 														);
 													}}
 												/>
@@ -421,14 +355,11 @@ try {
 							</div>
 						</DropdownMenu>
 					</Dropdown>
-
-					{/* Button to open  New Item modal */}
 				</SubHeaderRight>
 			</SubHeader>
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -461,7 +392,6 @@ try {
 											<th>Quantity</th>
 											<th>Selling Price</th>
 											<th>Stock</th>
-										
 										</tr>
 									</thead>
 									<tbody>
@@ -492,8 +422,8 @@ try {
 													? selectedUsers.includes(stockInOut.stock)
 													: true,
 											)
-												.map((brand:any) => (
-													<tr key={brand.id}>
+												.map((brand:any,index: any) => (
+													<tr key={index}>
 														<td>{brand.date}</td>
 														<td>{brand.category}</td>
 														<td>{brand.brand}</td>
@@ -519,9 +449,9 @@ try {
 					</div>
 				</div>
 			</Page>
-			
 			<StockEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };
+
 export default Index;

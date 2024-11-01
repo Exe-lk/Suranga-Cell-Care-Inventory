@@ -9,24 +9,19 @@ export const createSupplier = async (name: string, email: string, address: strin
 
 export const getSuppliers = async () => {
   const q = query(collection(firestore, 'supplier'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteSuppliers = async () => {
   const q = query(collection(firestore, 'supplier'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getSupplierById = async (id: string) => {
   const supplierRef = doc(firestore, 'supplier', id);
   const supplierSnap = await getDoc(supplierRef);
-
   if (supplierSnap.exists()) {
     return { id: supplierSnap.id, ...supplierSnap.data() };
   } else {

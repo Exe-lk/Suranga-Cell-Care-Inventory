@@ -13,17 +13,13 @@ import { useGetTechniciansQuery } from '../redux/slices/technicianManagementApiS
 import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 
 const TypeAnalatisk = () => {
-	// Fetch technicians from the API
 	const { data: technicians, isLoading: isLoadingTechnicians } = useGetTechniciansQuery(undefined);
-	// Fetch bills from the API
 	const { data: bills, isLoading: isLoadingBills } = useGetBillsQuery(undefined);
-
-	// Local state to store chart data
 	const [columnBasic1, setColumnBasic1] = useState<IChartOptions>({
 		series: [
 			{
 				name: 'Technicians',
-				data: [], // This will be dynamically filled with bill counts
+				data: [],
 			},
 		],
 		options: {
@@ -46,7 +42,7 @@ const TypeAnalatisk = () => {
 				colors: ['transparent'],
 			},
 			xaxis: {
-				categories: [], // This will be dynamically filled with technician names
+				categories: [],
 			},
 			yaxis: {
 				title: {
@@ -66,17 +62,13 @@ const TypeAnalatisk = () => {
 		},
 	});
 
-	// Update chart data once we have the technicians and bills data
 	useEffect(() => {
 		if (!isLoadingTechnicians && !isLoadingBills && technicians && bills) {
-			// Extract technician names and their corresponding technicianNum
 			const technicianNames = technicians.map((tech: any) => tech.name);
 			const billCounts = technicians.map((tech: any) => {
-				// Count the bills for each technician by technicianNum
-				return bills.filter((bill: any) => bill.technicianNum === tech.technicianNum).length;
+				return bills.filter((bill: any) => bill.technicianNum === tech.technicianNum)
+					.length;
 			});
-
-			// Update the chart data
 			setColumnBasic1((prevState) => ({
 				...prevState,
 				series: [{ name: 'Technicians', data: billCounts }],

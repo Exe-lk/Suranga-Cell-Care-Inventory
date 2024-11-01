@@ -17,11 +17,12 @@ import PaginationButtons, {
 import {
 	useGetStockInOutsQuery,
 } from '../../../redux/slices/stockInOutDissApiSlice';
+
 const Index: NextPage = () => {
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [startDate, setStartDate] = useState<string>(''); // State for start date
-	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [searchTerm, setSearchTerm] = useState(''); 
+	const [startDate, setStartDate] = useState<string>(''); 
+	const [endDate, setEndDate] = useState<string>(''); 
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
@@ -29,31 +30,27 @@ const Index: NextPage = () => {
 	const [selectedDevice, setSelectedDevice] = useState<any>(null);
 	const [devices, setDevices] = useState<any>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-
-		// Attach event listener for keydown
 	}, [StockInOuts ]);
+
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date);
 		const start = startDate ? new Date(startDate) : null;
 		const end = endDate ? new Date(endDate) : null;
-
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		}
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		}
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
-
-		return true; // Return all if no date range is selected
+		return true; 
 	});
 
 	useEffect(() => {
@@ -64,7 +61,6 @@ const Index: NextPage = () => {
 		}
 	}, []);
 
-	// UseEffect to set up BrowserPrint and retrieve devices
 	useEffect(() => {
 		const setup = () => {
 			(window as any).BrowserPrint.getDefaultDevice(
@@ -72,21 +68,17 @@ const Index: NextPage = () => {
 				(device: any) => {
 					setSelectedDevice(device);
 					setDevices((prevDevices: any) => [...prevDevices, device]);
-
 					(window as any).BrowserPrint.getLocalDevices(
 						(deviceList: any) => {
 							const newDevices = deviceList.filter(
 								(dev: any) => dev.uid !== device.uid,
 							);
-							console.log(deviceList);
 							setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
-
-							// Automatically select Zebra Technologies printer if available
 							const zebraDevice = newDevices.find(
 								(dev: any) => dev.manufacturer === 'Zebra Technologies',
 							);
 							if (zebraDevice) {
-								setSelectedDevice(zebraDevice); // Set Zebra printer as default
+								setSelectedDevice(zebraDevice);
 							}
 						},
 						() => {
@@ -100,7 +92,6 @@ const Index: NextPage = () => {
 				},
 			);
 		};
-
 		if (isBrowserPrintLoaded) setup(); // Ensure BrowserPrint is loaded
 	}, [isBrowserPrintLoaded]);
 
@@ -116,7 +107,6 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Please select a printer device', 'error');
 			return;
 		}
-
 		Swal.fire({
 			title: 'Bar Code Print!',
 			html: `

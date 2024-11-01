@@ -35,17 +35,14 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			nic: '',
 			email: '',
 			mobile: '',
-
 			status: true,
 		},
 		validate: (values) => {
 			const errors: {
 				role?: string;
-
 				name?: string;
 				nic?: string;
 				email?: string;
-
 				password?: string;
 				mobile?: string;
 			} = {};
@@ -69,8 +66,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -82,12 +80,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addUser(values).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'User Created Successfully',
@@ -126,7 +121,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				className='p-4'>
 				<ModalTitle id=''>{'New User'}</ModalTitle>
 			</ModalHeader>
-
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
 					<FormGroup id='name' label='Name' className='col-md-6'>
@@ -158,7 +152,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value={'cashier'}>Cashier</Option>
 						</Select>
 					</FormGroup>
-
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>
 						<Input
 							type='text'
@@ -174,7 +167,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='nic' label='NIC' className='col-md-6'>
 						<Input
 							onChange={formik.handleChange}
@@ -212,4 +204,5 @@ UserAddModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default UserAddModal;

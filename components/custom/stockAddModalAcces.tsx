@@ -62,14 +62,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		sellingPrice: 0,
 		barcode: 0,
 	});
-
 	const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
 	const [updateStockInOut] = useUpdateStockInOutMutation();
 	const { refetch } = useGetItemAccesQuery(undefined);
 	const { data: stockInOuts } = useGetStockInOutsQuery(undefined);
-	console.log(stockInOuts);
-
 	const [generatedCode, setGeneratedCode] = useState('');
 	const [generatedbarcode, setGeneratedBarcode] = useState<any>();
 
@@ -77,35 +74,30 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		if (isSuccess && stockInData) {
 			setStockIn(stockInData);
 		}
-
 		if (stockInOuts?.length) {
-			// Find the code with the highest numeric value
 			const lastCode = stockInOuts
-				.map((item: { code: string }) => item.code) // Extract all codes
-				.filter((code: string) => code) // Ensure the code is not undefined or empty
+				.map((item: { code: string }) => item.code)
+				.filter((code: string) => code) 
 				.reduce((maxCode: string, currentCode: string) => {
-					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
-					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
-					return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
-				}, '100000'); // Default starting code
-
-			const newCode = incrementCode(lastCode); // Increment the last code
-			setGeneratedCode(newCode); // Set the new generated code in state
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); 
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); 
+					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
+				}, '100000'); 
+			const newCode = incrementCode(lastCode); 
+			setGeneratedCode(newCode); 
 		} else {
-			// No previous codes, so start from STK100000
 			setGeneratedCode('100000');
 			setGeneratedBarcode('1000100000');
 		}
 	}, [isSuccess, stockInData, stockInOuts]);
 
-	// Function to increment the code
 	const incrementCode = (code: string) => {
-		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
-		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0'); // Increment and pad with zeros to 6 digits
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10); 
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(5, '0'); 
 		const barcode = (numericPart + 1).toString().padStart(10, '0');
 		const value = `${stockIn.code}${incrementedNumericPart}`;
 		setGeneratedBarcode(value);
-		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
+		return incrementedNumericPart; 
 	};
 
 	const formik = useFormik({
@@ -166,7 +158,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.cost) {
 				errors.cost = 'Cost is required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -178,7 +169,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const updatedQuantity =
 						parseInt(stockInData.quantity) + parseInt(values.quantity);
@@ -187,12 +177,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						code: generatedCode,
 						barcode: generatedbarcode,
 					}).unwrap();
-					console.log(generatedbarcode);
-
 					await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Stock In Created Successfully',
@@ -234,7 +220,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.brand}
 						/>
 					</FormGroup>
-
 					<FormGroup id='model' label='Model' className='col-md-6'>
 						<Input
 							type='text'
@@ -244,7 +229,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.model}
 						/>
 					</FormGroup>
-
 					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Input
 							type='text'
@@ -254,7 +238,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.category}
 						/>
 					</FormGroup>
-
 					<FormGroup id='type' label='Type' className='col-md-6'>
 						<Input
 							type='text'
@@ -264,8 +247,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.type}
 						/>
 					</FormGroup>
-
-					{/* Render IMI and Storage fields only if type is Mobile */}
 					{formik.values.type === 'Mobile' && (
 						<>
 							<FormGroup id='imi' label='IMI' className='col-md-6'>
@@ -278,7 +259,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									isTouched={formik.touched.imi}
 								/>
 							</FormGroup>
-
 							<FormGroup id='storage' label='Storage' className='col-md-6'>
 								<Input
 									type='text'
@@ -298,7 +278,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									isTouched={formik.touched.mobileType}
 								/>
 							</FormGroup>
-							{/* Render additional fields only if mobileType is Brand New */}
 							{formik.values.mobileType === 'Used' && (
 								<>
 									<FormGroup id='name' label='Name' className='col-md-6'>
@@ -311,7 +290,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 											isTouched={formik.touched.name}
 										/>
 									</FormGroup>
-
 									<FormGroup
 										id='mobile'
 										label='Mobile Number'
@@ -325,7 +303,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 											isTouched={formik.touched.mobile}
 										/>
 									</FormGroup>
-
 									<FormGroup id='nic' label='NIC' className='col-md-6'>
 										<Input
 											type='text'
@@ -340,7 +317,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							)}
 						</>
 					)}
-
 					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
 						<Input
 							type='number'
@@ -354,7 +330,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='date' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
@@ -368,7 +343,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-
 					<FormGroup id='cost' label='Cost' className='col-md-6'>
 						<Input
 							type='number'
@@ -412,7 +386,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 StockAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

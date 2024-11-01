@@ -13,21 +13,6 @@ import { useGetBillsQuery } from '../redux/slices/billApiSlice';
 const TypeAnalatisk = () => {
 	const { data: bills, isLoading } = useGetBillsQuery(undefined);
 	const [monthlyData, setMonthlyData] = useState<number[]>(Array(12).fill(0));
-
-	useEffect(() => {
-		if (bills) {
-			const counts = Array(12).fill(0);
-
-			bills.forEach((bill: { dateIn: string }) => {
-				const date = new Date(bill.dateIn);
-				const month = date.getMonth();
-				counts[month] += 1;
-			});
-
-			setMonthlyData(counts);
-		}
-	}, [bills]);
-
 	const chartOptions: IChartOptions = {
 		series: [
 			{
@@ -90,6 +75,18 @@ const TypeAnalatisk = () => {
 			},
 		},
 	};
+
+	useEffect(() => {
+		if (bills) {
+			const counts = Array(12).fill(0);
+			bills.forEach((bill: { dateIn: string }) => {
+				const date = new Date(bill.dateIn);
+				const month = date.getMonth();
+				counts[month] += 1;
+			});
+			setMonthlyData(counts);
+		}
+	}, [bills]);
 
 	return (
 		<div className='col-lg-6'>

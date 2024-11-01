@@ -19,13 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(201).json({ message: 'Brand created', id });
         break;
       }
-
       case 'GET': {
         const brands = await getDeleteBrand();
         res.status(200).json(brands);
         break;
       }
-
       case 'PUT': {
         const { id, name, description, category, status } = req.body;
         if (!id || !name) {
@@ -36,7 +34,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Brand updated' });
         break;
       }
-
       case 'DELETE': {
         const { id } = req.body;
         if (!id) {
@@ -47,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Brand deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['POST', 'GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

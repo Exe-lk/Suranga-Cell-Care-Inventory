@@ -23,6 +23,7 @@ interface UserAddModalProps {
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
+
 const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addDealer, { isLoading }] = useAddDealerMutation();
 	const { refetch } = useGetDealersQuery(undefined);
@@ -34,7 +35,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			email: '',
 			address: '',
 			mobileNumber: '',
-
 			status: true,
 		},
 		validate: (values) => {
@@ -49,9 +49,11 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.name = 'Name is required.';
 			}
 			if (!values.email) {
-				errors.email = 'Email is required.';
+				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
 				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			if (!values.address) {
 				errors.address = 'Address is required.';
@@ -73,7 +75,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (itemErrors.length > 0) {
 				errors.item = itemErrors;
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -85,12 +86,9 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addDealer(values).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Dealer Created Successfully',
@@ -191,7 +189,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</div>
 						</FormGroup>
 					))}
-
 					<div className='col-md-12'>
 						<Button
 							color='info'
@@ -253,4 +250,5 @@ UserAddModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default UserAddModal;

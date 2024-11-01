@@ -39,13 +39,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete it!',
 			});
-
 			if (inputText === 'DELETE') {
-				// Call the delete mutation from Redux
 				await deleteItemAcce(itemAcce.id).unwrap();
 				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');
-
-				// Refetch categories to update the list
 				refetch();
 			}
 		} catch (error) {
@@ -58,7 +54,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -78,9 +73,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					description: itemAcce.description,
 					
 				};
-
 				await updateItemAcce(values);
-
 				Swal.fire('Restory!', 'The item dis has been deleted.', 'success');
 			}
 		} catch (error) {
@@ -106,14 +99,11 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-
 			if (inputText === 'DELETE ALL') {
 				for (const itemAcce of ItemAcces) {
 					await deleteItemAcce(itemAcce.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All items have been deleted.', 'success');
-
-				// Refetch categories after deletion
 				refetch();
 			}
 		} catch (error) {
@@ -122,7 +112,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		}
 	};
 
-	// Handle restore all categories
 	const handleRestoreAll = async () => {
 		try {
 			const result = await Swal.fire({
@@ -134,7 +123,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-
 			if (result.isConfirmed) {
 				for (const itemAcce of ItemAcces) {
 					const values = {
@@ -147,13 +135,10 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					brand: itemAcce.brand,
 					reorderLevel: itemAcce.reorderLevel,
 					description: itemAcce.description,
-					
 					};
 					await updateItemAcce(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All items have been restored.', 'success');
-
-				// Refetch categories after restoring
 				refetch();
 			}
 		} catch (error) {
@@ -161,6 +146,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			Swal.fire('Error', 'Failed to restore all items.', 'error');
 		}
 	};
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -201,10 +187,9 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 							</tr>
 						)}
 						{ItemAcces &&
-							ItemAcces.map((itemAcce: any) => (
-								<tr key={itemAcce.index}>
+							ItemAcces.map((itemAcce: any, index: any) => (
+								<tr key={index}>
 									<td>{itemAcce.model}</td>
-
 									<td>
 										<Button
 											icon='Restore'
@@ -213,7 +198,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 											onClick={() => handleClickRestore(itemAcce)}>
 											Restore
 										</Button>
-
 										<Button
 											className='m-2'
 											icon='Delete'
@@ -230,7 +214,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		</Modal>
 	);
 };
-
 CategoryEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

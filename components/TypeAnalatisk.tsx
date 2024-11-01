@@ -19,7 +19,6 @@ const getMonthFromTimestamp = (timestamp: { seconds: number }) => {
 	const date = new Date(timestamp.seconds * 1000);
 	return date.getMonth();
 };
-
 const countByMonth = (data: { timestamp: { seconds: number } }[]) => {
 	const monthsCount = Array(12).fill(0);
 	if (data && Array.isArray(data)) {
@@ -30,7 +29,6 @@ const countByMonth = (data: { timestamp: { seconds: number } }[]) => {
 	}
 	return monthsCount;
 };
-
 const TypeAnalatisk = () => {
 	const { data: brands } = useGetBrandsQuery(undefined);
 	const { data: brands1 } = useGetBrands1Query(undefined);
@@ -38,7 +36,6 @@ const TypeAnalatisk = () => {
 	const { data: categories1 } = useGetCategories1Query(undefined);
 	const { data: models } = useGetModelsQuery(undefined);
 	const { data: models1 } = useGetModels1Query(undefined);
-
 	const [columnBasic1, setColumnBasic1] = useState<IChartOptions>({
 		series: [
 			{ name: 'Model', data: [] },
@@ -89,7 +86,6 @@ const TypeAnalatisk = () => {
 			const modelTotals = countByMonth(models).map(
 				(val, index) => val + countByMonth(models1)[index],
 			);
-
 			setColumnBasic1({
 				series: [
 					{ name: 'Model', data: modelTotals },

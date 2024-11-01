@@ -35,7 +35,6 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 			if (!values.type) {
 				errors.type = 'Required';
 			}
-
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -47,12 +46,9 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addStockKeeper(values).unwrap();
-
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Stock Keeper Created Successfully',
@@ -119,7 +115,6 @@ const StockTypeAddModal: FC<StockTypeAddModalProps> = ({ id, isOpen, setIsOpen }
 		</Modal>
 	);
 };
-
 StockTypeAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

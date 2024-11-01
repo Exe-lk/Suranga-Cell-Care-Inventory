@@ -17,41 +17,31 @@ import {
 	useGetStockInOutsQuery,
 } from '../../redux/slices/stockInOutAcceApiSlice';
 
-// Define the props for the StockAddModal component
 interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
 }
-// StockAddModal component definition
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 
-	
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const currentDate = new Date();
 	const formattedDate = currentDate.toLocaleDateString();
 	const { data: stockInOuts ,refetch} = useGetStockInOutsQuery(undefined);
 	const stockInOutToEdit = stockInOuts?.find((stockInOut: any) => stockInOut.id === id);
 	const [updateStockInOut, { isLoading }] = useUpdateStockInOutMutation();
-	//get data from database
-	
 
-	// Initialize formik for form management
 	const formik = useFormik({
 		initialValues: {
 			id:'',
 			quantity:stockInOutToEdit?.quantity || '',
 			status:true,
-
 		},
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
-				
 				quantity?: string;
-				
 			} = {};
-			
 			if (!values.quantity) {
 				errors.quantity = 'Required';
 			}
@@ -66,24 +56,19 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
-					// Update the category
-					console.log(values);
 					const data = {
 						status: true,
 						id: id,
 						quantity: values.quantity
 					};
 					await updateStockInOut(data).unwrap();
-
-					// Success feedback
 					await Swal.fire({
 						icon: 'success',
 						title: 'Item Dis Updated Successfully',
 					});
-					await refetch(); // Refresh the data
-					setIsOpen(false); // Close the modal after successful update
+					await refetch(); 
+					setIsOpen(false); 
 				} catch (error) {
 					await Swal.fire({
 						icon: 'error',
@@ -97,6 +82,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
+	
 	return (
 		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
@@ -104,10 +90,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-
-					
-					
-					
 					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
 						<Input
 							type='number'
@@ -117,12 +99,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
-					
+					</FormGroup>	
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
-				{/* Save button to submit the form */}
 				<Button color='info' onClick={formik.handleSubmit} >
 					Save
 				</Button>
@@ -130,10 +110,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 }
-// Prop types definition for CustomerEditModal component
 StockAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default StockAddModal;

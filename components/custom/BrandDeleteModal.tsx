@@ -42,7 +42,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
-
 		if (confirmation.value === 'DELETE') {
 			await deleteBrand(brand.id)
 				.unwrap()
@@ -62,7 +61,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 			console.error('No brands to restore.');
 			return;
 		}
-
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -72,7 +70,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore it!',
 			});
-
 			if (result.isConfirmed) {
 				const values = {
 					id: brand.id,
@@ -81,10 +78,8 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 					description: brand.description,
 					status: true,
 				};
-
 				await updateBrand(values);
 				Swal.fire('Restored!', 'The Brand has been restored.', 'success');
-
 				refetch();
 				refetchMainPage();
 			}
@@ -104,7 +99,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
-
 		if (confirmation.value === 'DELETE ALL') {
 			for (const brand of brands) {
 				await deleteBrand(brand.id).unwrap();
@@ -121,14 +115,12 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});
-
 		if (confirmation.isConfirmed) {
 			for (const brand of brands) {
 				const updatedBrand = { ...brand, status: true };
 				await updateBrand(updatedBrand).unwrap();
 			}
 			Swal.fire('Restored!', 'All Brands have been restored.', 'success');
-
 			refetch();
 			refetchMainPage();
 		}
@@ -144,7 +136,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 					<thead>
 						<tr>
 							<th>Brand name</th>
-
 							<th>
 								<Button
 									icon='Delete'
@@ -204,7 +195,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 		</Modal>
 	);
 };
-
 BrandDeleteModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

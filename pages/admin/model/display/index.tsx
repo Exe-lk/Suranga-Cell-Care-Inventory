@@ -51,11 +51,13 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
 	}, [models]);
+
 	const handleClickDelete = async (model: any) => {
 		try {
 			const result = await Swal.fire({
@@ -77,7 +79,6 @@ const Index: NextPage = () => {
 						description: model.description,
 						status: false,
 					});
-
 					Swal.fire('Deleted!', 'Model has been deleted.', 'success');
 					refetch();
 				} catch (error) {
@@ -94,14 +95,12 @@ const Index: NextPage = () => {
 			Swal.fire('Error', 'Failed to delete model.', 'error');
 		}
 	};
+
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-
 		modifyTableForExport(table as HTMLElement, true);
-
 		const clonedTable = table.cloneNode(true) as HTMLElement;
-
 		const rows = clonedTable.querySelectorAll('tr');
 		rows.forEach((row) => {
 			const lastCell = row.querySelector('td:last-child, th:last-child');
@@ -109,10 +108,8 @@ const Index: NextPage = () => {
 				lastCell.remove();
 			}
 		});
-
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-
 		try {
 			switch (format) {
 				case 'svg':
@@ -149,7 +146,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -160,7 +156,6 @@ const Index: NextPage = () => {
 				.join(',');
 			csvContent += rowData + '\n';
 		});
-
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
@@ -174,39 +169,32 @@ const Index: NextPage = () => {
 			const pageHeight = pdf.internal.pageSize.getHeight();
 			const rows: any[] = [];
 			const headers: any[] = [];
-
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
 			const logoX = 20;
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
-
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
 			const title = 'Model-Display Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
-
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
-
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
-
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -216,7 +204,6 @@ const Index: NextPage = () => {
 					rows.push(rowData);
 				});
 			}
-
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -231,14 +218,12 @@ const Index: NextPage = () => {
 				},
 				theme: 'grid',
 			});
-
 			pdf.save('Manage Display Model Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -262,7 +247,6 @@ const Index: NextPage = () => {
 			};
 		});
 	};
-
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -275,7 +259,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -288,7 +271,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -296,19 +278,15 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
-
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
 					width: table.offsetWidth + 'px',
 				},
 			});
-
 			table.style.border = originalBorderStyle;
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Manage Display Model Report.png';
@@ -317,7 +295,6 @@ const Index: NextPage = () => {
 			console.error('Error generating PNG: ', error);
 		}
 	};
-
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -325,9 +302,7 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			hideLastCells(table);
-
 			const dataUrl = await toSvg(table, {
 				backgroundColor: 'white',
 				cacheBust: true,
@@ -336,9 +311,7 @@ const Index: NextPage = () => {
 					color: 'black',
 				},
 			});
-
 			restoreLastCells(table);
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Manage Display Model Report.svg';
@@ -349,6 +322,7 @@ const Index: NextPage = () => {
 			if (table) restoreLastCells(table);
 		}
 	};
+
 	return (
 		<PageWrapper>
 			<SubHeader>
@@ -410,7 +384,6 @@ const Index: NextPage = () => {
 									</DropdownMenu>
 								</Dropdown>
 							</CardTitle>
-
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table  table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary'}>
@@ -506,4 +479,5 @@ const Index: NextPage = () => {
 		</PageWrapper>
 	);
 };
+
 export default Index;

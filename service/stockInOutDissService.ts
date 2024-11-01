@@ -10,9 +10,7 @@ export const createstockIn = async (values: any) => {
 
 export const getstockIns = async () => {
   const q = query(collection(firestore, 'Stock'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
@@ -20,13 +18,13 @@ export const getstockIns = async () => {
 export const getstockInById = async (id: string) => {
   const stockInRef = doc(firestore, 'Stock', id);
   const stockInSnap = await getDoc(stockInRef);
-
   if (stockInSnap.exists()) {
     return { id: stockInSnap.id, ...stockInSnap.data() };
   } else {
     return null;
   }
 };
+
 export const updatestockIn = async (id: string, quantity: string) => {
   const stockInRef = doc(firestore, 'ItemManagementDis', id);
   await updateDoc(stockInRef, { quantity });

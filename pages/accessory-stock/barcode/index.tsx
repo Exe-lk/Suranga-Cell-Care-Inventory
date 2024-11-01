@@ -18,6 +18,7 @@ import {
 	useGetStockInOutsQuery,
 	useUpdateStockInOutMutation,
 } from '../../../redux/slices/stockInOutAcceApiSlice';
+import index from '../../cashier/bill';
 
 const Index: NextPage = () => {
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
@@ -79,7 +80,6 @@ const Index: NextPage = () => {
 							const newDevices = deviceList.filter(
 								(dev: any) => dev.uid !== device.uid,
 							);
-							console.log(deviceList);
 							setDevices((prevDevices: any) => [...prevDevices, ...newDevices]);
 
 							// Automatically select Zebra Technologies printer if available
@@ -344,8 +344,8 @@ const Index: NextPage = () => {
 														stockInOut.stock === 'stockIn',
 												)
 
-												.map((brand: any) => (
-													<tr key={brand.id}>
+												.map((brand: any, index: any) => (
+													<tr key={index}>
 														<td>{brand.date}</td>
 														<td>{brand.code}</td>
 														<td>

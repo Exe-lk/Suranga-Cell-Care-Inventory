@@ -11,9 +11,11 @@ import Option from '../bootstrap/Option';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 import { useGetBrandsQuery } from '../../redux/slices/brandApiSlice';
 import { useGetModelsQuery } from '../../redux/slices/modelApiSlice';
-import { useAddItemDisMutation, useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
+import {
+	useAddItemDisMutation,
+	useGetItemDissQuery,
+} from '../../redux/slices/itemManagementDisApiSlice';
 import { useGetCategoriesQuery } from '../../redux/slices/categoryApiSlice';
-
 
 interface ItemAddModalProps {
 	id: string;
@@ -24,47 +26,41 @@ interface ItemAddModalProps {
 const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [selectedCategory, setSelectedCategory] = useState<string>('');
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
-	const [customCategory, setCustomCategory] = useState<string>(''); // State to track custom category input
+	const [customCategory, setCustomCategory] = useState<string>('');
 	const [addItemDis, { isLoading }] = useAddItemDisMutation();
 	const { refetch } = useGetBrandsQuery(undefined);
 	const { data: brands } = useGetBrandsQuery(undefined);
 	const { data: models } = useGetModelsQuery(undefined);
 	const { data: categories } = useGetCategoriesQuery(undefined);
-	const {data: itemAcces} = useGetItemDissQuery(undefined);
+	const { data: itemAcces } = useGetItemDissQuery(undefined);
 	const [generatedCode, setGeneratedCode] = useState('');
+
 	useEffect(() => {
-	
-
 		if (itemAcces?.length) {
-			// Find the code with the highest numeric value
 			const lastCode = itemAcces
-				.map((item: { code: string }) => item.code) // Extract all codes
-				.filter((code: string) => code) // Ensure the code is not undefined or empty
+				.map((item: { code: string }) => item.code)
+				.filter((code: string) => code)
 				.reduce((maxCode: string, currentCode: string) => {
-					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10); // Extract numeric part
-					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10); // Numeric part of max code so far
-					return currentNumericPart > maxNumericPart ? currentCode : maxCode; // Find the code with the highest numeric part
-				}, '5000'); // Default starting code
-
-			const newCode = incrementCode(lastCode); // Increment the last code
-			setGeneratedCode(newCode); // Set the new generated code in state
+					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
+					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
+					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
+				}, '5000');
+			const newCode = incrementCode(lastCode);
+			setGeneratedCode(newCode);
 		} else {
-			// No previous codes, so start from STK100000
 			setGeneratedCode('5000');
 		}
 	}, [itemAcces]);
-	const incrementCode = (code: string) => {
-		console.log(code)
-		const numericPart = parseInt(code.replace(/\D/g, ''), 10); // Extract the numeric part of the code
-		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0'); // Increment and pad with zeros to 6 digits
-		
 
-		return incrementedNumericPart; // Return the new code in the format STKxxxxxx
+	const incrementCode = (code: string) => {
+		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
+		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0');
+		return incrementedNumericPart;
 	};
-	// Formik for form handling
+
 	const formik = useFormik({
 		initialValues: {
-			code:generatedCode,
+			code: generatedCode,
 			model: '',
 			brand: '',
 			reorderLevel: '',
@@ -78,36 +74,30 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			status: true,
 		},
 		validate: (values) => {
-  const errors: Record<string, string> = {};
-
-  if (!values.model) errors.model = 'Required';
-  if (!values.brand) errors.brand = 'Required';
-  if (!values.reorderLevel) {
-    errors.reorderLevel = 'Required';
-  } else if (Number(values.reorderLevel) <= 0) {
-    errors.reorderLevel = 'Must be a positive number';
-  }
-  if (!values.boxNumber) errors.boxNumber = 'Required';
-  if (!values.touchpadNumber) errors.touchpadNumber = 'Required';
-
-  // Conditionally validate fields based on the selected category
-  if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
-    errors.touchpadNumber = 'Touchpad Number is required';
-  }
-  if (selectedCategory === 'Displays' && !values.displaySNumber) {
-    errors.displaySNumber = 'Display Serial Number is required';
-  }
-  if (selectedCategory === 'Battery Cell' && !values.batteryCellNumber) {
-    errors.batteryCellNumber = 'Battery Cell Number is required';
-  }
-
-  // Validate "Other" category input
-  if (selectedCategory === 'Other' && !values.otherCategory) {
-    errors.otherCategory = 'Please specify the category';
-  }
-
-  return errors;
-},
+			const errors: Record<string, string> = {};
+			if (!values.model) errors.model = 'Required';
+			if (!values.brand) errors.brand = 'Required';
+			if (!values.reorderLevel) {
+				errors.reorderLevel = 'Required';
+			} else if (Number(values.reorderLevel) <= 0) {
+				errors.reorderLevel = 'Must be a positive number';
+			}
+			if (!values.boxNumber) errors.boxNumber = 'Required';
+			if (!values.touchpadNumber) errors.touchpadNumber = 'Required';
+			if (selectedCategory === 'Touch Pad' && !values.touchpadNumber) {
+				errors.touchpadNumber = 'Touchpad Number is required';
+			}
+			if (selectedCategory === 'Displays' && !values.displaySNumber) {
+				errors.displaySNumber = 'Display Serial Number is required';
+			}
+			if (selectedCategory === 'Battery Cell' && !values.batteryCellNumber) {
+				errors.batteryCellNumber = 'Battery Cell Number is required';
+			}
+			if (selectedCategory === 'Other' && !values.otherCategory) {
+				errors.otherCategory = 'Please specify the category';
+			}
+			return errors;
+		},
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -117,14 +107,13 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const response: any = await addItemDis({
 						...values,
-						code:generatedCode,
-						category: values.category, // Pass category name instead of ID
-						brand: values.brand, // Pass brand name instead of ID
-						model: values.model, // Pass model name instead of ID
+						code: generatedCode,
+						category: values.category,
+						brand: values.brand,
+						model: values.model,
 					}).unwrap();
 					refetch();
 					await Swal.fire({
@@ -146,35 +135,30 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 	});
 
-	// Handle category selection
 	const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSelectedCategory(e.target.value);
 		formik.setFieldValue('category', e.target.value);
-		setSelectedBrand(''); // Reset brand selection
-		formik.setFieldValue('brand', ''); // Clear selected brand in formik
-		formik.setFieldValue('model', ''); // Clear selected model in formik
-		setCustomCategory(''); // Reset custom category if changed
+		setSelectedBrand('');
+		formik.setFieldValue('brand', '');
+		formik.setFieldValue('model', '');
+		setCustomCategory('');
 	};
 
-	// Handle custom category input change
 	const handleCustomCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setCustomCategory(e.target.value);
-		formik.setFieldValue('otherCategory', e.target.value); // Update the custom category in formik values
+		formik.setFieldValue('otherCategory', e.target.value);
 	};
 
-	// Handle brand selection
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
 		formik.setFieldValue('brand', e.target.value);
-		formik.setFieldValue('model', ''); // Clear selected model when changing brand
+		formik.setFieldValue('model', '');
 	};
 
-	// Filter brands based on selected category
 	const filteredBrands = brands?.filter(
 		(brand: any) => brand.category === selectedCategory || selectedCategory === 'Other',
 	);
 
-	// Filter models based on selected brand and category
 	const filteredModels = models?.filter(
 		(model: any) =>
 			model.brand === selectedBrand &&
@@ -193,7 +177,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-					{/* Radio buttons for Category selection */}
 					<FormGroup id='categorySelect' label='Category' className='col-md-12'>
 						<ChecksGroup isInline>
 							<Checks
@@ -234,8 +217,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 						</ChecksGroup>
 					</FormGroup>
-
-					{/* Conditionally show custom category input if "Other" is selected */}
 					{selectedCategory === 'Other' && (
 						<FormGroup
 							id='categorySelectDropdown'
@@ -262,8 +243,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Conditionally show brand dropdown if a category is selected */}
 					{selectedCategory && (
 						<FormGroup id='brandSelect' label='Brand' className='col-md-6'>
 							<Select
@@ -280,8 +259,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Conditionally show model dropdown if a brand is selected */}
 					{selectedBrand && (
 						<FormGroup id='modelSelect' label='Model' className='col-md-6'>
 							<Select
@@ -299,8 +276,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Select>
 						</FormGroup>
 					)}
-
-					{/* Show additional fields after brand and model are selected */}
 					{formik.values.model && (
 						<>
 							<FormGroup id='reorderLevel' label='Reorder Level' className='col-md-6'>
@@ -321,8 +296,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									name='boxNumber'
 								/>
 							</FormGroup>
-
-							{/* Conditionally show fields based on the selected category */}
 							{selectedCategory === 'Touch Pad' && (
 								<FormGroup
 									id='touchpadNumber'
@@ -337,7 +310,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
-
 							{selectedCategory === 'Displays' && (
 								<FormGroup
 									id='displaySNumber'
@@ -352,7 +324,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
-
 							{selectedCategory === 'Battery Cell' && (
 								<FormGroup
 									id='batteryCellNumber'
@@ -379,7 +350,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 ItemAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

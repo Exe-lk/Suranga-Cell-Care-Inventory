@@ -15,7 +15,6 @@ import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementA
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
 
-// Define the props for the StockAddModal component
 interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
@@ -24,10 +23,7 @@ interface StockAddModalProps {
 }
 
 const formatTimestamp = (seconds: number, nanoseconds: number): string => {
-	// Convert the seconds to milliseconds
 	const date = new Date(seconds * 1000);
-
-	// Use Intl.DateTimeFormat to format the date
 	const formattedDate = new Intl.DateTimeFormat('en-US', {
 		year: 'numeric',
 		month: 'long',
@@ -38,7 +34,6 @@ const formatTimestamp = (seconds: number, nanoseconds: number): string => {
 		hour12: true,
 		timeZoneName: 'short',
 	}).format(date);
-
 	return formattedDate;
 };
 
@@ -62,12 +57,10 @@ interface StockOut {
 	status: boolean;
 }
 
-// StockAddModal component definition
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
 	const [selectedOption, setSelectedOption] = useState<'Dealer' | 'Technician' | 'Return' |'Branch'| ''>(
 		'',
 	);
-
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
 		model: '',
@@ -87,56 +80,35 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		stock: 'stockOut',
 		status: true,
 	});
-
 	const [selectedCost, setSelectedCost] = useState<string | null>(null);
 	const {
 		data: technicians,
 		isLoading: techniciansLoading,
 		isError: techniciansError,
 	} = useGetTechniciansQuery(undefined);
-
 	const {
 		data: stockInData,
 		isLoading: stockInLoading,
 		isError: stockInError,
 	} = useGetStockInOutsQuery(undefined);
-	// console.log(stockInData);
-
 	const [addstockOut] = useAddStockOutMutation();
 	const { data: stockOutData, isSuccess } = useGetItemDisByIdQuery(id);
-	console.log(stockOutData);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
 	const { refetch } = useGetItemDissQuery(undefined);
-
-	useEffect(() => {
-		if (isSuccess && stockOutData) {
-			setStockOut(stockOutData);
-		}
-	}, [isSuccess, stockOutData]);
-
 	const filteredStockIn = stockInData?.filter(
 		(item: { stock: string }) => item.stock === 'stockIn',
 	);
-
-	// console.log(filteredStockIn);
-
-	// Function to handle dateIn selection change
 	const handleDateInChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedTimestamp = e.target.value;
 		formik.setFieldValue('dateIn', selectedTimestamp);
-
-		// Find the selected stockIn entry based on the selected timestamp
 		const selectedStock = filteredStockIn?.find((item: { timestamp: { seconds: number; nanoseconds: number } }) => {
 			const formattedDate = formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds);
 			return formattedDate === selectedTimestamp;
 		});
-
-		// Set the cost from the selected stockIn entry
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
-
 	const stockInQuantity = quantity;
-	// Initialize formik for form management
+
 	const formik = useFormik({
 		initialValues: {
 			brand: stockOut.brand,
@@ -163,7 +135,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			if (!values.date) errors.date = 'Date Out is required';
 			if (!values.dateIn) errors.dateIn = 'Date In is required';
 			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
-
 			if (selectedOption === 'Dealer') {
 				if (!values.dealerName) errors.dealerName = 'Dealer Name is required';
 				if (!values.dealerTelNum) errors.dealerTelNum = 'Dealer Tel Number is required';
@@ -190,50 +161,31 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
-				await refetch();
-		
-				// Ensure that stockInData exists and has a valid quantity
-				console.log(stockInQuantity); // Check the quantity coming from props
-	
-				// Parse the submitted stock out quantity
+				await refetch();	
 				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
-	
-				// Check if stock quantities are valid numbers
 				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
 					Swal.fire({
 						icon: 'error',
 						title: 'Invalid Quantity',
 						text: 'Quantity must be a valid number.',
 					});
-					return; // Exit early if quantities are invalid
-				}
-		
-				// Subtract the stock out quantity from stock in quantity
+					return; 
+				}	
 				const updatedQuantity = stockInQuantity - stockOutQuantity;
-		
 				if (updatedQuantity < 0) {
 					Swal.fire({
 						icon: 'error',
 						title: 'Insufficient Stock',
 						text: 'The stock out quantity exceeds available stock.',
 					});
-					return; // Prevent stock from going below zero
-				}
-		
-				// Submit the stock out data
-				const stockOutResponse = await addstockOut(values).unwrap();
-		
-				// Update the stock in with the new quantity
-				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-		
-				// Refetch data to update UI
-				refetch();
-		
-				// Show success message
+					return; 
+				}		
+				const stockOutResponse = await addstockOut(values).unwrap();		
+				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();	
+				refetch();	
 				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
 				formik.resetForm();
-				setIsOpen(false); // Close the modal after successful addition
+				setIsOpen(false); 
 			} catch (error) {
 				await Swal.fire({
 					icon: 'error',
@@ -244,16 +196,21 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		}		
 	});
 
-	// Handle radio button selection
 	const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return'| 'Branch');
 	};
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); // Remove non-digit characters
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; // Ensure it starts with '0'
-		return sanitized.slice(0, 10); // Limit to 10 digits (with leading 0)
+		let sanitized = value.replace(/\D/g, ''); 
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; 
+		return sanitized.slice(0, 10); 
 	};
+
+	useEffect(() => {
+		if (isSuccess && stockOutData) {
+			setStockOut(stockOutData);
+		}
+	}, [isSuccess, stockOutData]);
 	
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -298,7 +255,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={!!formik.errors.date && formik.touched.date}
 						/>
 					</FormGroup>
-
 					<FormGroup id="dateIn" label="Date In" className="col-md-6">
 						<Select
 							id="dateIn"
@@ -325,14 +281,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							)}
 						</Select>
 					</FormGroup>
-
-					{/* Display cost field if selectedCost is available */}
 					{selectedCost && (
 						<FormGroup id="cost" label="Cost(Per Unit)" className="col-md-6">
 							<Input type="text" value={selectedCost} readOnly />
 						</FormGroup>
 					)}
-
 					<FormGroup id='sellingPrice' label='Selling Price' className='col-md-6'>
 						<Input
 							type='text'
@@ -344,8 +297,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={!!formik.errors.sellingPrice && formik.touched.sellingPrice}
 						/>
 					</FormGroup>
-
-					{/* Radio Buttons */}
 					<FormGroup id='StockOutSelect' className='col-md-12'>
 						<ChecksGroup isInline>
 							<Checks
@@ -386,8 +337,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							/>
 						</ChecksGroup>
 					</FormGroup>
-
-					{/* Conditionally render fields based on the selected option */}
 					{selectedOption === 'Dealer' && (
 						<>
 							<FormGroup id='dealerName' label='Dealer Name' className='col-md-6'>
@@ -410,7 +359,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							type='text'
 							value={formik.values.dealerTelNum}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); // Allow only numbers
+								const input = e.target.value.replace(/\D/g, ''); 
 								formik.setFieldValue('dealerTelNum', formatMobileNumber(input));
 							}}
 							onBlur={formik.handleBlur}
@@ -438,7 +387,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							</FormGroup>
 						</>
 					)}
-
 					{selectedOption === 'Technician' && (
 						<FormGroup
 							id='technicianNum'
@@ -448,8 +396,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								id='technicianNum'
 								name='technicianNum'
 								ariaLabel='technicianNum'
-								onChange={formik.handleChange} // This updates the value in formik
-								value={formik.values.technicianNum} // This binds the formik value to the selected option
+								onChange={formik.handleChange} 
+								value={formik.values.technicianNum} 
 								onBlur={formik.handleBlur}
 								className={`form-control ${
 									formik.touched.technicianNum && formik.errors.technicianNum
@@ -465,13 +413,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 											key={technicianNum.id}
 											value={technicianNum.technicianNum}>
 											{' '}
-											{/* Use name as value */}
 											{technicianNum.technicianNum}
 										</option>
 									),
 								)}
 							</Select>
-
 							{formik.touched.category && formik.errors.category ? (
 								<div className='invalid-feedback'>{formik.errors.category}</div>
 							) : (
@@ -479,7 +425,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							)}
 						</FormGroup>
 					)}
-
 					{selectedOption === 'Return' && (
 						<FormGroup id='sellerName' label='Seller Name' className='col-md-6'>
 							<Input
@@ -514,7 +459,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		</Modal>
 	);
 };
-
 StockAddModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

@@ -50,11 +50,8 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			});
 
 			if (inputText === 'DELETE') {
-				// Call the delete mutation from Redux
 				await deleteTechnician(technician.id).unwrap();
 				Swal.fire('Deleted!', 'The technician has been deleted.', 'success');
-
-				// Refetch categories to update the list
 				refetch();
 			}
 		} catch (error) {
@@ -67,7 +64,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -83,9 +79,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					type: technician.type,
 					mobileNumber: technician.mobileNumber,
 				};
-
 				await updateTechnician(values);
-
 				Swal.fire('Deleted!', 'The technician has been deleted.', 'success');
 			}
 		} catch (error) {
@@ -111,14 +105,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-
 			if (inputText === 'DELETE ALL') {
 				for (const technician of technicians) {
 					await deleteTechnician(technician.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All technicians have been deleted.', 'success');
-
-				// Refetch categories after deletion
 				refetch();
 			}
 		} catch (error) {
@@ -127,7 +118,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		}
 	};
 
-	// Handle restore all categories
 	const handleRestoreAll = async () => {
 		try {
 			const result = await Swal.fire({
@@ -139,22 +129,19 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-
 			if (result.isConfirmed) {
 				for (const technician of technicians) {
 					const values = {
 						id: technician.id,
 						technicianNum: technician.technicianNum,
 						name: technician.name,
-						status: true, // Assuming restoring means setting status to true
+						status: true, 
 						type: technician.type,
 						mobileNumber: technician.mobileNumber,
 					};
 					await updateTechnician(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All technicians have been restored.', 'success');
-
-				// Refetch categories after restoring
 				refetch();
 			}
 		} catch (error) {
@@ -164,7 +151,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	};
 
 	return (
-		<Modal isOpen={isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader setIsOpen={setIsOpen} className='p-4'>
 				<ModalTitle id=''>{'Recycle Bin'}</ModalTitle>
 			</ModalHeader>
@@ -173,7 +160,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			<thead className={"table-dark border-primary"}>
 						<tr>
 							<th>Technicians</th>
-
 							<th>
 								<Button
 									icon='Delete'
@@ -204,10 +190,9 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</tr>
 						)}
 						{technicians &&
-							technicians.map((technician: any) => (
-								<tr key={technician.cid}>
+							technicians.map((technician: any,index: any) => (
+								<tr key={index}>
 									<td>{technician.name}</td>
-
 									<td>
 										<Button
 											icon='Restore'
@@ -216,7 +201,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 											onClick={() => handleClickRestore(technician)}>
 											Restore
 										</Button>
-
 										<Button
 											className='m-2'
 											icon='Delete'
@@ -230,11 +214,9 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					</tbody>
 				</table>
 			</ModalBody>
-			
 		</Modal>
 	);
 };
-
 UserEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

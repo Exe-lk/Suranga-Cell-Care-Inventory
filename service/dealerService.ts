@@ -9,24 +9,19 @@ export const createDealer = async (name: string, email: string, address: string,
 
 export const getDealers = async () => {
   const q = query(collection(firestore, 'dealer'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteDealers = async () => {
   const q = query(collection(firestore, 'dealer'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDealerById = async (id: string) => {
   const dealerRef = doc(firestore, 'dealer', id);
   const dealerSnap = await getDoc(dealerRef);
-
   if (dealerSnap.exists()) {
     return { id: dealerSnap.id, ...dealerSnap.data() };
   } else {

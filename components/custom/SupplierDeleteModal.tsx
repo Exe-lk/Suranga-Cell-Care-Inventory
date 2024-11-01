@@ -48,7 +48,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete it!',
 			});
-
 			if (inputText === 'DELETE') {
 				await deleteSupplier(supplier.id).unwrap();
 				Swal.fire('Deleted!', 'The supplier has been permentaly deleted.', 'success');
@@ -65,7 +64,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -82,9 +80,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					address: supplier.address,
 					mobileNumber: supplier.mobileNumber,
 				};
-
 				await updateSupplier(values);
-
 				Swal.fire('Restored!', 'The supplier has been restored.', 'success');
 			}
 		} catch (error) {
@@ -110,13 +106,11 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, delete all!',
 			});
-
 			if (inputText === 'DELETE ALL') {
 				for (const supplier of suppliers) {
 					await deleteSupplier(supplier.id).unwrap();
 				}
 				Swal.fire('Deleted!', 'All suppliers have been permentaly deleted.', 'success');
-
 				refetch();
 			}
 		} catch (error) {
@@ -136,7 +130,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore all!',
 			});
-
 			if (result.isConfirmed) {
 				for (const supplier of suppliers) {
 					const values = {
@@ -151,7 +144,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					await updateSupplier(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All suppliers have been restored.', 'success');
-
 				refetch();
 			}
 		} catch (error) {
@@ -170,7 +162,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					<thead className={'table-dark border-primary'}>
 						<tr>
 							<th>Supplier</th>
-
 							<th>
 								<Button
 									icon='Delete'
@@ -206,7 +197,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							suppliers.map((supplier: any, index: any) => (
 								<tr key={index}>
 									<td>{supplier.name}</td>
-
 									<td>
 										<Button
 											icon='Restore'
@@ -215,7 +205,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 											onClick={() => handleClickRestore(supplier)}>
 											Restore
 										</Button>
-
 										<Button
 											className='m-2'
 											icon='Delete'
@@ -232,7 +221,6 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 		</Modal>
 	);
 };
-
 UserEditModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

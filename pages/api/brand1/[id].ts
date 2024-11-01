@@ -3,12 +3,10 @@ import { getBrandById, updateBrand, deleteBrand } from '../../../service/brand1S
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
-
   if (!id) {
     res.status(400).json({ error: 'Brand ID is required' });
     return;
   }
-
   try {
     switch (req.method) {
       case 'GET': {
@@ -20,7 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         break;
       }
-
       case 'PUT': {
         const { category, name, description, status } = req.body;
         if (!name) {
@@ -31,13 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ message: 'Brand updated' });
         break;
       }
-
       case 'DELETE': {
         await deleteBrand(id as string);
         res.status(200).json({ message: 'Brand deleted' });
         break;
       }
-
       default: {
         res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
         res.status(405).end(`Method ${req.method} Not Allowed`);

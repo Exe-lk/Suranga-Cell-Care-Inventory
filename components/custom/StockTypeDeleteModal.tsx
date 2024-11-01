@@ -47,7 +47,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete',
 		});
-
 		if (confirmation.value === 'DELETE') {
 			await deleteStockKeeper(stockKeeper.id)
 				.unwrap()
@@ -71,7 +70,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 			console.error('No stock types to restore.');
 			return;
 		}
-
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -81,7 +79,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, restore it!',
 			});
-
 			if (result.isConfirmed) {
 				const values = {
 					id: stockKeeper.id,
@@ -89,10 +86,8 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 					description: stockKeeper.description,
 					status: true,
 				};
-
 				await updateStockKeeper(values);
 				Swal.fire('Restored!', 'The Stock Keeper has been restored.', 'success');
-
 				refetch();
 				refetchMainPage();
 			}
@@ -112,7 +107,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Delete All',
 		});
-
 		if (confirmation.value === 'DELETE ALL') {
 			for (const stockKeeper of stockKeepers) {
 				await deleteStockKeeper(stockKeeper.id).unwrap();
@@ -129,14 +123,12 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 			showCancelButton: true,
 			confirmButtonText: 'Restore All',
 		});
-
 		if (confirmation.isConfirmed) {
 			for (const stockKeeper of stockKeepers) {
 				const updatedStockKeeper = { ...stockKeeper, status: true };
 				await updateStockKeeper(updatedStockKeeper).unwrap();
 			}
 			Swal.fire('Restored!', 'All Stock Keepers have been restored.', 'success');
-
 			refetch();
 			refetchMainPage();
 		}
@@ -151,7 +143,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 					<thead>
 						<tr>
 							<th>Stock Keeper Type </th>
-
 							<th>
 								<Button
 									icon='Delete'
@@ -215,7 +206,6 @@ const StockTypeDeleteModal: FC<StockTypeDeleteModalProps> = ({
 		</Modal>
 	);
 };
-
 StockTypeDeleteModal.propTypes = {
 	id: PropTypes.string.isRequired,
 	isOpen: PropTypes.bool.isRequired,

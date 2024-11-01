@@ -9,24 +9,19 @@ export const createstockKeeper = async (type: string, description: string) => {
 
 export const getstockKeeper = async () => {
   const q = query(collection(firestore, 'stockKeeper'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeletestockKeeper = async () => {
   const q = query(collection(firestore, 'stockKeeper'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getstockKeeperById = async (id: string) => {
   const stockKeeperRef = doc(firestore, 'stockKeeper', id);
   const stockKeeperSnap = await getDoc(stockKeeperRef);
-
   if (stockKeeperSnap.exists()) {
     return { id: stockKeeperSnap.id, ...stockKeeperSnap.data() };
   } else {

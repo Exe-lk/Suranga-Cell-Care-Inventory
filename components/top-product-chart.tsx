@@ -16,7 +16,6 @@ const PieBasic = () => {
 		useGetCategoriesQuery(undefined);
 	const { data: categories1Data, isLoading: isCategories1Loading } =
 		useGetCategories1Query(undefined);
-
 	const [state, setState] = useState<IChartOptions>({
 		series: [0, 0],
 		options: {
@@ -45,12 +44,9 @@ const PieBasic = () => {
 		if (!isCategoriesLoading && !isCategories1Loading && categoriesData && categories1Data) {
 			const accessoryCount = categories1Data.length;
 			const displaysCount = categoriesData.length;
-
 			const totalCount = accessoryCount + displaysCount;
-
 			const accessoryPercentage = ((accessoryCount / totalCount) * 100).toFixed(2);
 			const displaysPercentage = ((displaysCount / totalCount) * 100).toFixed(2);
-
 			setState((prevState) => ({
 				...prevState,
 				series: [parseFloat(accessoryPercentage), parseFloat(displaysPercentage)],

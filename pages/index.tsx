@@ -29,6 +29,7 @@ import { useGetUsersQuery } from '../redux/slices/userApiSlice';
 interface ILoginHeaderProps {
 	isNewUser?: boolean;
 }
+
 const LoginHeader: FC<ILoginHeaderProps> = () => {
 	return (
 		<>
@@ -47,6 +48,7 @@ interface User {
 interface ILoginProps {
 	isSignUp?: boolean;
 }
+
 const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 	const router = useRouter();
 	const { darkModeStatus } = useDarkMode();
@@ -62,18 +64,18 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 		},
 		validate: (values) => {
 			const errors: { email?: string; password?: string } = {};
-
 			if (!values.email) {
 				errors.email = 'Required';
 			} else if (!values.email.includes('@')) {
-				errors.email = 'Invalid email address';
+				errors.email = 'Invalid email format.';
+			} else if (values.email.includes(' ')) {
+				errors.email = 'Email should not contain spaces.';
 			}
 			if (!values.password) {
 				errors.password = 'Required';
 			}
 			return errors;
 		},
-
 		onSubmit: async (values) => {
 			try {
 				const response = await addUser(values).unwrap();
@@ -110,7 +112,6 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 				}
 			} catch (error: any) {
 				console.error('Login Error:', error);
-
 				if (error.status === 404) {
 					await Swal.fire('Error', 'Email not found. Please try again.', 'error');
 				} else if (error.status === 401) {

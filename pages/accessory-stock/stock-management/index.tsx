@@ -31,53 +31,42 @@ import PaginationButtons, {
 } from '../../../components/PaginationButtons';
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); // Dark mode
-	const [searchTerm, setSearchTerm] = useState(''); // State for search term
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); // State for add modal status
+	const { darkModeStatus } = useDarkMode(); 
+	const [searchTerm, setSearchTerm] = useState(''); 
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
-	const [id, setId] = useState<string>(''); // State for current category ID
+	const [id, setId] = useState<string>(''); 
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	const [startDate, setStartDate] = useState<string>(''); // State for start date
-	const [endDate, setEndDate] = useState<string>(''); // State for end date
+	const [startDate, setStartDate] = useState<string>(''); 
+	const [endDate, setEndDate] = useState<string>(''); 
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const stock = [{ stock: 'stockOut' }, { stock: 'stockIn' }];
-	console.log(StockInOuts);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
-	const filteredTransactions = StockInOuts?.filter((trans: any) => {
-		const transactionDate = new Date(trans.date); // Parse the transaction date
-		const start = startDate ? new Date(startDate) : null; // Parse start date if provided
-		const end = endDate ? new Date(endDate) : null; // Parse end date if provided
 
-		// Apply date range filter if both start and end dates are selected
+	const filteredTransactions = StockInOuts?.filter((trans: any) => {
+		const transactionDate = new Date(trans.date); 
+		const start = startDate ? new Date(startDate) : null; 
+		const end = endDate ? new Date(endDate) : null; 
 		if (start && end) {
 			return transactionDate >= start && transactionDate <= end;
 		}
-		// If only start date is selected
 		else if (start) {
 			return transactionDate >= start;
 		}
-		// If only end date is selected
 		else if (end) {
 			return transactionDate <= end;
 		}
-
-		return true; // Return all if no date range is selected
+		return true; 
 	});
 
-	// Function to handle the download in different formats
-	// Function to handle the download in different formats
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-
-		// Remove borders and hide last cells before exporting
 		modifyTableForExport(table as HTMLElement, true);
-
 		try {
-			// Handle export based on the format
 			switch (format) {
 				case 'svg':
 					await downloadTableAsSVG();
@@ -97,12 +86,9 @@ const Index: NextPage = () => {
 		} catch (error) {
 			console.error('Error exporting table: ', error);
 		} finally {
-			// Restore table after export
 			modifyTableForExport(table as HTMLElement, false);
 		}
 	};
-
-	// Helper function to modify table by hiding last column and removing borders
 	const modifyTableForExport = (table: HTMLElement, hide: boolean) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -116,8 +102,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
-	// Function to export the table data in PNG format
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -127,18 +111,13 @@ const Index: NextPage = () => {
 			}
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
-
-			// Convert table to PNG
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
 					width: table.offsetWidth + 'px',
 				},
 			});
-			// Restore original border style after capture
 			table.style.border = originalBorderStyle;
-
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'table_data.png';
@@ -147,8 +126,6 @@ const Index: NextPage = () => {
 			console.error('Error generating PNG: ', error);
 		}
 	};
-
-	// Function to export the table data in SVG format
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -156,28 +133,19 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
-			// Temporarily store the original color of each cell
 			const cells = table.querySelectorAll('th, td');
 			const originalColors: string[] = [];
-
 			cells.forEach((cell: any, index: number) => {
-				originalColors[index] = cell.style.color; // Save original color
-				cell.style.color = 'black'; // Set text color to black
+				originalColors[index] = cell.style.color; 
+				cell.style.color = 'black'; 
 			});
-
-			// Convert table to SVG
 			const dataUrl = await toSvg(table, {
 				backgroundColor: 'white',
 				cacheBust: true,
 			});
-
-			// Restore the original color of each cell
 			cells.forEach((cell: any, index: number) => {
-				cell.style.color = originalColors[index]; // Restore original color
+				cell.style.color = originalColors[index]; 
 			});
-
-			// Create link element and trigger download
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'table_data.svg';
@@ -186,8 +154,6 @@ const Index: NextPage = () => {
 			console.error('Error generating SVG: ', error);
 		}
 	};
-
-	// Function to export the table data in CSV format
 	const downloadTableAsCSV = (table: HTMLElement) => {
 		let csvContent = 'Category\n';
 		const rows = table.querySelectorAll('tr');
@@ -199,33 +165,24 @@ const Index: NextPage = () => {
 				.join(',');
 			csvContent += rowData + '\n';
 		});
-
-		// Create a blob and initiate download
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
 		link.download = 'table_data.csv';
 		link.click();
 	};
-
-	// Function to export the table data in PDF format
 	const downloadTableAsPDF = (table: HTMLElement) => {
 		try {
 			const pdf = new jsPDF('p', 'pt', 'a4');
 			const pageWidth = pdf.internal.pageSize.getWidth();
 			const title = 'LOT Management';
 			const titleFontSize = 18;
-
-			// Add heading to PDF (centered)
 			pdf.setFontSize(titleFontSize);
 			const textWidth = pdf.getTextWidth(title);
 			const xPosition = (pageWidth - textWidth) / 2;
 			pdf.text(title, xPosition, 40);
-
 			const rows: any[] = [];
 			const headers: any[] = [];
-
-			// Extract table headers (exclude last cell)
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
@@ -235,8 +192,6 @@ const Index: NextPage = () => {
 						.map((cell: any) => cell.innerText),
 				);
 			}
-
-			// Extract table rows (exclude last cell)
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -248,8 +203,6 @@ const Index: NextPage = () => {
 					rows.push(rowData);
 				});
 			}
-
-			// Generate PDF using autoTable
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -260,26 +213,25 @@ const Index: NextPage = () => {
 				},
 				theme: 'grid',
 			});
-
 			pdf.save('table_data.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
+
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
 
-		// Attach event listener for keydown
 
 	  }, [StockInOuts]);
+
 	return (
 		<PageWrapper>
 			<SubHeader>
 				<SubHeaderLeft>
-					{/* Search input */}
 					<label
 						className='border-0 bg-transparent cursor-pointer me-0'
 						htmlFor='searchInput'>
@@ -321,10 +273,10 @@ const Index: NextPage = () => {
 													setSelectedUsers(
 														(prevUsers) =>
 															checked
-																? [...prevUsers, value] // Add category if checked
+																? [...prevUsers, value]
 																: prevUsers.filter(
 																		(brand) => brand !== value,
-																  ), // Remove category if unchecked
+																  ), 
 													);
 												}}
 											/>
@@ -346,7 +298,6 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						{/* Table for displaying customer data */}
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -416,9 +367,8 @@ const Index: NextPage = () => {
 														? selectedUsers.includes(brand.stock)
 														: true,
 												)
-
-												.map((brand: any) => (
-													<tr key={brand.index}>
+												.map((brand: any, index: any) => (
+													<tr key={index}>
 														<td>{brand.date}</td>
 														<td>{brand.category}</td>
 														<td>{brand.brand}</td>

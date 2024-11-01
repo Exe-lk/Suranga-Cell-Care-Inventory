@@ -29,22 +29,14 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [stockInOuts]);
 	const filteredStockInOuts = stockInOuts?.filter((item: any) => item.stock === 'stockOut');
-
+	
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
-
 		const clonedTable = table.cloneNode(true) as HTMLElement;
-
 		const clonedTableStyles = getComputedStyle(table);
 		clonedTable.setAttribute('style', clonedTableStyles.cssText);
-
 		try {
 			switch (format) {
 				case 'svg':
@@ -66,7 +58,6 @@ const Index: NextPage = () => {
 			console.error('Error exporting table: ', error);
 		}
 	};
-
 	const downloadTableAsCSV = (table: any) => {
 		let csvContent = '';
 		const rows = table.querySelectorAll('tr');
@@ -77,7 +68,6 @@ const Index: NextPage = () => {
 				.join(',');
 			csvContent += rowData + '\n';
 		});
-
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
@@ -91,39 +81,32 @@ const Index: NextPage = () => {
 			const pageHeight = pdf.internal.pageSize.getHeight();
 			const rows: any[] = [];
 			const headers: any[] = [];
-
 			pdf.setLineWidth(1);
 			pdf.rect(10, 10, pageWidth - 20, pageHeight - 20);
-
 			const logoData = await loadImage(bill);
 			const logoWidth = 100;
 			const logoHeight = 40;
 			const logoX = 20;
 			const logoY = 20;
 			pdf.addImage(logoData, 'PNG', logoX, logoY, logoWidth, logoHeight);
-
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-
 			const title = 'Customer Accesory Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
 			const titleX = pageWidth - titleWidth - 20;
 			pdf.text(title, titleX, 30);
-
 			const currentDate = new Date().toLocaleDateString();
 			const dateX = pageWidth - pdf.getTextWidth(currentDate) - 20;
 			pdf.setFontSize(12);
 			pdf.text(currentDate, dateX, 50);
-
 			const thead = table.querySelector('thead');
 			if (thead) {
 				const headerCells = thead.querySelectorAll('th');
 				headers.push(Array.from(headerCells).map((cell: any) => cell.innerText));
 			}
-
 			const tbody = table.querySelector('tbody');
 			if (tbody) {
 				const bodyRows = tbody.querySelectorAll('tr');
@@ -133,10 +116,8 @@ const Index: NextPage = () => {
 					rows.push(rowData);
 				});
 			}
-
 			const tableWidth = pageWidth * 0.9;
 			const tableX = (pageWidth - tableWidth) / 2;
-
 			autoTable(pdf, {
 				head: headers,
 				body: rows,
@@ -161,14 +142,12 @@ const Index: NextPage = () => {
 				tableWidth: 'wrap',
 				theme: 'grid',
 			});
-
 			pdf.save('Customer Accesory Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
 		}
 	};
-
 	const loadImage = (url: string): Promise<string> => {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
@@ -192,7 +171,6 @@ const Index: NextPage = () => {
 			};
 		});
 	};
-
 	const hideLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -205,7 +183,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const restoreLastCells = (table: HTMLElement) => {
 		const rows = table.querySelectorAll('tr');
 		rows.forEach((row) => {
@@ -218,7 +195,6 @@ const Index: NextPage = () => {
 			}
 		});
 	};
-
 	const downloadTableAsPNG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -226,19 +202,15 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			const originalBorderStyle = table.style.border;
 			table.style.border = '1px solid black';
-
 			const dataUrl = await toPng(table, {
 				cacheBust: true,
 				style: {
 					width: table.offsetWidth + 'px',
 				},
 			});
-
 			table.style.border = originalBorderStyle;
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Customer Accesory Report.png';
@@ -247,7 +219,6 @@ const Index: NextPage = () => {
 			console.error('Error generating PNG: ', error);
 		}
 	};
-
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -255,9 +226,7 @@ const Index: NextPage = () => {
 				console.error('Table element not found');
 				return;
 			}
-
 			hideLastCells(table);
-
 			const dataUrl = await toSvg(table, {
 				backgroundColor: 'white',
 				cacheBust: true,
@@ -266,9 +235,7 @@ const Index: NextPage = () => {
 					color: 'black',
 				},
 			});
-
 			restoreLastCells(table);
-
 			const link = document.createElement('a');
 			link.href = dataUrl;
 			link.download = 'Customer Accesory Report.svg';
@@ -279,6 +246,12 @@ const Index: NextPage = () => {
 			if (table) restoreLastCells(table);
 		}
 	};
+
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [stockInOuts]);
 
 	return (
 		<PageWrapper>
@@ -300,7 +273,6 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 			</SubHeader>
-
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>

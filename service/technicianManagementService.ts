@@ -9,24 +9,19 @@ export const createTechnician = async (technicianNum: string, name: string, type
 
 export const getTechnicians = async () => {
   const q = query(collection(firestore, 'technician'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteTechnicians = async () => {
   const q = query(collection(firestore, 'technician'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getTechnicianById = async (id: string) => {
   const technicianRef = doc(firestore, 'technician', id);
   const technicianSnap = await getDoc(technicianRef);
-
   if (technicianSnap.exists()) {
     return { id: technicianSnap.id, ...technicianSnap.data() };
   } else {

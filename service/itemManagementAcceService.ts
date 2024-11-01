@@ -9,24 +9,19 @@ export const createItemAcce = async (type: string, mobileType: string, category:
 
 export const getItemAcces = async () => {
   const q = query(collection(firestore, 'ItemManagementAcce'), where('status', '==', true));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getDeleteItemAcces = async () => {
   const q = query(collection(firestore, 'ItemManagementAcce'), where('status', '==', false));
-
   const querySnapshot = await getDocs(q);
-
   return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 };
 
 export const getItemAcceById = async (id: string) => {
   const ItemAcceRef = doc(firestore, 'ItemManagementAcce', id);
   const ItemAcceSnap = await getDoc(ItemAcceRef);
-
   if (ItemAcceSnap.exists()) {
     return { id: ItemAcceSnap.id, ...ItemAcceSnap.data() };
   } else {

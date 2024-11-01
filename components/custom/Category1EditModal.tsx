@@ -24,7 +24,6 @@ interface CategoryEditModalProps {
 const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: categoryData, refetch } = useGetCategories1Query(undefined);
 	const [updateCategory, { isLoading }] = useUpdateCategory1Mutation();
-
 	const categoryToEdit = categoryData?.find((category: any) => category.id === id);
 
 	const formik = useFormik({
@@ -41,7 +40,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			}
 			return errors;
 		},
-
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -51,7 +49,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-
 				try {
 					const data = {
 						name: values.name,
@@ -60,7 +57,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					};
 					await updateCategory(data).unwrap();
 					refetch();
-
 					await Swal.fire({
 						icon: 'success',
 						title: 'Category Updated Successfully',
@@ -120,4 +116,5 @@ CategoryEditModal.propTypes = {
 	isOpen: PropTypes.bool.isRequired,
 	setIsOpen: PropTypes.func.isRequired,
 };
+
 export default CategoryEditModal;
