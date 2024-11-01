@@ -29,9 +29,9 @@ export const getItemAcceById = async (id: string) => {
   }
 };
 
-export const updateItemAcce = async (id: string, type: string, mobileType: string, category: string, model: string, quantity: string, brand: string, reorderLevel: string, description: string, status: boolean) => {
+export const updateItemAcce = async (id: string, type: string, mobileType: string, category: string, model: string, quantity: string, brand: string, reorderLevel: string, description: string, code: any,status:any) => {
   const ItemAcceRef = doc(firestore, 'ItemManagementAcce', id);
-  await updateDoc(ItemAcceRef, { type, mobileType, category, model, quantity, brand, reorderLevel, description, status });
+  await updateDoc(ItemAcceRef, { type, mobileType, category, model, quantity, brand, reorderLevel, description, code ,status});
 };
 
 export const deleteItemAcce = async (id: string) => {

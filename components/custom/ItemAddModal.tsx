@@ -39,21 +39,23 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [generatedCode, setGeneratedCode] = useState('');
 
 	useEffect(() => {
-		if (itemAcces?.length) {
-			const lastCode = itemAcces
-				.map((item: { code: string }) => item.code)
-				.filter((code: string) => code)
-				.reduce((maxCode: string, currentCode: string) => {
-					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
-					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
-					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
-				}, '1000');
-			const newCode = incrementCode(lastCode);
-			setGeneratedCode(newCode);
-		} else {
-			setGeneratedCode('1000');
+		if (isOpen) {
+			if (itemAcces?.length) {
+				const lastCode = itemAcces
+					.map((item: { code: string }) => item.code)
+					.filter((code: string) => code)
+					.reduce((maxCode: string, currentCode: string) => {
+						const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
+						const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
+						return currentNumericPart > maxNumericPart ? currentCode : maxCode;
+					}, '1000');
+				const newCode = incrementCode(lastCode);
+				setGeneratedCode(newCode);
+			} else {
+				setGeneratedCode('1000');
+			}
 		}
-	}, [itemAcces]);
+	}, [isOpen, itemAcces]);
 
 	const incrementCode = (code: string) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
@@ -119,6 +121,9 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						title: 'Item Created Successfully',
 					});
 					formik.resetForm();
+					setSelectedCategory('');
+					setSelectedBrand('');
+					setGeneratedCode('');
 					setIsOpen(false);
 				} catch (error) {
 					await Swal.fire({
@@ -156,14 +161,17 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			(model.category === selectedCategory || selectedCategory === 'Other'),
 	);
 
+	const handleClose = () => {
+		formik.resetForm();
+		setSelectedCategory('');
+		setSelectedBrand('');
+		setGeneratedCode('');
+		setIsOpen(false);
+	};
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader
-				setIsOpen={() => {
-					setIsOpen(false);
-					formik.resetForm();
-				}}
-				className='p-4'>
+			<ModalHeader setIsOpen={handleClose} className='p-4'>
 				<ModalTitle id=''>{'New Item'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

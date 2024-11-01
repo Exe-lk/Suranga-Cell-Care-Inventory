@@ -19,12 +19,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { type, mobileType, category, model, quantity, brand, reorderLevel, description, status } = req.body;
+        const { type, mobileType, category, model, quantity, brand, reorderLevel, description,code, status } = req.body;
         if (!model) {
           res.status(400).json({ error: 'Model  is required' });
           return;
         }
-        await updateItemAcce(id as string, type, mobileType, category, model, quantity, brand, reorderLevel, description, status);
+        await updateItemAcce(id as string, type, mobileType, category, model, quantity, brand, reorderLevel, description, code,status);
         res.status(200).json({ message: 'Item Acce updated' });
         break;
       }

@@ -61,7 +61,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				confirmButtonText: 'Yes, Restore it!',
 			});
 			if (result.isConfirmed) {
-				const values = await {
+				const values = {
 					id: itemAcce.id,
 					status: true,
 					type: itemAcce.type,
@@ -71,17 +71,18 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					brand: itemAcce.brand,
 					reorderLevel: itemAcce.reorderLevel,
 					description: itemAcce.description,
-					
+					code: itemAcce.code,
 				};
-				await updateItemAcce(values);
-				Swal.fire('Restory!', 'The item dis has been deleted.', 'success');
+				await updateItemAcce(values).unwrap();
+				Swal.fire('Restored!', 'The item has been restored.', 'success');
+				refetch(); 
 			}
 		} catch (error) {
-			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete item dis.', 'error');
+			console.error('Error restoring item:', error);
+			Swal.fire('Error', 'Failed to restore item.', 'error');
 		}
 	};
-
+	
 	const handleDeleteAll = async () => {
 		try {
 			const { value: inputText } = await Swal.fire({
@@ -116,7 +117,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'This will restore all categories.',
+				text: 'This will restore all items.',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -126,26 +127,28 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			if (result.isConfirmed) {
 				for (const itemAcce of ItemAcces) {
 					const values = {
-					id: itemAcce.id,
-					status: true,
-					type: itemAcce.type,
-					mobileType: itemAcce.mobileType,
-					category: itemAcce.category,
-					model: itemAcce.model,
-					brand: itemAcce.brand,
-					reorderLevel: itemAcce.reorderLevel,
-					description: itemAcce.description,
+						id: itemAcce.id,
+						status: true,
+						type: itemAcce.type,
+						mobileType: itemAcce.mobileType,
+						category: itemAcce.category,
+						model: itemAcce.model,
+						brand: itemAcce.brand,
+						reorderLevel: itemAcce.reorderLevel,
+						description: itemAcce.description,
+						code: itemAcce.code,
 					};
 					await updateItemAcce(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All items have been restored.', 'success');
-				refetch();
+				refetch(); 
 			}
 		} catch (error) {
 			console.error('Error restoring all items:', error);
 			Swal.fire('Error', 'Failed to restore all items.', 'error');
 		}
 	};
+	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
