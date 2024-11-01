@@ -76,7 +76,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					otherCategory: itemDis.otherCategory
 				};
 				await updateItemDis(values);
-				Swal.fire('Restory!', 'The item dis has been deleted.', 'success');
+				Swal.fire('Restored!', 'The item dis has been Restored.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
