@@ -14,26 +14,26 @@ const DefaultAside = () => {
 	const { asideStatus, setAsideStatus } = useContext(ThemeContext);
 	const [isAuthorized, setIsAuthorized] = useState(false);
 	const router = useRouter();
-	const getUserRole = () => {
-		return localStorage.getItem('userRole');
-	};
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, async (user) => {
-			if (user) {
-				const role = getUserRole();
-				if (role == 'accessosry stock keeper') {
-					setIsAuthorized(true);
-				} else {
-					router.push('/');
-				}
+		const validateUser = async () => {
+			const email = localStorage.getItem('userRole');
+			const response = await fetch('/api/validateUser', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ email }),
+			});
+
+			await response.json();
+			if (response.ok && email === 'accessosry stock keeper') {
+				setIsAuthorized(true);
 			} else {
 				router.push('/');
 			}
-		});
+		};
 
-		return () => unsubscribe();
-	}, [router]);
+		validateUser();
+	}, []);
 
 	return (
 		<Aside>
