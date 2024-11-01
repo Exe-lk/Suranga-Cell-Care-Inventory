@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useContext, useState } from 'react';
+import React, { FC } from 'react';
 import type { NextPage } from 'next';
 import { GetStaticProps } from 'next';
 import Head from 'next/head';
@@ -8,7 +8,6 @@ import { useFormik } from 'formik';
 import classNames from 'classnames';
 import Link from 'next/link';
 import PropTypes from 'prop-types';
-import AuthContext from '../context/authContext';
 import useDarkMode from '../hooks/useDarkMode';
 import PageWrapper from '../layout/PageWrapper/PageWrapper';
 import Page from '../layout/Page/Page';
@@ -16,15 +15,9 @@ import Card, { CardBody } from '../components/bootstrap/Card';
 import Button from '../components/bootstrap/Button';
 import FormGroup from '../components/bootstrap/forms/FormGroup';
 import Input from '../components/bootstrap/forms/Input';
-import Select from '../components/bootstrap/forms/Select';
-import axios from 'axios';
 import Swal from 'sweetalert2';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { auth, firestore } from '../firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import Logo from '../components/Logo';
 import { useAddUserMutation } from '../redux/slices/userApiSlice';
-import { useGetUsersQuery } from '../redux/slices/userApiSlice';
 
 interface ILoginHeaderProps {
 	isNewUser?: boolean;
@@ -39,12 +32,6 @@ const LoginHeader: FC<ILoginHeaderProps> = () => {
 	);
 };
 
-interface User {
-	password: string;
-	email: string;
-	position: string;
-}
-
 interface ILoginProps {
 	isSignUp?: boolean;
 }
@@ -52,8 +39,6 @@ interface ILoginProps {
 const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 	const router = useRouter();
 	const { darkModeStatus } = useDarkMode();
-	const [users, setUsers] = useState<User[]>([]);
-	const { setUser } = useContext(AuthContext);
 	const [addUser] = useAddUserMutation();
 
 	const formik = useFormik({
@@ -87,6 +72,7 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 						title: 'Login Successful',
 						text: 'You have successfully logged in!',
 					});
+					localStorage.setItem('userRole', response.user.position);
 					switch (response.user.position) {
 						case 'admin':
 							router.push('/admin/dashboard');
