@@ -141,7 +141,7 @@ const Index: NextPage = () => {
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = 'table_data.csv';
+		link.download = 'Technician Report.csv';
 		link.click();
 	};
 	const downloadTableAsPDF = async (table: HTMLElement) => {
@@ -162,7 +162,7 @@ const Index: NextPage = () => {
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-			const title = 'Barcode Report';
+			const title = 'Technician Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
@@ -200,7 +200,7 @@ const Index: NextPage = () => {
 				},
 				theme: 'grid',
 			});
-			pdf.save('Barcode Report.pdf');
+			pdf.save('Technician Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
@@ -271,7 +271,7 @@ const Index: NextPage = () => {
 			table.style.border = originalBorderStyle;
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.png';
+			link.download = 'Technician Report.png';
 			link.click();
 		} catch (error) {
 			console.error('Error generating PNG: ', error);
@@ -296,7 +296,7 @@ const Index: NextPage = () => {
 			restoreLastCells(table);
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'table_data.svg';
+			link.download = 'Technician Report.svg';
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);

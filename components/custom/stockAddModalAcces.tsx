@@ -143,9 +143,13 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					}
 					if (!values.nic) {
 						errors.nic = 'NIC is required';
+					}else if (!/^\d{9}[Vv]$/.test(values.nic) && !/^\d{12}$/.test(values.nic)) {
+						errors.nic = 'NIC must be 9 digits followed by "V" or 12 digits';
 					}
 					if (!values.mobile) {
 						errors.mobile = 'Mobile Number is required';
+					}else if (values.mobile.length !== 10) {
+						errors.mobile = 'Mobile number must be exactly 10 digits';
 					}
 				}
 			}
@@ -192,6 +196,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 		},
 	});
+
+	const formatMobileNumber = (value: string) => {
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
+	};
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -260,6 +270,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									onBlur={formik.handleBlur}
 									isValid={formik.isValid}
 									isTouched={formik.touched.storage}
+									invalidFeedback={formik.errors.storage}
+									validFeedback='Looks good!'
 								/>
 							</FormGroup>
 							<FormGroup id='mobileType' label='Mobile Type' className='col-md-6'>
@@ -290,10 +302,15 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 										<Input
 											type='text'
 											value={formik.values.mobile}
-											onChange={formik.handleChange}
+											onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+												const input = e.target.value.replace(/\D/g, '');
+												formik.setFieldValue('mobile', formatMobileNumber(input));
+											}}
 											onBlur={formik.handleBlur}
 											isValid={formik.isValid}
 											isTouched={formik.touched.mobile}
+											invalidFeedback={formik.errors.mobile}
+											validFeedback='Looks good!'
 										/>
 									</FormGroup>
 									<FormGroup id='nic' label='NIC' className='col-md-6'>
