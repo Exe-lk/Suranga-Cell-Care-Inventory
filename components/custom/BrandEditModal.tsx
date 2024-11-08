@@ -35,23 +35,18 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			id: '',
 			category: brandToEdit?.category || '',
 			name: brandToEdit?.name || '',
-			description: brandToEdit?.description || '',
 		},
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: {
 				category?: string;
 				name?: string;
-				description?: string;
 			} = {};
 			if (!values.category) {
 				errors.category = 'Required';
 			}
 			if (!values.name) {
 				errors.name = 'Required';
-			}
-			if (!values.description) {
-				errors.description = 'Required';
 			}
 			return errors;
 		},
@@ -68,7 +63,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 					const data = {
 						category: values.category,
 						name: values.name,
-						description: values.description,
 						status: true,
 						id: id,
 					};
@@ -140,18 +134,6 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={formik.touched.name}
 							invalidFeedback={formik.errors.name}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='description' label='Description' className='col-md-6'>
-						<Input
-							name='description'
-							onChange={formik.handleChange}
-							value={formik.values.description}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.description}
-							invalidFeedback={formik.errors.description}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

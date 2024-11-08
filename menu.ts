@@ -298,67 +298,60 @@ export const addminPagesMenu = {
 	},
 	singlePages: {
 		id: 'singlePages',
-		text: 'Model Management',
+		text: 'Display Stock Management',
 		path: 'single-pages',
 		icon: 'ChangeHistory',
 		subMenu: {
-			Display: {
-				id: 'model',
-				text: 'Display Model Management',
-				path: 'admin/model/display',
+			Category: {
+				id: 'category',
+				text: 'Category Management',
+				path: 'admin/display/category',
 				icon: 'LaptopMac',
 		
 			},
 			Model: {
-				id: 'model1',
-				text: 'Accessory Model Management',
-				path: 'admin/model/accessory',
-				icon: 'SupervisedUserCircle',
+				id: 'model',
+				text: 'Model Management',
+				path: 'admin/display/model',
+				icon: 'LaptopMac',
 		
 			},
+			Brand: {
+				id: 'brand',
+				text: 'Brand Management',
+				path: 'admin/display/brand',
+				icon: 'LaptopMac',
+		
+			},
+
+			
 			
 		}
 	},
 	singlePages1: {
 		id: 'singlePages1',
-		text: 'Brand Management',
+		text: 'Accessory Stock Management',
 		path: 'single-pages',
 		icon: 'BrandingWatermark',
 		subMenu: {
-			Display: {
-				id: 'brand',
-				text: 'Display Brand Management',
-				path: 'admin/brand/display',
-				icon: 'LaptopMac',
-		
-			},
-			Model: {
-				id: 'brand1',
-				text: 'Accessory Brand Management',
-				path: 'admin/brand/accessory',
+			Category1: {
+				id: 'category1',
+				text: 'Category Management',
+				path: 'admin/accessory/category',
 				icon: 'SupervisedUserCircle',
 		
 			},
-			
-		}
-	},
-	singlePages2: {
-		id: 'singlePages2',
-		text: 'Category Management',
-		path: 'single-pages',
-		icon: 'Category',
-		subMenu: {
-			Display: {
-				id: 'category',
-				text: 'Display Category Management',
-				path: 'admin/category/display',
-				icon: 'LaptopMac',
+			Brand1: {
+				id: 'brand1',
+				text: 'Brand Management',
+				path: 'admin/accessory/brand',
+				icon: 'SupervisedUserCircle',
 		
 			},
-			Model: {
-				id: 'category1',
-				text: 'Accessory Category Management',
-				path: 'admin/category/accessory',
+			Model1: {
+				id: 'model1',
+				text: 'Model Management',
+				path: 'admin/accessory/model',
 				icon: 'SupervisedUserCircle',
 		
 			},

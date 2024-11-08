@@ -29,18 +29,13 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		initialValues: {
 			category: '',
 			name: '',
-			description: '',
 			status: true,
 		},
 		validate: (values) => {
 			const errors: {
 				category?: string;
 				name?: string;
-				description?: string;
 			} = {};
-			if (!values.description) {
-				errors.description = 'Required';
-			}
 			if (!values.name) {
 				errors.name = 'Required';
 			}
@@ -136,17 +131,6 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={formik.touched.name}
 							invalidFeedback={formik.errors.name}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='description' label='Description' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.description}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.description}
-							invalidFeedback={formik.errors.description}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

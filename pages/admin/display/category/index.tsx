@@ -1,37 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
+import useDarkMode from '../../../../hooks/useDarkMode';
 import Page from '../../../../layout/Page/Page';
-import SubHeader, {
-	SubHeaderLeft,
-	SubHeaderRight,
-} from '../../../../layout/SubHeader/SubHeader';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../../layout/SubHeader/SubHeader';
 import Icon from '../../../../components/icon/Icon';
 import Input from '../../../../components/bootstrap/forms/Input';
 import Dropdown, { DropdownMenu, DropdownToggle } from '../../../../components/bootstrap/Dropdown';
 import Button from '../../../../components/bootstrap/Button';
 import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
-import BrandAddModal from '../../../../components/custom/BrandAddModal';
-import BrandDeleteModal from '../../../../components/custom/BrandDeleteModal';
-import BrandEditModal from '../../../../components/custom/BrandEditModal';
+import CategoryAddModal from '../../../../components/custom/CategoryAddModal';
+import CategoryDeleteModal from '../../../../components/custom/CategoryDeleteModal';
+import CategoryEditModal from '../../../../components/custom/CategoryEditModal';
 import Swal from 'sweetalert2';
-import { useGetBrandsQuery, useUpdateBrandMutation } from '../../../../redux/slices/brandApiSlice';
+import {
+	useGetCategoriesQuery,
+	useUpdateCategoryMutation,
+} from '../../../../redux/slices/categoryApiSlice';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem } from '../../../../components/bootstrap/Dropdown';
 import jsPDF from 'jspdf';
-import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import autoTable from 'jspdf-autotable';
+import bill from '../../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../../components/PaginationButtons';
-
-interface Category {
-	cid: string;
-	name: string;
-	description: string;
-	status: boolean;
-}
 
 const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -39,17 +33,23 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
-	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
+	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
+	const [updateCategory] = useUpdateCategoryMutation();
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	const [updateBrand] = useUpdateBrandMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	const handleClickDelete = async (brand: any) => {
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [categories]);
+
+	const handleClickDelete = async (category: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'You will not be able to recover this brand!',
+				text: 'You will not be able to recover this category!',
 				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonColor: '#3085d6',
@@ -58,14 +58,12 @@ const Index: NextPage = () => {
 			});
 			if (result.isConfirmed) {
 				try {
-					await updateBrand({
-						id: brand.id,
-						name: brand.name,
-						description: brand.description,
-						category: brand.category,
+					await updateCategory({
+						id: category.id,
+						name: category.name,
 						status: false,
 					});
-					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
+					Swal.fire('Deleted!', 'Category has been deleted.', 'success');
 					refetch();
 				} catch (error) {
 					console.error('Error during handleDelete: ', error);
@@ -78,7 +76,7 @@ const Index: NextPage = () => {
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
-			Swal.fire('Error', 'Failed to delete brand.', 'error');
+			Swal.fire('Error', 'Failed to delete category.', 'error');
 		}
 	};
 
@@ -145,7 +143,7 @@ const Index: NextPage = () => {
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = 'Manage Display Brand Report.csv';
+		link.download = 'Manage Display Category Report.csv';
 		link.click();
 	};
 	const downloadTableAsPDF = async (table: HTMLElement) => {
@@ -166,7 +164,7 @@ const Index: NextPage = () => {
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-			const title = 'Manage Display Brand Report';
+			const title = 'Category Display Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
@@ -204,7 +202,7 @@ const Index: NextPage = () => {
 				},
 				theme: 'grid',
 			});
-			pdf.save('Manage Display Brand Report.pdf');
+			pdf.save('Manage Display Category Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
@@ -275,7 +273,7 @@ const Index: NextPage = () => {
 			table.style.border = originalBorderStyle;
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'Manage Display Brand Report.png';
+			link.download = 'Manage Display Category Report.png';
 			link.click();
 		} catch (error) {
 			console.error('Error generating PNG: ', error);
@@ -300,7 +298,7 @@ const Index: NextPage = () => {
 			restoreLastCells(table);
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'Manage Display Brand Report.svg';
+			link.download = 'Manage Display Category Report.svg';
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
@@ -308,12 +306,6 @@ const Index: NextPage = () => {
 			if (table) restoreLastCells(table);
 		}
 	};
-
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [brands]);
 
 	return (
 		<PageWrapper>
@@ -342,7 +334,7 @@ const Index: NextPage = () => {
 						color='success'
 						isLight
 						onClick={() => setAddModalStatus(true)}>
-						New Brand
+						New category
 					</Button>
 				</SubHeaderRight>
 			</SubHeader>
@@ -352,7 +344,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
-									Manage Display Brand
+									Manage Display Category
 								</div>
 								<Dropdown>
 									<DropdownToggle hasIcon={false}>
@@ -380,60 +372,71 @@ const Index: NextPage = () => {
 								<table className='table  table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary'}>
 										<tr>
-											<th>Category</th>
-											<th>Brand name</th>
-											<th>Description</th>
+											<th>Category name</th>
 											<th></th>
 										</tr>
 									</thead>
 									<tbody>
 										{isLoading && (
 											<tr>
-												<td>Loadning...</td>
+												<td>Loading...</td>
 											</tr>
 										)}
 										{error && (
 											<tr>
-												<td>Error fetching brands.</td>
+												<td>Error fetching categories.</td>
 											</tr>
 										)}
-										{brands &&
-											dataPagination(brands, currentPage, perPage)
-												.filter((brand: any) => brand.status === true)
-												.filter((brand: any) =>
+										{categories &&
+											dataPagination(categories, currentPage, perPage)
+												.filter((category: any) => category.status === true)
+												.filter((category: any) =>
 													searchTerm
-														? brand.name
+														? category.name
 																.toLowerCase()
 																.includes(searchTerm.toLowerCase())
 														: true,
 												)
-												.map((brand: any, index: any) => (
-													<tr key={index}>
-														<td>{brand.category}</td>
-														<td>{brand.name}</td>
-														<td>{brand.description}</td>
-														<td>
-															<Button
-																icon='Edit'
-																color='primary'
-																onClick={() => {
-																	setEditModalStatus(true);
-																	setId(brand.id);
-																}}>
-																Edit
-															</Button>
-															<Button
-																icon='Delete'
-																className='m-2'
-																color='danger'
-																onClick={() =>
-																	handleClickDelete(brand)
-																}>
-																Delete
-															</Button>
-														</td>
-													</tr>
-												))}
+												.map((category: any, index: any) => {
+													const hideButtons =
+														category.name === 'Touch Pad' ||
+														category.name === 'Battery Cell' ||
+														category.name === 'Displays';
+
+													return (
+														<tr key={index}>
+															<td>{category.name}</td>
+															<td>
+																{!hideButtons && (
+																	<>
+																		<Button
+																			icon='Edit'
+																			color='primary'
+																			onClick={() => {
+																				setEditModalStatus(
+																					true,
+																				);
+																				setId(category.id);
+																			}}>
+																			Edit
+																		</Button>
+																		<Button
+																			icon='Delete'
+																			className='m-2'
+																			color='danger'
+																			onClick={() =>
+																				handleClickDelete(
+																					category,
+																				)
+																			}>
+																			Delete
+																		</Button>
+																	</>
+																)}
+															</td>
+														</tr>
+													);
+												})}
 									</tbody>
 								</table>
 								<Button
@@ -447,7 +450,7 @@ const Index: NextPage = () => {
 								</Button>
 							</CardBody>
 							<PaginationButtons
-								data={brands}
+								data={categories}
 								label='parts'
 								setCurrentPage={setCurrentPage}
 								currentPage={currentPage}
@@ -458,14 +461,14 @@ const Index: NextPage = () => {
 					</div>
 				</div>
 			</Page>
-			<BrandAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
-			<BrandDeleteModal
+			<CategoryAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
+			<CategoryDeleteModal
 				setIsOpen={setDeleteModalStatus}
 				isOpen={deleteModalStatus}
 				id=''
 				refetchMainPage={refetch}
 			/>
-			<BrandEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
+			<CategoryEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
 		</PageWrapper>
 	);
 };

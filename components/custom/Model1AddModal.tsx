@@ -44,9 +44,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				brand?: string;
 				description?: string;
 			} = {};
-			if (!values.description) {
-				errors.description = 'Required';
-			}
 			if (!values.name) {
 				errors.name = 'Required';
 			}

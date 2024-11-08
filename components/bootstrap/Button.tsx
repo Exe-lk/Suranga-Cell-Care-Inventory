@@ -153,6 +153,7 @@ const Button = forwardRef<HTMLAnchorElement, IButtonProps>(
 				'btn-only-icon': !children || isVisuallyHidden,
 				disabled: isDisable,
 				active: isActive,
+				'text-black': color === 'success',
 			},
 			className,
 		);

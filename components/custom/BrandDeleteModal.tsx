@@ -75,7 +75,6 @@ const BrandDeleteModal: FC<BrandDeleteModalProps> = ({
 					id: brand.id,
 					category: brand.category,
 					name: brand.name,
-					description: brand.description,
 					status: true,
 				};
 				await updateBrand(values);

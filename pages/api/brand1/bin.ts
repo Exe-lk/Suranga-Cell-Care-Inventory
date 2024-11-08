@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { category, name, description } = req.body;
+        const { category, name } = req.body;
         if (!name) {
           res.status(400).json({ error: 'Brand name is required' });
           return;
         }
-        const id = await createBrand(category, name, description);
+        const id = await createBrand(category, name);
         res.status(201).json({ message: 'Brand created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, category, name, description, status } = req.body;
+        const { id, category, name, status } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Brand ID and name are required' });
           return;
         }
-        await updateBrand(id, category, name, description, status);
+        await updateBrand(id, category, name, status);
         res.status(200).json({ message: 'Brand updated' });
         break;
       }
