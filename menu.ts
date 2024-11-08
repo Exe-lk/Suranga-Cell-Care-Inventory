@@ -735,24 +735,6 @@ export const demoPagesMenu = {
 				as: 'crm/customer/1',
 				icon: 'Badge',
 			},
-			// sales: {
-			// 	id: 'sales',
-			// 	text: 'Sales',
-			// 	path: 'crm/sales',
-			// 	icon: 'Storefront',
-			// },
-			// invoiceID: {
-			// 	id: 'invoiceID',
-			// 	text: 'invoiceID',
-			// 	path: 'crm/invoice',
-			// 	hide: true,
-			// },
-			// invoice: {
-			// 	id: 'invoice',
-			// 	text: 'Invoice',
-			// 	path: 'crm/invoice/1',
-			// 	icon: 'Receipt',
-			// },
 		},
 	},
 	chat: {
