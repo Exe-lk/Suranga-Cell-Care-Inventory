@@ -511,26 +511,30 @@ const Index: NextPage = () => {
 														<td>{user.nic}</td>
 														<td>{user.role}</td>
 														<td>
-															<Button
-																icon='Edit'
-																color='primary'
-																onClick={() => {
-																	setEditModalStatus(true);
-																	setId(user.id);
-																}}
-																isDisable={user.role === 'admin'}>
-																Edit
-															</Button>
-															<Button
-																className='m-2'
-																icon='Delete'
-																color='danger'
-																onClick={() =>
-																	handleClickDelete(user)
-																}
-																isDisable={user.role === 'admin'}>
-																Delete
-															</Button>
+															{user.role !== 'admin' && (
+																<>
+																	<Button
+																		icon='Edit'
+																		color='primary'
+																		onClick={() => {
+																			setEditModalStatus(
+																				true,
+																			);
+																			setId(user.id);
+																		}}>
+																		Edit
+																	</Button>
+																	<Button
+																		className='m-2'
+																		icon='Delete'
+																		color='danger'
+																		onClick={() =>
+																			handleClickDelete(user)
+																		}>
+																		Delete
+																	</Button>
+																</>
+															)}
 														</td>
 													</tr>
 												))}

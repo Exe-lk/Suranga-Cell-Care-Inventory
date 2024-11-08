@@ -47,7 +47,7 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
-	
+
 	const filteredTransactions = bills?.filter((trans: any) => {
 		const transactionDateIn = new Date(trans.dateIn);
 		const transactionDateOut = trans.DateOut ? new Date(trans.DateOut) : null;
@@ -475,37 +475,37 @@ const Index: NextPage = () => {
 									<div
 										className='rounded-circle bg-success d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>waiting to in progress</div>{' '}
 									<div
 										className='rounded-circle bg-info d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>in progress</div>{' '}
 									<div
 										className='rounded-circle bg-warning d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>completed</div>{' '}
 									<div
 										className='rounded-circle bg-danger d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>reject</div>{' '}
 									<div
 										className='rounded-circle bg-lo50-primary d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>in progress to complete</div>{' '}
 									<div
 										className='rounded-circle bg-lo50-info d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
-										<span className='text-white'></span>
+										<span className='text-black'></span>
 									</div>
 									<div className='mx-2'>HandOver</div>{' '}
 								</div>
@@ -585,7 +585,7 @@ const Index: NextPage = () => {
 															<span
 																className={`badge rounded-pill ${getStatusColorClass(
 																	bill.Status,
-																)}`}>
+																)} text-black`}>
 																{bill.Status}
 															</span>
 														</td>

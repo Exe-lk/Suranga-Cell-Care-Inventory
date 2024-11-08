@@ -30,7 +30,6 @@ import PaginationButtons, {
 interface Category {
 	cid: string;
 	name: string;
-	description: string;
 	status: boolean;
 }
 
@@ -69,7 +68,6 @@ const Index: NextPage = () => {
 						id:brand.id,
 						category:brand.category,
 						name:brand.name,
-						description:brand.description,
 						status:false,
 				});
 					Swal.fire('Deleted!', 'Brand has been deleted.', 'success');
@@ -375,7 +373,6 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Category</th>
 											<th>Brand name</th>
-											<th>Description</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -407,7 +404,6 @@ const Index: NextPage = () => {
 													<tr key={index}>
 														<td>{brand.category}</td>
 														<td>{brand.name}</td>
-														<td>{brand.description}</td>
 														<td>
 															<Button
 																icon='Edit'

@@ -33,7 +33,6 @@ import PaginationButtons, {
 interface Category {
 	cid: string;
 	name: string;
-	description: string;
 	status: boolean;
 }
 
@@ -74,7 +73,6 @@ const Index: NextPage = () => {
 					await updateBrand({
 						id: brand.id,
 						name: brand.name,
-						description: brand.description,
 						category: brand.category,
 						status: false,
 					});
@@ -389,7 +387,6 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Category</th>
 											<th>Brand name</th>
-											<th>Description</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -418,7 +415,6 @@ const Index: NextPage = () => {
 													<tr key={index}>
 														<td>{brand.category}</td>
 														<td>{brand.name}</td>
-														<td>{brand.description}</td>
 														<td>
 															<Button
 																icon='Edit'

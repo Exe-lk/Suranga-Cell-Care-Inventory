@@ -58,9 +58,6 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.brand) {
 				errors.brand = 'Required';
 			}
-			if (!values.description) {
-				errors.description = 'Required';
-			}
 			return errors;
 		},
 		onSubmit: async (values) => {
