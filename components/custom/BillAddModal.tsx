@@ -45,6 +45,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			CustomerMobileNum: '',
 			email: '',
 			NIC: '',
+			componentCost: '',
+			repairCost: '',
 			cost: '',
 			Price: '',
 			Status: '',
@@ -63,6 +65,8 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				CustomerMobileNum?: string;
 				email?: string;
 				NIC?: string;
+				componentCost?: string;
+				repairCost?: string;
 				cost?: string;
 				Price?: string;
 				Status?: string;
@@ -92,14 +96,19 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			} else if (/[A-Z]/.test(values.email)) {
 				errors.email = 'Email should be in lowercase only.';
 			}
-			if (!values.cost) errors.cost = 'Cost is required.';
-			else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
+			if (!values.componentCost) errors.componentCost = 'Component Cost is required.';
+			else if (parseFloat(values.componentCost) <= 0)
+				errors.componentCost = 'Component Cost must be greater than 0';
+			if (!values.repairCost) errors.repairCost = 'Repair Cost is required.';
+			else if (parseFloat(values.repairCost) <= 0)
+				errors.repairCost = 'Repair Cost must be greater than 0';
 			if (!values.Price) errors.Price = 'Price is required.';
 			else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
 			if (!values.Status) errors.Status = 'Status is required.';
 			if (!values.dateIn) errors.dateIn = 'Date In is required.';
-			if (!values.DateOut) errors.DateOut = 'Date Out is required.';
-			else if (new Date(values.DateOut) <= new Date(values.dateIn)) {
+			if (values.Status === 'Reject' || values.Status === 'Repair Completed') {
+				if (!values.DateOut) errors.DateOut = 'Date Out is required.';
+			}else if (new Date(values.DateOut) <= new Date(values.dateIn)) {
 				errors.DateOut = 'Date Out must be after Date In.';
 			}
 			return errors;
@@ -154,6 +163,12 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
 		return sanitized.slice(0, 10);
 	};
+
+	useEffect(() => {
+		const componentCost = parseFloat(formik.values.componentCost) || 0;
+		const repairCost = parseFloat(formik.values.repairCost) || 0;
+		formik.setFieldValue('cost', (componentCost + repairCost).toFixed(2));
+	}, [formik.values.componentCost, formik.values.repairCost]);
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -311,6 +326,30 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='componentCost' label='Component Cost (lkr)' className='col-md-6'>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.componentCost}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.componentCost}
+							invalidFeedback={formik.errors.componentCost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='repairCost' label='Repair Cost (lkr)' className='col-md-6'>
+						<Input
+							type='number'
+							onChange={formik.handleChange}
+							value={formik.values.repairCost}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.repairCost}
+							invalidFeedback={formik.errors.repairCost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 					<FormGroup id='cost' label='Cost (lkr)' className='col-md-6'>
 						<Input
 							type='number'
@@ -321,6 +360,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isTouched={formik.touched.cost}
 							invalidFeedback={formik.errors.cost}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup id='Price' label='Price (lkr)' className='col-md-6'>
@@ -347,29 +387,28 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							invalidFeedback={formik.errors.Status}
 							validFeedback='Looks good!'>
 							<Option value=''>Select the Status</Option>
-							<Option value='waiting to in progress'>waiting to in progress</Option>
-							<Option value='in progress'>in progress</Option>
-							<Option value='completed'>completed</Option>
-							<Option value='reject'>reject</Option>
-							<Option value='in progress to complete'>Hand Over to cashier</Option>
+							<Option value='Waiting'>Waiting</Option>
+							<Option value='Ready to Repair'>Ready to Repair</Option>
+							<Option value='In Progress'>In Progress</Option>
+							<Option value='Reject'>Reject</Option>
+							<Option value='Repair Completed'>Repair Completed</Option>
 						</Select>
 					</FormGroup>
-					<FormGroup
-						id='DateOut'
-						label='Date Out'
-						onChange={formik.handleChange}
-						className='col-md-6'>
-						<Input
-							type='date'
-							onChange={formik.handleChange}
-							value={formik.values.DateOut}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.DateOut}
-							invalidFeedback={formik.errors.DateOut}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
+					{formik.values.Status === 'Reject' ||
+					formik.values.Status === 'Repair Completed' ? (
+						<FormGroup id='DateOut' label='Date Out' className='col-md-6'>
+							<Input
+								type='date'
+								onChange={formik.handleChange}
+								value={formik.values.DateOut}
+								onBlur={formik.handleBlur}
+								isValid={formik.isValid}
+								isTouched={formik.touched.DateOut}
+								invalidFeedback={formik.errors.DateOut}
+								validFeedback='Looks good!'
+							/>
+						</FormGroup>
+					) : null}
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>

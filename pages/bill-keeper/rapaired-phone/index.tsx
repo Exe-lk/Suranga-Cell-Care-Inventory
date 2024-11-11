@@ -37,11 +37,11 @@ const Index: NextPage = () => {
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const Status = [
-		{ Status: 'waiting to in progress' },
-		{ Status: 'in progress' },
-		{ Status: 'completed' },
-		{ Status: 'reject' },
-		{ Status: 'in progress to complete' },
+		{ Status: 'Waiting' },
+		{ Status: 'Ready to Repair' },
+		{ Status: 'In Progress' },
+		{ Status: 'Reject' },
+		{ Status: 'Repair Completed' },
 		{ Status: 'HandOver' },
 	];
 	const [startDate, setStartDate] = useState<string>('');
@@ -418,6 +418,8 @@ const Index: NextPage = () => {
 											<th>Phone Model</th>
 											<th>Repair Type</th>
 											<th>Status</th>
+											<th>Component Cost</th>
+											<th>Repair Cost</th>
 											<th>Cost</th>
 											<th>Price</th>
 											<th>Profit</th>
@@ -470,6 +472,8 @@ const Index: NextPage = () => {
 														<td>{bill.phoneModel}</td>
 														<td>{bill.repairType}</td>
 														<td>{bill.Status}</td>
+														<td>{bill.componentCost}</td>
+														<td>{bill.repairCost}</td>
 														<td>{bill.cost}</td>
 														<td>{bill.Price}</td>
 														<td>{bill.Price - bill.cost}</td>

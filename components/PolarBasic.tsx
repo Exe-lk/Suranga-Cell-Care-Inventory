@@ -47,12 +47,12 @@ const PolarBasic = () => {
 	useEffect(() => {
 		if (bills) {
 			const statusCounts = {
-				'in progress to complete': 0,
-				reject: 0,
-				completed: 0,
-				'in progress': 0,
-				'waiting to in progress': 0,
-				HandOver: 0,
+				'Waiting': 0,
+				'Ready to Repair': 0,
+				'In Progress': 0,
+				'Reject': 0,
+				'Repair Completed': 0,
+				'HandOver': 0,
 			};
 			bills.forEach((bill: { Status: keyof typeof statusCounts }) => {
 				if (statusCounts[bill.Status] !== undefined) {

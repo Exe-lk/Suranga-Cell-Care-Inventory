@@ -152,6 +152,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							</Option>
 							<Option value={'display stock keeper'}>Display Stock Keeper</Option>
 							<Option value={'cashier'}>Cashier</Option>
+							<Option value={'Repair Sales'}>Repair Sales</Option>
 							<Option value={'Viewer'}>Viewer</Option>
 						</Select>
 					</FormGroup>

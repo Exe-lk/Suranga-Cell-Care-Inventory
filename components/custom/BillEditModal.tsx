@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from 'react';
+import React, { FC, useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
@@ -46,6 +46,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			CustomerMobileNum: billToEdit?.CustomerMobileNum || '',
 			email: billToEdit?.email || '',
 			NIC: billToEdit?.NIC || '',
+			componentCost: billToEdit?.componentCost || '',
+			repairCost: billToEdit?.repairCost || '',
 			cost: billToEdit?.cost || '',
 			Price: billToEdit?.Price || '',
 			Status: billToEdit?.Status || '',
@@ -64,6 +66,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				CustomerMobileNum?: string;
 				email?: string;
 				NIC?: string;
+				componentCost?: string;
+				repairCost?: string;
 				cost?: string;
 				Price?: string;
 				Status?: string;
@@ -110,14 +114,21 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.Price) {
 				errors.Price = 'Price is required';
 			} else if (parseFloat(values.Price) <= 0) errors.Price = 'Price must be greater than 0';
-			if (!values.cost) {
-				errors.cost = 'cost is required';
-			} else if (parseFloat(values.cost) <= 0) errors.cost = 'Cost must be greater than 0';
+			if (!values.componentCost) {
+				errors.componentCost = 'Component Cost is required';
+			} else if (parseFloat(values.componentCost) <= 0)
+				errors.componentCost = 'Component Cost must be greater than 0';
+			if (!values.repairCost) {
+				errors.repairCost = 'Repair Cost is required';
+			} else if (parseFloat(values.repairCost) <= 0)
+				errors.repairCost = 'Repair Cost must be greater than 0';
 			if (!values.Status) {
 				errors.Status = 'Status is required';
 			}
-			if (!values.DateOut) {
+			if (values.Status === 'Reject' && !values.DateOut) {
 				errors.DateOut = 'Date Out is required';
+			}else if (new Date(values.DateOut) <= new Date(values.dateIn)) {
+				errors.DateOut = 'Date Out must be after Date In.';
 			}
 			return errors;
 		},
@@ -143,6 +154,8 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						CustomerMobileNum: values.CustomerMobileNum,
 						email: values.email,
 						NIC: values.NIC,
+						componentCost: values.componentCost,
+						repairCost: values.repairCost,
 						cost: values.cost,
 						Price: values.Price,
 						Status: values.Status,
@@ -178,6 +191,12 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		return sanitized.slice(0, 10);
 	};
 
+	useEffect(() => {
+		const componentCost = parseFloat(formik.values.componentCost) || 0;
+		const repairCost = parseFloat(formik.values.repairCost) || 0;
+		formik.setFieldValue('cost', (componentCost + repairCost).toFixed(2));
+	}, [formik.values.componentCost, formik.values.repairCost]);
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -190,7 +209,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
-				<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
+					<FormGroup id='billNumber' label='Bill Number' className='col-md-6'>
 						<Input
 							name='billNumber'
 							onChange={formik.handleChange}
@@ -330,6 +349,30 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='componentCost' label='Component Cost' className='col-md-6'>
+						<Input
+							name='componentCost'
+							onChange={formik.handleChange}
+							value={formik.values.componentCost}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={!!formik.touched.componentCost}
+							invalidFeedback={formik.errors.componentCost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='repairCost' label='Repair Cost' className='col-md-6'>
+						<Input
+							name='repairCost'
+							onChange={formik.handleChange}
+							value={formik.values.repairCost}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={!!formik.touched.repairCost}
+							invalidFeedback={formik.errors.repairCost}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 					<FormGroup id='cost' label='Cost' className='col-md-6'>
 						<Input
 							name='cost'
@@ -340,6 +383,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={!!formik.touched.cost}
 							invalidFeedback={formik.errors.cost}
 							validFeedback='Looks good!'
+							readOnly
 						/>
 					</FormGroup>
 					<FormGroup id='Price' label='Price' className='col-md-6'>
@@ -362,29 +406,32 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							value={formik.values.Status}
 							name='Status'
 							isValid={formik.isValid}
-							isTouched={!!formik.touched.Status}
+							isTouched={formik.touched.Status}
 							invalidFeedback={formik.errors.Status}
 							validFeedback='Looks good!'>
 							<Option value=''>Select the Status</Option>
-							<Option value='waiting to in progress'>waiting to in progress</Option>
-							<Option value='in progress'>in progress</Option>
-							<Option value='completed'>completed</Option>
-							<Option value='reject'>reject</Option>
-							<Option value='in progress to complete'>Hand Over to cashier</Option>
+							<Option value='Waiting'>Waiting</Option>
+							<Option value='Ready to Repair'>Ready to Repair</Option>
+							<Option value='In Progress'>In Progress</Option>
+							<Option value='Reject'>Reject</Option>
+							<Option value='Repair Completed'>Repair Completed</Option>
 						</Select>
 					</FormGroup>
-					<FormGroup id='DateOut' label='Date Out' className='col-md-6'>
-						<Input
-							name='DateOut'
-							onChange={formik.handleChange}
-							value={formik.values.DateOut}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={!!formik.touched.DateOut}
-							invalidFeedback={formik.errors.DateOut}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
+					{formik.values.Status === 'Reject' ||
+					formik.values.Status === 'Repair Completed' ? (
+						<FormGroup id='DateOut' label='Date Out' className='col-md-6'>
+							<Input
+								type='date'
+								onChange={formik.handleChange}
+								value={formik.values.DateOut}
+								onBlur={formik.handleBlur}
+								isValid={formik.isValid}
+								isTouched={formik.touched.DateOut}
+								invalidFeedback={formik.errors.DateOut}
+								validFeedback='Looks good!'
+							/>
+						</FormGroup>
+					) : null}
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
