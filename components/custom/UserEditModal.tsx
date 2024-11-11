@@ -158,6 +158,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value={'accessosry stock keeper'}>accessory stock keeper</Option>
 							<Option value={'display stock keeper'}>display stock keeper</Option>
 							<Option value={'cashier'}>cashier</Option>
+							<Option value={'Repair Sales'}>Repair Sales</Option>
 							<Option value={'Viewer'}>Viewer</Option>
 						</Select>
 					</FormGroup>

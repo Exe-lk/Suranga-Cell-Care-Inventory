@@ -176,6 +176,93 @@ export const BillKeeperPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
+	Waiting: {
+		id: 'stock2',
+		text: 'Waiting',
+		path: 'bill-keeper/Waiting',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	ReadytoRepair: {
+		id: 'stock2',
+		text: 'Ready to Repair',
+		path: 'bill-keeper/Ready-to-Repair',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	InProgress: {
+		id: 'stock2',
+		text: 'In Progress',
+		path: 'bill-keeper/In-Progress',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	Reject: {
+		id: 'stock2',
+		text: 'Reject',
+		path: 'bill-keeper/Reject',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	RepairCompleted: {
+		id: 'stock2',
+		text: 'Repair Completed',
+		path: 'bill-keeper/Repair-Completed',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	HandOver: {
+		id: 'stock2',
+		text: 'HandOver',
+		path: 'bill-keeper/HandOver',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+
+}
+export const repairsalesMenu ={
+	Waiting: {
+		id: 'stockWaiting',
+		text: 'Waiting',
+		path: 'repairSales/Waiting',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	ReadytoRepair: {
+		id: 'stockReadyToRepair',
+		text: 'Ready to Repair',
+		path: 'repairSales/Ready-to-Repair',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	InProgress: {
+		id: 'stockInProgress',
+		text: 'In Progress',
+		path: 'repairSales/In-Progress',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	Reject: {
+		id: 'stockReject',
+		text: 'Reject',
+		path: 'repairSales/Reject',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	RepairCompleted: {
+		id: 'stockRepairCompleted',
+		text: 'Repair Completed',
+		path: 'repairSales/Repair-Completed',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
+	HandOver: {
+		id: 'stockHandOver',
+		text: 'HandOver',
+		path: 'repairSales/HandOver',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
 }
 export const ViewPagesMenu = {
 	dashboard: {

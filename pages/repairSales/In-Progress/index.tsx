@@ -23,9 +23,9 @@ import { useGetBillsQuery } from '../../../redux/slices/billApiSlice';
 import { useGetTechniciansQuery } from '../../../redux/slices/technicianManagementApiSlice';
 import { toPng, toSvg } from 'html-to-image';
 import { DropdownItem } from '../../../components/bootstrap/Dropdown';
-import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
@@ -36,30 +36,34 @@ const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-	const Status = [
-		{ Status: 'Waiting' },
-		{ Status: 'Ready to Repair' },
-		{ Status: 'In Progress' },
-		{ Status: 'Reject' },
-		{ Status: 'Repair Completed' },
-		{ Status: 'HandOver' },
-	];
-	const inputRef = useRef<HTMLInputElement>(null);
+	const [startDate, setStartDate] = useState<string>('');
+	const [endDate, setEndDate] = useState<string>('');
+	const [currentPage, setCurrentPage] = useState<number>(1);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
+	const inputRef = useRef<HTMLInputElement>(null);
 	const { data: bills, error: billsError, isLoading: billsLoading } = useGetBillsQuery(undefined);
+    const inProgressBills = bills?.filter((bill: any) => bill.Status === 'In Progress');
 	const {
 		data: technicians,
 		error: techniciansError,
 		isLoading: techniciansLoading,
 	} = useGetTechniciansQuery(undefined);
-	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
-	const [startDate, setStartDate] = useState<string>('');
-	const [endDate, setEndDate] = useState<string>('');
 
-	const filteredTransactions = bills?.filter((trans: any) => {
+	useEffect(() => {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		}
+	}, [bills]);
+
+	const getTechnicianName = (technicianNum: string) => {
+		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
+		return technician ? technician.name : 'Unknown';
+	};
+
+	const filteredTransactions = inProgressBills?.filter((trans: any) => {
 		const transactionDate = new Date(trans.dateIn);
 		const start = startDate ? new Date(startDate) : null;
 		const end = endDate ? new Date(endDate) : null;
@@ -73,11 +77,6 @@ const Index: NextPage = () => {
 		return true;
 	});
 
-	const getTechnicianName = (technicianNum: string) => {
-		const technician = technicians?.find((tech: any) => tech.technicianNum === technicianNum);
-		return technician ? technician.name : 'Unknown';
-	};
-	
 	const handleExport = async (format: string) => {
 		const table = document.querySelector('table');
 		if (!table) return;
@@ -118,7 +117,7 @@ const Index: NextPage = () => {
 		const blob = new Blob([csvContent], { type: 'text/csv' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
-		link.download = 'Technician Work Report.csv';
+		link.download = 'In Progress.csv';
 		link.click();
 	};
 	const downloadTableAsPDF = async (table: HTMLElement) => {
@@ -139,7 +138,7 @@ const Index: NextPage = () => {
 			pdf.setFontSize(8);
 			pdf.setFont('helvetica', 'bold');
 			pdf.text('Suranga Cell-Care(pvt).Ltd.', 20, logoY + logoHeight + 10);
-			const title = 'Technician Work Report';
+			const title = 'In Progress Report';
 			pdf.setFontSize(16);
 			pdf.setFont('helvetica', 'bold');
 			const titleWidth = pdf.getTextWidth(title);
@@ -171,14 +170,14 @@ const Index: NextPage = () => {
 				startY: 100,
 				margin: { left: 20, right: 20 },
 				styles: {
-					fontSize: 10,
+					fontSize: 8,
 					overflow: 'linebreak',
 					cellPadding: 4,
 				},
 				headStyles: {
 					fillColor: [80, 101, 166],
 					textColor: [255, 255, 255],
-					fontSize: 12,
+					fontSize: 9,
 				},
 				columnStyles: {
 					0: { cellWidth: 'auto' },
@@ -189,7 +188,7 @@ const Index: NextPage = () => {
 				tableWidth: 'wrap',
 				theme: 'grid',
 			});
-			pdf.save('Technician Work Report.pdf');
+			pdf.save('In Progress Report.pdf');
 		} catch (error) {
 			console.error('Error generating PDF: ', error);
 			alert('Error generating PDF. Please try again.');
@@ -260,12 +259,13 @@ const Index: NextPage = () => {
 			table.style.border = originalBorderStyle;
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'Technician Work Report.png';
+			link.download = 'In Progress.png';
 			link.click();
 		} catch (error) {
 			console.error('Error generating PNG: ', error);
 		}
 	};
+
 	const downloadTableAsSVG = async () => {
 		try {
 			const table = document.querySelector('table');
@@ -285,7 +285,7 @@ const Index: NextPage = () => {
 			restoreLastCells(table);
 			const link = document.createElement('a');
 			link.href = dataUrl;
-			link.download = 'Technician Work Report.svg';
+			link.download = 'In Progress.svg';
 			link.click();
 		} catch (error) {
 			console.error('Error generating SVG: ', error);
@@ -293,12 +293,6 @@ const Index: NextPage = () => {
 			if (table) restoreLastCells(table);
 		}
 	};
-
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.focus();
-		}
-	}, [bills]);
 
 	return (
 		<PageWrapper>
@@ -333,30 +327,6 @@ const Index: NextPage = () => {
 						<DropdownMenu isAlignmentEnd size='lg'>
 							<div className='container py-2'>
 								<div className='row g-3'>
-									<FormGroup label='Status type' className='col-12'>
-										<ChecksGroup>
-											{Status.map((bill, index) => (
-												<Checks
-													key={bill.Status}
-													id={bill.Status}
-													label={bill.Status}
-													name={bill.Status}
-													value={bill.Status}
-													checked={selectedUsers.includes(bill.Status)}
-													onChange={(event: any) => {
-														const { checked, value } = event.target;
-														setSelectedUsers((prevUsers) =>
-															checked
-																? [...prevUsers, value]
-																: prevUsers.filter(
-																		(bill) => bill !== value,
-																  ),
-														);
-													}}
-												/>
-											))}
-										</ChecksGroup>
-									</FormGroup>
 									<FormGroup label='Start Date' className='col-6'>
 										<Input
 											type='date'
@@ -383,7 +353,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
-									Repaired Phones
+                                In Progress
 								</div>
 								<Dropdown>
 									<DropdownToggle hasIcon={false}>
@@ -413,9 +383,14 @@ const Index: NextPage = () => {
 										<tr>
 											<th>Date</th>
 											<th>Technician</th>
+											<th>Bill Number</th>
 											<th>Phone Model</th>
 											<th>Repair Type</th>
-											<th>Status</th>
+											<th>Component Cost</th>
+											<th>Repair Cost</th>
+											<th>Cost</th>
+											<th>Price</th>
+											<th>Profit</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -435,16 +410,21 @@ const Index: NextPage = () => {
 												currentPage,
 												perPage,
 											)
-												.filter((bill: any) =>
-													searchTerm
-														? bill.repairType
+												.filter((bill: any) => {
+													const technicianName = getTechnicianName(
+														bill.technicianNum,
+													).toLowerCase();
+													return searchTerm
+														? bill.billNumber
 																.toLowerCase()
-																.includes(searchTerm.toLowerCase()) ||
-															getTechnicianName(bill.technicianNum)
-																.toLowerCase()
-																.includes(searchTerm.toLowerCase())
-														: true, 
-												)
+																.includes(
+																	searchTerm.toLowerCase(),
+																) ||
+																technicianName.includes(
+																	searchTerm.toLowerCase(),
+																)
+														: true;
+												})
 												.filter((bill: any) =>
 													selectedUsers.length > 0
 														? selectedUsers.includes(bill.Status)
@@ -456,9 +436,14 @@ const Index: NextPage = () => {
 														<td>
 															{getTechnicianName(bill.technicianNum)}
 														</td>
+														<td>{bill.billNumber}</td>
 														<td>{bill.phoneModel}</td>
 														<td>{bill.repairType}</td>
-														<td>{bill.Status}</td>
+														<td>{bill.componentCost}</td>
+														<td>{bill.repairCost}</td>
+														<td>{bill.cost}</td>
+														<td>{bill.Price}</td>
+														<td>{bill.Price - bill.cost}</td>
 													</tr>
 												))}
 									</tbody>

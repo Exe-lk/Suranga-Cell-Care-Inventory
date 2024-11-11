@@ -64,6 +64,7 @@ const Index: NextPage = () => {
 		{ role: 'accessosry stock keeper' },
 		{ role: 'display stock keeper' },
 		{ role: 'cashier' },
+		{ role: 'Repair Sales' },
 		{ role: 'admin' },
 		{ role: 'Viewer' },
 	];

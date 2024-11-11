@@ -88,6 +88,8 @@ const Index: NextPage = () => {
 					CustomerMobileNum: bill.CustomerMobileNum,
 					email: bill.email,
 					NIC: bill.NIC,
+					componentCost: bill.componentCost,
+					repairCost: bill.repairCost,
 					cost: bill.cost,
 					Price: bill.Price,
 					Status: bill.Status,
@@ -344,15 +346,15 @@ const Index: NextPage = () => {
 
 	const getStatusColorClass = (status: string) => {
 		switch (status) {
-			case 'waiting to in progress':
+			case 'Waiting':
 				return 'bg-success';
-			case 'in progress':
+			case 'Ready to Repair':
 				return 'bg-info';
-			case 'completed':
+			case 'In Progress':
 				return 'bg-warning';
-			case 'reject':
+			case 'Reject':
 				return 'bg-danger';
-			case 'in progress to complete':
+			case 'Repair Completed':
 				return 'bg-lo50-primary';
 			case 'HandOver':
 				return 'bg-lo50-info';
@@ -477,31 +479,31 @@ const Index: NextPage = () => {
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-black'></span>
 									</div>
-									<div className='mx-2'>waiting to in progress</div>{' '}
+									<div className='mx-2'>Waiting</div>{' '}
 									<div
 										className='rounded-circle bg-info d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-black'></span>
 									</div>
-									<div className='mx-2'>in progress</div>{' '}
+									<div className='mx-2'>Ready to Repair</div>{' '}
 									<div
 										className='rounded-circle bg-warning d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-black'></span>
 									</div>
-									<div className='mx-2'>completed</div>{' '}
+									<div className='mx-2'>In Progress</div>{' '}
 									<div
 										className='rounded-circle bg-danger d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-black'></span>
 									</div>
-									<div className='mx-2'>reject</div>{' '}
+									<div className='mx-2'>Reject</div>{' '}
 									<div
 										className='rounded-circle bg-lo50-primary d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>
 										<span className='text-black'></span>
 									</div>
-									<div className='mx-2'>in progress to complete</div>{' '}
+									<div className='mx-2'>Repair Completed</div>{' '}
 									<div
 										className='rounded-circle bg-lo50-info d-flex mx-2 '
 										style={{ width: '15px', height: '15px', padding: '2px' }}>

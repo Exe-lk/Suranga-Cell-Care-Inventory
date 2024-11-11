@@ -6,6 +6,7 @@ import {
 	pageLayoutTypesPagesMenu,
 } from '../menu';
 import AdminHeader from '../pages/_layout/_headers/AdminHeader';
+import path from 'path';
 
 
 const headers = [
@@ -33,6 +34,10 @@ const headers = [
 	},
 	{
 		path: `/viewer/*`,
+		element: <AdminHeader />,
+	},
+	{
+		path: `/repairSales/*`,
 		element: <AdminHeader />,
 	},
 
