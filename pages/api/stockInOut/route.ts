@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { brand, model, category, quantity, date, suppName, cost, stock, code, barcode } = req.body;
+        const { brand, model, category, quantity, date, suppName, cost, stock, code, barcode,boxNumber,description} = req.body;
         if (!brand) {
           res.status(400).json({ error: 'stock In name is required' });
           return;

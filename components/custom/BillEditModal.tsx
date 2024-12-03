@@ -44,7 +44,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			technicianNum: billToEdit?.technicianNum || '',
 			CustomerName: billToEdit?.CustomerName || '',
 			CustomerMobileNum: billToEdit?.CustomerMobileNum || '',
-			email: billToEdit?.email || '',
 			NIC: billToEdit?.NIC || '',
 			componentCost: billToEdit?.componentCost || '',
 			repairCost: billToEdit?.repairCost || '',
@@ -64,7 +63,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				technicianNum?: string;
 				CustomerName?: string;
 				CustomerMobileNum?: string;
-				email?: string;
 				NIC?: string;
 				componentCost?: string;
 				repairCost?: string;
@@ -98,13 +96,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				errors.CustomerMobileNum = 'Customer Mobile Num is required';
 			} else if (values.CustomerMobileNum.length !== 10) {
 				errors.CustomerMobileNum = 'Mobile number must be exactly 10 digits';
-			}
-			if (!values.email) {
-				errors.email = 'Required';
-			} else if (!values.email.includes('@')) {
-				errors.email = 'Invalid email format.';
-			} else if (values.email.includes(' ')) {
-				errors.email = 'Email should not contain spaces.';
 			}
 			if (!values.NIC) {
 				errors.NIC = 'Required';
@@ -152,7 +143,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						technicianNum: values.technicianNum,
 						CustomerName: values.CustomerName,
 						CustomerMobileNum: values.CustomerMobileNum,
-						email: values.email,
 						NIC: values.NIC,
 						componentCost: values.componentCost,
 						repairCost: values.repairCost,
@@ -322,18 +312,6 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isValid={formik.isValid}
 							isTouched={!!formik.touched.CustomerMobileNum}
 							invalidFeedback={formik.errors.CustomerMobileNum}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='email' label='Email' className='col-md-6'>
-						<Input
-							name='email'
-							onChange={formik.handleChange}
-							value={formik.values.email}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={!!formik.touched.email}
-							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -44,6 +44,7 @@ interface StockOut {
 	category: string;
 	quantity: string;
 	date: string;
+	description: string;
 	dealerName: string;
 	dealerTelNum: string;
 	dealerPrecentage: string;
@@ -68,6 +69,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		category: '',
 		quantity: '',
 		date: '',
+		description: '',
 		dealerName: '',
 		dealerTelNum: '',
 		dealerPrecentage: '',
@@ -116,6 +118,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			category: stockOut.category,
 			quantity: '',
 			date: '',
+			description: '',
 			dealerName: '',
 			dealerTelNum: '',
 			dealerPrecentage: '',
@@ -244,17 +247,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={!!formik.errors.quantity && formik.touched.quantity}
 						/>
 					</FormGroup>
-					<FormGroup id='date' label='Date Out' className='col-md-6'>
-						<Input
-							type='date'
-							placeholder='Enter Date'
-							value={formik.values.date}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							name='date'
-							isValid={!!formik.errors.date && formik.touched.date}
-						/>
-					</FormGroup>
 					<FormGroup id="dateIn" label="Date In" className="col-md-6">
 						<Select
 							id="dateIn"
@@ -281,11 +273,33 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							)}
 						</Select>
 					</FormGroup>
+					<FormGroup id='date' label='Date Out' className='col-md-6'>
+						<Input
+							type='date'
+							placeholder='Enter Date'
+							value={formik.values.date}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							name='date'
+							isValid={!!formik.errors.date && formik.touched.date}
+						/>
+					</FormGroup>
 					{selectedCost && (
 						<FormGroup id="cost" label="Cost(lkr)" className="col-md-6">
 							<Input type="text" value={selectedCost} readOnly />
 						</FormGroup>
 					)}
+					<FormGroup id='description' label='Description' className='col-md-6'>
+						<Input
+							type='text'
+							placeholder='Enter Description'
+							value={formik.values.description}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							name='description'
+							isValid={!!formik.errors.description && formik.touched.description}
+						/>
+					</FormGroup>
 					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
 						<Input
 							type='text'
