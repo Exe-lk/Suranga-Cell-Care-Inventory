@@ -76,7 +76,6 @@ const ModelDeleteModal: FC<ModelDeleteModalProps> = ({
 					name: model.name,
 					category: model.category,
 					brand: model.brand,
-					description: model.description,
 					status: true,
 				};
 				await updateModel(values);

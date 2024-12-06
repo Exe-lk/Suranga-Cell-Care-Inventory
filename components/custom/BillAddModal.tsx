@@ -43,7 +43,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			technicianNum: '',
 			CustomerName: '',
 			CustomerMobileNum: '',
-			email: '',
 			NIC: '',
 			componentCost: '',
 			repairCost: '',
@@ -63,7 +62,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				technicianNum?: string;
 				CustomerName?: string;
 				CustomerMobileNum?: string;
-				email?: string;
 				NIC?: string;
 				componentCost?: string;
 				repairCost?: string;
@@ -86,15 +84,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 				errors.NIC = 'Required';
 			} else if (!/^\d{9}[Vv]$/.test(values.NIC) && !/^\d{12}$/.test(values.NIC)) {
 				errors.NIC = 'NIC must be 9 digits followed by "V" or 12 digits';
-			}
-			if (!values.email) {
-				errors.email = 'Required';
-			} else if (!values.email.includes('@')) {
-				errors.email = 'Invalid email format.';
-			} else if (values.email.includes(' ')) {
-				errors.email = 'Email should not contain spaces.';
-			} else if (/[A-Z]/.test(values.email)) {
-				errors.email = 'Email should be in lowercase only.';
 			}
 			if (!values.componentCost) errors.componentCost = 'Component Cost is required.';
 			else if (parseFloat(values.componentCost) <= 0)
@@ -301,17 +290,6 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 							isValid={formik.isValid}
 							isTouched={formik.touched.CustomerMobileNum}
 							invalidFeedback={formik.errors.CustomerMobileNum}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='email' label='Customer Email' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.email}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.email}
-							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

@@ -34,7 +34,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			name: '',
 			category: '',
 			brand: '',
-			description: '',
 			status: true,
 		},
 		validate: (values) => {
@@ -42,7 +41,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				name?: string;
 				category?: string;
 				brand?: string;
-				description?: string;
 			} = {};
 			if (!values.category) {
 				errors.category = 'Required';
@@ -184,17 +182,6 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 						) : (
 							<></>
 						)}
-					</FormGroup>
-					<FormGroup id='description' label='Description' className='col-md-6'>
-						<Input
-							onChange={formik.handleChange}
-							value={formik.values.description}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.description}
-							invalidFeedback={formik.errors.description}
-							validFeedback='Looks good!'
-						/>
 					</FormGroup>
 				</div>
 			</ModalBody>

@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, email, NIC,componentCost,repairCost, cost, Price, Status, DateOut } = req.body;
+        const { billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, NIC,componentCost,repairCost, cost, Price, Status, DateOut } = req.body;
         if (!phoneDetail) {
           res.status(400).json({ error: 'Phone Detail is required' });
           return;
         }
-        const id = await createBill(billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, email, NIC, componentCost,repairCost,cost, Price, Status, DateOut);
+        const id = await createBill(billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, NIC, componentCost,repairCost,cost, Price, Status, DateOut);
         res.status(201).json({ message: 'Bill created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, email, NIC, componentCost,repairCost,cost, Price, Status, DateOut, status} = req.body;
+        const { id, billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, NIC, componentCost,repairCost,cost, Price, Status, DateOut, status} = req.body;
         if (!id || !phoneDetail) {
           res.status(400).json({ error: 'Bill ID and phone detail are required' });
           return;
         }
-        await updateBill(id, billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, email, NIC,componentCost,repairCost, cost, Price, Status, DateOut, status);
+        await updateBill(id, billNumber,dateIn,phoneDetail, phoneModel, repairType, technicianNum, CustomerName, CustomerMobileNum, NIC,componentCost,repairCost, cost, Price, Status, DateOut, status);
         res.status(200).json({ message: 'Bill updated' });
         break;
       }

@@ -1,10 +1,10 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where, Timestamp } from 'firebase/firestore';
 
-export const createModel = async (name: string, description: string, brand: string, category: string) => {
+export const createModel = async (name: string,brand: string, category: string) => {
   const status = true;
   const timestamp = Timestamp.now();
-  const docRef = await addDoc(collection(firestore, 'ModelDisplay'), { name, description, brand, category, status, timestamp: timestamp });
+  const docRef = await addDoc(collection(firestore, 'ModelDisplay'), { name, brand, category, status, timestamp: timestamp });
   return docRef.id;
 };
 
@@ -30,9 +30,9 @@ export const getModelById = async (id: string) => {
   }
 };
 
-export const updateModel = async (id: string, name: string, description: string, brand: string, category: string, status: boolean) => {
+export const updateModel = async (id: string, name: string, brand: string, category: string, status: boolean) => {
   const ModelRef = doc(firestore, 'ModelDisplay', id);
-  await updateDoc(ModelRef, { name, description, brand, category, status });
+  await updateDoc(ModelRef, { name, brand, category, status });
 };
 
 export const deleteModel = async (id: string) => {

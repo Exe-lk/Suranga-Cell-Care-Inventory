@@ -5,6 +5,7 @@ import Page from '../../../layout/Page/Page';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
+	SubheaderSeparator,
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
@@ -25,6 +26,8 @@ import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
+import FormGroup from '../../../components/bootstrap/forms/FormGroup';
+import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 
 const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState(''); 
@@ -37,6 +40,15 @@ const Index: NextPage = () => {
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const brand = [
+		{ brand: 'Samsung' },
+		{ brand: 'Iphone' },
+		{ brand: 'Oppo' },
+		{ brand: 'Huawei' },
+		{ brand: 'Vivo' },
+		{ brand: 'Redmi' }
+		];
+	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
 	useEffect(() => {
 		if (inputRef.current) {
@@ -332,6 +344,46 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
+					<Dropdown>
+						<DropdownToggle hasIcon={false}>
+							<Button
+								icon='FilterAlt'
+								color='dark'
+								isLight
+								className='btn-only-icon position-relative'></Button>
+						</DropdownToggle>
+						<DropdownMenu isAlignmentEnd size='lg'>
+							<div className='container py-2'>
+								<div className='row g-3'>
+									<FormGroup label='Brand type' className='col-12'>
+										<ChecksGroup>
+											{brand.map((model, index) => (
+												<Checks
+													key={model.brand}
+													id={model.brand}
+													label={model.brand}
+													name={model.brand}
+													value={model.brand}
+													checked={selectedUsers.includes(model.brand)}
+													onChange={(event: any) => {
+														const { checked, value } = event.target;
+														setSelectedUsers((prevUsers) =>
+															checked
+																? [...prevUsers, value]
+																: prevUsers.filter(
+																		(model) => model !== value,
+																  ),
+														);
+													}}
+												/>
+											))}
+										</ChecksGroup>
+									</FormGroup>
+								</div>
+							</div>
+						</DropdownMenu>
+					</Dropdown>
+					<SubheaderSeparator />
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -397,6 +449,11 @@ const downloadTableAsSVG = async () => {
 													searchTerm 
 													? model.name.toLowerCase().includes(searchTerm.toLowerCase())
 													: true,
+												)
+												.filter((model: any) =>
+													selectedUsers.length > 0
+														? selectedUsers.includes(model.brand)
+														: true,
 												)
 												.map((model:any, index: any) => (
 													<tr key={index}>

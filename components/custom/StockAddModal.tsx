@@ -32,6 +32,8 @@ interface StockIn {
 	code: string;
 	cost: string;
 	stock: string;
+	boxNumber: string;
+	description: string;
 	status: boolean;
 }
 
@@ -47,6 +49,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		cost: '',
 		code: '',
 		stock: 'stockIn',
+		boxNumber: '',
+		description: '',
 		status: true,
 		barcode: 0,
 	});
@@ -103,6 +107,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			suppName: '',
 			cost: '',
 			code: generatedCode,
+			boxNumber: '',
+			description:'',
 			stock: 'stockIn',
 			status: true,
 			barcode: generatedbarcode,
@@ -114,6 +120,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				date?: string;
 				suppName?: string;
 				cost?: string;
+				boxNumber?: string;
 			} = {};
 			if (!values.quantity) {
 				errors.quantity = 'Quantity is required';
@@ -126,6 +133,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.cost) {
 				errors.cost = 'Cost is required';
+			}
+			if (!values.boxNumber) {
+				errors.boxNumber = 'Box Number is required';
 			}
 			return errors;
 		},
@@ -282,6 +292,30 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							isTouched={formik.touched.cost}
 							invalidFeedback={formik.errors.cost}
 							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='boxNumber' label='Box Number' className='col-md-6'>
+						<Input
+							type='text'
+							placeholder='Enter Box Number'
+							value={formik.values.boxNumber}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.boxNumber}
+							invalidFeedback={formik.errors.boxNumber}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='description' label='Description' className='col-md-6'>
+						<Input
+							type='text'
+							placeholder='Enter Description'
+							value={formik.values.description}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.description}
 						/>
 					</FormGroup>
 				</div>
