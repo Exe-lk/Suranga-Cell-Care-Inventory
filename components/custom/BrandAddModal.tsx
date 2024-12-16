@@ -138,7 +138,7 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit} isDisable={isLoading}>
-					{isLoading ? 'Saving...' : 'Add Brand'}
+					{isLoading ? 'Saving...' : 'Create Brand'}
 				</Button>
 			</ModalFooter>
 		</Modal>

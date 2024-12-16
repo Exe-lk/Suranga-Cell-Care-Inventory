@@ -301,7 +301,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='p-4'>
 				<Button color='success' onClick={() => formik.handleSubmit()}>
-					Add Item
+				Create Item
 				</Button>
 			</ModalFooter>
 		</Modal>
