@@ -197,7 +197,7 @@ const UserAddModal: FC<UserAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit}>
-					Add User
+					Create User
 				</Button>
 			</ModalFooter>
 		</Modal>
