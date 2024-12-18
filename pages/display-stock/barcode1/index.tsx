@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
+import useDarkMode from '../../../hooks/useDarkMode';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import SubHeader, { SubHeaderLeft } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
@@ -14,9 +15,13 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutDissApiSlice';
+import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
-import { MultiSelect } from 'primereact/multiselect';
+import ReactDOM from 'react-dom';
+
+
 const Index: NextPage = () => {
+	const animatedComponents = makeAnimated();
 	const { data: StockInOuts, error, isLoading, refetch } = useGetStockInOutsQuery(undefined);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [startDate, setStartDate] = useState<string>('');
@@ -28,26 +33,14 @@ const Index: NextPage = () => {
 	const [selectedDevice, setSelectedDevice] = useState<any>(null);
 	const [devices, setDevices] = useState<any>([]);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const [selectedBarcodes, setSelectedBarcodes] = useState<{ [key: string]: any[] }>({});
+	const [selectedBarcodes, setSelectedBarcodes] = useState<any[]>([]);
 
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
 	}, [StockInOuts]);
-	useEffect(() => {
-		if (StockInOuts) {
-			// Initialize state based on subStock array where 'print' is false
-			const initialSelections: { [key: string]: any[] } = {};
-			StockInOuts.forEach((brand: any) => {
-				const autoSelected = brand.subStock
-					.filter((item: any) => item.print === false) // Filter for print: false
-					.map((item: any) => item.barcode); // Extract barcode values
-				initialSelections[brand.id] = autoSelected;
-			});
-			setSelectedBarcodes(initialSelections);
-		}
-	}, [StockInOuts]);
+
 	const filteredTransactions = StockInOuts?.filter((trans: any) => {
 		const transactionDate = new Date(trans.date);
 		const start = startDate ? new Date(startDate) : null;
@@ -104,101 +97,255 @@ const Index: NextPage = () => {
 		if (isBrowserPrintLoaded) setup(); // Ensure BrowserPrint is loaded
 	}, [isBrowserPrintLoaded]);
 
-	function onSelectMachineModel(e: any, brandId: string) {
-		setSelectedBarcodes((prevState) => ({
-			...prevState,
-			[brandId]: e.value, // Update selected barcodes for this specific row
-		}));
-		console.log(`Selected Barcodes for Row ${brandId}: `, e.value);
-	}
+	const printLabels1 = (
+		price: string,
+		itemCode: string,
+		barCodeNo: string,
+		itemName: string,
+		labelQuantity: number,
+		printLabels: number,
+		subStock:any[]
+	) => {
+		// if (!selectedDevice) {
+		// 	// alert('Please select a printer device.');
+		// 	Swal.fire('Error', 'Please select a printer device', 'error');
+		// 	return;
+		// }
+		console.log(subStock)
+		Swal.fire({
+			title: 'Bar Code Print!',
+			html: `
+			  <div>
+			<label>Enter Quantity:</label>
+				<input type="number" id="quantityInput" class="swal2-input" placeholder="Quantity" value=${
+					labelQuantity - printLabels
+				}>
+			  </div>
+			`,
+			showCancelButton: true,
+			confirmButtonText: 'Print',
+			preConfirm: () => {
+				const quantity = (document.getElementById('quantityInput') as HTMLInputElement)
+					.value;
+				if (!quantity) {
+					Swal.showValidationMessage('Please enter the quantity');
+				} else if (Number(quantity) > labelQuantity - printLabels) {
+					Swal.showValidationMessage('Please enter the proper value');
+				} else {
+					return quantity;
+				}
+			},
+		}).then((result) => {
+			if (result.isConfirmed) {
+				labelQuantity = result.value;
+
+				// Calculating label rows and the remaining labels for the last row
+				let labelRawsQuantity = Math.floor(labelQuantity / 3);
+				let lastRawLabelQuantity = labelQuantity % 3;
+
+				let zplString = `
+		CT~~CD,~CC^~CT~
+		~JA
+		^XA
+		~TA000
+		~JSN
+		^LT-16
+		^MNW
+		^MTT
+		^PON
+		^PMN
+		^LH0,0
+		^JMA
+		^PR6,6
+		~SD15
+		^JUS
+		^LRN
+		^CI27
+		^PA0,1,1,0
+		^XZ
+		`;
+
+				// Loop through full rows of 3 labels each
+				for (let i = 0; i < labelRawsQuantity; i++) {
+					zplString += `
+			^XA
+			^MMT
+			^PW815
+			^LL200
+			^LS2
+			^FT83,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT43,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT43,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT43,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+	
+			^FT347,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT307,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT307,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT307,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+	
+			^FT610,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT570,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT570,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT570,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+			^PQ1,0,1,Y
+			^XZ
+			`;
+				}
+
+				// Handle the remaining labels for the last row
+				if (lastRawLabelQuantity > 0) {
+					zplString += `^XA ^MMT ^PW815 ^LL200 ^LS2`;
+
+					// First label in the last row
+					zplString += `
+			^FT83,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+			^BY2,3,52^FT43,145^BCN,,N,N
+			^FH\^FD>;${barCodeNo}^FS
+			^FT43,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+			^FT43,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+			`;
+
+					// Second label in the last row, if available
+					if (lastRawLabelQuantity > 1) {
+						zplString += `
+				^FT347,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+				^BY2,3,52^FT307,145^BCN,,N,N
+				^FH\^FD>;${barCodeNo}^FS
+				^FT307,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+				^FT307,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+				`;
+					}
+
+					// Third label in the last row, if available
+					if (lastRawLabelQuantity > 2) {
+						zplString += `
+				^FT610,86^A0N,28,33^FH\^CI28^FDRs ${price}^FS^CI27
+				^BY2,3,52^FT570,145^BCN,,N,N
+				^FH\^FD>;${barCodeNo}^FS
+				^FT570,58^A0N,20,20^FH\^CI28^FD${itemName}^FS^CI27
+				^FT570,170^A0N,20,20^FH\^CI28^FDItem Code : ${itemCode}^FS^CI27
+				`;
+					}
+
+					zplString += `^PQ1,0,1,Y ^XZ`;
+				}
+
+				// Send ZPL string to the selected device
+				selectedDevice.send(zplString, undefined, errorCallback);
+			}
+		});
+	};
+
 
 	const printLabels = (
 		price: string,
 		itemCode: string,
+		barCodeNo: string,
 		itemName: string,
-		selectedBarcodes:any[],
-		id:string
+		labelQuantity: number,
+		printLabels: number,
+		subStock: any[]
+	  ) => {
 		
-	) => {
+	  
 		Swal.fire({
-			title: 'Bar Code Print!',
-			
-			showCancelButton: true,
-			confirmButtonText: 'Print',
-			
-		}).then((result) => {
-			if (result.isConfirmed) {
-				// Number of barcodes to print
-				const labelQuantity = selectedBarcodes.length;
-			
-				// Calculating rows and remaining labels
-				let labelRawsQuantity = Math.floor(labelQuantity / 3);
-				let lastRawLabelQuantity = labelQuantity % 3;
-			
-				let zplString = `
-					CT~~CD,~CC^~CT~
-					~JA
-					^XA
-					~TA000
-					~JSN
-					^LT-16
-					^MNW
-					^MTT
-					^PON
-					^PMN
-					^LH0,0
-					^JMA
-					^PR6,6
-					~SD15
-					^JUS
-					^LRN
-					^CI27
-					^PA0,1,1,0
-					^XZ
-				`;
-			
-				// Loop through full rows of 3 labels
-				let currentIndex = 0;
-				for (let i = 0; i < labelRawsQuantity; i++) {
-					zplString += `^XA ^MMT ^PW815 ^LL200 ^LS2`;
-			
-					for (let j = 0; j < 3; j++) {
-						const currentBarcode = selectedBarcodes[currentIndex++];
-						zplString += `
-							^FT${83 + j * 264},86^A0N,28,33^FH\\^CI28^FDRs ${price}^FS^CI27
-							^BY2,3,52^FT${43 + j * 264},145^BCN,,N,N
-							^FH\\^FD>;${currentBarcode}^FS
-							^FT${43 + j * 264},58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
-							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FDItem Code : ${itemCode}^FS^CI27
-						`;
-					}
-					zplString += `^PQ1,0,1,Y ^XZ`;
-				}
-			
-				// Handle the remaining labels for the last row
-				if (lastRawLabelQuantity > 0) {
-					zplString += `^XA ^MMT ^PW815 ^LL200 ^LS2`;
-			
-					for (let j = 0; j < lastRawLabelQuantity; j++) {
-						const currentBarcode = selectedBarcodes[currentIndex++];
-						zplString += `
-							^FT${83 + j * 264},86^A0N,28,33^FH\\^CI28^FDRs ${price}^FS^CI27
-							^BY2,3,52^FT${43 + j * 264},145^BCN,,N,N
-							^FH\\^FD>;${currentBarcode}^FS
-							^FT${43 + j * 264},58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
-							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FDItem Code : ${itemCode}^FS^CI27
-						`;
-					}
-			
-					zplString += `^PQ1,0,1,Y ^XZ`;
-				}
-			
-				// Send ZPL string to the selected device
-				selectedDevice.send(zplString, undefined, errorCallback);
+		  title: 'Bar Code Print!',
+		  html: `
+			<div>
+			  <label style="display: block; margin-bottom: 5px;">Select Barcodes:</label>
+			  <div id="select-container"></div>
+			  
+			</div>
+		  `,
+		  didOpen: () => {
+			const container = document.getElementById('select-container');
+			if (container) {
+			  const dropdown = (
+				<Select
+				  closeMenuOnSelect={false}
+				  components={animatedComponents}
+				  isMulti
+				  theme={(theme) => ({
+					...theme,
+					borderRadius: 4,
+					colors: {
+					  ...theme.colors,
+					  primary25: '#4D69FA', // Hovered option background color
+					  primary: '#ffffff', // Selected option text color
+					  neutral0: '#212529', // Background color for the dropdown
+					  neutral30: '#ddd', // Placeholder text color
+					},
+				  })}
+				  onChange={(selected:any) => setSelectedBarcodes(selected)}
+				  options={
+					subStock.length > 0
+					  ? subStock.map((item, index) => ({
+						  value: item.barcode,
+						  label: `${item.barcode}`,
+						}))
+					  : [{ value: '', label: 'No Data Available' }]
+				  }
+				/>
+			  );
+			  ReactDOM.render(dropdown, container);
 			}
-			
+		  },
+		  showCancelButton: true,
+		  confirmButtonText: 'Print',
+		  preConfirm: () => {
+			const quantity = (document.getElementById('quantityInput') as HTMLInputElement).value;
+	  
+			if (!quantity) {
+			  Swal.showValidationMessage('Please enter the quantity');
+			  return false;
+			} else if (Number(quantity) > labelQuantity - printLabels) {
+			  Swal.showValidationMessage('Please enter the proper value');
+			  return false;
+			} else if (selectedBarcodes.length === 0) {
+			  Swal.showValidationMessage('Please select at least one barcode');
+			  return false;
+			}
+	  
+			return { quantity, selectedBarcodes };
+		  },
+		}).then((result) => {
+		  if (result.isConfirmed) {
+			const { quantity, selectedBarcodes } = result.value;
+	  
+			console.log('Selected Barcodes:', selectedBarcodes.map((b: any) => b.value));
+			console.log('Entered Quantity:', quantity);
+	  
+			// Use `selectedBarcodes` here to print the labels
+			let zplString = `^XA\n`;
+			selectedBarcodes.forEach((barcode: any) => {
+			  zplString += `
+				^FT83,86^A0N,28,33^FH\\^CI28^FDRs ${price}^FS^CI27
+				^BY2,3,52^FT43,145^BCN,,N,N
+				^FH\\^FD>;${barcode.value}^FS
+				^FT43,58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
+				^FT43,170^A0N,20,20^FH\\^CI28^FDItem Code : ${itemCode}^FS^CI27
+			  `;
+			});
+			zplString += `^XZ`;
+	  
+			console.log('Generated ZPL:', zplString);
+			selectedDevice.send(zplString, undefined, errorCallback);
+			// Replace `selectedDevice.send` with the actual call to send ZPL to the printer
+			// selectedDevice.send(zplString, undefined, errorCallback);
+		  }
 		});
-	};
+	  };
+
+
+
+
+
+
+
+	// Error callback
 	var errorCallback = function (errorMessage: any) {
 		// alert('Error: ' + errorMessage);
 	};
@@ -239,9 +386,8 @@ const Index: NextPage = () => {
 											<th>Date</th>
 											<th>Item Code</th>
 											<th>Item Name</th>
-											<th>Stock Quantity</th>
-											<th>Printed Lables</th>
-											<th></th>
+											<th>Quantity</th>
+											<th>Print Lable</th>
 
 											<th>
 												Select Printer
@@ -316,48 +462,16 @@ const Index: NextPage = () => {
 														</td>
 
 														<td>{brand.quantity}</td>
-														<td>
-															{brand.subStock
-																? brand.subStock.filter(
-																		(item: any) =>
-																			item.print === true,
-																  ).length
-																: 0}
-														</td>
-														<td>
-															<MultiSelect
-																value={
-																	selectedBarcodes[brand.id] || []
-																} // Use state value specific to this row or empty array
-																onChange={(e) =>
-																	onSelectMachineModel(
-																		e,
-																		brand.id,
-																	)
-																} // Pass brand.id to update specific row
-																options={
-																	brand.subStock
-																		? brand.subStock.map(
-																				(item: any) => ({
-																					value: item.barcode,
-																					text: item.barcode,
-																				}),
-																		  )
-																		: [
-																				{
-																					value: '',
-																					text: 'No Data',
-																				},
-																		  ]
-																}
-																optionLabel='text'
-																filter
-																placeholder='-- Select item  --'
-																maxSelectedLabels={2}
-																className='col-12'
-															/>
-														</td>
+														<td>{brand.printlable}</td>
 
+														{/* <td>
+															<Barcode
+																value={brand.barcode}
+																width={1}
+																height={30}
+																fontSize={16}
+															/>
+														</td> */}
 														<td>
 															<Button
 																icon='Print'
@@ -366,9 +480,14 @@ const Index: NextPage = () => {
 																	printLabels(
 																		'--',
 																		brand.code,
-																		brand.brand +' ' +brand.model,
-																		selectedBarcodes[brand.id] || [],
-																		brand.id,
+																		brand.barcode,
+																		brand.brand +
+																			' ' +
+																			brand.model,
+																		brand.quantity,
+																		brand.printlable,
+																		brand.subStock
+
 																	)
 																}>
 																Print

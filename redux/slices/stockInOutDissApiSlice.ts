@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const stockInOutApiSlice = createApi({
   reducerPath: 'stockInOutApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
+  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:3000/api/' }),
   tagTypes: ['StockInOut'],
   endpoints: (builder) => ({
     getStockInOuts: builder.query({
@@ -47,6 +47,18 @@ export const stockInOutApiSlice = createApi({
         method: 'DELETE',
       }),
     }),
+    getSubStockInOuts: builder.query({
+      query: () => 'stockInOut/route1',
+      providesTags: ['StockInOut'],
+    }),
+    updateSubStockInOut: builder.mutation({
+      query: (updatedStockInOut) => ({
+        url: `stockInOut/route1`,
+        method: 'PUT',
+        body: updatedStockInOut,
+      }),
+      invalidatesTags: ['StockInOut'],
+    }),
   }),
 });
 
@@ -58,4 +70,6 @@ export const {
   useAddStockOutMutation,
   useUpdateStockInOutMutation,
   useDeleteStockInOutMutation,
+  useGetSubStockInOutsQuery,
+  useUpdateSubStockInOutMutation,
 } = stockInOutApiSlice;

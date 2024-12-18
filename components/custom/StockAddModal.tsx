@@ -35,6 +35,7 @@ interface StockIn {
 	boxNumber: string;
 	description: string;
 	status: boolean;
+	printlable:number;
 }
 
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
@@ -53,6 +54,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		description: '',
 		status: true,
 		barcode: 0,
+		printlable:0
 	});
 	const { data: stockInData, isSuccess } = useGetItemDisByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
@@ -79,12 +81,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					const currentNumericPart = parseInt(currentCode.replace(/\D/g, ''), 10);
 					const maxNumericPart = parseInt(maxCode.replace(/\D/g, ''), 10);
 					return currentNumericPart > maxNumericPart ? currentCode : maxCode;
-				}, '500000');
+				}, '5000');
 			const newCode = incrementCode(lastCode);
 			setGeneratedCode(newCode);
 		} else {
-			setGeneratedCode('500000');
-			setGeneratedBarcode('5000500000');
+			setGeneratedCode('5000');
+			setGeneratedBarcode('50005000');
 		}
 	}, [isSuccess, stockInData, stockInOuts]);
 
@@ -112,6 +114,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			stock: 'stockIn',
 			status: true,
 			barcode: generatedbarcode,
+			printlable:0
+
 		},
 		enableReinitialize: true,
 		validate: (values) => {

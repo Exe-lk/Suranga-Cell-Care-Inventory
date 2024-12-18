@@ -50,7 +50,7 @@ const Index: NextPage = () => {
 	const [updateItemDis] = useUpdateItemDisMutation();
 	const [quantity, setQuantity] = useState<any>();
 	const inputRef = useRef<HTMLInputElement>(null);
-
+	const [formStatus, setFormStatus] = useState<boolean>(false);
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
@@ -364,6 +364,10 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
+					{
+              editModalStatus?(
+                <StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} quantity={quantity} />
+              ):(
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-primary'>
@@ -487,6 +491,8 @@ const Index: NextPage = () => {
 								setPerPage={setPerPage}
 							/>
 						</Card>
+						 )
+						}
 					</div>
 				</div>
 			</Page>
