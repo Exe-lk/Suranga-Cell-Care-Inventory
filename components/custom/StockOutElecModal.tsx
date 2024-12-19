@@ -54,9 +54,6 @@ interface StockOut {
 	quantity: string;
 	date: string;
 	description: string;
-	dealerName: string;
-	dealerTelNum: string;
-	dealerPrecentage: string;
 	technicianNum: string;
 	dateIn: string;
 	cost: string;
@@ -69,7 +66,7 @@ interface StockOut {
 
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
 	const [selectedOption, setSelectedOption] = useState<
-		'Dealer' | 'Technician' | 'Return' | 'Branch' | ''
+		'Technician' | 'Return' | 'Branch' | ''
 	>('');
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
@@ -79,9 +76,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		quantity: '',
 		date: '',
 		description: '',
-		dealerName: '',
-		dealerTelNum: '',
-		dealerPrecentage: '',
 		technicianNum: '',
 		dateIn: '',
 		cost: '',
@@ -124,6 +118,13 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
 	const stockInQuantity = quantity;
+	const closeModal = () => {
+		setIsOpen(false);
+		formik.resetForm();
+		setSelectedOption('');
+		setSelecteditems([]);
+		setSelectedCost(null);
+	};
 
 	const formik = useFormik({
 		initialValues: {
@@ -133,9 +134,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 			quantity: '',
 			date: '',
 			description: '',
-			dealerName: '',
-			dealerTelNum: '',
-			dealerPrecentage: '',
 			technicianNum: '',
 			dateIn: '',
 			cost: '',
@@ -149,20 +147,25 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: any = {};
-			if (!values.quantity) errors.quantity = 'Quantity is required';
-			if (!values.date) errors.date = 'Date Out is required';
-			if (!values.dateIn) errors.dateIn = 'Date In is required';
+			if (!values.date) {
+				errors.date = 'Date Out is required.';
+			}
 		
+			if (!values.description) {
+				errors.description = 'Description is required.';
+			}
+			if (selectedOption === 'Technician' && !values.technicianNum) {
+				errors.technicianNum = 'Technician Number is required for this option.';
+			}
+		
+			if (selectedOption === 'Return' && !values.sellerName) {
+				errors.sellerName = 'Supplier Name is required for this option.';
+			}
+		
+			if (selectedOption === 'Branch' && (!values.branchNum || isNaN(Number(values.branchNum)))) {
+				errors.branchNum = 'Branch Number must be a valid number for this option.';
+			}
 			
-			if (selectedOption === 'Technician') {
-				if (!values.technicianNum) errors.technicianNum = 'Technician Number is required';
-			}
-			if (selectedOption === 'Return') {
-				if (!values.sellerName) errors.sellerName = 'Seller Name is required';
-			}
-			if (selectedOption === 'Branch') {
-				if (!values.branchNum) errors.branchNum = 'Branch Number is required';
-			}
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -206,8 +209,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 				});
 				refetch();
 				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
-				formik.resetForm();
-				setIsOpen(false);
+				// formik.resetForm();
+				// setIsOpen(false);
+				closeModal();
 			} catch (error) {
 				await Swal.fire({
 					icon: 'error',
@@ -219,7 +223,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 	});
 
 	const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return' | 'Branch');
+		setSelectedOption(e.target.value as 'Technician' | 'Return' | 'Branch');
 	};
 
 	const formatMobileNumber = (value: string) => {
@@ -241,13 +245,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 	}
 
 	return (
-		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader
-				setIsOpen={() => {
-					setIsOpen(false);
-					formik.resetForm();
-				}}
-				className='p-4'>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={closeModal} size='xl' titleId={id}>
+			<ModalHeader setIsOpen={closeModal} className='p-4'>
 				<ModalTitle id=''>{'Stock Out'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>

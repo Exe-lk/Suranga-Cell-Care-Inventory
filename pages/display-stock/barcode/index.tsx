@@ -233,8 +233,8 @@ const Index: NextPage = () => {
 								</div>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-bordered border-primary table-hover'>
-									<thead>
+							<table className='table  table-bordered border-primary table-hover text-center'>
+							<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Date</th>
 											<th>Item Code</th>
