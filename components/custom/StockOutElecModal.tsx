@@ -341,7 +341,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 								name='stockOutType'
 								value='Technician'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Technician'}
+								checked={selectedOption}
 							/>
 							<Checks
 								type='radio'
@@ -350,7 +350,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 								name='stockOutType'
 								value='Return'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Return'}
+								checked={selectedOption}
 							/>
 							<Checks
 								type='radio'
@@ -359,7 +359,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 								name='stockOutType'
 								value='Branch'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Branch'}
+								checked={selectedOption}
 							/>
 						</ChecksGroup>
 					</FormGroup>

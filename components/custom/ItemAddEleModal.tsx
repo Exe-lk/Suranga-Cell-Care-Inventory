@@ -208,7 +208,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								name='category'
 								value='Touch Pad'
 								onChange={handleCategoryChange}
-								checked={selectedCategory === 'Touch Pad'}
+								checked={selectedCategory}
 							/>
 							<Checks
 								type='radio'
@@ -217,7 +217,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								name='category'
 								value='Displays'
 								onChange={handleCategoryChange}
-								checked={selectedCategory === 'Displays'}
+								checked={selectedCategory}
 							/>
 							<Checks
 								type='radio'
@@ -226,7 +226,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								name='category'
 								value='Battery Cell'
 								onChange={handleCategoryChange}
-								checked={selectedCategory === 'Battery Cell'}
+								checked={selectedCategory}
 							/>
 							<Checks
 								type='radio'
@@ -235,7 +235,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								name='category'
 								value='Other'
 								onChange={handleCategoryChange}
-								checked={selectedCategory === 'Other'}
+								checked={selectedCategory}
 							/>
 						</ChecksGroup>
 					</FormGroup>

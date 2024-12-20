@@ -18,6 +18,7 @@ interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
+	quantity: any;
 }
 
 interface StockIn {
@@ -38,7 +39,7 @@ interface StockIn {
 	printlable:number;
 }
 
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantity}) => {
 	const [stockIn, setStockIn] = useState<StockIn>({
 		cid: '',
 		brand: '',
@@ -68,6 +69,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: stockInOuts } = useGetStockInOutsQuery(undefined);
 	const [generatedCode, setGeneratedCode] = useState('');
 	const [generatedbarcode, setGeneratedBarcode] = useState<any>();
+	const nowQuantity = quantity;
 
 	useEffect(() => {
 		if (isSuccess && stockInData) {
@@ -154,7 +156,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				});
 				try {
 					const updatedQuantity =
-						parseInt(stockInData.quantity) + parseInt(values.quantity);
+						parseInt(nowQuantity) + parseInt(values.quantity);
 					const response: any = await addstockIn({
 						...values,
 						code: generatedCode,
