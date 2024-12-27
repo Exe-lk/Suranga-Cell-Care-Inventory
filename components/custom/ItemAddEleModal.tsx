@@ -24,7 +24,7 @@ interface ItemAddModalProps {
 }
 
 const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
-	const [selectedCategory, setSelectedCategory] = useState<string>('');
+	const [selectedCategory, setSelectedCategory] = useState<string>('Touch Pad');
 	const [selectedBrand, setSelectedBrand] = useState<string>('');
 	const [customCategory, setCustomCategory] = useState<string>('');
 	const [addItemDis, { isLoading }] = useAddItemDisMutation();
@@ -164,10 +164,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		setCustomCategory('');
 	};
 
-	const handleCustomCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setCustomCategory(e.target.value);
-		formik.setFieldValue('otherCategory', e.target.value);
-	};
+	
 
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
@@ -191,7 +188,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				setIsOpen={() => {
 					setIsOpen(false);
 					formik.resetForm();
-					setSelectedCategory('');
+					setSelectedCategory('Touch Pad');
 					setSelectedBrand('');
 				}}
 				className='p-4'>
@@ -212,7 +209,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 							<Checks
 								type='radio'
-								id='displays'
+								id='touchpad'
 								label='Displays'
 								name='category'
 								value='Displays'
@@ -221,7 +218,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 							<Checks
 								type='radio'
-								id='batteryCell'
+								id='touchpad'
 								label='Battery Cell'
 								name='category'
 								value='Battery Cell'
@@ -230,7 +227,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 							<Checks
 								type='radio'
-								id='other'
+								id='touchpad'
 								label='Other'
 								name='category'
 								value='Other'
@@ -239,7 +236,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 						</ChecksGroup>
 					</FormGroup>
-					{selectedCategory === 'Other' && (
+					{selectedCategory !== 'Battery Cell' && selectedCategory !== 'Displays' && selectedCategory !== 'Touch Pad' && (
 						<FormGroup
 							id='categorySelectDropdown'
 							label='Select Category'
