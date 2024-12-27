@@ -94,7 +94,7 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit}>
-					Add Category
+				Create Category
 				</Button>
 			</ModalFooter>
 		</Modal>

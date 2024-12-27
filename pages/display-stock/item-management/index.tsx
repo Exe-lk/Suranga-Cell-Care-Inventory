@@ -22,11 +22,11 @@ import StockOutModal from '../../../components/custom/StockOutElecModal';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import Swal from 'sweetalert2';
 import ItemDeleteModal from '../../../components/custom/ItemDeleteModal';
-import jsPDF from 'jspdf'; 
+import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { DropdownItem }from '../../../components/bootstrap/Dropdown';
+import { DropdownItem } from '../../../components/bootstrap/Dropdown';
 import { toPng, toSvg } from 'html-to-image';
-import { useUpdateItemDisMutation} from '../../../redux/slices/itemManagementDisApiSlice';
+import { useUpdateItemDisMutation } from '../../../redux/slices/itemManagementDisApiSlice';
 import { useGetItemDissQuery } from '../../../redux/slices/itemManagementDisApiSlice';
 import PaginationButtons, {
 	dataPagination,
@@ -36,28 +36,28 @@ import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10
 import { ref } from 'firebase/storage';
 
 const Index: NextPage = () => {
-	const { darkModeStatus } = useDarkMode(); 
-	const [searchTerm, setSearchTerm] = useState(''); 
-	const [addModalStatus, setAddModalStatus] = useState<boolean>(false); 
-	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
-    const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false);
-	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false); 
+	const { darkModeStatus } = useDarkMode();
+	const [searchTerm, setSearchTerm] = useState('');
+	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
+	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
+	const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false);
+	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false);
 	const [deleteModalStatus, setDeleteModalStatus] = useState<boolean>(false);
 	const [id, setId] = useState<string>('');
-	const {data: itemDiss,error, isLoading,refetch} = useGetItemDissQuery(undefined);
+	const { data: itemDiss, error, isLoading, refetch } = useGetItemDissQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateItemDis] = useUpdateItemDisMutation();
 	const [quantity, setQuantity] = useState<any>();
 	const inputRef = useRef<HTMLInputElement>(null);
-
+	const [formStatus, setFormStatus] = useState<boolean>(false);
 	useEffect(() => {
 		if (inputRef.current) {
 			inputRef.current.focus();
 		}
-	}, [itemDiss ]);
+	}, [itemDiss]);
 
-	const handleClickDelete = async (itemDis:any) => {
+	const handleClickDelete = async (itemDis: any) => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
@@ -79,7 +79,7 @@ const Index: NextPage = () => {
 					touchpadNumber: itemDis.touchpadNumber,
 					batteryCellNumber: itemDis.batteryCellNumber,
 					displaySNumber: itemDis.displaySNumber,
-					otherCategory: itemDis.otherCategory, 
+					otherCategory: itemDis.otherCategory,
 					status: false,
 				};
 				await updateItemDis(values);
@@ -364,136 +364,175 @@ const Index: NextPage = () => {
 			<Page>
 				<div className='row h-100'>
 					<div className='col-12'>
-						<Card stretch>
-							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='flex-grow-1 text-center text-primary'>
-									Manage Stock
-								</div>
-								<Dropdown>
-								<DropdownToggle hasIcon={false}>
-									<Button
-										icon='UploadFile'
-										color='warning'>
-										Export
-									</Button>
-								</DropdownToggle>
-								<DropdownMenu isAlignmentEnd>
-									<DropdownItem onClick={() => handleExport('svg')}>Download SVG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('png')}>Download PNG</DropdownItem>
-									<DropdownItem onClick={() => handleExport('csv')}>Download CSV</DropdownItem>
-									<DropdownItem onClick={() => handleExport('pdf')}>Download PDF</DropdownItem>
-								</DropdownMenu>
-							</Dropdown>
-							</CardTitle>
-							<CardBody isScrollable className='table-responsive'>
-								<table className='table  table-bordered border-primary table-hover text-center'>
-								<thead className={"table-dark border-primary"}>
-										<tr>
-											<th>Model</th>
-											<th>Brand</th>
-											<th>Reorder Level</th>
-											<th>Quantity</th>
-											<th>Box Number</th>
-											<th>Category</th>
-											<th></th>
-											<th></th>
-											<th></th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody>
-									{isLoading && (
-											<tr>
-												<td>Loading...</td>
-											</tr>
-										)}
-										{error && (
-											<tr>
-												<td>Error fetching dealers.</td>
-											</tr>
-										)}
-										{itemDiss &&
-											dataPagination(itemDiss, currentPage, perPage)
-											
-											.filter((brand: any) => {
-												if (brand.code.includes(searchTerm.slice(0, 4))) {
-													return brand;
-												}
-											})
-												.map((itemDiss: any,index: any) => (
-													<tr key={index}>
-														<td>{itemDiss.model}</td>
-														<td>{itemDiss.brand}</td>
-														<td>{itemDiss.reorderLevel}</td>
-														<td>{itemDiss.quantity}</td>
-														<td>{itemDiss.boxNumber}</td>
-														<td>{itemDiss.category}</td>
-														<td>
-															<Button
-																icon='CallReceived'
-																tag='a'
-																color='success'
-																onClick={() =>(
-																	setAddstockModalStatus(true),
-																	setId(itemDiss.id))
-																}></Button>
-														</td>
-														<td>
-															<Button
-																icon='CallMissedOutgoing'
-																tag='a'
-																color='warning'
-																onClick={() =>(
-																	refetch(),
-																	setEditstockModalStatus(true),
-																	setId(itemDiss.id),
-																	setQuantity(itemDiss.quantity)
-																)
-																}></Button>
-														</td>
-														<td>
-															<Button
-																icon='Edit'
-																tag='a'
-																color='info'
-																onClick={() =>(
-																	setEditModalStatus(true),
-																	setId(itemDiss.id))
-																}></Button>
-														</td>
-														<td>
-															<Button
-																className='m-2'
-																icon='Delete'
-																color='danger'
-																onClick={() => handleClickDelete(itemDiss)}></Button>
-														</td>
-													</tr>
-												))}
-									</tbody>
-								</table>
-								<Button icon='Delete' className='mb-5'
-								onClick={() => (
-									setDeleteModalStatus(true)
-								)}>
-								Recycle Bin</Button> 
-							</CardBody>
-							<PaginationButtons
-								data={itemDiss}
-								label='parts'
-								setCurrentPage={setCurrentPage}
-								currentPage={currentPage}
-								perPage={perPage}
-								setPerPage={setPerPage}
+						{editModalStatus ? (
+							<StockOutModal
+								setIsOpen={setEditstockModalStatus}
+								isOpen={editstockModalStatus}
+								id={id}
+								quantity={quantity}
 							/>
-						</Card>
+						) : (
+							<Card stretch>
+								<CardTitle className='d-flex justify-content-between align-items-center m-4'>
+									<div className='flex-grow-1 text-center text-primary'>
+										Manage Stock
+									</div>
+									<Dropdown>
+										<DropdownToggle hasIcon={false}>
+											<Button icon='UploadFile' color='warning'>
+												Export
+											</Button>
+										</DropdownToggle>
+										<DropdownMenu isAlignmentEnd>
+											<DropdownItem onClick={() => handleExport('svg')}>
+												Download SVG
+											</DropdownItem>
+											<DropdownItem onClick={() => handleExport('png')}>
+												Download PNG
+											</DropdownItem>
+											<DropdownItem onClick={() => handleExport('csv')}>
+												Download CSV
+											</DropdownItem>
+											<DropdownItem onClick={() => handleExport('pdf')}>
+												Download PDF
+											</DropdownItem>
+										</DropdownMenu>
+									</Dropdown>
+								</CardTitle>
+								<CardBody isScrollable className='table-responsive'>
+									<table className='table  table-bordered border-primary table-hover text-center'>
+										<thead className={'table-dark border-primary'}>
+											<tr>
+												<th>Model</th>
+												<th>Brand</th>
+												<th>Reorder Level</th>
+												<th>Quantity</th>
+												<th>Box Number</th>
+												<th>Category</th>
+												<th></th>
+												<th></th>
+												<th></th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody>
+											{isLoading && (
+												<tr>
+													<td>Loading...</td>
+												</tr>
+											)}
+											{error && (
+												<tr>
+													<td>Error fetching dealers.</td>
+												</tr>
+											)}
+											{itemDiss &&
+												dataPagination(itemDiss, currentPage, perPage)
+													.filter((brand: any) => {
+														if (
+															brand.code.includes(
+																searchTerm.slice(0, 4),
+															)
+														) {
+															return brand;
+														}
+													})
+													.map((itemDiss: any, index: any) => (
+														<tr key={index}>
+															<td>{itemDiss.model}</td>
+															<td>{itemDiss.brand}</td>
+															<td>{itemDiss.reorderLevel}</td>
+															<td>{itemDiss.quantity}</td>
+															<td>{itemDiss.boxNumber}</td>
+															<td>{itemDiss.category}</td>
+															<td>
+																<Button
+																	icon='CallReceived'
+																	tag='a'
+																	color='success'
+																	onClick={() => {
+																		setAddstockModalStatus(
+																			true,
+																		);
+																		setId(itemDiss.id);
+																		setQuantity(
+																			itemDiss.quantity,
+																		); 
+																	}}></Button>
+															</td>
+															<td>
+																<Button
+																	icon='CallMissedOutgoing'
+																	tag='a'
+																	color='warning'
+																	onClick={() => (
+																		refetch(),
+																		setEditstockModalStatus(
+																			true,
+																		),
+																		setId(itemDiss.id),
+																		setQuantity(
+																			itemDiss.quantity,
+																		)
+																	)}></Button>
+															</td>
+															<td>
+																<Button
+																	icon='Edit'
+																	tag='a'
+																	color='info'
+																	onClick={() => (
+																		setEditModalStatus(true),
+																		setId(itemDiss.id)
+																	)}></Button>
+															</td>
+															<td>
+																<Button
+																	className='m-2'
+																	icon='Delete'
+																	color='danger'
+																	onClick={() =>
+																		handleClickDelete(itemDiss)
+																	}></Button>
+															</td>
+														</tr>
+													))}
+										</tbody>
+									</table>
+									<Button
+										icon='Delete'
+										className='mb-5'
+										onClick={() => setDeleteModalStatus(true)}>
+										Recycle Bin
+									</Button>
+								</CardBody>
+								<PaginationButtons
+									data={itemDiss}
+									label='parts'
+									setCurrentPage={setCurrentPage}
+									currentPage={currentPage}
+									perPage={perPage}
+									setPerPage={setPerPage}
+								/>
+							</Card>
+						)}
 					</div>
 				</div>
 			</Page>
 			<ItemAddModal setIsOpen={setAddModalStatus} isOpen={addModalStatus} id='' />
 			<ItemEditModal setIsOpen={setEditModalStatus} isOpen={editModalStatus} id={id} />
-            <StockAddModal setIsOpen={setAddstockModalStatus} isOpen={addstockModalStatus} id={id} />
-			<StockOutModal setIsOpen={setEditstockModalStatus} isOpen={editstockModalStatus} id={id} quantity={quantity} />
+			<StockAddModal
+				setIsOpen={setAddstockModalStatus}
+				isOpen={addstockModalStatus}
+				id={id}
+				quantity={quantity}
+			/>
+			<StockOutModal
+				setIsOpen={setEditstockModalStatus}
+				isOpen={editstockModalStatus}
+				id={id}
+				quantity={quantity}
+			/>
 			<ItemDeleteModal setIsOpen={setDeleteModalStatus} isOpen={deleteModalStatus} id='' />
 		</PageWrapper>
 	);

@@ -391,7 +391,7 @@ const BillAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => 
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit}>
-					Add Bill
+					Create Bill
 				</Button>
 			</ModalFooter>
 		</Modal>

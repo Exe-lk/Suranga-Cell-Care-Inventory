@@ -2,18 +2,27 @@ import React, { FC, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useFormik } from 'formik';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle } from '../bootstrap/Modal';
-import { useAddStockOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
+import {
+	useAddStockOutMutation,
+	useGetSubStockInOutsQuery,
+} from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery } from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetItemDisByIdQuery } from '../../redux/slices/itemManagementDisApiSlice';
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
-import Select from '../bootstrap/forms/Select';
 import Swal from 'sweetalert2';
 import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 import { useGetTechniciansQuery } from '../../redux/slices/technicianManagementApiSlice';
-import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
+import {
+	useUpdateStockInOutMutation,
+	useUpdateSubStockInOutMutation,
+} from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
+import { default as BootstrapSelect } from '../bootstrap/forms/Select';
+import Option, { Options } from '../bootstrap/Option';
 
 interface StockAddModalProps {
 	id: string;
@@ -45,9 +54,6 @@ interface StockOut {
 	quantity: string;
 	date: string;
 	description: string;
-	dealerName: string;
-	dealerTelNum: string;
-	dealerPrecentage: string;
 	technicianNum: string;
 	dateIn: string;
 	cost: string;
@@ -58,10 +64,10 @@ interface StockOut {
 	status: boolean;
 }
 
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
-	const [selectedOption, setSelectedOption] = useState<'Dealer' | 'Technician' | 'Return' |'Branch'| ''>(
-		'',
-	);
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
+	const [selectedOption, setSelectedOption] = useState<
+		'Technician' | 'Return' | 'Branch' | ''
+	>('');
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
 		model: '',
@@ -70,9 +76,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		quantity: '',
 		date: '',
 		description: '',
-		dealerName: '',
-		dealerTelNum: '',
-		dealerPrecentage: '',
 		technicianNum: '',
 		dateIn: '',
 		cost: '',
@@ -83,33 +86,45 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		status: true,
 	});
 	const [selectedCost, setSelectedCost] = useState<string | null>(null);
+	const [selecteditems, setSelecteditems] = useState<any>([]);
 	const {
 		data: technicians,
 		isLoading: techniciansLoading,
 		isError: techniciansError,
 	} = useGetTechniciansQuery(undefined);
-	const {
-		data: stockInData,
-		isLoading: stockInLoading,
-		isError: stockInError,
-	} = useGetStockInOutsQuery(undefined);
+	const { data: stockInData } = useGetStockInOutsQuery(undefined);
+	const { data: substockInData } = useGetSubStockInOutsQuery(undefined);
 	const [addstockOut] = useAddStockOutMutation();
 	const { data: stockOutData, isSuccess } = useGetItemDisByIdQuery(id);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const [updateSubStockInOut] = useUpdateSubStockInOutMutation();
 	const { refetch } = useGetItemDissQuery(undefined);
+	const animatedComponents = makeAnimated();
 	const filteredStockIn = stockInData?.filter(
 		(item: { stock: string }) => item.stock === 'stockIn',
 	);
 	const handleDateInChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const selectedTimestamp = e.target.value;
 		formik.setFieldValue('dateIn', selectedTimestamp);
-		const selectedStock = filteredStockIn?.find((item: { timestamp: { seconds: number; nanoseconds: number } }) => {
-			const formattedDate = formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds);
-			return formattedDate === selectedTimestamp;
-		});
+		const selectedStock = filteredStockIn?.find(
+			(item: { timestamp: { seconds: number; nanoseconds: number } }) => {
+				const formattedDate = formatTimestamp(
+					item.timestamp.seconds,
+					item.timestamp.nanoseconds,
+				);
+				return formattedDate === selectedTimestamp;
+			},
+		);
 		setSelectedCost(selectedStock ? selectedStock.cost : null);
 	};
 	const stockInQuantity = quantity;
+	const closeModal = () => {
+		setIsOpen(false);
+		formik.resetForm();
+		setSelectedOption('');
+		setSelecteditems([]);
+		setSelectedCost(null);
+	};
 
 	const formik = useFormik({
 		initialValues: {
@@ -119,9 +134,6 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			quantity: '',
 			date: '',
 			description: '',
-			dealerName: '',
-			dealerTelNum: '',
-			dealerPrecentage: '',
 			technicianNum: '',
 			dateIn: '',
 			cost: '',
@@ -130,29 +142,30 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			sellerName: '',
 			stock: 'stockOut',
 			status: true,
+			substockInData: '',
 		},
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: any = {};
-			if (!values.quantity) errors.quantity = 'Quantity is required';
-			if (!values.date) errors.date = 'Date Out is required';
-			if (!values.dateIn) errors.dateIn = 'Date In is required';
-			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
-			if (selectedOption === 'Dealer') {
-				if (!values.dealerName) errors.dealerName = 'Dealer Name is required';
-				if (!values.dealerTelNum) errors.dealerTelNum = 'Dealer Tel Number is required';
-				if (!values.dealerPrecentage)
-					errors.dealerPrecentage = 'Dealer Percentage is required';
+			if (!values.date) {
+				errors.date = 'Date Out is required.';
 			}
-			if (selectedOption === 'Technician') {
-				if (!values.technicianNum) errors.technicianNum = 'Technician Number is required';
+		
+			if (!values.description) {
+				errors.description = 'Description is required.';
 			}
-			if (selectedOption === 'Return') {
-				if (!values.sellerName) errors.sellerName = 'Seller Name is required';
+			if (selectedOption === 'Technician' && !values.technicianNum) {
+				errors.technicianNum = 'Technician Number is required for this option.';
 			}
-			if (selectedOption === 'Branch') {
-				if (!values.branchNum) errors.branchNum = 'Branch Number is required';
+		
+			if (selectedOption === 'Return' && !values.sellerName) {
+				errors.sellerName = 'Supplier Name is required for this option.';
 			}
+		
+			if (selectedOption === 'Branch' && (!values.branchNum || isNaN(Number(values.branchNum)))) {
+				errors.branchNum = 'Branch Number must be a valid number for this option.';
+			}
+			
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -164,7 +177,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
-				await refetch();	
+				await refetch();
+				values.quantity=selecteditems.length
 				const stockOutQuantity = values.quantity ? parseInt(values.quantity) : 0;
 				if (isNaN(stockInQuantity) || isNaN(stockOutQuantity)) {
 					Swal.fire({
@@ -172,8 +186,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						title: 'Invalid Quantity',
 						text: 'Quantity must be a valid number.',
 					});
-					return; 
-				}	
+					return;
+				}
 				const updatedQuantity = stockInQuantity - stockOutQuantity;
 				if (updatedQuantity < 0) {
 					Swal.fire({
@@ -181,14 +195,23 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						title: 'Insufficient Stock',
 						text: 'The stock out quantity exceeds available stock.',
 					});
-					return; 
-				}		
-				const stockOutResponse = await addstockOut(values).unwrap();		
-				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();	
-				refetch();	
+					return;
+				}
+				const stockOutResponse = await addstockOut(values).unwrap();
+				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+				selecteditems.map(async (val: any) => {
+					const id = val.value.split('-')[0];
+					const subid = val.label;
+					const values = {
+						status: true,
+					};
+					await updateSubStockInOut({ id, subid, values }).unwrap();
+				});
+				refetch();
 				await Swal.fire({ icon: 'success', title: 'Stock Out Created Successfully' });
-				formik.resetForm();
-				setIsOpen(false); 
+				// formik.resetForm();
+				// setIsOpen(false);
+				closeModal();
 			} catch (error) {
 				await Swal.fire({
 					icon: 'error',
@@ -196,17 +219,17 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					text: 'Failed to process the stock. Please try again.',
 				});
 			}
-		}		
+		},
 	});
 
 	const handleOptionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		setSelectedOption(e.target.value as 'Dealer' | 'Technician' | 'Return'| 'Branch');
+		setSelectedOption(e.target.value as 'Technician' | 'Return' | 'Branch');
 	};
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); 
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; 
-		return sanitized.slice(0, 10); 
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
 
 	useEffect(() => {
@@ -214,15 +237,16 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			setStockOut(stockOutData);
 		}
 	}, [isSuccess, stockOutData]);
-	
+
+	function onSelectMachineModel(e: any) {
+		setSelecteditems(e);
+		formik.values.quantity = selecteditems.length;
+		console.log(substockInData);
+	}
+
 	return (
-		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
-			<ModalHeader
-				setIsOpen={() => {
-					setIsOpen(false);
-					formik.resetForm();
-				}}
-				className='p-4'>
+		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={closeModal} size='xl' titleId={id}>
+			<ModalHeader setIsOpen={closeModal} className='p-4'>
 				<ModalTitle id=''>{'Stock Out'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
@@ -240,39 +264,50 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						<Input
 							type='number'
 							placeholder='Enter Quantity'
-							value={formik.values.quantity}
-							onChange={formik.handleChange}
+							value={selecteditems?.length}
+							// value={formik.values.quantity}
+							disabled
+							// onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
 							name='quantity'
 							isValid={!!formik.errors.quantity && formik.touched.quantity}
 						/>
 					</FormGroup>
-					<FormGroup id="dateIn" label="Date In" className="col-md-6">
+					<FormGroup id='substockInData' label='Select items' className='col-md-6'>
+						<br />
+
 						<Select
-							id="dateIn"
-							name="dateIn"
-							ariaLabel="dateIn"
-							onChange={handleDateInChange}
-							value={formik.values.dateIn}
-							onBlur={formik.handleBlur}
-							className={`form-control ${formik.touched.dateIn && formik.errors.dateIn ? 'is-invalid' : ''}`}
-						>
-							<option value="">Select a Time Stamp</option>
-							{stockInLoading && <option>Loading time stamps...</option>}
-							{stockInError && <option>Error fetching timestamps</option>}
-							{filteredStockIn?.map((item: { id: string; timestamp: { seconds: number; nanoseconds: number } }) => (
-								<option
-									key={item.id}
-									value={formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds)}
-								>
-									{formatTimestamp(item.timestamp.seconds, item.timestamp.nanoseconds)}
-								</option>
-							))}
-							{formik.touched.dateIn && formik.errors.dateIn && (
-								<div className="invalid-feedback">{formik.errors.dateIn}</div>
-							)}
-						</Select>
+							closeMenuOnSelect={false}
+							components={animatedComponents}
+							isMulti
+							theme={(theme) => ({
+								...theme,
+								borderRadius: 4,
+								colors: {
+									...theme.colors,
+									primary25: '#4D69FA', // Hovered option background color
+									primary: 'white', // Selected option color
+									neutral0: '#212529', // Background color for the dropdown (dark background)
+									neutral5: '#343A40', // Border color (dark theme)
+									neutral10: '#343A40', // Focused border color
+									neutral20: '#666', // Placeholder color
+									neutral30: '#ddd', // Text color for normal state
+									neutral50: '#fff', // Text color for hovered options
+									neutral80: '#fff', // Text color for selected options
+								},
+							})}
+							onChange={(e) => onSelectMachineModel(e)}
+							options={
+								substockInData
+									? substockInData.map((item: any, index: any) => ({
+											value: `${item.id}-${index}`,
+											label: item.barcode,
+									  }))
+									: [{ value: '', label: 'No Data' }]
+							}
+						/>
 					</FormGroup>
+					
 					<FormGroup id='date' label='Date Out' className='col-md-6'>
 						<Input
 							type='date'
@@ -284,11 +319,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={!!formik.errors.date && formik.touched.date}
 						/>
 					</FormGroup>
-					{selectedCost && (
-						<FormGroup id="cost" label="Cost(lkr)" className="col-md-6">
-							<Input type="text" value={selectedCost} readOnly />
-						</FormGroup>
-					)}
+
 					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							type='text'
@@ -300,28 +331,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={!!formik.errors.description && formik.touched.description}
 						/>
 					</FormGroup>
-					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
-						<Input
-							type='text'
-							placeholder='Enter Selling Price'
-							value={formik.values.sellingPrice}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							name='sellingPrice'
-							isValid={!!formik.errors.sellingPrice && formik.touched.sellingPrice}
-						/>
-					</FormGroup>
+
 					<FormGroup id='StockOutSelect' className='col-md-12'>
 						<ChecksGroup isInline>
-							<Checks
-								type='radio'
-								id='dealer'
-								label='Dealer'
-								name='stockOutType'
-								value='Dealer'
-								onChange={handleOptionChange}
-								checked={selectedOption === 'Dealer'}
-							/>
 							<Checks
 								type='radio'
 								id='technician'
@@ -329,7 +341,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								name='stockOutType'
 								value='Technician'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Technician'}
+								checked={selectedOption}
 							/>
 							<Checks
 								type='radio'
@@ -338,7 +350,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								name='stockOutType'
 								value='Return'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Return'}
+								checked={selectedOption}
 							/>
 							<Checks
 								type='radio'
@@ -347,71 +359,22 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 								name='stockOutType'
 								value='Branch'
 								onChange={handleOptionChange}
-								checked={selectedOption === 'Branch'}
+								checked={selectedOption}
 							/>
 						</ChecksGroup>
 					</FormGroup>
-					{selectedOption === 'Dealer' && (
-						<>
-							<FormGroup id='dealerName' label='Dealer Name' className='col-md-6'>
-								<Input
-									type='text'
-									placeholder='Enter Dealer Name'
-									value={formik.values.dealerName}
-									onChange={formik.handleChange}
-									name='dealerName'
-									isValid={
-										!!formik.errors.dealerName && formik.touched.dealerName
-									}
-								/>
-							</FormGroup>
-							<FormGroup
-								id='dealerTelNum'
-								label='Dealer Telephone Number'
-								className='col-md-6'>
-								<Input
-							type='text'
-							value={formik.values.dealerTelNum}
-							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-								const input = e.target.value.replace(/\D/g, ''); 
-								formik.setFieldValue('dealerTelNum', formatMobileNumber(input));
-							}}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.dealerTelNum}
-							invalidFeedback={formik.errors.dealerTelNum}
-							validFeedback='Looks good!'
-						/>
-							</FormGroup>
-							<FormGroup
-								id='dealerPrecentage'
-								label='Dealer Percentage'
-								className='col-md-6'>
-								<Input
-									type='number'
-									placeholder='Enter Dealer Percentage'
-									value={formik.values.dealerPrecentage}
-									onChange={formik.handleChange}
-									name='dealerPrecentage'
-									isValid={
-										!!formik.errors.dealerPrecentage &&
-										formik.touched.dealerPrecentage
-									}
-								/>
-							</FormGroup>
-						</>
-					)}
+
 					{selectedOption === 'Technician' && (
 						<FormGroup
 							id='technicianNum'
 							label='Technician Number'
 							className='col-md-6'>
-							<Select
+							<BootstrapSelect
 								id='technicianNum'
 								name='technicianNum'
 								ariaLabel='technicianNum'
-								onChange={formik.handleChange} 
-								value={formik.values.technicianNum} 
+								onChange={formik.handleChange}
+								value={formik.values.technicianNum}
 								onBlur={formik.handleBlur}
 								className={`form-control ${
 									formik.touched.technicianNum && formik.errors.technicianNum
@@ -431,7 +394,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 										</option>
 									),
 								)}
-							</Select>
+							</BootstrapSelect>
 							{formik.touched.category && formik.errors.category ? (
 								<div className='invalid-feedback'>{formik.errors.category}</div>
 							) : (

@@ -382,15 +382,15 @@ try {
 							</Dropdown>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
-								<table className='table table-modern table-bordered border-primary table-hover '>
-								<thead>
+							<table className='table  table-bordered border-primary table-hover text-center'>
+							<thead className={"table-dark border-primary"}>
 										<tr>
 											<th>Date</th>
 											<th>Category</th>
 											<th>Brand</th>
 											<th>Model</th>
 											<th>Quantity</th>
-											<th>Selling Price</th>
+											{/* <th>Selling Price</th> */}
 											<th>Stock</th>
 										</tr>
 									</thead>
@@ -427,7 +427,7 @@ try {
 														<td>{brand.brand}</td>
 														<td>{brand.model}</td>
 														<td>{brand.quantity}</td>
-														<td>{brand.sellingPrice}</td>
+														{/* <td>{brand.sellingPrice}</td> */}
 														<td>{brand.stock}</td>
 													</tr>
 												))

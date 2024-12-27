@@ -19,7 +19,9 @@ import AsideRoutes from '../layout/Aside/AsideRoutes';
 import { ToastCloseButton } from '../components/bootstrap/Toasts';
 import { Provider } from 'react-redux';
 import store from '../redux/store';
+import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 
+import "primereact/resources/themes/lara-dark-blue/theme.css";
 const MyApp = ({ Component, pageProps }: AppProps) => {
 	getOS();
 
@@ -40,6 +42,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 	};
 
 	return (
+		<PrimeReactProvider>
 		<Provider store={store}>
 		<AuthContextProvider>
 			<ThemeContextProvider>
@@ -68,6 +71,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
 			</ThemeContextProvider>
 		</AuthContextProvider>
 		</Provider>
+		</PrimeReactProvider>
 	);
 };
 
