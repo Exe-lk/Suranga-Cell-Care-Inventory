@@ -181,7 +181,9 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			model.brand === selectedBrand &&
 			(model.category === selectedCategory || selectedCategory === 'Other'),
 	);
-
+	const derivedCategory = ['Battery Cell', 'Displays', 'Touch Pad'].includes(selectedCategory)
+	? selectedCategory
+	: 'Other';
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -232,7 +234,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								name='category'
 								value='Other'
 								onChange={handleCategoryChange}
-								checked={selectedCategory}
+								checked={derivedCategory}
 							/>
 						</ChecksGroup>
 					</FormGroup>
