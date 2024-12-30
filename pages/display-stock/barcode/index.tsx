@@ -552,6 +552,7 @@ const Index: NextPage = () => {
 			confirmButtonText: 'Print',
 		}).then((result) => {
 			if (result.isConfirmed) {
+				console.log(selectedBarcodes)
 				// Number of barcodes to print
 				const labelQuantity = selectedBarcodes.length;
 
@@ -593,7 +594,7 @@ const Index: NextPage = () => {
 							^BY2,3,52^FT${43 + j * 264},145^BCN,,N,N
 							^FH\\^FD>;${currentBarcode}^FS
 							^FT${43 + j * 264},58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
-							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FDItem Code : ${itemCode}^FS^CI27
+							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FDItem Code : ${currentBarcode}^FS^CI27
 						`;
 					}
 					zplString += `^PQ1,0,1,Y ^XZ`;
@@ -610,7 +611,7 @@ const Index: NextPage = () => {
 							^BY2,3,52^FT${43 + j * 264},145^BCN,,N,N
 							^FH\\^FD>;${currentBarcode}^FS
 							^FT${43 + j * 264},58^A0N,20,20^FH\\^CI28^FD${itemName}^FS^CI27
-							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FD ${itemCode}^FS^CI27
+							^FT${43 + j * 264},170^A0N,20,20^FH\\^CI28^FD ${currentBarcode}^FS^CI27
 						`;
 					}
 
