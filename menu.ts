@@ -95,6 +95,13 @@ export const CashierPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
+	Print: {
+		id: 'print',
+		text: 'print',
+		path: 'cashier/print',
+		icon: 'AutoStories',
+		subMenu: null,
+	},
 }
 export const stockElePagesMenu = {
 	dashboard: {

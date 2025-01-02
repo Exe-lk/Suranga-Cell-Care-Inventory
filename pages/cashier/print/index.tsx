@@ -56,7 +56,7 @@ function index() {
 				// 			type: 'displaystock',
 				// 		})),
 				// 	);
-				const combinedResult = [ ...result1];
+				const combinedResult = [...result1];
 				setItems(combinedResult);
 				console.log(combinedResult);
 			} catch (error) {
@@ -80,9 +80,7 @@ function index() {
 					(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
 				);
 
-				const existingItem = orderedItems.find(
-					(item) => item.barcode === selectedProduct,
-				);
+				const existingItem = orderedItems.find((item) => item.barcode === selectedProduct);
 				if (!existingItem) {
 					const barcode = [...selectedBarcode, selectedProduct];
 					setSelectedBarcode(barcode);
@@ -93,14 +91,14 @@ function index() {
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity:updatedItems[existingItemIndex].quantity+1
+						...selectedItem,
+						quantity: updatedItems[existingItemIndex].quantity + 1,
 					};
-					
 				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity:1 }];
+					updatedItems = [...orderedItems, { ...selectedItem, quantity: 1 }];
 				}
 				setOrderedItems(updatedItems);
-			}else{
+			} else {
 				const existingItemIndex = orderedItems.findIndex(
 					(item) => item.barcode === selectedProduct,
 				);
@@ -109,11 +107,11 @@ function index() {
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity
+						...selectedItem,
+						quantity,
 					};
-					
 				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity }];
+					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
 				}
 				setOrderedItems(updatedItems);
 			}
@@ -198,25 +196,10 @@ function index() {
 						type: payment ? 'cash' : 'card',
 						id: id,
 					};
-					const collectionRef = collection(firestore, 'orders');
-					await addDoc(collectionRef, values);
-					const updatePromises = orderedItems.map(async (order) => {
-						const itemRef = doc(firestore, 'item', order.cid);
-						const newQuantity = order.quentity - order.quantity;
-						await updateDoc(itemRef, {
-							quentity: newQuantity > 0 ? newQuantity : 0,
-						});
-					});
-					await Promise.all(updatePromises);
-					Swal.fire({
-						title: 'Success',
-						text: 'Bill has been added successfully.',
-						icon: 'success',
-						showConfirmButton: false, // Hides the OK button
-						timer: 1000, // Closes the alert after 2 seconds (2000ms)
-					});
-					setOrderedItems([]);
-					setAmount(0);
+
+					//add print function
+
+
 				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
@@ -230,186 +213,14 @@ function index() {
 	return (
 		<PageWrapper className=''>
 			<div className='row m-4'>
-				<div className='col-8 mb-3 mb-sm-0'>
-					<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
-						<CardBody isScrollable>
-							<table className='table table-hover table-bordered border-primary'>
-								<thead className={'table-dark border-primary'}>
-									<tr>
-										<th>Name</th>
-										<th>Qty</th>
-										<th>U/Price(LKR)</th>
-										<th>D/Amount(LKR)</th>
-										<th>Net Value(LKR)</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									{orderedItems.map((val: any, index: any) => (
-										<tr>
-											<td>{val.category}  {val.model}  {val.brand}</td>
-											<td>{val.quantity}</td>
-											<td>{val.sellingPrice}</td>
-											<td>
-												{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
-											</td>
-											<td>
-												{val.sellingPrice * val.quantity }
-											</td>
-											<td>
-												<Button
-													icon='delete'
-													onClick={() =>
-														handleDeleteItem(val.cid)
-													}></Button>
-											</td>
-										</tr>
-									))}
-									<tr>
-										<td colSpan={4} className='text fw-bold'>
-											Total
-										</td>
-										<td className='fw-bold'>{calculateSubTotal()}</td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
-						</CardBody>
-						<CardFooter className='pb-1'>
-							{/* Two cards side by side occupying full width */}
-							<div className='d-flex w-100'>
-								<Card className='col-4 flex-grow-1 me-2'>
-									<CardBody>
-										<FormGroup
-											id='product'
-											label='Product Name'
-											className='col-12'>
-											<Dropdown
-												aria-label='State'
-												editable
-												placeholder='-- Select Product --'
-												className='selectpicker col-12'
-												options={
-													items
-														? items.map((type: any) => ({
-																value: type.barcode,
-																label: type.barcode,
-														  }))
-														: [{ value: '', label: 'No Data' }]
-												}
-												onChange={(e: any) =>
-													setSelectedProduct(e.target.value)
-												}
-												// onBlur={formik.handleBlur}
-												value={selectedProduct}
-											/>
-											{/* <Select
-												ariaLabel='Default select example'
-												onChange={(e: any) =>
-													setSelectedProduct(e.target.value)
-												}
-												value={selectedProduct}
-												placeholder='Select Item'
-												validFeedback='Looks good!'>
-												{items.map((option, index) => (
-													<Option key={index} value={option.cid}>
-														{option.name}
-													</Option>
-												))}
-											</Select> */}
-										</FormGroup>
-										<FormGroup
-											id='quantity'
-											label='Quantity'
-											className='col-12 mt-2'>
-											<Input
-												type='number'
-												onChange={(e: any) =>
-													setQuantity(Number(e.target.value))
-												}
-												value={quantity}
-												min={1}
-												validFeedback='Looks good!'
-											/>
-										</FormGroup>
-										<div className='d-flex justify-content-end mt-2'>
-											{/* <button className='btn btn-danger me-2'>Cancel</button> */}
-											<button
-												className='btn btn-success'
-												onClick={handlePopupOk}>
-												ADD
-											</button>
-										</div>
-									</CardBody>
-								</Card>
-								<Card className='flex-grow-1 ms-2'>
-									<CardBody>
-										<>
-											
-											<FormGroup
-												id='amount'
-												label='Amount (LKR)'
-												className='col-12 mt-2'>
-												<Input
-													type='number'
-													onChange={(e: any) => {
-														let value = e.target.value;
-
-														// Remove leading zero if it's the first character
-														if (
-															value.length > 1 &&
-															value.startsWith('0')
-														) {
-															value = value.substring(1); // Remove the first character
-														}
-
-														setAmount(value); // Update the state with the modified value
-													}}
-													value={amount}
-													min={0}
-													validFeedback='Looks good!'
-												/>
-											</FormGroup>
-											<ChecksGroup isInline className='pt-2'>
-												<Checks
-													// type='switch'
-													id='inlineCheckOne'
-													label='Cash'
-													name='checkOne'
-													checked={payment}
-													onClick={(e) => {
-														setPayment(true);
-													}}
-												/>
-												<Checks
-													// type='switch'
-													id='inlineCheckTwo'
-													label='Card'
-													name='checkOne'
-													checked={!payment}
-													onClick={(e) => {
-														setPayment(false);
-													}}
-												/>
-											</ChecksGroup>
-											<Button
-												color='success'
-												className='mt-4 w-100'
-												onClick={addbill}>
-												Process
-											</Button>
-										</>
-									</CardBody>
-								</Card>
-							</div>
-						</CardFooter>
-					</Card>
-				</div>
-
 				{/* Second Card */}
 				<div className='col-4'>
 					<Card stretch className='mt-4 p-4' style={{ height: '75vh' }}>
 						<CardBody isScrollable>
+							<Button color='success' className='mt-4 w-100 mb-4' onClick={addbill}>
+								Process
+							</Button>
+
 							<div
 								// ref={printRef} // Attach the ref here
 								style={{
@@ -506,11 +317,7 @@ function index() {
 							</div>
 						</CardBody>
 					</Card>
-
-					
 				</div>
-
-				fhfhff
 			</div>
 		</PageWrapper>
 	);
