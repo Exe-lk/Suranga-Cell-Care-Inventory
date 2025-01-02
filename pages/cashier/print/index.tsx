@@ -32,14 +32,14 @@ function index() {
 		minute: '2-digit',
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
-	useEffect(() => {
-		const cashier = localStorage.getItem('user');
-		if (cashier) {
-			const jsonObject = JSON.parse(cashier);
-			console.log(jsonObject);
-			setCasher(jsonObject);
-		}
-	}, []);
+	// useEffect(() => {
+	// 	const cashier = localStorage.getItem('user');
+	// 	if (cashier) {
+	// 		const jsonObject = JSON.parse(cashier);
+	// 		console.log(jsonObject);
+	// 		setCasher(jsonObject);
+	// 	}
+	// }, []);
 
 	useEffect(() => {
 		const fetchData = async () => {

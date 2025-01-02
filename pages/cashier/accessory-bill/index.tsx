@@ -22,6 +22,7 @@ function index() {
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
 	const [selectedProduct, setSelectedProduct] = useState<string>('');
 	const [quantity, setQuantity] = useState<number>(1);
+	const [currentDraftId, setCurrentDraftId] = useState<any>("");
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
 	const [id, setId] = useState<number>(1530);
@@ -32,36 +33,6 @@ function index() {
 		minute: '2-digit',
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
-	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
-	const dropdownRef = useRef<HTMLSelectElement>(null);
-	const quantityRef = useRef<HTMLInputElement>(null);
-	const amountRef = useRef<HTMLInputElement>(null);
-	const addButtonRef = useRef<HTMLButtonElement>(null);
-	const processButtonRef = useRef<HTMLButtonElement>(null);
-
-	useEffect(() => {
-		if (dropdownRef.current) {
-			dropdownRef.current.focus();
-		}
-	}, []);
-
-	const handleKeyDown = (e: React.KeyboardEvent, currentRef: React.RefObject<any>, nextRef: React.RefObject<any>) => {
-		if (e.key === 'Enter' && nextRef.current) {
-			nextRef.current.focus();
-			e.preventDefault(); // Prevent form submission or default behavior
-		}
-	};
-
-	const handleCardNavigation = (e: React.KeyboardEvent) => {
-		if (e.key === 'ArrowRight' && amountRef.current) {
-			amountRef.current.focus();
-		} else if (e.key === 'ArrowLeft' && dropdownRef.current) {
-			dropdownRef.current.focus();
-		}
-	};
-
-
-
 	useEffect(() => {
 		const cashier = localStorage.getItem('user');
 		if (cashier) {
@@ -175,9 +146,7 @@ function index() {
 
 			setSelectedProduct('');
 			setQuantity(1);
-			if (dropdownRef.current) {
-				dropdownRef.current.focus(); // Refocus on the dropdown
-			}
+			
 			Swal.fire({
 				title: 'Success',
 				text: 'Item added/replaced successfully.',
@@ -258,9 +227,7 @@ function index() {
 						type: payment ? 'cash' : 'card',
 						id: id,
 					};
-					if (dropdownRef.current) {
-						dropdownRef.current.focus(); // Refocus on the dropdown
-					}
+					
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
@@ -341,7 +308,7 @@ function index() {
 												className='col-12'
 												>
 												<Dropdown
-												ref={dropdownRef}
+												
 													aria-label='State'
 													editable
 													placeholder='-- Select Product --'
@@ -367,7 +334,7 @@ function index() {
 												label='Quantity'
 												className='col-12 mt-2'>
 												<Input
-												ref={quantityRef}
+												
 													type='number'
 													onChange={(e: any) =>
 														setQuantity(Number(e.target.value))
@@ -379,7 +346,7 @@ function index() {
 											</FormGroup>
 											<div className='d-flex justify-content-end mt-2'>
 												<button
-												ref={addButtonRef}
+												
 													className='btn btn-success'
 													onClick={handlePopupOk}>
 													ADD
@@ -395,7 +362,7 @@ function index() {
 													label='Amount (LKR)'
 													className='col-12 mt-2'>
 													<Input
-													ref={amountRef}
+													
 														type='number'
 														onChange={(e: any) => {
 															let value = e.target.value;
@@ -436,7 +403,7 @@ function index() {
 													/>
 												</ChecksGroup>
 												<Button
-												ref={processButtonRef}
+												
 													color='success'
 													className='mt-4 w-100'
 													onClick={addbill}>
