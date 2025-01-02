@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
@@ -12,7 +12,7 @@ import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
-
+import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
 
@@ -32,6 +32,36 @@ function index() {
 		minute: '2-digit',
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
+	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
+	const dropdownRef = useRef<HTMLSelectElement>(null);
+	const quantityRef = useRef<HTMLInputElement>(null);
+	const amountRef = useRef<HTMLInputElement>(null);
+	const addButtonRef = useRef<HTMLButtonElement>(null);
+	const processButtonRef = useRef<HTMLButtonElement>(null);
+
+	useEffect(() => {
+		if (dropdownRef.current) {
+			dropdownRef.current.focus();
+		}
+	}, []);
+
+	const handleKeyDown = (e: React.KeyboardEvent, currentRef: React.RefObject<any>, nextRef: React.RefObject<any>) => {
+		if (e.key === 'Enter' && nextRef.current) {
+			nextRef.current.focus();
+			e.preventDefault(); // Prevent form submission or default behavior
+		}
+	};
+
+	const handleCardNavigation = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowRight' && amountRef.current) {
+			amountRef.current.focus();
+		} else if (e.key === 'ArrowLeft' && dropdownRef.current) {
+			dropdownRef.current.focus();
+		}
+	};
+
+
+
 	useEffect(() => {
 		const cashier = localStorage.getItem('user');
 		if (cashier) {
@@ -41,6 +71,33 @@ function index() {
 		}
 	}, []);
 
+	// Save current orderedItems as a draft
+	const handleSaveDraft = () => {
+		if (orderedItems.length === 0) {
+			Swal.fire('Error', 'No items to save as draft.', 'error');
+			return;
+		}
+
+		const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+		const newDraft = {
+			draftId: new Date().getTime(), // Unique identifier
+			orders: orderedItems,
+		};
+		localStorage.setItem('drafts', JSON.stringify([...savedDrafts, newDraft]));
+		setOrderedItems([]);
+		Swal.fire('Success', 'Draft saved successfully.', 'success');
+	};
+
+	// Load a selected draft into orderedItems
+	const handleLoadDraft = (draft: any) => {
+		if (draft && draft.orders) {
+			setOrderedItems(draft.orders);
+			setCurrentDraftId(draft.draftId) // Set the orders part of the draft
+			// Swal.fire('Success', 'Draft loaded successfully.', 'success');
+		} else {
+			Swal.fire('Error', 'Invalid draft data.', 'error');
+		}
+	};
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -56,7 +113,7 @@ function index() {
 				// 			type: 'displaystock',
 				// 		})),
 				// 	);
-				const combinedResult = [ ...result1];
+				const combinedResult = [...result1];
 				setItems(combinedResult);
 				console.log(combinedResult);
 			} catch (error) {
@@ -74,15 +131,13 @@ function index() {
 		}
 		const selectedItem = items.find((item) => item.barcode === selectedProduct);
 		if (selectedItem) {
-			console.log(selectedItem.type);
+			console.log(selectedItem);
 			if (selectedItem.type == 'displaystock') {
 				const existingItemIndex = orderedItems.findIndex(
 					(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
 				);
 
-				const existingItem = orderedItems.find(
-					(item) => item.barcode === selectedProduct,
-				);
+				const existingItem = orderedItems.find((item) => item.barcode === selectedProduct);
 				if (!existingItem) {
 					const barcode = [...selectedBarcode, selectedProduct];
 					setSelectedBarcode(barcode);
@@ -93,14 +148,14 @@ function index() {
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity:updatedItems[existingItemIndex].quantity+1
+						...selectedItem,
+						quantity: updatedItems[existingItemIndex].quantity + 1,
 					};
-					
 				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity:1 }];
+					updatedItems = [...orderedItems, { ...selectedItem, quantity: 1 }];
 				}
 				setOrderedItems(updatedItems);
-			}else{
+			} else {
 				const existingItemIndex = orderedItems.findIndex(
 					(item) => item.barcode === selectedProduct,
 				);
@@ -109,18 +164,20 @@ function index() {
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity
+						...selectedItem,
+						quantity,
 					};
-					
 				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity }];
+					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
 				}
 				setOrderedItems(updatedItems);
 			}
 
 			setSelectedProduct('');
 			setQuantity(1);
-
+			if (dropdownRef.current) {
+				dropdownRef.current.focus(); // Refocus on the dropdown
+			}
 			Swal.fire({
 				title: 'Success',
 				text: 'Item added/replaced successfully.',
@@ -133,8 +190,8 @@ function index() {
 		}
 	};
 
-	const handleDeleteItem = (cid: string) => {
-		const updatedItems = orderedItems.filter((item) => item.cid !== cid);
+	const handleDeleteItem = (code: string) => {
+		const updatedItems = orderedItems.filter((item) => item.barcode !== code);
 		setOrderedItems(updatedItems);
 
 		Swal.fire({
@@ -148,13 +205,7 @@ function index() {
 
 	const calculateSubTotal = () => {
 		return orderedItems
-			.reduce(
-				(sum, val) =>
-					sum +
-					val.price * val.quantity -
-					((val.price * val.quantity) / 100) * val.discount,
-				0,
-			)
+			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
 			.toFixed(2);
 	};
 	const calculateDiscount = () => {
@@ -164,7 +215,9 @@ function index() {
 	};
 
 	const calculateTotal = () => {
-		return orderedItems.reduce((sum, val) => sum + val.price * val.quantity, 0).toFixed(2);
+		return orderedItems
+			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
+			.toFixed(2);
 	};
 
 	const addbill = async () => {
@@ -189,6 +242,13 @@ function index() {
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
 
+					// Remove the draft by draftId
+					const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
+					const updatedDrafts = savedDrafts.filter(
+						(draft: any) => draft.draftId !== currentDraftId,
+					);
+					localStorage.setItem('drafts', JSON.stringify(updatedDrafts));
+
 					const values = {
 						orders: orderedItems,
 						time: currentTime,
@@ -198,16 +258,9 @@ function index() {
 						type: payment ? 'cash' : 'card',
 						id: id,
 					};
-					const collectionRef = collection(firestore, 'orders');
-					await addDoc(collectionRef, values);
-					const updatePromises = orderedItems.map(async (order) => {
-						const itemRef = doc(firestore, 'item', order.cid);
-						const newQuantity = order.quentity - order.quantity;
-						await updateDoc(itemRef, {
-							quentity: newQuantity > 0 ? newQuantity : 0,
-						});
-					});
-					await Promise.all(updatePromises);
+					if (dropdownRef.current) {
+						dropdownRef.current.focus(); // Refocus on the dropdown
+					}
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
@@ -228,291 +281,296 @@ function index() {
 	};
 
 	return (
-		<PageWrapper className=''>
-			<div className='row m-4'>
-				<div className='col-8 mb-3 mb-sm-0'>
-					<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
-						<CardBody isScrollable>
-							<table className='table table-hover table-bordered border-primary'>
-								<thead className={'table-dark border-primary'}>
-									<tr>
-										<th>Name</th>
-										<th>Qty</th>
-										<th>U/Price(LKR)</th>
-										<th>D/Amount(LKR)</th>
-										<th>Net Value(LKR)</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									{orderedItems.map((val: any, index: any) => (
+		<>
+			<PageWrapper className=''>
+				<MyDefaultHeader onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} />
+				<div className='row m-4'>
+					<div className='col-8 mb-3 mb-sm-0'>
+						<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
+							<CardBody isScrollable>
+								<table className='table table-hover table-bordered border-primary'>
+									<thead className={'table-dark border-primary'}>
 										<tr>
-											<td>{val.category}  {val.model}  {val.brand}</td>
-											<td>{val.quantity}</td>
-											<td>{val.sellingPrice}</td>
-											<td>
-												{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
-											</td>
-											<td>
-												{val.sellingPrice * val.quantity }
-											</td>
-											<td>
-												<Button
-													icon='delete'
-													onClick={() =>
-														handleDeleteItem(val.cid)
-													}></Button>
-											</td>
+											<th>Name</th>
+											<th>Qty</th>
+											<th>U/Price(LKR)</th>
+											<th>D/Amount(LKR)</th>
+											<th>Net Value(LKR)</th>
+											<th></th>
 										</tr>
-									))}
-									<tr>
-										<td colSpan={4} className='text fw-bold'>
-											Total
-										</td>
-										<td className='fw-bold'>{calculateSubTotal()}</td>
-										<td></td>
-									</tr>
-								</tbody>
-							</table>
-						</CardBody>
-						<CardFooter className='pb-1'>
-							{/* Two cards side by side occupying full width */}
-							<div className='d-flex w-100'>
-								<Card className='col-4 flex-grow-1 me-2'>
-									<CardBody>
-										<FormGroup
-											id='product'
-											label='Product Name'
-											className='col-12'>
-											<Dropdown
-												aria-label='State'
-												editable
-												placeholder='-- Select Product --'
-												className='selectpicker col-12'
-												options={
-													items
-														? items.map((type: any) => ({
-																value: type.barcode,
-																label: type.barcode,
-														  }))
-														: [{ value: '', label: 'No Data' }]
-												}
-												onChange={(e: any) =>
-													setSelectedProduct(e.target.value)
-												}
-												// onBlur={formik.handleBlur}
-												value={selectedProduct}
-											/>
-											{/* <Select
-												ariaLabel='Default select example'
-												onChange={(e: any) =>
-													setSelectedProduct(e.target.value)
-												}
-												value={selectedProduct}
-												placeholder='Select Item'
-												validFeedback='Looks good!'>
-												{items.map((option, index) => (
-													<Option key={index} value={option.cid}>
-														{option.name}
-													</Option>
-												))}
-											</Select> */}
-										</FormGroup>
-										<FormGroup
-											id='quantity'
-											label='Quantity'
-											className='col-12 mt-2'>
-											<Input
-												type='number'
-												onChange={(e: any) =>
-													setQuantity(Number(e.target.value))
-												}
-												value={quantity}
-												min={1}
-												validFeedback='Looks good!'
-											/>
-										</FormGroup>
-										<div className='d-flex justify-content-end mt-2'>
-											{/* <button className='btn btn-danger me-2'>Cancel</button> */}
-											<button
-												className='btn btn-success'
-												onClick={handlePopupOk}>
-												ADD
-											</button>
-										</div>
-									</CardBody>
-								</Card>
-								<Card className='flex-grow-1 ms-2'>
-									<CardBody>
-										<>
-											
+									</thead>
+									<tbody>
+										{orderedItems.map((val: any, index: any) => (
+											<tr>
+												<td>
+													{val.category} {val.model} {val.brand}
+												</td>
+												<td>{val.quantity}</td>
+												<td>{val.sellingPrice}</td>
+												<td>
+													{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
+												</td>
+												<td>{val.sellingPrice * val.quantity}</td>
+												<td>
+													<Button
+														icon='delete'
+														onClick={() =>
+															handleDeleteItem(val.barcode)
+														}></Button>
+												</td>
+											</tr>
+										))}
+										<tr>
+											<td colSpan={4} className='text fw-bold'>
+												Total
+											</td>
+											<td className='fw-bold'>{calculateSubTotal()}</td>
+											<td></td>
+										</tr>
+									</tbody>
+								</table>
+							</CardBody>
+							<CardFooter className='pb-1'>
+								
+								<div className='d-flex w-100'>
+									<Card className='col-4 flex-grow-1 me-2'>
+										<CardBody>
 											<FormGroup
-												id='amount'
-												label='Amount (LKR)'
+												id='product'
+												label='Product Name'
+												className='col-12'
+												>
+												<Dropdown
+												ref={dropdownRef}
+													aria-label='State'
+													editable
+													placeholder='-- Select Product --'
+													className='selectpicker col-12'
+													options={
+														items
+															? items.map((type: any) => ({
+																	value: type.barcode,
+																	label: type.barcode,
+															  }))
+															: [{ value: '', label: 'No Data' }]
+													}
+													onChange={(e: any) =>
+														setSelectedProduct(e.target.value)
+													}
+													
+													value={selectedProduct}
+												/>
+												
+											</FormGroup>
+											<FormGroup
+												id='quantity'
+												label='Quantity'
 												className='col-12 mt-2'>
 												<Input
+												ref={quantityRef}
 													type='number'
-													onChange={(e: any) => {
-														let value = e.target.value;
-
-														// Remove leading zero if it's the first character
-														if (
-															value.length > 1 &&
-															value.startsWith('0')
-														) {
-															value = value.substring(1); // Remove the first character
-														}
-
-														setAmount(value); // Update the state with the modified value
-													}}
-													value={amount}
-													min={0}
+													onChange={(e: any) =>
+														setQuantity(Number(e.target.value))
+													}
+													value={quantity}
+													min={1}
 													validFeedback='Looks good!'
 												/>
 											</FormGroup>
-											<ChecksGroup isInline className='pt-2'>
-												<Checks
-													// type='switch'
-													id='inlineCheckOne'
-													label='Cash'
-													name='checkOne'
-													checked={payment}
-													onClick={(e) => {
-														setPayment(true);
-													}}
-												/>
-												<Checks
-													// type='switch'
-													id='inlineCheckTwo'
-													label='Card'
-													name='checkOne'
-													checked={!payment}
-													onClick={(e) => {
-														setPayment(false);
-													}}
-												/>
-											</ChecksGroup>
-											<Button
-												color='success'
-												className='mt-4 w-100'
-												onClick={addbill}>
-												Process
-											</Button>
-										</>
-									</CardBody>
-								</Card>
-							</div>
-						</CardFooter>
-					</Card>
-				</div>
+											<div className='d-flex justify-content-end mt-2'>
+												<button
+												ref={addButtonRef}
+													className='btn btn-success'
+													onClick={handlePopupOk}>
+													ADD
+												</button>
+											</div>
+										</CardBody>
+									</Card>
+									<Card className='flex-grow-1 ms-2'>
+										<CardBody>
+											<>
+												<FormGroup
+													id='amount'
+													label='Amount (LKR)'
+													className='col-12 mt-2'>
+													<Input
+													ref={amountRef}
+														type='number'
+														onChange={(e: any) => {
+															let value = e.target.value;
+															if (
+																value.length > 1 &&
+																value.startsWith('0')
+															) {
+																value = value.substring(1);
+															}
 
-				{/* Second Card */}
-				<div className='col-4'>
-					<Card stretch className='mt-4 p-4' style={{ height: '75vh' }}>
-						<CardBody isScrollable>
-							<div
-								// ref={printRef} // Attach the ref here
-								style={{
-									width: '300px',
-									fontSize: '12px',
-									backgroundColor: 'white',
-									color: 'black',
-								}}
-								className='p-3'>
-								<center>
-									{/* <img src={Logo} style={{ height: 50, width: 100 }} alt='' /> */}
-									<p>
-										No.137M,
-										<br />
-										Colombo Road,
-										<br />
-										Biyagama
-										<br />
-										TEL : -076 227 1846 / 076 348 0380
-									</p>
-								</center>
-								<div className='d-flex justify-content-between align-items-center mt-4'>
-									<div className='text-start'>
-										<p className='mb-0'>
-											DATE &nbsp;&emsp; &emsp; &emsp;:&emsp;{currentDate}
-										</p>
-										<p className='mb-0'>START TIME&emsp;:&emsp;{currentTime}</p>
-										<p className='mb-0'> INVOICE NO&nbsp; &nbsp;:&emsp;{id}</p>
-									</div>
+															setAmount(value);
+														}}
+														value={amount}
+														min={0}
+														validFeedback='Looks good!'
+													/>
+												</FormGroup>
+												<ChecksGroup isInline className='pt-2'>
+													<Checks
+														// type='switch'
+														id='inlineCheckOne'
+														label='Cash'
+														name='checkOne'
+														checked={payment}
+														onClick={(e) => {
+															setPayment(true);
+														}}
+													/>
+													<Checks
+														// type='switch'
+														id='inlineCheckTwo'
+														label='Card'
+														name='checkOne'
+														checked={!payment}
+														onClick={(e) => {
+															setPayment(false);
+														}}
+													/>
+												</ChecksGroup>
+												<Button
+												ref={processButtonRef}
+													color='success'
+													className='mt-4 w-100'
+													onClick={addbill}>
+													Process
+												</Button>
+											</>
+										</CardBody>
+									</Card>
 								</div>
-
-								<hr />
-								<hr />
-								<p>
-									Product &emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
-									Value
-								</p>
-
-								<hr />
-
-								{orderedItems.map(
-									({ cid, name, quantity, price, discount }: any, index: any) => (
+							</CardFooter>
+						</Card>
+					</div>
+					{/* Second Card */}
+					<div className='col-4'>
+						<Card stretch className='mt-4 p-4' style={{ height: '75vh' }}>
+							<CardBody isScrollable>
+								<div
+									// ref={printRef} // Attach the ref here
+									style={{
+										width: '300px',
+										fontSize: '12px',
+										backgroundColor: 'white',
+										color: 'black',
+									}}
+									className='p-3'>
+									<center>
+										{/* <img src={Logo} style={{ height: 50, width: 100 }} alt='' /> */}
 										<p>
-											{index + 1}. {name}
+											No.137M,
 											<br />
-											{cid}&emsp;&emsp;&emsp;
-											{quantity}&emsp;&emsp;&emsp;
-											{price}.00&emsp;&emsp;&emsp;&emsp;
-											{(price * quantity).toFixed(2)}
+											Colombo Road,
+											<br />
+											Biyagama
+											<br />
+											TEL : -076 227 1846 / 076 348 0380
 										</p>
-									),
-								)}
-
-								<hr />
-								<div className='d-flex justify-content-between'>
-									<div>Total</div>
-									<div>
-										<strong>{calculateTotal()}</strong>
+									</center>
+									<div className='d-flex justify-content-between align-items-center mt-4'>
+										<div className='text-start'>
+											<p className='mb-0'>
+												DATE &nbsp;&emsp; &emsp; &emsp;:&emsp;{currentDate}
+											</p>
+											<p className='mb-0'>
+												START TIME&emsp;:&emsp;{currentTime}
+											</p>
+											<p className='mb-0'>
+												{' '}
+												INVOICE NO&nbsp; &nbsp;:&emsp;{id}
+											</p>
+										</div>
 									</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>Discount</div>
+
+									<hr />
+									<hr />
+									<p>
+										Product &emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
+										Value
+									</p>
+
+									<hr />
+
+									{orderedItems.map(
+										(
+											{
+												cid,
+												category,
+												model,
+												brand,
+												quantity,
+												price,
+												discount,
+												barcode,
+												sellingPrice,
+											}: any,
+											index: any,
+										) => (
+											<p>
+												{index + 1}. {category} {model} {brand}
+												<br />
+												{barcode}&emsp;
+												{quantity}&emsp;&emsp;&emsp;
+												{sellingPrice}.00&emsp;&emsp;&emsp;&emsp;
+												{(sellingPrice * quantity).toFixed(2)}
+											</p>
+										),
+									)}
+
+									<hr />
+									<div className='d-flex justify-content-between'>
+										<div>Total</div>
+										<div>
+											<strong>{calculateTotal()}</strong>
+										</div>
+									</div>
+									<div className='d-flex justify-content-between'>
+										{/* <div>Discount</div>
 									<div>
 										<strong>{calculateDiscount()}</strong>
+									</div> */}
 									</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>
-										<strong>Sub Total</strong>
+									<div className='d-flex justify-content-between'>
+										<div>
+											<strong>Sub Total</strong>
+										</div>
+										<div>
+											<strong>{calculateSubTotal()}</strong>
+										</div>
 									</div>
-									<div>
-										<strong>{calculateSubTotal()}</strong>
+									<hr />
+									<div className='d-flex justify-content-between'>
+										<div>Cash Received</div>
+										<div>{amount}.00</div>
 									</div>
-								</div>
-								<hr />
-								<div className='d-flex justify-content-between'>
-									<div>Cash Received</div>
-									<div>{amount}.00</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>Balance</div>
-									<div>{amount - Number(calculateSubTotal())}</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>No.Of Pieces</div>
-									<div>{orderedItems.length}</div>
-								</div>
+									<div className='d-flex justify-content-between'>
+										<div>Balance</div>
+										<div>{amount - Number(calculateSubTotal())}</div>
+									</div>
+									<div className='d-flex justify-content-between'>
+										<div>No.Of Pieces</div>
+										<div>{orderedItems.length}</div>
+									</div>
 
-								<hr />
-								<center>THANK YOU COME AGAIN</center>
-								<hr />
+									<hr />
+									<center>THANK YOU COME AGAIN</center>
+									<hr />
 
-								<center style={{ fontSize: '11px' }}></center>
-							</div>
-						</CardBody>
-					</Card>
-
-					
+									<center style={{ fontSize: '11px' }}></center>
+								</div>
+							</CardBody>
+						</Card>
+					</div>			
 				</div>
-
-				fhfhff
-			</div>
-		</PageWrapper>
+			</PageWrapper>
+		</>
 	);
 }
 
