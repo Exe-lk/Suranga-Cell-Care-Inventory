@@ -168,11 +168,11 @@ function index() {
 	};
 
 	const addbill = async () => {
-		if (
-			amount >= Number(calculateSubTotal()) &&
-			amount > 0 &&
-			Number(calculateSubTotal()) > 0
-		) {
+		// if (
+		// 	amount >= Number(calculateSubTotal()) &&
+		// 	amount > 0 &&
+		// 	Number(calculateSubTotal()) > 0
+		// ) {
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -222,9 +222,9 @@ function index() {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred. Please try again later.');
 			}
-		} else {
-			Swal.fire('Warning..!', 'Insufficient amount', 'error');
-		}
+		// } else {
+		// 	Swal.fire('Warning..!', 'Insufficient amount', 'error');
+		// }
 	};
 
 	return (
