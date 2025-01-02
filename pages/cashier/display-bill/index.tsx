@@ -10,7 +10,7 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutDissApiSlice';
+import { useGetStockInOutsQuery , useUpdateSubStockInOutMutation } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 
 function index() {
@@ -18,28 +18,30 @@ function index() {
 
 	const { data: Disstock, error, isLoading } = useGetStockInOutsQuery(undefined);
 	const { data: Accstock } = useGetStockInOutsdisQuery(undefined);
+	const [updateSubStockInOut] = useUpdateSubStockInOutMutation();
 	const [items, setItems] = useState<any[]>([]);
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
 	const [selectedProduct, setSelectedProduct] = useState<string>('');
 	const [quantity, setQuantity] = useState<number>(1);
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
-	const [id, setId] = useState<number>(1530);
+	const [id1, setId] = useState<number>(1530);
 	const [casher, setCasher] = useState<any>({});
 	const currentDate = new Date().toLocaleDateString('en-CA');
 	const currentTime = new Date().toLocaleTimeString('en-GB', {
 		hour: '2-digit',
 		minute: '2-digit',
 	});
+	const [sellingPrices, setSellingPrices] = useState<{ [prefix: string]: number }>({});
 	const [isQzReady, setIsQzReady] = useState(false);
-	useEffect(() => {
-		const cashier = localStorage.getItem('user');
-		if (cashier) {
-			const jsonObject = JSON.parse(cashier);
-			console.log(jsonObject);
-			setCasher(jsonObject);
-		}
-	}, []);
+	// useEffect(() => {
+	// 	const cashier = localStorage.getItem('user');
+	// 	if (cashier) {
+	// 		const jsonObject = JSON.parse(cashier);
+	// 		console.log(jsonObject);
+	// 		setCasher(jsonObject);
+	// 	}
+	// }, []);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -56,7 +58,7 @@ function index() {
 							type: 'displaystock',
 						})),
 					);
-				const combinedResult = [ ...result];
+				const combinedResult = [...result];
 				setItems(combinedResult);
 				console.log(combinedResult);
 			} catch (error) {
@@ -72,51 +74,52 @@ function index() {
 			Swal.fire('Error', 'Please select a product and enter a valid quantity.', 'error');
 			return;
 		}
+
+		const productPrefix = selectedProduct.slice(0, 4);
+		if (!sellingPrices[productPrefix]) {
+			Swal.fire('Warning', 'Please enter a selling price for this product.', 'error');
+			return;
+		}
+
 		const selectedItem = items.find((item) => item.barcode === selectedProduct);
+		console.log(selectedItem);
 		if (selectedItem) {
-			console.log(selectedItem.type);
-			if (selectedItem.type == 'displaystock') {
-				const existingItemIndex = orderedItems.findIndex(
-					(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
-				);
+			const sellingPrice = sellingPrices[productPrefix];
+			const existingItemIndex = orderedItems.findIndex(
+				(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
+			);
 
-				const existingItem = orderedItems.find(
-					(item) => item.barcode === selectedProduct,
-				);
-				if (!existingItem) {
-					const barcode = [...selectedBarcode, selectedProduct];
-					setSelectedBarcode(barcode);
-				}
-
-				let updatedItems;
-
-				if (existingItemIndex !== -1) {
-					updatedItems = [...orderedItems];
-					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity:updatedItems[existingItemIndex].quantity+1
-					};
-					
-				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity:1 }];
-				}
-				setOrderedItems(updatedItems);
-			}else{
-				const existingItemIndex = orderedItems.findIndex(
-					(item) => item.barcode === selectedProduct,
-				);
-				let updatedItems;
-
-				if (existingItemIndex !== -1) {
-					updatedItems = [...orderedItems];
-					updatedItems[existingItemIndex] = {
-						...selectedItem,quantity
-					};
-					
-				} else {
-					updatedItems = [...orderedItems, { ...selectedItem,quantity }];
-				}
-				setOrderedItems(updatedItems);
+			const existingItem = orderedItems.find((item) => item.barcode === selectedProduct);
+			if (!existingItem) {
+				const barcode = [
+					...selectedBarcode,
+					{ barcode: selectedProduct, id: selectedItem.id },
+				];
+				setSelectedBarcode(barcode);
 			}
+
+			let updatedItems;
+
+			if (existingItemIndex !== -1) {
+				updatedItems = [...orderedItems];
+				updatedItems[existingItemIndex] = {
+					...selectedItem,
+					quantity: updatedItems[existingItemIndex].quantity + 1,
+					sellingPrice,
+					netValue: (updatedItems[existingItemIndex].quantity + 1) * sellingPrice,
+				};
+			} else {
+				updatedItems = [
+					...orderedItems,
+					{
+						...selectedItem,
+						quantity: 1,
+						sellingPrice,
+						netValue: sellingPrice, // Initial net value for 1 item
+					},
+				];
+			}
+			setOrderedItems(updatedItems);
 
 			setSelectedProduct('');
 			setQuantity(1);
@@ -133,8 +136,17 @@ function index() {
 		}
 	};
 
-	const handleDeleteItem = (cid: string) => {
-		const updatedItems = orderedItems.filter((item) => item.cid !== cid);
+	const handleDeleteItem = (barcode: string) => {
+		// Remove the deleted item's selling price
+		const productPrefix = barcode.slice(0, 4); // Extract the first 4 digits
+		setSellingPrices((prev) => {
+			const updatedPrices = { ...prev };
+			delete updatedPrices[productPrefix];
+			return updatedPrices;
+		});
+
+		// Filter out the deleted item
+		const updatedItems = orderedItems.filter((item) => item.barcode !== barcode);
 		setOrderedItems(updatedItems);
 
 		Swal.fire({
@@ -148,15 +160,10 @@ function index() {
 
 	const calculateSubTotal = () => {
 		return orderedItems
-			.reduce(
-				(sum, val) =>
-					sum +
-					val.price * val.quantity -
-					((val.price * val.quantity) / 100) * val.discount,
-				0,
-			)
+			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
 			.toFixed(2);
 	};
+
 	const calculateDiscount = () => {
 		return orderedItems
 			.reduce((sum, val) => sum + ((val.price * val.quantity) / 100) * val.discount, 0)
@@ -167,12 +174,14 @@ function index() {
 		return orderedItems.reduce((sum, val) => sum + val.price * val.quantity, 0).toFixed(2);
 	};
 
+
 	const addbill = async () => {
-		// if (
-		// 	amount >= Number(calculateSubTotal()) &&
-		// 	amount > 0 &&
-		// 	Number(calculateSubTotal()) > 0
-		// ) {
+		console.log(selectedBarcode);
+		if (
+			amount >= Number(calculateSubTotal()) &&
+			amount > 0 &&
+			Number(calculateSubTotal()) > 0
+		) {
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -183,38 +192,33 @@ function index() {
 					cancelButtonColor: '#d33',
 					confirmButtonText: 'Yes, Print Bill!',
 				});
-
+	
 				if (result.isConfirmed) {
 					const totalAmount = calculateSubTotal();
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
-
-					const values = {
-						orders: orderedItems,
-						time: currentTime,
-						date: formattedDate,
-						casheir: casher.email,
-						amount: Number(totalAmount),
-						type: payment ? 'cash' : 'card',
-						id: id,
-					};
-					const collectionRef = collection(firestore, 'orders');
-					await addDoc(collectionRef, values);
-					const updatePromises = orderedItems.map(async (order) => {
-						const itemRef = doc(firestore, 'item', order.cid);
-						const newQuantity = order.quentity - order.quantity;
-						await updateDoc(itemRef, {
-							quentity: newQuantity > 0 ? newQuantity : 0,
-						});
-					});
-					await Promise.all(updatePromises);
+	
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
 						icon: 'success',
-						showConfirmButton: false, // Hides the OK button
-						timer: 1000, // Closes the alert after 2 seconds (2000ms)
+						showConfirmButton: false, 
+						timer: 1000, 
 					});
+					const selectedBarcodes = selectedBarcode; 
+					const subStockUpdatePromises = selectedBarcodes.map(async (subid: any) => {
+						const values = {
+							status: true, 
+							soldDate: formattedDate,
+						};
+						try {
+							await updateSubStockInOut({ id:subid.id, subid: subid.barcode, values }).unwrap();
+							console.log(`Sub-stock with ID: ${subid} updated successfully.`);
+						} catch (error) {
+							console.error(`Failed to update sub-stock with ID: ${subid}`, error);
+						}
+					});
+					await Promise.all(subStockUpdatePromises);	
 					setOrderedItems([]);
 					setAmount(0);
 				}
@@ -222,9 +226,22 @@ function index() {
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred. Please try again later.');
 			}
-		// } else {
-		// 	Swal.fire('Warning..!', 'Insufficient amount', 'error');
-		// }
+		} else {
+			Swal.fire('Warning..!', 'Insufficient amount', 'error');
+		}
+	};
+
+	
+	const handleProductChange = (value: string) => {
+		const productPrefix = value.slice(0, 4); 
+		if (sellingPrices[productPrefix]) {
+			// Auto-fill the selling price if it exists
+			setQuantity(1);
+			setSelectedProduct(value);
+		} else {
+			// Allow manual entry for selling price
+			setSelectedProduct(value);
+		}
 	};
 
 	return (
@@ -240,28 +257,30 @@ function index() {
 										<th>Qty</th>
 										<th>Cost</th>
 										<th>U/Price(LKR)</th>
-										
+
 										<th>Net Value(LKR)</th>
 										<th></th>
 									</tr>
 								</thead>
 								<tbody>
-									{orderedItems.map((val: any, index: any) => (
-										<tr>
-											<td>{val.category}  {val.model}  {val.brand}</td>
+									{orderedItems.map((val, index) => (
+										<tr key={index}>
+											<td>
+												{val.category} {val.model} {val.brand}
+											</td>
 											<td>{val.quantity}</td>
 											<td>{val.cost}</td>
+											<td>{val.sellingPrice}</td>{' '}
+											{/* Display selling price */}
 											<td>
-												{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
-											</td>
-											<td>
-												{val.sellingPrice * val.quantity }
-											</td>
+												{(val.sellingPrice * val.quantity).toFixed(2)}
+											</td>{' '}
+											{/* Calculate Net Value */}
 											<td>
 												<Button
 													icon='delete'
 													onClick={() =>
-														handleDeleteItem(val.cid)
+														handleDeleteItem(val.barcode)
 													}></Button>
 											</td>
 										</tr>
@@ -299,11 +318,11 @@ function index() {
 														: [{ value: '', label: 'No Data' }]
 												}
 												onChange={(e: any) =>
-													setSelectedProduct(e.target.value)
+													handleProductChange(e.target.value)
 												}
-												// onBlur={formik.handleBlur}
 												value={selectedProduct}
 											/>
+
 											{/* <Select
 												ariaLabel='Default select example'
 												onChange={(e: any) =>
@@ -320,19 +339,30 @@ function index() {
 											</Select> */}
 										</FormGroup>
 										<FormGroup
-											id='quantity'
-											label='Quantity'
+											id='sellingPrice'
+											label='Selling Price'
 											className='col-12 mt-2'>
 											<Input
 												type='number'
-												onChange={(e: any) =>
-													setQuantity(Number(e.target.value))
-												}
-												value={quantity}
+												onChange={(e: any) => {
+													const productPrefix = selectedProduct.slice(
+														0,
+														4,
+													);
+													const price = Number(e.target.value);
+													setSellingPrices((prev) => ({
+														...prev,
+														[productPrefix]: price,
+													})); // Store the price
+												}}
+												value={
+													sellingPrices[selectedProduct.slice(0, 4)] || ''
+												} // Auto-fill if available
 												min={1}
 												validFeedback='Looks good!'
 											/>
 										</FormGroup>
+
 										<div className='d-flex justify-content-end mt-2'>
 											{/* <button className='btn btn-danger me-2'>Cancel</button> */}
 											<button
@@ -346,7 +376,6 @@ function index() {
 								<Card className='flex-grow-1 ms-2'>
 									<CardBody>
 										<>
-											
 											<FormGroup
 												id='amount'
 												label='Amount (LKR)'
@@ -406,7 +435,6 @@ function index() {
 						</CardFooter>
 					</Card>
 				</div>
-
 				{/* Second Card */}
 				<div className='col-4'>
 					<Card stretch className='mt-4 p-4' style={{ height: '75vh' }}>
@@ -438,7 +466,7 @@ function index() {
 											DATE &nbsp;&emsp; &emsp; &emsp;:&emsp;{currentDate}
 										</p>
 										<p className='mb-0'>START TIME&emsp;:&emsp;{currentTime}</p>
-										<p className='mb-0'> INVOICE NO&nbsp; &nbsp;:&emsp;{id}</p>
+										<p className='mb-0'> INVOICE NO&nbsp; &nbsp;:&emsp;{id1}</p>
 									</div>
 								</div>
 
@@ -452,14 +480,17 @@ function index() {
 								<hr />
 
 								{orderedItems.map(
-									({ cid, name, quantity, price, discount,cost }: any, index: any) => (
+									(
+										{ cid, name, quantity, price, discount, sellingPrice }: any,
+										index: any,
+									) => (
 										<p>
 											{index + 1}. {name}
 											<br />
 											{cid}&emsp;&emsp;&emsp;
 											{quantity}&emsp;&emsp;&emsp;
-											{cost}.00&emsp;&emsp;&emsp;&emsp;
-											{(price * quantity).toFixed(2)}
+											{sellingPrice}.00&emsp;&emsp;&emsp;&emsp;
+											{(sellingPrice * quantity).toFixed(2)}
 										</p>
 									),
 								)}
@@ -468,15 +499,15 @@ function index() {
 								<div className='d-flex justify-content-between'>
 									<div>Total</div>
 									<div>
-										<strong>{calculateTotal()}</strong>
+										<strong>{calculateSubTotal()}</strong>
 									</div>
 								</div>
-								<div className='d-flex justify-content-between'>
+								{/* <div className='d-flex justify-content-between'>
 									<div>Discount</div>
 									<div>
 										<strong>{calculateDiscount()}</strong>
 									</div>
-								</div>
+								</div> */}
 								<div className='d-flex justify-content-between'>
 									<div>
 										<strong>Sub Total</strong>
@@ -507,10 +538,7 @@ function index() {
 							</div>
 						</CardBody>
 					</Card>
-
-					
 				</div>
-
 				fhfhff
 			</div>
 		</PageWrapper>
