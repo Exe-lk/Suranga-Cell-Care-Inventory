@@ -13,16 +13,17 @@ import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks'
 import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
+import { access } from 'fs';
+import { Creatbill, Getbills } from '../../../service/accessoryService';
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
 
-	const { data: Disstock, error, isLoading } = useGetStockInOutsQuery(undefined);
-	const { data: Accstock } = useGetStockInOutsdisQuery(undefined);
+	// const { data: Disstock, } = useGetStockInOutsQuery(undefined);
+	const { data: Accstock, error, isLoading } = useGetStockInOutsdisQuery(undefined);
 	const [items, setItems] = useState<any[]>([]);
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
 	const [selectedProduct, setSelectedProduct] = useState<string>('');
-	const [quantity, setQuantity] = useState<number>(1);
-	const [currentDraftId, setCurrentDraftId] = useState<any>("");
+	const [quantity, setQuantity] = useState<any>(null);
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
 	const [id, setId] = useState<number>(1530);
@@ -33,6 +34,57 @@ function index() {
 		minute: '2-digit',
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
+	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
+	const dropdownRef = useRef<HTMLSelectElement>(null);
+	const quantityRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (dropdownRef.current) {
+			dropdownRef.current.focus();
+		}
+	}, [Accstock]);
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const querySnapshot = await getDocs(collection(firestore, 'accessorybill'));
+				const dataList = querySnapshot.docs.map((doc) => ({
+					id: parseInt(doc.id, 10), // Ensure `id` is a number
+					...doc.data(),
+				}));
+
+				console.log('Data List:', dataList);
+
+				// Find the largest id
+				const largestId = dataList.reduce(
+					(max, item) => (item.id > max ? item.id : max),
+					0,
+				);
+				console.log('Largest ID:', largestId);
+				setId(largestId + 1);
+			} catch (error) {
+				console.error('Error fetching data: ', error);
+			}
+		};
+
+		fetchData();
+	}, [orderedItems]);
+
+	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			// Focus on the quantity input field
+			if (quantityRef.current) {
+				quantityRef.current.focus();
+			}
+			e.preventDefault(); // Prevent default behavior, if any
+		}
+	};
+
+	const handleaddKeyPress = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			handlePopupOk();
+		}
+	};
+
 	useEffect(() => {
 		const cashier = localStorage.getItem('user');
 		if (cashier) {
@@ -63,8 +115,8 @@ function index() {
 	const handleLoadDraft = (draft: any) => {
 		if (draft && draft.orders) {
 			setOrderedItems(draft.orders);
-			setCurrentDraftId(draft.draftId) // Set the orders part of the draft
-			// Swal.fire('Success', 'Draft loaded successfully.', 'success');
+			setCurrentDraftId(draft.draftId); // Set the orders part of the draft
+			Swal.fire('Success', 'Draft loaded successfully.', 'success');
 		} else {
 			Swal.fire('Error', 'Invalid draft data.', 'error');
 		}
@@ -93,7 +145,7 @@ function index() {
 		};
 
 		fetchData();
-	}, [payment]);
+	}, [isLoading]);
 
 	const handlePopupOk = async () => {
 		if (!selectedProduct || quantity <= 0) {
@@ -145,11 +197,13 @@ function index() {
 			}
 
 			setSelectedProduct('');
-			setQuantity(1);
-			
+			setQuantity(0);
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
 			Swal.fire({
 				title: 'Success',
-				text: 'Item added/replaced successfully.',
+				text: 'Product added/replaced successfully.',
 				icon: 'success',
 				showConfirmButton: false,
 				timer: 1000,
@@ -222,12 +276,12 @@ function index() {
 						orders: orderedItems,
 						time: currentTime,
 						date: formattedDate,
-						casheir: casher.email,
+						// casheir: casher.email,
 						amount: Number(totalAmount),
 						type: payment ? 'cash' : 'card',
 						id: id,
 					};
-					
+					Creatbill(values);
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
@@ -298,19 +352,18 @@ function index() {
 								</table>
 							</CardBody>
 							<CardFooter className='pb-1'>
-								
+								{/* Two cards side by side occupying full width */}
 								<div className='d-flex w-100'>
 									<Card className='col-4 flex-grow-1 me-2'>
 										<CardBody>
 											<FormGroup
 												id='product'
 												label='Product Name'
-												className='col-12'
-												>
+												className='col-12'>
 												<Dropdown
-												
 													aria-label='State'
 													editable
+													ref={dropdownRef}
 													placeholder='-- Select Product --'
 													className='selectpicker col-12'
 													options={
@@ -324,29 +377,30 @@ function index() {
 													onChange={(e: any) =>
 														setSelectedProduct(e.target.value)
 													}
-													
+													onKeyDown={handleDropdownKeyPress}
+													// onBlur={formik.handleBlur}
 													value={selectedProduct}
 												/>
-												
 											</FormGroup>
 											<FormGroup
 												id='quantity'
 												label='Quantity'
 												className='col-12 mt-2'>
 												<Input
-												
+													ref={quantityRef}
 													type='number'
+													onKeyDown={handleaddKeyPress}
 													onChange={(e: any) =>
 														setQuantity(Number(e.target.value))
 													}
 													value={quantity}
-													min={1}
+													min={0}
 													validFeedback='Looks good!'
 												/>
 											</FormGroup>
 											<div className='d-flex justify-content-end mt-2'>
+												{/* <button className='btn btn-danger me-2'>Cancel</button> */}
 												<button
-												
 													className='btn btn-success'
 													onClick={handlePopupOk}>
 													ADD
@@ -362,18 +416,19 @@ function index() {
 													label='Amount (LKR)'
 													className='col-12 mt-2'>
 													<Input
-													
 														type='number'
 														onChange={(e: any) => {
 															let value = e.target.value;
+
+															// Remove leading zero if it's the first character
 															if (
 																value.length > 1 &&
 																value.startsWith('0')
 															) {
-																value = value.substring(1);
+																value = value.substring(1); // Remove the first character
 															}
 
-															setAmount(value);
+															setAmount(value); // Update the state with the modified value
 														}}
 														value={amount}
 														min={0}
@@ -403,7 +458,6 @@ function index() {
 													/>
 												</ChecksGroup>
 												<Button
-												
 													color='success'
 													className='mt-4 w-100'
 													onClick={addbill}>
@@ -534,7 +588,7 @@ function index() {
 								</div>
 							</CardBody>
 						</Card>
-					</div>			
+					</div>
 				</div>
 			</PageWrapper>
 		</>

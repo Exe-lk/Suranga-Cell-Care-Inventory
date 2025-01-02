@@ -11,7 +11,7 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft }: any) => {
 	useEffect(() => {
 		const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
 		setDrafts(savedDrafts);
-	}, [drafts]);
+	}, [onSaveDraft]);
 
 	// Handle dropdown selection
 	const handleSelectDraft1 = (draft: any) => {
