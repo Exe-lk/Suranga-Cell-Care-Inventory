@@ -194,7 +194,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					setSelectedBrand('');
 				}}
 				className='p-4'>
-				<ModalTitle id=''>{'New Item'}</ModalTitle>
+				<ModalTitle id=''>{'Create Item'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
 				<div className='row g-4'>

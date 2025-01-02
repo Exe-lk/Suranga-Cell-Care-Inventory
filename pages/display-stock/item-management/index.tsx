@@ -363,7 +363,7 @@ const Index: NextPage = () => {
 						color='success'
 						isLight
 						onClick={() => setAddModalStatus(true)}>
-						New Item
+						Create Item
 					</Button>
 				</SubHeaderRight>
 			</SubHeader>
