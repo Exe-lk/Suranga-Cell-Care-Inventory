@@ -433,24 +433,39 @@ const Index: NextPage = () => {
 												</tr>
 											)}
 											{itemDiss &&
+												// dataPagination(itemDiss, currentPage, perPage)
+												// 	.filter((brand: any) => {
+												// 		if (
+												// 			brand.code.includes(
+												// 				searchTerm.slice(0, 4),
+												// 			)
+												// 		) {
+												// 			return brand;
+												// 		}
+												// 	})
+												// 	.map((itemDiss: any, index: any) => (
+												// 		<tr key={index}>
+												// 			<td>{itemDiss.model}</td>
+												// 			<td>{itemDiss.brand}</td>
+												// 			<td>{itemDiss.reorderLevel}</td>
+												// 			<td>{itemDiss.quantity}</td>
+												// 			<td>{itemDiss.boxNumber}</td>
+												// 			<td>{itemDiss.category}</td>
 												dataPagination(itemDiss, currentPage, perPage)
-													.filter((brand: any) => {
-														if (
-															brand.code.includes(
-																searchTerm.slice(0, 4),
-															)
-														) {
-															return brand;
-														}
-													})
+													.filter((item: any) =>
+														searchTerm
+														? item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+															item.brand.toLowerCase().includes(searchTerm.toLowerCase())
+														: true,
+													)
 													.map((itemDiss: any, index: any) => (
 														<tr key={index}>
-															<td>{itemDiss.model}</td>
-															<td>{itemDiss.brand}</td>
-															<td>{itemDiss.reorderLevel}</td>
-															<td>{itemDiss.quantity}</td>
-															<td>{itemDiss.boxNumber}</td>
-															<td>{itemDiss.category}</td>
+														<td>{itemDiss.model}</td>
+														<td>{itemDiss.brand}</td>
+														<td>{itemDiss.reorderLevel}</td>
+														<td>{itemDiss.quantity}</td>
+														<td>{itemDiss.boxNumber}</td>
+														<td>{itemDiss.category}</td>
 															<td>
 																<Button
 																	icon='CallReceived'
