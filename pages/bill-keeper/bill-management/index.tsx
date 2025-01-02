@@ -516,8 +516,7 @@ const Index: NextPage = () => {
 								<table className='table  table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary'}>
 										<tr>
-											<th>Date In</th>
-											<th>Date out</th>
+											<th>Date In</th>											
 											<th>Phone Details</th>
 											<th>Bill Num</th>
 											<th>Phone Model</th>
@@ -525,11 +524,12 @@ const Index: NextPage = () => {
 											<th>Tech No.</th>
 											<th>Customer Name</th>
 											<th>Mobile Num</th>
-											<th>Email</th>
+											{/* <th>Email</th> */}
 											<th>NIC</th>
 											<th>Cost</th>
 											<th>Price</th>
 											<th>Status</th>
+											<th>Date out</th>
 											<th></th>
 										</tr>
 									</thead>
@@ -570,8 +570,7 @@ const Index: NextPage = () => {
 												)
 												.map((bill: any, index: any) => (
 													<tr key={index}>
-														<td>{bill.dateIn}</td>
-														<td>{bill.DateOut}</td>
+														<td>{bill.dateIn}</td>														
 														<td>{bill.phoneDetail}</td>
 														<td>{bill.billNumber}</td>
 														<td>{bill.phoneModel}</td>
@@ -579,7 +578,7 @@ const Index: NextPage = () => {
 														<td>{bill.technicianNum}</td>
 														<td>{bill.CustomerName}</td>
 														<td>{bill.CustomerMobileNum}</td>
-														<td>{bill.email}</td>
+														{/* <td>{bill.email}</td> */}
 														<td>{bill.NIC}</td>
 														<td>{bill.cost}</td>
 														<td>{bill.Price}</td>
@@ -591,6 +590,7 @@ const Index: NextPage = () => {
 																{bill.Status}
 															</span>
 														</td>
+														<td>{bill.DateOut}</td>
 														<td>
 															<Button
 																icon='Edit'
