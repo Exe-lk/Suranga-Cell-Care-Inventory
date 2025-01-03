@@ -21,7 +21,7 @@ interface StockAddModalProps {
 
 interface StockIn {
 	barcode: number;
-	cid: string;
+	id: string;
 	brand: string;
 	model: string;
 	category: string;
@@ -38,11 +38,12 @@ interface StockIn {
 	stock: string;
 	status: boolean;
 	sellingPrice: Number;
+	imi: string;
 }
 
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
 	const [stockIn, setStockIn] = useState<StockIn>({
-		cid: '',
+		id: '',
 		brand: '',
 		model: '',
 		category: '',
@@ -60,6 +61,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		status: true,
 		sellingPrice: 0,
 		barcode: 0,
+		imi: '',
 	});
 	const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
@@ -119,6 +121,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 			status: true,
 			sellingPrice: 0,
 			barcode: generatedbarcode,
+			imi: '',
+			cid: stockIn.id || '',
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -155,6 +159,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 					}
 				}
 			}
+			if (values.type === 'Mobile' && !values.imi)
+				errors.imi = 'Imi is required';
 			if (!values.cost) {
 				errors.cost = 'Cost is required';
 			}
@@ -173,8 +179,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 				const finalValues = {
 					...values,
 					quantity: values.type === 'Mobile' ? '1' : values.quantity, // Set quantity to 1 for Mobile
+					cid: stockIn.id,
 				};
-
 				try {
 					const updatedQuantity = parseInt(nowQuantity) + parseInt(finalValues.quantity);
 					const response: any = await addstockIn({
@@ -267,6 +273,21 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							isTouched={formik.touched.type}
 						/>
 					</FormGroup>
+					{formik.values.type === 'Mobile' && (
+						<FormGroup id='imi' label='IMEI' className='col-md-6'>
+						<Input
+							type='text'
+							onChange={formik.handleChange}
+							value={formik.values.imi}
+							name='imi'
+							placeholder='Enter IMEI'
+							isValid={formik.isValid}
+							isTouched={formik.touched.imi}
+							invalidFeedback={formik.errors.imi}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					)}
 					{formik.values.type === 'Mobile' && (
 						<>
 							<FormGroup id='storage' label='Storage' className='col-md-6'>

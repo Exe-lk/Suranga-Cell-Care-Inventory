@@ -73,7 +73,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					description: itemAcce.description,
 					code: itemAcce.code,
 					quantity:itemAcce.quantity,
-					imi:itemAcce.imi
 
 				};
 				await updateItemAcce(values).unwrap();
@@ -141,7 +140,6 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						description: itemAcce.description,
 						code: itemAcce.code,
 						quantity:itemAcce.quantity,
-						imi:itemAcce.imi
 
 					};
 					await updateItemAcce(values).unwrap();
