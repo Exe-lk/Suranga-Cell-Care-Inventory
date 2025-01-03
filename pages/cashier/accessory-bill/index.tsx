@@ -24,7 +24,7 @@ function index() {
 	const [quantity, setQuantity] = useState<any>(null);
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
-	const [id, setId] = useState<number>(1530);
+	const [id, setId] = useState<number>(0);
 	const [casher, setCasher] = useState<any>({});
 	const currentDate = new Date().toLocaleDateString('en-CA');
 	const currentTime = new Date().toLocaleTimeString('en-GB', {
@@ -305,27 +305,27 @@ function index() {
 							'Suranga Cell Care\n\n',
 							'\x1D\x21\x00',
 							'\x1B\x4D\x00',
-							'No.524/1/A,\nKandy Road,\nKadawatha\n\n',
+							'No.524/1/A,\nKandy Road,\nKadawatha\n',
 							'\x1B\x61\x00',
 							'TEL: 011 292 6030/ 071 911 1144\n\n',
 							`Date      :${currentDate}\n
 							 START TIME: ${currentTime}\n
 							 INVOICE NO: ${id}\n`,
 							'\x1B\x61\x00',
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'Product Qty U/Price Net Value\n',
-							'----------------------------\n',
-							...orderedItems.map(({ name, quantity, sellingPrice }) => {
+							'-----------------------------------\n',
+							...orderedItems.map(({ name, quantity, sellingPrice,category,model,brand, }) => {
 								
 								const netValue = sellingPrice * quantity ;
 								const truncatedName =
-									name.length > 10 ? name.substring(0, 10) + '...' : name;
+								brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
 
-								return `${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
+								return `${category} ${model} ${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
 									2,
 								)} ${netValue.toFixed(2)}\n`;
 							}),
-							'----------------------------\n',
+							'-----------------------------------\n',
 							
 							
 							'\x1B\x61\x01',
@@ -337,21 +337,17 @@ function index() {
 							'\x1B\x61\x00',
 							'\n',
 							`Cash Received   : ${amount}.00\n`,
-							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
-								2,
-							)}\n`,
-							'\n',
+							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(2,)}\n`,
 							`No. of Pieces   : ${orderedItems.length}\n`,
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'\x1B\x61\x01',
 							'THANK YOU COME AGAIN !\n',
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'\x1B\x61\x01',
 							'Retail POS by EXE.lk\n',
 							'Call: 070 332 9900\n',
-							'----------------------------\n',
-							'----------------------------\n',
-							'----------------------------\n',
+							'-----------------------------------\n',
+							
 							'\x1D\x56\x41',
 						];
 						await window.qz.print(config, data);
