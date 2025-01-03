@@ -62,6 +62,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			reorderLevel: itemAcceToEdit?.reorderLevel || '',
 			description: itemAcceToEdit?.description || '',
 			status: true,
+			imi: itemAcceToEdit?.imi || '',
 		},
 		validate: (values) => {
 			const errors: {
@@ -74,11 +75,14 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				quantity?: string;
 				reorderLevel?: string;
 				description?: string;
+				imi?: string;
 			} = {};
 			if (!values.code) errors.code = 'Code is required';
 			if (!values.type) errors.type = 'Type is required';
 			if (values.type === 'Mobile' && !values.mobileType)
 				errors.mobileType = 'Mobile Type is required';
+			if (values.type === 'Mobile' && !values.imi)
+				errors.imi = 'Imi is required';
 			if (!values.category) errors.category = 'Category is required';
 			if (!values.model) errors.model = 'Model is required';
 			if (!values.brand) errors.brand = 'Brand is required';
@@ -107,6 +111,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					quantity: values.quantity,
 					reorderLevel: values.reorderLevel,
 					description: values.description,
+					imi: values.imi,
 				};
 				await updateItemAcce(data).unwrap();
 				await refetch();
@@ -211,6 +216,22 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								<Option value='Used'>Used</Option>
 							</Select>
 						</FormGroup>
+					)}
+					{formik.values.type === 'Mobile' && (
+						<FormGroup id='imi' label='IMEI' className='col-md-6'>
+						<Input
+							type='text'
+							onChange={formik.handleChange}
+							value={formik.values.imi}
+							name='imi'
+							placeholder='Enter IMEI'
+							isValid={formik.isValid}
+							isTouched={formik.touched.imi}
+							invalidFeedback={formik.errors.imi}
+							validFeedback='Looks good!'
+							readOnly
+						/>
+					</FormGroup>
 					)}
 					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
