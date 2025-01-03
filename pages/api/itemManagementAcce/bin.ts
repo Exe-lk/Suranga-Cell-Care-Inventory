@@ -10,12 +10,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     switch (req.method) {
       case 'POST': {
-        const { type, mobileType, category, model, quantity, brand, reorderLevel, description, code } = req.body;
+        const { type, mobileType, category, model, quantity, brand, reorderLevel, description, code ,imi} = req.body;
         if (!model) {
           res.status(400).json({ error: 'Item Acce model  is required' });
           return;
         }
-        const id = await createItemAcce(type, mobileType, category, model, quantity, brand, reorderLevel, description, code);
+        const id = await createItemAcce(type, mobileType, category, model, quantity, brand, reorderLevel, description, code,imi);
         res.status(201).json({ message: 'Item Acce created', id });
         break;
       }
@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id,type, mobileType, category, model, quantity, brand, reorderLevel, description, code ,status } = req.body;
+        const { id,type, mobileType, category, model, quantity, brand, reorderLevel, description, code ,status,imi } = req.body;
         if (!id || !model) {
           res.status(400).json({ error: 'Item Acce ID and model  are required' });
           return;
         }
-        await updateItemAcce(id, type, mobileType, category, model, quantity, brand, reorderLevel, description, code, status);
+        await updateItemAcce(id, type, mobileType, category, model, quantity, brand, reorderLevel, description, code, status,imi);
         res.status(200).json({ message: 'Item Acce updated' });
         break;
       }

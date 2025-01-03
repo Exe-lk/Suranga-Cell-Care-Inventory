@@ -75,6 +75,7 @@ const Index: NextPage = () => {
 					description: itemAcce.description,
 					code: itemAcce.code,
 					status: false,
+					imi: itemAcce.imi,
 				};
 				await updateItemAcce(values);
 				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');

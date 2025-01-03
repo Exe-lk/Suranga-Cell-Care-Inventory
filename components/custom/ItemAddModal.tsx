@@ -75,6 +75,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			reorderLevel: '',
 			description: '',
 			status: true,
+			imi: '',
 		},
 		validate: (values) => {
 			const errors: Record<string, string> = {};
@@ -83,6 +84,9 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (values.type === 'Mobile' && !values.mobileType) {
 				errors.mobileType = 'Mobile Type is required';
+			}
+			if (values.type === 'Mobile' && !values.imi) {
+				errors.imi = 'IMEI is required';
 			}
 			if (!values.category) {
 				errors.category = 'Category is required';
@@ -99,6 +103,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			return errors;
 		},
 		onSubmit: async (values) => {
+			console.log('values: ', values);
 			try {
 				const process = Swal.fire({
 					title: 'Processing...',
@@ -217,6 +222,21 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								<Option value='Used'>Used</Option>
 							</Select>
 						</FormGroup>
+					)}
+					{formik.values.type === 'Mobile' && (
+						<FormGroup id='imi' label='IMEI' className='col-md-6'>
+						<Input
+							type='text'
+							onChange={formik.handleChange}
+							value={formik.values.imi}
+							name='imi'
+							placeholder='Enter IMEI'
+							isValid={formik.isValid}
+							isTouched={formik.touched.imi}
+							invalidFeedback={formik.errors.imi}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
 					)}
 					<FormGroup id='category' label='Category' className='col-md-6'>
 						<Select
