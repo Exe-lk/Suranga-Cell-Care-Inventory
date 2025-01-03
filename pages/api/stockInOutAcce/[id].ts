@@ -20,10 +20,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       case 'PUT': {
         const { quantity } = req.body;
-        if (!quantity) {
-          res.status(400).json({ error: 'Dealer name is required' });
-          return;
-        }
+        // if (!quantity) {
+        //   res.status(400).json({ error: 'Dealer name is required' });
+        //   return;
+        // }
         await updatestockIn(id as string, quantity);
         res.status(200).json({ message: 'Dealer updated' });
         break;
