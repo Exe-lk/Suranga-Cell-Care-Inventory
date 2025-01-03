@@ -101,14 +101,14 @@ function index() {
 		}
 	};
 
-	useEffect(() => {
-		const cashier = localStorage.getItem('user');
-		if (cashier) {
-			const jsonObject = JSON.parse(cashier);
-			console.log(jsonObject);
-			setCasher(jsonObject);
-		}
-	}, []);
+	// useEffect(() => {
+	// 	const cashier = localStorage.getItem('user');
+	// 	if (cashier) {
+	// 		const jsonObject = JSON.parse(cashier);
+	// 		console.log(jsonObject);
+	// 		setCasher(jsonObject);
+	// 	}
+	// }, []);
 
 	// Save current orderedItems as a draft
 	const handleSaveDraft = () => {
