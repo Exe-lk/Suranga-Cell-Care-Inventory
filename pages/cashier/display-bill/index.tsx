@@ -1,17 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import Page from '../../../layout/Page/Page';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import 'react-simple-keyboard/build/css/index.css';
 import Swal from 'sweetalert2';
+import Spinner from '../../../components/bootstrap/Spinner';
 import Card, { CardBody, CardFooter } from '../../../components/bootstrap/Card';
 import { Dropdown } from 'primereact/dropdown';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import { useGetStockInOutsQuery , useUpdateSubStockInOutMutation } from '../../../redux/slices/stockInOutDissApiSlice';
+import {
+	useGetStockInOutsQuery,
+	useUpdateSubStockInOutMutation,
+} from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
+import MyDefaultHeader1 from '../../_layout/_headers/CashieriDisplayHeader';
+import { Creatbill, Getbills } from '../../../service/displayServices';
+
 
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
@@ -32,8 +40,18 @@ function index() {
 		hour: '2-digit',
 		minute: '2-digit',
 	});
+	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
 	const [sellingPrices, setSellingPrices] = useState<{ [prefix: string]: number }>({});
 	const [isQzReady, setIsQzReady] = useState(false);
+	const dropdownRef = useRef<Dropdown>(null);
+	const sellingPriceRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		if (dropdownRef.current) {
+			dropdownRef.current.focus();
+		}
+	}, [Disstock]);
+
 	// useEffect(() => {
 	// 	const cashier = localStorage.getItem('user');
 	// 	if (cashier) {
@@ -42,6 +60,33 @@ function index() {
 	// 		setCasher(jsonObject);
 	// 	}
 	// }, []);
+
+	const handleSaveDraft = () => {
+		if (orderedItems.length === 0) {
+			Swal.fire('Error', 'No items to save as draft.', 'error');
+			return;
+		}
+
+		const savedDrafts = JSON.parse(localStorage.getItem('drafts1') || '[]');
+		const newDraft = {
+			draftId: new Date().getTime(), // Unique identifier
+			orders: orderedItems,
+		};
+		localStorage.setItem('drafts1', JSON.stringify([...savedDrafts, newDraft]));
+		setOrderedItems([]);
+		Swal.fire('Success', 'Draft saved successfully.', 'success');
+	};
+
+	// Load a selected draft into orderedItems
+	const handleLoadDraft = (draft: any) => {
+		if (draft && draft.orders) {
+			setOrderedItems(draft.orders);
+			setCurrentDraftId(draft.draftId); // Set the orders part of the draft
+			Swal.fire('Success', 'Draft loaded successfully.', 'success');
+		} else {
+			Swal.fire('Error', 'Invalid draft data.', 'error');
+		}
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -67,7 +112,23 @@ function index() {
 		};
 
 		fetchData();
-	}, [payment]);
+	}, [isLoading]);
+
+	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			// Focus on the quantity input field
+			if (sellingPriceRef.current) {
+				sellingPriceRef.current.focus();
+			}
+			e.preventDefault(); // Prevent default behavior, if any
+		}
+	};
+
+	const handleaddKeyPress = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			handlePopupOk();
+		}
+	};
 
 	const handlePopupOk = async () => {
 		if (!selectedProduct || quantity <= 0) {
@@ -115,7 +176,7 @@ function index() {
 						...selectedItem,
 						quantity: 1,
 						sellingPrice,
-						netValue: sellingPrice, // Initial net value for 1 item
+						netValue: sellingPrice,
 					},
 				];
 			}
@@ -123,10 +184,13 @@ function index() {
 
 			setSelectedProduct('');
 			setQuantity(1);
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
 
 			Swal.fire({
 				title: 'Success',
-				text: 'Item added/replaced successfully.',
+				text: 'Product added/replaced successfully.',
 				icon: 'success',
 				showConfirmButton: false,
 				timer: 1000,
@@ -174,7 +238,6 @@ function index() {
 		return orderedItems.reduce((sum, val) => sum + val.price * val.quantity, 0).toFixed(2);
 	};
 
-
 	const addbill = async () => {
 		console.log(selectedBarcode);
 		if (
@@ -192,33 +255,52 @@ function index() {
 					cancelButtonColor: '#d33',
 					confirmButtonText: 'Yes, Print Bill!',
 				});
-	
+
 				if (result.isConfirmed) {
 					const totalAmount = calculateSubTotal();
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
-	
+					const savedDrafts = JSON.parse(localStorage.getItem('drafts1') || '[]');
+					const updatedDrafts = savedDrafts.filter(
+						(draft: any) => draft.draftId !== currentDraftId,
+					);
+					localStorage.setItem('drafts1', JSON.stringify(updatedDrafts));
+					const values = {
+						orders: orderedItems,
+						time: currentTime,
+						date: formattedDate,
+						// casheir: casher.email,
+						amount: Number(totalAmount),
+						type: payment ? 'cash' : 'card',
+						id: id1,
+					};
+					Creatbill(values);
+
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
 						icon: 'success',
-						showConfirmButton: false, 
-						timer: 1000, 
+						showConfirmButton: false,
+						timer: 1000,
 					});
-					const selectedBarcodes = selectedBarcode; 
+					const selectedBarcodes = selectedBarcode;
 					const subStockUpdatePromises = selectedBarcodes.map(async (subid: any) => {
 						const values = {
-							status: true, 
+							status: true,
 							soldDate: formattedDate,
 						};
 						try {
-							await updateSubStockInOut({ id:subid.id, subid: subid.barcode, values }).unwrap();
+							await updateSubStockInOut({
+								id: subid.id,
+								subid: subid.barcode,
+								values,
+							}).unwrap();
 							console.log(`Sub-stock with ID: ${subid} updated successfully.`);
 						} catch (error) {
 							console.error(`Failed to update sub-stock with ID: ${subid}`, error);
 						}
 					});
-					await Promise.all(subStockUpdatePromises);	
+					await Promise.all(subStockUpdatePromises);
 					setOrderedItems([]);
 					setAmount(0);
 				}
@@ -231,9 +313,8 @@ function index() {
 		}
 	};
 
-	
 	const handleProductChange = (value: string) => {
-		const productPrefix = value.slice(0, 4); 
+		const productPrefix = value.slice(0, 4);
 		if (sellingPrices[productPrefix]) {
 			// Auto-fill the selling price if it exists
 			setQuantity(1);
@@ -243,9 +324,33 @@ function index() {
 			setSelectedProduct(value);
 		}
 	};
-
+	if (isLoading) {
+		console.log(isLoading);
+		return (
+			<PageWrapper>
+				<Page>
+					<div className='row h-100 py-5'>
+						<div className='col-12 text-center py-5 my-5'>
+							<Spinner
+								tag={'div'}
+								color={'primary'}
+								isGrow={false}
+								size={50} // Example: 10, '3vh', '5rem' etc.
+								// inButton={ Boolean || String} // true || false || 'onlyIcon'
+								className={''}
+							/>
+							<br />
+							<br />
+							<h2>Please Wait</h2>
+						</div>
+					</div>
+				</Page>
+			</PageWrapper>
+		);
+	}
 	return (
 		<PageWrapper className=''>
+			<MyDefaultHeader1 onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} />
 			<div className='row m-4'>
 				<div className='col-8 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
@@ -307,6 +412,7 @@ function index() {
 											<Dropdown
 												aria-label='State'
 												editable
+												ref={dropdownRef}
 												placeholder='-- Select Product --'
 												className='selectpicker col-12'
 												options={
@@ -320,6 +426,7 @@ function index() {
 												onChange={(e: any) =>
 													handleProductChange(e.target.value)
 												}
+												onKeyDown={handleDropdownKeyPress}
 												value={selectedProduct}
 											/>
 
@@ -343,7 +450,9 @@ function index() {
 											label='Selling Price'
 											className='col-12 mt-2'>
 											<Input
+												ref={sellingPriceRef}
 												type='number'
+												onKeyDown={handleaddKeyPress}
 												onChange={(e: any) => {
 													const productPrefix = selectedProduct.slice(
 														0,
@@ -473,7 +582,7 @@ function index() {
 								<hr />
 								<hr />
 								<p>
-									Product &emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
+									Product &emsp;&emsp;&emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
 									Value
 								</p>
 
@@ -481,13 +590,13 @@ function index() {
 
 								{orderedItems.map(
 									(
-										{ cid, name, quantity, price, discount, sellingPrice }: any,
+										{ cid, name, quantity, price, discount, sellingPrice ,category,model,brand,barcode}: any,
 										index: any,
 									) => (
 										<p>
-											{index + 1}. {name}
+											{index + 1}. {category} {model} {brand}
 											<br />
-											{cid}&emsp;&emsp;&emsp;
+											{barcode}&emsp;
 											{quantity}&emsp;&emsp;&emsp;
 											{sellingPrice}.00&emsp;&emsp;&emsp;&emsp;
 											{(sellingPrice * quantity).toFixed(2)}
