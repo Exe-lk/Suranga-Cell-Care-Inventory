@@ -315,19 +315,19 @@ function index() {
 							'----------------------------\n',
 							'Product Qty U/Price Net Value\n',
 							'----------------------------\n',
-							...orderedItems.map(({ name, quantity, price, discount }) => {
-								const discountAmount = ((price * quantity) / 100) * discount;
-								const netValue = price * quantity - discountAmount;
+							...orderedItems.map(({ name, quantity, sellingPrice }) => {
+								
+								const netValue = sellingPrice * quantity ;
 								const truncatedName =
 									name.length > 10 ? name.substring(0, 10) + '...' : name;
 
-								return `${truncatedName} \n         ${quantity}  ${price.toFixed(
+								return `${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
 									2,
 								)} ${netValue.toFixed(2)}\n`;
 							}),
 							'----------------------------\n',
-							`TOTAL           : ${calculateTotal()}\n`,
-							`Discount Amount : ${calculateDiscount()}\n\n`,
+							
+							
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
