@@ -190,7 +190,7 @@ function index() {
 
 			Swal.fire({
 				title: 'Success',
-				text: 'Item added/replaced successfully.',
+				text: 'Product added/replaced successfully.',
 				icon: 'success',
 				showConfirmButton: false,
 				timer: 1000,
@@ -582,7 +582,7 @@ function index() {
 								<hr />
 								<hr />
 								<p>
-									Product &emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
+									Product &emsp;&emsp;&emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
 									Value
 								</p>
 
@@ -590,13 +590,13 @@ function index() {
 
 								{orderedItems.map(
 									(
-										{ cid, name, quantity, price, discount, sellingPrice }: any,
+										{ cid, name, quantity, price, discount, sellingPrice ,category,model,brand,barcode}: any,
 										index: any,
 									) => (
 										<p>
-											{index + 1}. {name}
+											{index + 1}. {category} {model} {brand}
 											<br />
-											{cid}&emsp;&emsp;&emsp;
+											{barcode}&emsp;
 											{quantity}&emsp;&emsp;&emsp;
 											{sellingPrice}.00&emsp;&emsp;&emsp;&emsp;
 											{(sellingPrice * quantity).toFixed(2)}
