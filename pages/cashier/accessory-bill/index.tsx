@@ -302,10 +302,12 @@ function index() {
 							'\x1B\x40',
 							'\x1B\x61\x01',
 							'\x1D\x21\x11',
-							'Suranga Cell Care\n\n',
+							'\x1B\x45\x01', // ESC E 1 - Bold on
+							'Suranga Cell Care\n\n', // Store name
+							'\x1B\x45\x00', // ESC E 0 - Bold off
 							'\x1D\x21\x00',
 							'\x1B\x4D\x00',
-							'No.524/1/A,\nKandy Road,\nKadawatha\n',
+							'No.524/1/A,\nKandy Road,Kadawatha\n',
 							'011 292 6030/ 071 911 1144\n',
 							'\x1B\x61\x00',
 							`Date        : ${formattedDate}\n`,
@@ -315,25 +317,30 @@ function index() {
 							'---------------------------------\n',
 							'Product Qty  U/Price    Net Value\n',
 							'---------------------------------\n',
-							...orderedItems.map(({ name, quantity, sellingPrice,category,model,brand, }) => {
-								
-								const netValue = sellingPrice * quantity ;
-								const truncatedName =
-								brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+							...orderedItems.map(
+								({ name, quantity, sellingPrice, category, model, brand }) => {
+									const netValue = sellingPrice * quantity;
+									const truncatedName =
+										brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
 
-								return( `${category} ${model} ${truncatedName} \n      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`);
-							}),
+									return `${category} ${model} ${truncatedName} \n      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`;
+								},
+							),
 							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
+							'\x1B\x45\x01', 
 							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
+							'\x1B\x45\x00',
 							'\x1D\x21\x00',
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
 							'---------------------------------\n',
 							`Cash Received   : ${amount}.00\n`,
-							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(2,)}\n`,
+							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
+								2,
+							)}\n`,
 							`No. of Pieces   : ${orderedItems.length}\n`,
 							'---------------------------------\n',
 							'\x1B\x61\x01',
