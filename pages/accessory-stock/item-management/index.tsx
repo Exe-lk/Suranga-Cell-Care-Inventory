@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import SubHeader, {
-	SubHeaderLeft,
-	SubHeaderRight,
-} from '../../../layout/SubHeader/SubHeader';
+import SubHeader, { SubHeaderLeft, SubHeaderRight } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
@@ -30,7 +27,7 @@ import autoTable from 'jspdf-autotable';
 import { useUpdateItemAcceMutation } from '../../../redux/slices/itemManagementAcceApiSlice';
 import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
 import bill from '../../../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
-
+import { set } from 'date-fns';
 
 const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
@@ -487,10 +484,13 @@ const Index: NextPage = () => {
 																icon='CallReceived'
 																tag='a'
 																color='success'
-																onClick={() => (
+																onClick={() => {
 																	setAddstockModalStatus(true),
 																	setId(itemAcces.id)
-																)}></Button>
+																	setQuantity(
+																		itemAcces.quantity,
+																	);
+																}}></Button>
 														</td>
 														<td>
 															<Button
@@ -552,6 +552,7 @@ const Index: NextPage = () => {
 				setIsOpen={setAddstockModalStatus}
 				isOpen={addstockModalStatus}
 				id={id}
+				quantity={quantity}
 			/>
 			<StockOutModal
 				setIsOpen={setEditstockModalStatus}
