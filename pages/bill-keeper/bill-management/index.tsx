@@ -65,6 +65,7 @@ const Index: NextPage = () => {
 		return isDateInValid && isDateOutValid;
 	});
 
+	
 	const handleClickDelete = async (bill: any) => {
 		try {
 			const result = await Swal.fire({
