@@ -18,7 +18,7 @@ import {
 } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 import MyDefaultHeader1 from '../../_layout/_headers/CashieriDisplayHeader';
-import { Creatbill, Getbills } from '../../../service/displayServices';
+import {useAddBillMutation} from '../../../redux/slices/displayService';
 
 
 function index() {
@@ -45,6 +45,7 @@ function index() {
 	const [isQzReady, setIsQzReady] = useState(false);
 	const dropdownRef = useRef<Dropdown>(null);
 	const sellingPriceRef = useRef<HTMLInputElement>(null);
+	const [addbillDisplay] = useAddBillMutation();
 
 	useEffect(() => {
 		if (dropdownRef.current) {
@@ -269,12 +270,13 @@ function index() {
 						orders: orderedItems,
 						time: currentTime,
 						date: formattedDate,
-						// casheir: casher.email,
 						amount: Number(totalAmount),
 						type: payment ? 'cash' : 'card',
 						id: id1,
 					};
-					Creatbill(values);
+					console.log(values);
+					const response: any = await addbillDisplay({"values":values}).unwrap();
+					console.log(response);
 
 					Swal.fire({
 						title: 'Success',
