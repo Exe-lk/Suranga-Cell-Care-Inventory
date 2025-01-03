@@ -306,8 +306,8 @@ function index() {
 							'\x1D\x21\x00',
 							'\x1B\x4D\x00',
 							'No.524/1/A,\nKandy Road,\nKadawatha\n',
+							'011 292 6030/ 071 911 1144\n',
 							'\x1B\x61\x00',
-							'TEL: 011 292 6030/ 071 911 1144\n\n',
 							`Date        : ${formattedDate}\n`,
 							`START TIME  : ${currentTime}\n`,
 							`INVOICE NO  : ${id}\n`,
@@ -321,8 +321,7 @@ function index() {
 								const truncatedName =
 								brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
 
-								return `${category} ${model} ${truncatedName} \n
-								      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`;
+								return( `${category} ${model} ${truncatedName} \n      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`);
 							}),
 							'---------------------------------\n',
 							'\x1B\x61\x01',
@@ -332,6 +331,7 @@ function index() {
 							'\x1D\x21\x00',
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
+							'---------------------------------\n',
 							`Cash Received   : ${amount}.00\n`,
 							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(2,)}\n`,
 							`No. of Pieces   : ${orderedItems.length}\n`,
