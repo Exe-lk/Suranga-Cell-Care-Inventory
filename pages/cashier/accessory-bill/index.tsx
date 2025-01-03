@@ -15,6 +15,7 @@ import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
 import { Creatbill, Getbills } from '../../../service/accessoryService';
 import Page from '../../../layout/Page/Page';
 import Spinner from '../../../components/bootstrap/Spinner';
+
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
 	const { data: Accstock, error, isLoading } = useGetStockInOutsdisQuery(undefined);
@@ -35,6 +36,11 @@ function index() {
 	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
 	const dropdownRef = useRef<Dropdown>(null);
 	const quantityRef = useRef<HTMLInputElement>(null);
+	const inputRef = useRef<HTMLInputElement>(null);
+	const cardRef = useRef<HTMLInputElement>(null);
+	const cashRef = useRef<HTMLInputElement>(null);
+	const printRef = useRef<any>(null);
+	const endRef = useRef<any>(null);
 
 	useEffect(() => {
 		const script = document.createElement('script');
@@ -56,12 +62,6 @@ function index() {
 			document.body.removeChild(script);
 		};
 	}, []);
-
-	useEffect(() => {
-		if (dropdownRef.current) {
-			dropdownRef.current.focus();
-		}
-	}, [Accstock]);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -86,6 +86,12 @@ function index() {
 		fetchData();
 	}, [orderedItems]);
 
+	useEffect(() => {
+		if (dropdownRef.current) {
+			dropdownRef.current.focus();
+		}
+	}, [Accstock]);
+
 	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === 'Enter') {
 			if (quantityRef.current) {
@@ -93,11 +99,118 @@ function index() {
 			}
 			e.preventDefault();
 		}
+		if (e.key === 'ArrowRight') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
 	};
 
+	const amountchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowLeft') {
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowDown') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+
+	const cashchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowRight') {
+			if (cardRef.current) {
+				cardRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'Enter') {
+			setPayment(true);
+		}
+		if (e.key === 'ArrowDown') {
+			if (printRef.current) {
+				printRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+	const cardchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowLeft') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'Enter') {
+			setPayment(false);
+		}
+		if (e.key === 'ArrowDown') {
+			if (printRef.current) {
+				printRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+	const printchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowDown') {
+			if (endRef.current) {
+				endRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowLeft') {
+			if (quantityRef.current) {
+				quantityRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+	const salechange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (printRef.current) {
+				printRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
 	const handleaddKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === 'Enter') {
 			handlePopupOk();
+		}
+		if (e.key === 'ArrowRight') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowUp') {
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
+			e.preventDefault();
 		}
 	};
 
@@ -257,7 +370,7 @@ function index() {
 					showCancelButton: true,
 					confirmButtonColor: '#3085d6',
 					cancelButtonColor: '#d33',
-					confirmButtonText: 'Yes, Print Bill!',
+					confirmButtonText: 'Yes, End Bill!',
 				});
 
 				if (result.isConfirmed) {
@@ -288,6 +401,35 @@ function index() {
 					});
 					setOrderedItems([]);
 					setAmount(0);
+				}
+			} catch (error) {
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred. Please try again later.');
+			}
+		} else {
+			Swal.fire('Warning..!', 'Insufficient amount', 'error');
+		}
+	};
+	const printbill = async (e: any) => {
+		if (
+			amount >= Number(calculateSubTotal()) &&
+			amount > 0 &&
+			Number(calculateSubTotal()) > 0
+		) {
+			try {
+				const result = await Swal.fire({
+					title: 'Are you sure?',
+					// text: 'You will not be able to recover this status!',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Print Bill!',
+				});
+
+				if (result.isConfirmed) {
+					const currentDate = new Date();
+					const formattedDate = currentDate.toLocaleDateString();
 					if (!isQzReady || typeof window.qz === 'undefined') {
 						console.error('QZ Tray is not ready.');
 						alert('QZ Tray is not loaded yet. Please try again later.');
@@ -317,31 +459,41 @@ function index() {
 							'---------------------------------\n',
 							'Product Qty  U/Price    Net Value\n',
 							'---------------------------------\n',
-							...orderedItems.map(({ name, quantity, sellingPrice, category, model, brand }) => {
-								const netValue = sellingPrice * quantity;
-								const truncatedName = brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
-							
-								// Define receipt width (e.g., 42 characters for typical printers)
-								const receiptWidth = 42;
-							
-								// Create the line dynamically
-								const line = `${category} ${model} ${truncatedName}`;
-								const quantityStr = `${quantity}`;
-								const priceStr = `${sellingPrice.toFixed(2)}`;
-								const netValueStr = `${netValue.toFixed(2)}`;
-							
-								// Calculate spacing to align `netValueStr` to the right
-								const totalLineLength = line.length + quantityStr.length + priceStr.length + netValueStr.length + 6; // 6 spaces for fixed spacing
-								const remainingSpaces = receiptWidth - totalLineLength;
-							
-								return `${line}\n        ${quantityStr}    ${priceStr}${' '.repeat(remainingSpaces)}${netValueStr}\n`;
-							}),
-							
+							...orderedItems.map(
+								({ name, quantity, sellingPrice, category, model, brand }) => {
+									const netValue = sellingPrice * quantity;
+									const truncatedName =
+										brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+
+									// Define receipt width (e.g., 42 characters for typical printers)
+									const receiptWidth = 42;
+
+									// Create the line dynamically
+									const line = `${category} ${model} ${truncatedName}`;
+									const quantityStr = `${quantity}`;
+									const priceStr = `${sellingPrice.toFixed(2)}`;
+									const netValueStr = `${netValue.toFixed(2)}`;
+
+									// Calculate spacing to align `netValueStr` to the right
+									const totalLineLength =
+										line.length +
+										quantityStr.length +
+										priceStr.length +
+										netValueStr.length +
+										6; // 6 spaces for fixed spacing
+									const remainingSpaces = receiptWidth - totalLineLength;
+
+									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
+										remainingSpaces,
+									)}${netValueStr}\n`;
+								},
+							),
+
 							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
-							'\x1B\x45\x01', 
+							'\x1B\x45\x01',
 							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
 							'\x1B\x45\x00',
 							'\x1D\x21\x00',
@@ -376,6 +528,37 @@ function index() {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
+	const startbill = async () => {
+		if (orderedItems.length > 0) {
+			const result = await Swal.fire({
+				title: 'Are you sure?',
+				// text: 'You will not be able to recover this status!',
+				icon: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, Print Bill!',
+			});
+
+			if (result.isConfirmed) {
+				setOrderedItems([]);
+				setAmount(0);
+				setQuantity(0);
+				setSelectedProduct('');
+				if (dropdownRef.current) {
+					dropdownRef.current.focus();
+				}
+			}
+		} else {
+			setOrderedItems([]);
+			setAmount(0);
+			setQuantity(0);
+			setSelectedProduct('');
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
+		}
+	};
 	if (isLoading) {
 		console.log(isLoading);
 		return (
@@ -402,7 +585,11 @@ function index() {
 	return (
 		<>
 			<PageWrapper className=''>
-				<MyDefaultHeader onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} />
+				<MyDefaultHeader
+					onSaveDraft={handleSaveDraft}
+					onLoadDraft={handleLoadDraft}
+					startBill={startbill}
+				/>
 				<div className='row m-4'>
 					<div className='col-8 mb-3 mb-sm-0'>
 						<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
@@ -456,7 +643,7 @@ function index() {
 										<CardBody>
 											<FormGroup
 												id='product'
-												label='Product Name'
+												label='Barcode ID'
 												className='col-12'>
 												<Dropdown
 													aria-label='State'
@@ -498,11 +685,12 @@ function index() {
 											</FormGroup>
 											<div className='d-flex justify-content-end mt-2'>
 												{/* <button className='btn btn-danger me-2'>Cancel</button> */}
-												<button
-													className='btn btn-success'
+												<Button
+													color='success'
+													className=''
 													onClick={handlePopupOk}>
 													ADD
-												</button>
+												</Button>
 											</div>
 										</CardBody>
 									</Card>
@@ -515,6 +703,7 @@ function index() {
 													className='col-12 mt-2'>
 													<Input
 														type='number'
+														ref={inputRef} // Attach a ref to the input
 														onChange={(e: any) => {
 															let value = e.target.value;
 															if (
@@ -525,14 +714,17 @@ function index() {
 															}
 															setAmount(value);
 														}}
+														onKeyDown={amountchange}
 														value={amount}
 														min={0}
 														validFeedback='Looks good!'
 													/>
 												</FormGroup>
+
 												<ChecksGroup isInline className='pt-2'>
 													<Checks
-														// type='switch'
+														ref={cashRef}
+														onKeyDown={cashchange}
 														id='inlineCheckOne'
 														label='Cash'
 														name='checkOne'
@@ -542,7 +734,8 @@ function index() {
 														}}
 													/>
 													<Checks
-														// type='switch'
+														ref={cardRef}
+														onKeyDown={cardchange}
 														id='inlineCheckTwo'
 														label='Card'
 														name='checkOne'
@@ -553,10 +746,20 @@ function index() {
 													/>
 												</ChecksGroup>
 												<Button
+													ref={printRef}
+													color='info'
+													className='mt-4 w-100'
+													onClick={printbill}
+													onKeyDown={printchange}>
+													Print Bill
+												</Button>
+												<Button
+													ref={endRef}
 													color='success'
 													className='mt-4 w-100'
-													onClick={addbill}>
-													Process
+													onClick={addbill}
+													onKeyDown={salechange}>
+													End Sale
 												</Button>
 											</>
 										</CardBody>
@@ -643,12 +846,7 @@ function index() {
 									)}
 
 									<hr />
-									<div className='d-flex justify-content-between'>
-										<div>Total</div>
-										<div>
-											<strong>{calculateTotal()}</strong>
-										</div>
-									</div>
+
 									<div className='d-flex justify-content-between'>
 										{/* <div>Discount</div>
 									<div>
