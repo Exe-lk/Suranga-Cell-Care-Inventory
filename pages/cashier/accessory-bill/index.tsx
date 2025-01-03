@@ -24,7 +24,7 @@ function index() {
 	const [quantity, setQuantity] = useState<any>(null);
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
-	const [id, setId] = useState<number>(1530);
+	const [id, setId] = useState<number>(0);
 	const [casher, setCasher] = useState<any>({});
 	const currentDate = new Date().toLocaleDateString('en-CA');
 	const currentTime = new Date().toLocaleTimeString('en-GB', {
@@ -302,56 +302,65 @@ function index() {
 							'\x1B\x40',
 							'\x1B\x61\x01',
 							'\x1D\x21\x11',
-							'Suranga Cell Care\n\n',
+							'\x1B\x45\x01', // ESC E 1 - Bold on
+							'Suranga Cell Care\n\n', // Store name
+							'\x1B\x45\x00', // ESC E 0 - Bold off
 							'\x1D\x21\x00',
 							'\x1B\x4D\x00',
-							'No.524/1/A,\nKandy Road,\nKadawatha\n\n',
+							'No.524/1/A,\nKandy Road,Kadawatha\n',
+							'011 292 6030/ 071 911 1144\n',
 							'\x1B\x61\x00',
-							'TEL: 011 292 6030/ 071 911 1144\n\n',
-							`Date      :${currentDate}\n
-							 START TIME: ${currentTime}\n
-							 INVOICE NO: ${id}\n`,
+							`Date        : ${formattedDate}\n`,
+							`START TIME  : ${currentTime}\n`,
+							`INVOICE NO  : ${id}\n`,
 							'\x1B\x61\x00',
-							'----------------------------\n',
-							'Product Qty U/Price Net Value\n',
-							'----------------------------\n',
-							...orderedItems.map(({ name, quantity, sellingPrice }) => {
-								
-								const netValue = sellingPrice * quantity ;
-								const truncatedName =
-									name.length > 10 ? name.substring(0, 10) + '...' : name;
-
-								return `${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
-									2,
-								)} ${netValue.toFixed(2)}\n`;
+							'---------------------------------\n',
+							'Product Qty  U/Price    Net Value\n',
+							'---------------------------------\n',
+							...orderedItems.map(({ name, quantity, sellingPrice, category, model, brand }) => {
+								const netValue = sellingPrice * quantity;
+								const truncatedName = brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+							
+								// Define receipt width (e.g., 42 characters for typical printers)
+								const receiptWidth = 42;
+							
+								// Create the line dynamically
+								const line = `${category} ${model} ${truncatedName}`;
+								const quantityStr = `${quantity}`;
+								const priceStr = `${sellingPrice.toFixed(2)}`;
+								const netValueStr = `${netValue.toFixed(2)}`;
+							
+								// Calculate spacing to align `netValueStr` to the right
+								const totalLineLength = line.length + quantityStr.length + priceStr.length + netValueStr.length + 6; // 6 spaces for fixed spacing
+								const remainingSpaces = receiptWidth - totalLineLength;
+							
+								return `${line}\n        ${quantityStr}    ${priceStr}${' '.repeat(remainingSpaces)}${netValueStr}\n`;
 							}),
-							'----------------------------\n',
 							
-							
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
+							'\x1B\x45\x01', 
 							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
+							'\x1B\x45\x00',
 							'\x1D\x21\x00',
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
-							'\n',
+							'---------------------------------\n',
 							`Cash Received   : ${amount}.00\n`,
 							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
 								2,
 							)}\n`,
-							'\n',
 							`No. of Pieces   : ${orderedItems.length}\n`,
-							'----------------------------\n',
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'THANK YOU COME AGAIN !\n',
-							'----------------------------\n',
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'Retail POS by EXE.lk\n',
 							'Call: 070 332 9900\n',
-							'----------------------------\n',
-							'----------------------------\n',
-							'----------------------------\n',
+							'---------------------------------\n',
 							'\x1D\x56\x41',
 						];
 						await window.qz.print(config, data);
