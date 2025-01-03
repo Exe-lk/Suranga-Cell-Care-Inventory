@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState ,useRef } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
+import Page from '../../../layout/Page/Page';
 import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import 'react-simple-keyboard/build/css/index.css';
 import Swal from 'sweetalert2';
+import Spinner from '../../../components/bootstrap/Spinner';
 import Card, { CardBody, CardFooter } from '../../../components/bootstrap/Card';
 import { Dropdown } from 'primereact/dropdown';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
@@ -12,6 +14,7 @@ import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
 import { useGetStockInOutsQuery , useUpdateSubStockInOutMutation } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
+import MyDefaultHeader1 from '../../_layout/_headers/CashieriDisplayHeader';
 
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
@@ -32,8 +35,20 @@ function index() {
 		hour: '2-digit',
 		minute: '2-digit',
 	});
+		const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
 	const [sellingPrices, setSellingPrices] = useState<{ [prefix: string]: number }>({});
 	const [isQzReady, setIsQzReady] = useState(false);
+	const dropdownRef = useRef<HTMLSelectElement>(null);
+	const sellingPriceRef = useRef<HTMLInputElement>(null);
+	
+	
+
+	useEffect(() => {
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
+		}, [Disstock]);
+
 	// useEffect(() => {
 	// 	const cashier = localStorage.getItem('user');
 	// 	if (cashier) {
@@ -42,6 +57,33 @@ function index() {
 	// 		setCasher(jsonObject);
 	// 	}
 	// }, []);
+
+	const handleSaveDraft = () => {
+			if (orderedItems.length === 0) {
+				Swal.fire('Error', 'No items to save as draft.', 'error');
+				return;
+			}
+	
+			const savedDrafts = JSON.parse(localStorage.getItem('drafts1') || '[]');
+			const newDraft = {
+				draftId: new Date().getTime(), // Unique identifier
+				orders: orderedItems,
+			};
+			localStorage.setItem('drafts1', JSON.stringify([...savedDrafts, newDraft]));
+			setOrderedItems([]);
+			Swal.fire('Success', 'Draft saved successfully.', 'success');
+		};
+	
+		// Load a selected draft into orderedItems
+		const handleLoadDraft = (draft: any) => {
+			if (draft && draft.orders) {
+				setOrderedItems(draft.orders);
+				setCurrentDraftId(draft.draftId); // Set the orders part of the draft
+				Swal.fire('Success', 'Draft loaded successfully.', 'success');
+			} else {
+				Swal.fire('Error', 'Invalid draft data.', 'error');
+			}
+		};
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -67,7 +109,23 @@ function index() {
 		};
 
 		fetchData();
-	}, [payment]);
+	}, [isLoading]);
+
+	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
+			if (e.key === 'Enter') {
+				// Focus on the quantity input field
+				if (sellingPriceRef.current) {
+					sellingPriceRef.current.focus();
+				}
+				e.preventDefault(); // Prevent default behavior, if any
+			}
+		};
+
+		const handleaddKeyPress = (e: React.KeyboardEvent) => {
+				if (e.key === 'Enter') {
+					handlePopupOk();
+				}
+			};
 
 	const handlePopupOk = async () => {
 		if (!selectedProduct || quantity <= 0) {
@@ -115,7 +173,7 @@ function index() {
 						...selectedItem,
 						quantity: 1,
 						sellingPrice,
-						netValue: sellingPrice, // Initial net value for 1 item
+						netValue: sellingPrice, 
 					},
 				];
 			}
@@ -123,6 +181,9 @@ function index() {
 
 			setSelectedProduct('');
 			setQuantity(1);
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
 
 			Swal.fire({
 				title: 'Success',
@@ -243,9 +304,33 @@ function index() {
 			setSelectedProduct(value);
 		}
 	};
-
+	if (isLoading) {
+		console.log(isLoading)
+		return (
+		  <PageWrapper>
+			<Page>
+			  <div className="row h-100 py-5">
+				<div className="col-12 text-center py-5 my-5">
+				  <Spinner
+					tag={"div"} 
+					color={"primary"}
+					isGrow={false}
+					size={50} // Example: 10, '3vh', '5rem' etc.
+					// inButton={ Boolean || String} // true || false || 'onlyIcon'
+					className={""} />
+				  <br />
+				  <br />
+				  <h2>Please Wait
+				  </h2>
+				</div>
+			  </div>
+			</Page>
+		  </PageWrapper>
+		);
+	  }
 	return (
 		<PageWrapper className=''>
+		<MyDefaultHeader1 onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} />
 			<div className='row m-4'>
 				<div className='col-8 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
@@ -307,6 +392,7 @@ function index() {
 											<Dropdown
 												aria-label='State'
 												editable
+												ref={dropdownRef}
 												placeholder='-- Select Product --'
 												className='selectpicker col-12'
 												options={
@@ -320,6 +406,7 @@ function index() {
 												onChange={(e: any) =>
 													handleProductChange(e.target.value)
 												}
+												onKeyDown={handleDropdownKeyPress}
 												value={selectedProduct}
 											/>
 
@@ -343,7 +430,9 @@ function index() {
 											label='Selling Price'
 											className='col-12 mt-2'>
 											<Input
+												ref={sellingPriceRef}
 												type='number'
+												onKeyDown={handleaddKeyPress}
 												onChange={(e: any) => {
 													const productPrefix = selectedProduct.slice(
 														0,
