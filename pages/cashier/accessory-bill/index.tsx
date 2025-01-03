@@ -297,7 +297,7 @@ function index() {
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
-						const config = window.qz.configs.create('XP-58');
+						const config = window.qz.configs.create('EPSON TM-U220 Receipt');
 						const data = [
 							'\x1B\x40',
 							'\x1B\x61\x01',
