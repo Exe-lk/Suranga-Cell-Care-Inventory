@@ -317,15 +317,26 @@ function index() {
 							'---------------------------------\n',
 							'Product Qty  U/Price    Net Value\n',
 							'---------------------------------\n',
-							...orderedItems.map(
-								({ name, quantity, sellingPrice, category, model, brand }) => {
-									const netValue = sellingPrice * quantity;
-									const truncatedName =
-										brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
-
-									return `${category} ${model} ${truncatedName} \n      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`;
-								},
-							),
+							...orderedItems.map(({ name, quantity, sellingPrice, category, model, brand }) => {
+								const netValue = sellingPrice * quantity;
+								const truncatedName = brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+							
+								// Define receipt width (e.g., 42 characters for typical printers)
+								const receiptWidth = 42;
+							
+								// Create the line dynamically
+								const line = `${category} ${model} ${truncatedName}`;
+								const quantityStr = `${quantity}`;
+								const priceStr = `${sellingPrice.toFixed(2)}`;
+								const netValueStr = `${netValue.toFixed(2)}`;
+							
+								// Calculate spacing to align `netValueStr` to the right
+								const totalLineLength = line.length + quantityStr.length + priceStr.length + netValueStr.length + 6; // 6 spaces for fixed spacing
+								const remainingSpaces = receiptWidth - totalLineLength;
+							
+								return `${line}\n        ${quantityStr}    ${priceStr}${' '.repeat(remainingSpaces)}${netValueStr}\n`;
+							}),
+							
 							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
