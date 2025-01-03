@@ -16,6 +16,7 @@ interface StockAddModalProps {
 	id: string;
 	isOpen: boolean;
 	setIsOpen(...args: unknown[]): unknown;
+	quantity: any;
 }
 
 interface StockIn {
@@ -39,7 +40,7 @@ interface StockIn {
 	sellingPrice: Number;
 }
 
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
 	const [stockIn, setStockIn] = useState<StockIn>({
 		cid: '',
 		brand: '',
@@ -67,6 +68,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: stockInOuts } = useGetStockInOutsQuery(undefined);
 	const [generatedCode, setGeneratedCode] = useState('');
 	const [generatedbarcode, setGeneratedBarcode] = useState<any>();
+	const nowQuantity = quantity;
 
 	useEffect(() => {
 		if (isSuccess && stockInData) {
@@ -87,7 +89,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			setGeneratedCode('100000');
 			setGeneratedBarcode('1000100000');
 		}
-	}, [isSuccess, stockInData, stockInOuts,isOpen]);
+	}, [isSuccess, stockInData, stockInOuts, isOpen]);
 
 	const incrementCode = (code: string) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
@@ -121,7 +123,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: Record<string, string> = {};
-			if (!values.quantity) {
+			if (values.type === 'Accessory' && !values.quantity) {
 				errors.quantity = 'Quantity is required';
 			}
 			if (!values.sellingPrice) {
@@ -143,12 +145,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					}
 					if (!values.nic) {
 						errors.nic = 'NIC is required';
-					}else if (!/^\d{9}[Vv]$/.test(values.nic) && !/^\d{12}$/.test(values.nic)) {
+					} else if (!/^\d{9}[Vv]$/.test(values.nic) && !/^\d{12}$/.test(values.nic)) {
 						errors.nic = 'NIC must be 9 digits followed by "V" or 12 digits';
 					}
 					if (!values.mobile) {
 						errors.mobile = 'Mobile Number is required';
-					}else if (values.mobile.length !== 10) {
+					} else if (values.mobile.length !== 10) {
 						errors.mobile = 'Mobile number must be exactly 10 digits';
 					}
 				}
@@ -167,11 +169,16 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 					showCancelButton: false,
 					showConfirmButton: false,
 				});
+
+				const finalValues = {
+					...values,
+					quantity: values.type === 'Mobile' ? '1' : values.quantity, // Set quantity to 1 for Mobile
+				};
+
 				try {
-					const updatedQuantity =
-						parseInt(stockInData.quantity) + parseInt(values.quantity);
+					const updatedQuantity = parseInt(nowQuantity) + parseInt(finalValues.quantity);
 					const response: any = await addstockIn({
-						...values,
+						...finalValues,
 						code: generatedCode,
 						barcode: generatedbarcode,
 					}).unwrap();
@@ -304,7 +311,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 											value={formik.values.mobile}
 											onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 												const input = e.target.value.replace(/\D/g, '');
-												formik.setFieldValue('mobile', formatMobileNumber(input));
+												formik.setFieldValue(
+													'mobile',
+													formatMobileNumber(input),
+												);
 											}}
 											onBlur={formik.handleBlur}
 											isValid={formik.isValid}
@@ -327,20 +337,24 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							)}
 						</>
 					)}
-					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
+					<FormGroup
+						id='quantity'
+						label='Quantity'
+						className={`col-md-6 ${formik.values.type === 'Mobile' ? 'd-none' : ''}`}>
 						<Input
 							type='number'
-							min={1}
-							placeholder='Enter Quantity'
-							value={formik.values.quantity}
+							value={formik.values.type === 'Mobile' ? 1 : formik.values.quantity}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
+							isValid={formik.isValid && formik.values.type !== 'Mobile'}
 							isTouched={formik.touched.quantity}
 							invalidFeedback={formik.errors.quantity}
 							validFeedback='Looks good!'
+							readOnly={formik.values.type === 'Mobile'}
+							className={formik.values.type === 'Mobile' ? 'd-none' : ''}
 						/>
 					</FormGroup>
+
 					<FormGroup id='date' label='Date In' className='col-md-6'>
 						<Input
 							type='date'
