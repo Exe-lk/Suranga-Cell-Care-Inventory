@@ -15,6 +15,8 @@ import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../re
 import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
 import { access } from 'fs';
 import { Creatbill, Getbills } from '../../../service/accessoryService';
+import Page from '../../../layout/Page/Page';
+import Spinner from '../../../components/bootstrap/Spinner';
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
 
@@ -300,7 +302,30 @@ function index() {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
-
+	if (isLoading) {
+		console.log(isLoading)
+		return (
+		  <PageWrapper>
+			<Page>
+			  <div className="row h-100 py-5">
+				<div className="col-12 text-center py-5 my-5">
+				  <Spinner
+					tag={"div"} 
+					color={"primary"}
+					isGrow={false}
+					size={50} // Example: 10, '3vh', '5rem' etc.
+					// inButton={ Boolean || String} // true || false || 'onlyIcon'
+					className={""} />
+				  <br />
+				  <br />
+				  <h2>Please Wait
+				  </h2>
+				</div>
+			  </div>
+			</Page>
+		  </PageWrapper>
+		);
+	  }
 	return (
 		<>
 			<PageWrapper className=''>
