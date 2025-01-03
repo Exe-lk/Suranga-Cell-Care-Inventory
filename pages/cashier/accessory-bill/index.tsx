@@ -302,12 +302,12 @@ function index() {
 							'\x1B\x40',
 							'\x1B\x61\x01',
 							'\x1D\x21\x11',
-							'PAVO\n\n',
+							'Suranga Cell Care\n\n',
 							'\x1D\x21\x00',
 							'\x1B\x4D\x00',
-							'No.137M,\nColombo Road,\nBiyagama\n\n',
+							'No.524/1/A,\nKandy Road,\nKadawatha\n\n',
 							'\x1B\x61\x00',
-							'TEL:076 227 1846 / 076 348 0380\n\n',
+							'TEL: 011 292 6030/ 071 911 1144\n\n',
 							`Date      :${currentDate}\n
 							 START TIME: ${currentTime}\n
 							 INVOICE NO: ${id}\n`,
@@ -315,19 +315,19 @@ function index() {
 							'----------------------------\n',
 							'Product Qty U/Price Net Value\n',
 							'----------------------------\n',
-							...orderedItems.map(({ name, quantity, price, discount }) => {
-								const discountAmount = ((price * quantity) / 100) * discount;
-								const netValue = price * quantity - discountAmount;
+							...orderedItems.map(({ name, quantity, sellingPrice }) => {
+								
+								const netValue = sellingPrice * quantity ;
 								const truncatedName =
 									name.length > 10 ? name.substring(0, 10) + '...' : name;
 
-								return `${truncatedName} \n         ${quantity}  ${price.toFixed(
+								return `${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
 									2,
 								)} ${netValue.toFixed(2)}\n`;
 							}),
 							'----------------------------\n',
-							`TOTAL           : ${calculateTotal()}\n`,
-							`Discount Amount : ${calculateDiscount()}\n\n`,
+							
+							
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
@@ -572,13 +572,15 @@ function index() {
 									<center>
 										{/* <img src={Logo} style={{ height: 50, width: 100 }} alt='' /> */}
 										<p>
-											No.137M,
+											<b>Suranga Cell Care</b>
 											<br />
-											Colombo Road,
+											No.524/1/A,
 											<br />
-											Biyagama
+											Kandy Road,
 											<br />
-											TEL : -076 227 1846 / 076 348 0380
+											Kadawatha
+											<br />
+											TEL : 011 292 6030/ 071 911 1144
 										</p>
 									</center>
 									<div className='d-flex justify-content-between align-items-center mt-4'>
