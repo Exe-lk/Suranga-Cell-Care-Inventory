@@ -312,9 +312,9 @@ function index() {
 							 START TIME: ${currentTime}\n
 							 INVOICE NO: ${id}\n`,
 							'\x1B\x61\x00',
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'Product Qty U/Price Net Value\n',
-							'----------------------------\n',
+							'-----------------------------------\n',
 							...orderedItems.map(({ name, quantity, sellingPrice,category,model,brand, }) => {
 								
 								const netValue = sellingPrice * quantity ;
@@ -325,7 +325,7 @@ function index() {
 									2,
 								)} ${netValue.toFixed(2)}\n`;
 							}),
-							'----------------------------\n',
+							'-----------------------------------\n',
 							
 							
 							'\x1B\x61\x01',
@@ -337,21 +337,17 @@ function index() {
 							'\x1B\x61\x00',
 							'\n',
 							`Cash Received   : ${amount}.00\n`,
-							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
-								2,
-							)}\n`,
-							'\n',
+							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(2,)}\n`,
 							`No. of Pieces   : ${orderedItems.length}\n`,
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'\x1B\x61\x01',
 							'THANK YOU COME AGAIN !\n',
-							'----------------------------\n',
+							'-----------------------------------\n',
 							'\x1B\x61\x01',
 							'Retail POS by EXE.lk\n',
 							'Call: 070 332 9900\n',
-							'----------------------------\n',
-							'----------------------------\n',
-							'----------------------------\n',
+							'-----------------------------------\n',
+							
 							'\x1D\x56\x41',
 						];
 						await window.qz.print(config, data);
