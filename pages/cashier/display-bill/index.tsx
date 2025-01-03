@@ -46,12 +46,162 @@ function index() {
 	const dropdownRef = useRef<Dropdown>(null);
 	const sellingPriceRef = useRef<HTMLInputElement>(null);
 	const [addbillDisplay] = useAddBillMutation();
+	const inputRef = useRef<HTMLInputElement>(null);
+		const cardRef = useRef<HTMLInputElement>(null);
+		const cashRef = useRef<HTMLInputElement>(null);
+		const printRef = useRef<any>(null);
+		const endRef = useRef<any>(null);
+
+	useEffect(() => {
+			const script = document.createElement('script');
+			script.src = 'https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js';
+			script.async = true;
+	
+			script.onload = () => {
+				console.log('QZ Tray script loaded.');
+				setIsQzReady(true);
+			};
+	
+			script.onerror = () => {
+				console.error('Failed to load QZ Tray script.');
+			};
+	
+			document.body.appendChild(script);
+	
+			return () => {
+				document.body.removeChild(script);
+			};
+		}, []);
+
 
 	useEffect(() => {
 		if (dropdownRef.current) {
 			dropdownRef.current.focus();
 		}
 	}, [Disstock]);
+
+	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
+			if (e.key === 'Enter') {
+				if (sellingPriceRef.current) {
+					sellingPriceRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowRight') {
+				if (inputRef.current) {
+					inputRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+	
+		const amountchange = (e: React.KeyboardEvent) => {
+			if (e.key === 'ArrowLeft') {
+				if (dropdownRef.current) {
+					dropdownRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowDown') {
+				if (cashRef.current) {
+					cashRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+	
+		const cashchange = (e: React.KeyboardEvent) => {
+			if (e.key === 'ArrowUp') {
+				if (inputRef.current) {
+					inputRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowRight') {
+				if (cardRef.current) {
+					cardRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'Enter') {
+				setPayment(true);
+			}
+			if (e.key === 'ArrowDown') {
+				if (printRef.current) {
+					printRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+		const cardchange = (e: React.KeyboardEvent) => {
+			if (e.key === 'ArrowUp') {
+				if (inputRef.current) {
+					inputRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowLeft') {
+				if (cashRef.current) {
+					cashRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'Enter') {
+				setPayment(false);
+			}
+			if (e.key === 'ArrowDown') {
+				if (printRef.current) {
+					printRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+		const printchange = (e: React.KeyboardEvent) => {
+			if (e.key === 'ArrowUp') {
+				if (cashRef.current) {
+					cashRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowDown') {
+				if (endRef.current) {
+					endRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowLeft') {
+				if (sellingPriceRef.current) {
+					sellingPriceRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+		const salechange = (e: React.KeyboardEvent) => {
+			if (e.key === 'ArrowUp') {
+				if (printRef.current) {
+					printRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+		const handleaddKeyPress = (e: React.KeyboardEvent) => {
+			if (e.key === 'Enter') {
+				handlePopupOk();
+			}
+			if (e.key === 'ArrowRight') {
+				if (inputRef.current) {
+					inputRef.current.focus();
+				}
+				e.preventDefault();
+			}
+			if (e.key === 'ArrowUp') {
+				if (dropdownRef.current) {
+					dropdownRef.current.focus();
+				}
+				e.preventDefault();
+			}
+		};
+
 
 	// useEffect(() => {
 	// 	const cashier = localStorage.getItem('user');
@@ -115,21 +265,6 @@ function index() {
 		fetchData();
 	}, [isLoading]);
 
-	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			// Focus on the quantity input field
-			if (sellingPriceRef.current) {
-				sellingPriceRef.current.focus();
-			}
-			e.preventDefault(); // Prevent default behavior, if any
-		}
-	};
-
-	const handleaddKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			handlePopupOk();
-		}
-	};
 
 	const handlePopupOk = async () => {
 		if (!selectedProduct || quantity <= 0) {
@@ -314,6 +449,155 @@ function index() {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
+	const printbill = async (e: any) => {
+			if (
+				amount >= Number(calculateSubTotal()) &&
+				amount > 0 &&
+				Number(calculateSubTotal()) > 0
+			) {
+				try {
+					const result = await Swal.fire({
+						title: 'Are you sure?',
+						// text: 'You will not be able to recover this status!',
+						icon: 'warning',
+						showCancelButton: true,
+						confirmButtonColor: '#3085d6',
+						cancelButtonColor: '#d33',
+						confirmButtonText: 'Yes, Print Bill!',
+					});
+	
+					if (result.isConfirmed) {
+						const currentDate = new Date();
+						const formattedDate = currentDate.toLocaleDateString();
+						if (!isQzReady || typeof window.qz === 'undefined') {
+							console.error('QZ Tray is not ready.');
+							alert('QZ Tray is not loaded yet. Please try again later.');
+							return;
+						}
+						try {
+							if (!window.qz.websocket.isActive()) {
+								await window.qz.websocket.connect();
+							}
+							const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+							const data = [
+								'\x1B\x40',
+								'\x1B\x61\x01',
+								'\x1D\x21\x11',
+								'\x1B\x45\x01', // ESC E 1 - Bold on
+								'Suranga Cell Care\n\n', // Store name
+								'\x1B\x45\x00', // ESC E 0 - Bold off
+								'\x1D\x21\x00',
+								'\x1B\x4D\x00',
+								'No.524/1/A,\nKandy Road,Kadawatha\n',
+								'011 292 6030/ 071 911 1144\n',
+								'\x1B\x61\x00',
+								`Date        : ${formattedDate}\n`,
+								`START TIME  : ${currentTime}\n`,
+								`INVOICE NO  : ${id1}\n`,
+								'\x1B\x61\x00',
+								'---------------------------------\n',
+								'Product Qty  U/Price    Net Value\n',
+								'---------------------------------\n',
+								...orderedItems.map(
+									({ name, quantity, sellingPrice, category, model, brand }) => {
+										const netValue = sellingPrice * quantity;
+										const truncatedName =
+											brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+	
+										// Define receipt width (e.g., 42 characters for typical printers)
+										const receiptWidth = 42;
+	
+										// Create the line dynamically
+										const line = `${category} ${model} ${truncatedName}`;
+										const quantityStr = `${quantity}`;
+										const priceStr = `${sellingPrice.toFixed(2)}`;
+										const netValueStr = `${netValue.toFixed(2)}`;
+	
+										// Calculate spacing to align `netValueStr` to the right
+										const totalLineLength =
+											line.length +
+											quantityStr.length +
+											priceStr.length +
+											netValueStr.length +
+											6; // 6 spaces for fixed spacing
+										const remainingSpaces = receiptWidth - totalLineLength;
+	
+										return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
+											remainingSpaces,
+										)}${netValueStr}\n`;
+									},
+								),
+	
+								'---------------------------------\n',
+								'\x1B\x61\x01',
+								'\x1B\x45\x01',
+								'\x1D\x21\x10',
+								'\x1B\x45\x01',
+								`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
+								'\x1B\x45\x00',
+								'\x1D\x21\x00',
+								'\x1B\x45\x00',
+								'\x1B\x61\x00',
+								'---------------------------------\n',
+								`Cash Received   : ${amount}.00\n`,
+								`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
+									2,
+								)}\n`,
+								`No. of Pieces   : ${orderedItems.length}\n`,
+								'---------------------------------\n',
+								'\x1B\x61\x01',
+								'THANK YOU COME AGAIN !\n',
+								'---------------------------------\n',
+								'\x1B\x61\x01',
+								'Retail POS by EXE.lk\n',
+								'Call: 070 332 9900\n',
+								'---------------------------------\n',
+								'\x1D\x56\x41',
+							];
+							await window.qz.print(config, data);
+						} catch (error) {
+							console.error('Printing failed', error);
+						}
+					}
+				} catch (error) {
+					console.error('Error during handleUpload: ', error);
+					alert('An error occurred. Please try again later.');
+				}
+			} else {
+				Swal.fire('Warning..!', 'Insufficient amount', 'error');
+			}
+		};
+		const startbill = async () => {
+			if (orderedItems.length > 0) {
+				const result = await Swal.fire({
+					title: 'Are you sure?',
+					// text: 'You will not be able to recover this status!',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Print Bill!',
+				});
+	
+				if (result.isConfirmed) {
+					setOrderedItems([]);
+					setAmount(0);
+					setQuantity(0);
+					setSelectedProduct('');
+					if (dropdownRef.current) {
+						dropdownRef.current.focus();
+					}
+				}
+			} else {
+				setOrderedItems([]);
+				setAmount(0);
+				setQuantity(0);
+				setSelectedProduct('');
+				if (dropdownRef.current) {
+					dropdownRef.current.focus();
+				}
+			}
+		};
 
 	const handleProductChange = (value: string) => {
 		const productPrefix = value.slice(0, 4);
@@ -493,6 +777,7 @@ function index() {
 												className='col-12 mt-2'>
 												<Input
 													type='number'
+													ref={inputRef}
 													onChange={(e: any) => {
 														let value = e.target.value;
 
@@ -506,6 +791,7 @@ function index() {
 
 														setAmount(value); // Update the state with the modified value
 													}}
+													onKeyDown={amountchange}
 													value={amount}
 													min={0}
 													validFeedback='Looks good!'
@@ -514,6 +800,8 @@ function index() {
 											<ChecksGroup isInline className='pt-2'>
 												<Checks
 													// type='switch'
+													ref={cashRef}
+													onKeyDown={cashchange}
 													id='inlineCheckOne'
 													label='Cash'
 													name='checkOne'
@@ -524,6 +812,8 @@ function index() {
 												/>
 												<Checks
 													// type='switch'
+													ref={cardRef}
+													onKeyDown={cardchange}
 													id='inlineCheckTwo'
 													label='Card'
 													name='checkOne'
@@ -534,11 +824,21 @@ function index() {
 												/>
 											</ChecksGroup>
 											<Button
-												color='success'
-												className='mt-4 w-100'
-												onClick={addbill}>
-												Process
-											</Button>
+													ref={printRef}
+													color='info'
+													className='mt-4 w-100'
+													onClick={printbill}
+													onKeyDown={printchange}>
+													Print Bill
+												</Button>
+												<Button
+													ref={endRef}
+													color='success'
+													className='mt-4 w-100'
+													onClick={addbill}
+													onKeyDown={salechange}>
+													End Sale
+												</Button>
 										</>
 									</CardBody>
 								</Card>
