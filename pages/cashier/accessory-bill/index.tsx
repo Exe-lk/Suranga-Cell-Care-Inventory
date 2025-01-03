@@ -33,7 +33,7 @@ function index() {
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
 	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
-	const dropdownRef = useRef<HTMLSelectElement>(null);
+	const dropdownRef = useRef<Dropdown>(null);
 	const quantityRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {
