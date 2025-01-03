@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import { addDoc, collection, doc, getDocs, query, updateDoc, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import 'react-simple-keyboard/build/css/index.css';
 import Swal from 'sweetalert2';
@@ -10,17 +10,13 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery as useGetStockInOutsdisQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
 import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
-import { access } from 'fs';
 import { Creatbill, Getbills } from '../../../service/accessoryService';
 import Page from '../../../layout/Page/Page';
 import Spinner from '../../../components/bootstrap/Spinner';
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
-
-	// const { data: Disstock, } = useGetStockInOutsQuery(undefined);
 	const { data: Accstock, error, isLoading } = useGetStockInOutsdisQuery(undefined);
 	const [items, setItems] = useState<any[]>([]);
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
@@ -37,14 +33,36 @@ function index() {
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
 	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
-	const dropdownRef = useRef<HTMLSelectElement>(null);
+	const dropdownRef = useRef<Dropdown>(null);
 	const quantityRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		const script = document.createElement('script');
+		script.src = 'https://cdn.jsdelivr.net/npm/qz-tray@2.2.4/qz-tray.min.js';
+		script.async = true;
+
+		script.onload = () => {
+			console.log('QZ Tray script loaded.');
+			setIsQzReady(true);
+		};
+
+		script.onerror = () => {
+			console.error('Failed to load QZ Tray script.');
+		};
+
+		document.body.appendChild(script);
+
+		return () => {
+			document.body.removeChild(script);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (dropdownRef.current) {
 			dropdownRef.current.focus();
 		}
 	}, [Accstock]);
+
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -53,10 +71,7 @@ function index() {
 					id: parseInt(doc.id, 10), // Ensure `id` is a number
 					...doc.data(),
 				}));
-
 				console.log('Data List:', dataList);
-
-				// Find the largest id
 				const largestId = dataList.reduce(
 					(max, item) => (item.id > max ? item.id : max),
 					0,
@@ -73,11 +88,10 @@ function index() {
 
 	const handleDropdownKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === 'Enter') {
-			// Focus on the quantity input field
 			if (quantityRef.current) {
 				quantityRef.current.focus();
 			}
-			e.preventDefault(); // Prevent default behavior, if any
+			e.preventDefault();
 		}
 	};
 
@@ -127,17 +141,6 @@ function index() {
 		const fetchData = async () => {
 			try {
 				const result1 = Accstock.filter((item: any) => item.stock === 'stockIn');
-				// const result = Disstock.filter((item: any) => item.stock === 'stockIn') // Filter for stockIn
-				// 	.flatMap((item: any) =>
-				// 		item.subStock.map((subItem: any) => ({
-				// 			...subItem,
-				// 			brand: item.brand,
-				// 			category: item.category,
-				// 			cost: item.cost,
-				// 			model: item.model,
-				// 			type: 'displaystock',
-				// 		})),
-				// 	);
 				const combinedResult = [...result1];
 				setItems(combinedResult);
 				console.log(combinedResult);
@@ -161,15 +164,12 @@ function index() {
 				const existingItemIndex = orderedItems.findIndex(
 					(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
 				);
-
 				const existingItem = orderedItems.find((item) => item.barcode === selectedProduct);
 				if (!existingItem) {
 					const barcode = [...selectedBarcode, selectedProduct];
 					setSelectedBarcode(barcode);
 				}
-
 				let updatedItems;
-
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
@@ -185,7 +185,6 @@ function index() {
 					(item) => item.barcode === selectedProduct,
 				);
 				let updatedItems;
-
 				if (existingItemIndex !== -1) {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
@@ -197,7 +196,6 @@ function index() {
 				}
 				setOrderedItems(updatedItems);
 			}
-
 			setSelectedProduct('');
 			setQuantity(0);
 			if (dropdownRef.current) {
@@ -218,7 +216,6 @@ function index() {
 	const handleDeleteItem = (code: string) => {
 		const updatedItems = orderedItems.filter((item) => item.barcode !== code);
 		setOrderedItems(updatedItems);
-
 		Swal.fire({
 			title: 'Success',
 			text: 'Item removed successfully.',
@@ -233,6 +230,7 @@ function index() {
 			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
 			.toFixed(2);
 	};
+
 	const calculateDiscount = () => {
 		return orderedItems
 			.reduce((sum, val) => sum + ((val.price * val.quantity) / 100) * val.discount, 0)
@@ -266,14 +264,11 @@ function index() {
 					const totalAmount = calculateSubTotal();
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
-
-					// Remove the draft by draftId
 					const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
 					const updatedDrafts = savedDrafts.filter(
 						(draft: any) => draft.draftId !== currentDraftId,
 					);
 					localStorage.setItem('drafts', JSON.stringify(updatedDrafts));
-
 					const values = {
 						orders: orderedItems,
 						time: currentTime,
@@ -288,11 +283,81 @@ function index() {
 						title: 'Success',
 						text: 'Bill has been added successfully.',
 						icon: 'success',
-						showConfirmButton: false, // Hides the OK button
-						timer: 1000, // Closes the alert after 2 seconds (2000ms)
+						showConfirmButton: false,
+						timer: 1000,
 					});
 					setOrderedItems([]);
 					setAmount(0);
+					if (!isQzReady || typeof window.qz === 'undefined') {
+						console.error('QZ Tray is not ready.');
+						alert('QZ Tray is not loaded yet. Please try again later.');
+						return;
+					}
+					try {
+						if (!window.qz.websocket.isActive()) {
+							await window.qz.websocket.connect();
+						}
+						const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+						const data = [
+							'\x1B\x40',
+							'\x1B\x61\x01',
+							'\x1D\x21\x11',
+							'PAVO\n\n',
+							'\x1D\x21\x00',
+							'\x1B\x4D\x00',
+							'No.137M,\nColombo Road,\nBiyagama\n\n',
+							'\x1B\x61\x00',
+							'TEL:076 227 1846 / 076 348 0380\n\n',
+							`Date      :${currentDate}\n
+							 START TIME: ${currentTime}\n
+							 INVOICE NO: ${id}\n`,
+							'\x1B\x61\x00',
+							'----------------------------\n',
+							'Product Qty U/Price Net Value\n',
+							'----------------------------\n',
+							...orderedItems.map(({ name, quantity, price, discount }) => {
+								const discountAmount = ((price * quantity) / 100) * discount;
+								const netValue = price * quantity - discountAmount;
+								const truncatedName =
+									name.length > 10 ? name.substring(0, 10) + '...' : name;
+
+								return `${truncatedName} \n         ${quantity}  ${price.toFixed(
+									2,
+								)} ${netValue.toFixed(2)}\n`;
+							}),
+							'----------------------------\n',
+							`TOTAL           : ${calculateTotal()}\n`,
+							`Discount Amount : ${calculateDiscount()}\n\n`,
+							'\x1B\x61\x01',
+							'\x1B\x45\x01',
+							'\x1D\x21\x10',
+							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
+							'\x1D\x21\x00',
+							'\x1B\x45\x00',
+							'\x1B\x61\x00',
+							'\n',
+							`Cash Received   : ${amount}.00\n`,
+							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
+								2,
+							)}\n`,
+							'\n',
+							`No. of Pieces   : ${orderedItems.length}\n`,
+							'----------------------------\n',
+							'\x1B\x61\x01',
+							'THANK YOU COME AGAIN !\n',
+							'----------------------------\n',
+							'\x1B\x61\x01',
+							'Retail POS by EXE.lk\n',
+							'Call: 070 332 9900\n',
+							'----------------------------\n',
+							'----------------------------\n',
+							'----------------------------\n',
+							'\x1D\x56\x41',
+						];
+						await window.qz.print(config, data);
+					} catch (error) {
+						console.error('Printing failed', error);
+					}
 				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
@@ -303,29 +368,28 @@ function index() {
 		}
 	};
 	if (isLoading) {
-		console.log(isLoading)
+		console.log(isLoading);
 		return (
-		  <PageWrapper>
-			<Page>
-			  <div className="row h-100 py-5">
-				<div className="col-12 text-center py-5 my-5">
-				  <Spinner
-					tag={"div"} 
-					color={"primary"}
-					isGrow={false}
-					size={50} // Example: 10, '3vh', '5rem' etc.
-					// inButton={ Boolean || String} // true || false || 'onlyIcon'
-					className={""} />
-				  <br />
-				  <br />
-				  <h2>Please Wait
-				  </h2>
-				</div>
-			  </div>
-			</Page>
-		  </PageWrapper>
+			<PageWrapper>
+				<Page>
+					<div className='row h-100 py-5'>
+						<div className='col-12 text-center py-5 my-5'>
+							<Spinner
+								tag={'div'}
+								color={'primary'}
+								isGrow={false}
+								size={50}
+								className={''}
+							/>
+							<br />
+							<br />
+							<h2>Please Wait</h2>
+						</div>
+					</div>
+				</Page>
+			</PageWrapper>
 		);
-	  }
+	}
 	return (
 		<>
 			<PageWrapper className=''>
@@ -444,16 +508,13 @@ function index() {
 														type='number'
 														onChange={(e: any) => {
 															let value = e.target.value;
-
-															// Remove leading zero if it's the first character
 															if (
 																value.length > 1 &&
 																value.startsWith('0')
 															) {
-																value = value.substring(1); // Remove the first character
+																value = value.substring(1);
 															}
-
-															setAmount(value); // Update the state with the modified value
+															setAmount(value);
 														}}
 														value={amount}
 														min={0}
