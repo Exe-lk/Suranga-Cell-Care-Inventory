@@ -308,26 +308,23 @@ function index() {
 							'No.524/1/A,\nKandy Road,\nKadawatha\n',
 							'\x1B\x61\x00',
 							'TEL: 011 292 6030/ 071 911 1144\n\n',
-							`Date      :${currentDate}\n
-							 START TIME: ${currentTime}\n
-							 INVOICE NO: ${id}\n`,
+							`Date        : ${formattedDate}\n`,
+							`START TIME  : ${currentTime}\n`,
+							`INVOICE NO  : ${id}\n`,
 							'\x1B\x61\x00',
-							'-----------------------------------\n',
-							'Product Qty U/Price Net Value\n',
-							'-----------------------------------\n',
+							'---------------------------------\n',
+							'Product Qty  U/Price    Net Value\n',
+							'---------------------------------\n',
 							...orderedItems.map(({ name, quantity, sellingPrice,category,model,brand, }) => {
 								
 								const netValue = sellingPrice * quantity ;
 								const truncatedName =
 								brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
 
-								return `${category} ${model} ${truncatedName} \n         ${quantity}  ${sellingPrice.toFixed(
-									2,
-								)} ${netValue.toFixed(2)}\n`;
+								return `${category} ${model} ${truncatedName} \n
+								      ${quantity}    ${sellingPrice.toFixed(2)}      ${netValue.toFixed(2)}\n`;
 							}),
-							'-----------------------------------\n',
-							
-							
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
@@ -335,19 +332,17 @@ function index() {
 							'\x1D\x21\x00',
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
-							'\n',
 							`Cash Received   : ${amount}.00\n`,
 							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(2,)}\n`,
 							`No. of Pieces   : ${orderedItems.length}\n`,
-							'-----------------------------------\n',
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'THANK YOU COME AGAIN !\n',
-							'-----------------------------------\n',
+							'---------------------------------\n',
 							'\x1B\x61\x01',
 							'Retail POS by EXE.lk\n',
 							'Call: 070 332 9900\n',
-							'-----------------------------------\n',
-							
+							'---------------------------------\n',
 							'\x1D\x56\x41',
 						];
 						await window.qz.print(config, data);
