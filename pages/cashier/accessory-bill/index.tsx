@@ -447,6 +447,7 @@ function index() {
 					confirmButtonText: 'Yes, Print Bill!',
 				});
 
+				
 				if (result.isConfirmed) {
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
