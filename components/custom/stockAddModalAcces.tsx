@@ -178,9 +178,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 
 				const finalValues = {
 					...values,
-					quantity: values.type === 'Mobile' ? '1' : values.quantity, // Set quantity to 1 for Mobile
+					quantity: values.type === 'Mobile' ? '1' : values.quantity, 
 					cid: stockIn.id,
 				};
+				
 				try {
 					const updatedQuantity = parseInt(nowQuantity) + parseInt(finalValues.quantity);
 					const response: any = await addstockIn({

@@ -37,13 +37,6 @@ export const stockAccPagesMenu = {
 		icon: 'Dashboard',
 		subMenu: null,
 	},
-	brand: {
-		id: 'dashboard',
-		text: 'Brand Management',
-		path: 'accessory-stock/brand-management',
-		icon: 'BrandingWatermark',
-		subMenu: null,
-	},
 	Category: {
 		id: 'dashboard',
 		text: 'Category',
@@ -51,6 +44,14 @@ export const stockAccPagesMenu = {
 		icon: 'Category',
 		subMenu: null,
 	},
+	brand: {
+		id: 'dashboard',
+		text: 'Brand Management',
+		path: 'accessory-stock/brand-management',
+		icon: 'BrandingWatermark',
+		subMenu: null,
+	},
+	
 	model: {
 		id: 'dashboard',
 		text: 'Model Management',
