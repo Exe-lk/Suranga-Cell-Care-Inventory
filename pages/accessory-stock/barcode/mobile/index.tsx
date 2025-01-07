@@ -104,26 +104,13 @@ const Index: NextPage = () => {
 
 		Swal.fire({
 			title: 'Bar Code Print!',
-			html: `
-			  <div>
-			<label>Enter Quantity:</label>
-				<input type="number" id="quantityInput" class="swal2-input" placeholder="Quantity" value=${labelQuantity}>
-			  </div>
-			`,
+			
 			showCancelButton: true,
 			confirmButtonText: 'Print',
-			preConfirm: () => {
-				const quantity = (document.getElementById('quantityInput') as HTMLInputElement)
-					.value;
-				if (!quantity) {
-					Swal.showValidationMessage('Please enter the quantity');
-				} else {
-					return quantity;
-				}
-			},
+			
 		}).then((result) => {
 			if (result.isConfirmed) {
-				labelQuantity = result.value;
+				labelQuantity =3;
 
 				// Calculating label rows and the remaining labels for the last row
 				let labelRawsQuantity = Math.floor(labelQuantity / 3);
@@ -267,7 +254,7 @@ const Index: NextPage = () => {
 											<th>Item Code</th>
 											<th>Item Name</th>
 											<th>Unit Selling Price</th>
-											<th>Quantity</th>
+											<th>IMI</th>
 
 											<th></th>
 											<th>
@@ -315,19 +302,17 @@ const Index: NextPage = () => {
 													(StockInOut: any) => StockInOut.status === true,
 												)
 												.filter((brand: any) => {
-													if (
-														brand.barcode
-															?.toString()
-															.includes(searchTerm)
-													) {
-														return brand;
-													}
+													const search = searchTerm.toLowerCase();
+													return (
+														brand.barcode?.toString().toLowerCase().includes(search) ||
+														brand.brand?.toLowerCase().includes(search) ||
+														brand.category?.toLowerCase().includes(search) ||
+														brand.model?.toLowerCase().includes(search)||
+														(brand.brand+" "+brand.model)?.toLowerCase().includes(search) ||
+														brand.imi?.toLowerCase().includes(search)
+													);
 												})
-												.filter((brand: any) =>
-													selectedUsers.length > 0
-														? selectedUsers.includes(brand.stock)
-														: true,
-												)
+												
 												.filter(
 													(stockInOut: any) =>
 														stockInOut.stock === 'stockIn',
@@ -340,12 +325,11 @@ const Index: NextPage = () => {
 														<td>{brand.date}</td>
 														<td>{brand.code}</td>
 														<td>
-															{brand.brand} {brand.category}{' '}
-															{brand.model}
+														{brand.brand} {' '}	{brand.model}
 														</td>
 														<td>{brand.sellingPrice}</td>
 
-														<td>{brand.quantity}</td>
+														<td>{brand.imi}</td>
 														<td>
 															<Barcode
 																value={brand.barcode}
