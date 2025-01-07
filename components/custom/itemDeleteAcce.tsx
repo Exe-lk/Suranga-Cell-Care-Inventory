@@ -73,6 +73,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					description: itemAcce.description,
 					code: itemAcce.code,
 					quantity: itemAcce.quantity,
+					warranty: itemAcce.warranty
 				};
 				await updateItemAcce(values).unwrap();
 				Swal.fire('Restored!', 'The item has been restored.', 'success');
@@ -88,7 +89,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				text: 'Please type "DELETE ALL" to confirm deleting all items.',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
@@ -139,6 +140,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						description: itemAcce.description,
 						code: itemAcce.code,
 						quantity: itemAcce.quantity,
+						warranty: itemAcce.warranty
 					};
 					await updateItemAcce(values).unwrap();
 				}

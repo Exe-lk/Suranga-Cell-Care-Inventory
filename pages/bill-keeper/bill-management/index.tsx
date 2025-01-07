@@ -31,6 +31,7 @@ import PaginationButtons, {
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
 
+
 const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');

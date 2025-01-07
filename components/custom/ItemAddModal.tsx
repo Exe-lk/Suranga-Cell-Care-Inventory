@@ -95,9 +95,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.brand) {
 				errors.brand = 'Brand is required';
 			}
-			if (!values.model) {
-				errors.model = 'Model is required';
-			}
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -186,6 +183,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							readOnly
 							isValid={formik.isValid}
 							isTouched={formik.touched.code}
+							invalidFeedback={formik.errors.code}
+							validFeedback='Looks good!'
 						/>
 					</FormGroup>
 					<FormGroup id='type' label='Type' className='col-md-6'>
@@ -226,7 +225,10 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							ariaLabel='Category'
 							onChange={handleCategoryChange}
 							value={selectedCategory}
-							onBlur={formik.handleBlur}>
+							onBlur={formik.handleBlur}
+							isTouched={formik.touched.category}
+							invalidFeedback={formik.errors.category}
+							validFeedback='Looks good!'>
 							<Option value=''>Select a category</Option>
 							{categoriesLoading && (
 								<Option value='loading'>Loading categories...</Option>
@@ -247,7 +249,10 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								ariaLabel='Select brand'
 								onChange={handleBrandChange}
 								value={selectedBrand}
-								onBlur={formik.handleBlur}>
+								onBlur={formik.handleBlur}
+								isTouched={formik.touched.brand}
+							invalidFeedback={formik.errors.brand}
+							validFeedback='Looks good!'>
 								<Option value=''>Select Brand</Option>
 								{filteredBrands?.map((brand: any, index: any) => (
 									<Option key={index} value={brand.name}>
@@ -264,7 +269,10 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 								onChange={formik.handleChange}
 								value={formik.values.model}
 								onBlur={formik.handleBlur}
-								name='model'>
+								name='model'
+								isTouched={formik.touched.model}
+							invalidFeedback={formik.errors.model}
+							validFeedback='Looks good!'>
 								<Option value=''>Select Model</Option>
 								{filteredModels?.map((model: any, index: any) => (
 									<Option key={index} value={model.name}>
@@ -309,6 +317,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									value={formik.values.warranty}
 									onBlur={formik.handleBlur}
 								>
+									<option value=''>Select Warranty</option>
 									<option value='One Month'>One Month</option>
 									<option value='Two Month'>Two Month</option>
 									<option value='Three Month'>Three Month</option>
