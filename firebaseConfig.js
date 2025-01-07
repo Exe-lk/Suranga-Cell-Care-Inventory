@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: "1:941072877710:web:15d94bfab9ee34513e61df",
   measurementId: "G-SW9W05KMJM"
 };
-
+// sakya
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const firestore = getFirestore(app);

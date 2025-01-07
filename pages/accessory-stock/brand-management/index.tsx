@@ -397,7 +397,8 @@ const Index: NextPage = () => {
 												)
 												.filter((brand : any) => 
 													searchTerm 
-													? brand.name.toLowerCase().includes(searchTerm.toLowerCase())
+													? brand.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+													brand.category.toLowerCase().includes(searchTerm.toLowerCase())
 													: true,
 												)
 												.map((brand:any, index: any) => (

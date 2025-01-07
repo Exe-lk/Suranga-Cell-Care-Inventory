@@ -77,7 +77,7 @@ const Index: NextPage = () => {
 					status: false,
 				};
 				await updateItemAcce(values);
-				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');
+				Swal.fire('Deleted!', 'The Item Accessory has been deleted.', 'success');
 			}
 		} catch (error) {
 			console.error('Error deleting document: ', error);
@@ -463,7 +463,7 @@ const Index: NextPage = () => {
 												)
 												.filter((brand: any) => {
 													if (
-														brand.code.includes(searchTerm.slice(0, 4))
+														brand.code.includes(searchTerm.slice(0, 4))  
 													) {
 														return brand;
 													}

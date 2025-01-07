@@ -41,7 +41,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			});
 			if (inputText === 'DELETE') {
 				await deleteItemAcce(itemAcce.id).unwrap();
-				Swal.fire('Deleted!', 'The Item Dis has been deleted.', 'success');
+				Swal.fire('Deleted!', 'The Item Acce has been deleted.', 'success');
 				refetch();
 			}
 		} catch (error) {
@@ -72,19 +72,18 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					reorderLevel: itemAcce.reorderLevel,
 					description: itemAcce.description,
 					code: itemAcce.code,
-					quantity:itemAcce.quantity,
-
+					quantity: itemAcce.quantity,
 				};
 				await updateItemAcce(values).unwrap();
 				Swal.fire('Restored!', 'The item has been restored.', 'success');
-				refetch(); 
+				refetch();
 			}
 		} catch (error) {
 			console.error('Error restoring item:', error);
 			Swal.fire('Error', 'Failed to restore item.', 'error');
 		}
 	};
-	
+
 	const handleDeleteAll = async () => {
 		try {
 			const { value: inputText } = await Swal.fire({
@@ -139,20 +138,18 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						reorderLevel: itemAcce.reorderLevel,
 						description: itemAcce.description,
 						code: itemAcce.code,
-						quantity:itemAcce.quantity,
-
+						quantity: itemAcce.quantity,
 					};
 					await updateItemAcce(values).unwrap();
 				}
 				Swal.fire('Restored!', 'All items have been restored.', 'success');
-				refetch(); 
+				refetch();
 			}
 		} catch (error) {
 			console.error('Error restoring all items:', error);
 			Swal.fire('Error', 'Failed to restore all items.', 'error');
 		}
 	};
-	
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
@@ -169,21 +166,23 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 									icon='Delete'
 									onClick={handleDeleteAll}
 									color='danger'
-									isLight>
+									isLight
+									isDisable={!ItemAcces || ItemAcces.length === 0}>
 									Delete All
 								</Button>
 								<Button
 									icon='Restore'
 									className='ms-3'
 									onClick={handleRestoreAll}
-									color='primary'>
+									color='primary'
+									isDisable={!ItemAcces || ItemAcces.length === 0}>
 									Restore All
 								</Button>
 							</th>
 						</tr>
 					</thead>
 					<tbody>
-					{isLoading && (
+						{isLoading && (
 							<tr>
 								<td>Loading...</td>
 							</tr>

@@ -344,7 +344,7 @@ const downloadTableAsSVG = async () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
-					<Dropdown>
+					{/* <Dropdown>
 						<DropdownToggle hasIcon={false}>
 							<Button
 								icon='FilterAlt'
@@ -382,8 +382,8 @@ const downloadTableAsSVG = async () => {
 								</div>
 							</div>
 						</DropdownMenu>
-					</Dropdown>
-					<SubheaderSeparator />
+					</Dropdown> */}
+					{/* <SubheaderSeparator /> */}
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -447,7 +447,9 @@ const downloadTableAsSVG = async () => {
 												)
 												.filter((model : any) => 
 													searchTerm 
-													? model.name.toLowerCase().includes(searchTerm.toLowerCase())
+													? model.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+													model.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+													model.brand.toLowerCase().includes(searchTerm.toLowerCase()) 
 													: true,
 												)
 												.filter((model: any) =>
