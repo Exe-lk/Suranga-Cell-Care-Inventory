@@ -15,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           res.status(400).json({ error: 'Item Acce model is required' });
           return;
         }
-        const id = await createItemAcce(type, mobileType, category, model, quantity, brand, reorderLevel, description, code);
+        const id = await createItemAcce(req.body);
         res.status(201).json({ message: 'Item Acce created', id });
         break;
       }

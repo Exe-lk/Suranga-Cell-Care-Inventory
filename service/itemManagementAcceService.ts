@@ -1,9 +1,9 @@
 import { firestore } from '../firebaseConfig';
 import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where } from 'firebase/firestore';
 
-export const createItemAcce = async (type: string, mobileType: string, category: string, model: string, quantity: string, brand: string, reorderLevel: string, description: string, code: any) => {
+export const createItemAcce = async (values:any) => {
   const status = true;
-  const docRef = await addDoc(collection(firestore, 'ItemManagementAcce'), { type, mobileType, category, model, quantity, brand, reorderLevel, description, status, code });
+  const docRef = await addDoc(collection(firestore, 'ItemManagementAcce'), values);
   return docRef.id;
 };
 

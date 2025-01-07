@@ -75,6 +75,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			reorderLevel: '',
 			description: '',
 			status: true,
+			warranty:''
 		},
 		validate: (values) => {
 			const errors: Record<string, string> = {};
@@ -298,6 +299,24 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
+					<FormGroup id='warranty' label='Warranty' className='col-md-6'>
+								<Select
+									id='warranty'
+									name='warranty'
+									ariaLabel='warranty'
+									onChange={formik.handleChange}
+									value={formik.values.warranty}
+									onBlur={formik.handleBlur}
+								>
+									<option value='One Month'>One Month</option>
+									<option value='Two Month'>Two Month</option>
+									<option value='Three Month'>Three Month</option>
+									<option value='Six Month'>Six Month</option>
+									<option value='One Year'>One Year</option>
+									<option value='Two Year'>Two Year</option>
+									<option value='Five Year'>Five Year</option>
+								</Select>
+							</FormGroup>
 				</div>
 			</ModalBody>
 			<ModalFooter className='p-4'>
