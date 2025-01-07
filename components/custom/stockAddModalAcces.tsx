@@ -11,6 +11,8 @@ import { useGetItemAcceByIdQuery } from '../../redux/slices/itemManagementAcceAp
 import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
 import { useGetStockInOutsQuery } from '../../redux/slices/stockInOutAcceApiSlice';
+import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice';
+import Select from '../bootstrap/forms/Select';
 
 interface StockAddModalProps {
 	id: string;
@@ -63,6 +65,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		barcode: 0,
 		imi: '',
 	});
+	const {
+			data: suppliers,
+			isLoading: supplierLoading,
+			isError,
+		} = useGetSuppliersQuery(undefined);
 	const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
 	const [updateStockInOut] = useUpdateStockInOutMutation();
@@ -123,6 +130,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 			barcode: generatedbarcode,
 			imi: '',
 			cid: stockIn.id || '',
+			suppName:''
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -143,6 +151,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 				errors.cost = 'Cost is required';
 			} else if (parseInt(values.cost) <= 0) {
 				errors.cost = 'Cost must be a positive number';
+			}
+			if (!values.suppName) {
+				errors.suppName = 'Cost is required';
 			}
 			if (!values.date) {
 				errors.date = 'Date In is required';
@@ -429,6 +440,34 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.sellingPrice}
 							validFeedback='Looks good!'
 						/>
+					</FormGroup>
+					<FormGroup id='suppName' label='Supplier Name' className='col-md-6'>
+						<Select
+							id='suppName'
+							name='suppName'
+							ariaLabel='suppName'
+							onChange={formik.handleChange}
+							value={formik.values.suppName}
+							onBlur={formik.handleBlur}
+							className={`form-control ${
+								formik.touched.suppName && formik.errors.suppName
+									? 'is-invalid'
+									: ''
+							}`}>
+							<option value=''>Select a Supp Name</option>
+							{supplierLoading && <option>Loading Supp Name...</option>}
+							{isError && <option>Error fetching Supp Names</option>}
+							{suppliers?.map((suppName: { id: string; name: string }) => (
+								<option key={suppName.id} value={suppName.name}>
+									{suppName.name}
+								</option>
+							))}
+						</Select>
+						{formik.touched.category && formik.errors.category ? (
+							<div className='invalid-feedback'>{formik.errors.category}</div>
+						) : (
+							<></>
+						)}
 					</FormGroup>
 				</div>
 			</ModalBody>
