@@ -16,6 +16,7 @@ import {
 } from 'firebase/firestore';
 
 export const createstockIn = async (values: any) => {
+	console.log(values)
 	values.status = true;
 	values.timestamp = Timestamp.now();
 	const docRef = doc(firestore, 'Stock', values.barcode); // Use barcode as document ID

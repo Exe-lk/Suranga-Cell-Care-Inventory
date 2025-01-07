@@ -4,7 +4,7 @@ import Button from '../../../components/bootstrap/Button';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import CommonHeaderRight from './HeaderRight';
 
-const MyDefaultHeader = ({ onSaveDraft, onLoadDraft,startBill }: any) => {
+const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill }: any) => {
 	const [drafts, setDrafts] = useState([]);
 
 	// Load drafts from localStorage
@@ -21,10 +21,7 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft,startBill }: any) => {
 		if (index >= 0 && index < drafts.length) {
 			const selectedDraft = drafts[index];
 			onLoadDraft(selectedDraft);
-
-			// Swal.fire('Success', 'Draft loaded successfully.', 'success');
 		} else {
-			// Swal.fire('Error', 'Invalid draft selected.', 'error');
 		}
 	};
 
@@ -33,10 +30,10 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft,startBill }: any) => {
 			<HeaderLeft>
 				<div className='row g-3'>
 					<div className='col-auto '>
-						<Button color='success' className='mt-4'onClick={startBill}
-						>
+						<Button color='success' className='mt-4' onClick={startBill}>
 							Start Bill
 						</Button>
+						
 					</div>
 					<div className='col-auto  ms-auto'>
 						<div className='row g-3'>

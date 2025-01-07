@@ -69,7 +69,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			category: '',
 			touchpadNumber: '',
 			batteryCellNumber: '',
-			displaySNumber: '',
+			warranty: '',
 			otherCategory: '',
 			status: true,
 		},
@@ -97,13 +97,11 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			}
 			if (!values.reorderLevel) {
 				errors.reorderLevel = 'Reorder Level is required';
-			} 
+			}
 			if (values.category === 'Touch Pad' && !values.touchpadNumber) {
 				errors.touchpadNumber = 'Touchpad Number is required for Touch Pad category';
 			}
-			if (values.category === 'Displays' && !values.displaySNumber) {
-				errors.displaySNumber = 'Display Serial Number is required for Displays category';
-			}
+
 			if (values.category === 'Battery Cell' && !values.batteryCellNumber) {
 				errors.batteryCellNumber =
 					'Battery Cell Number is required for Battery Cell category';
@@ -164,8 +162,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		setCustomCategory('');
 	};
 
-	
-
 	const handleBrandChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setSelectedBrand(e.target.value);
 		formik.setFieldValue('brand', e.target.value);
@@ -182,8 +178,8 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			(model.category === selectedCategory || selectedCategory === 'Other'),
 	);
 	const derivedCategory = ['Battery Cell', 'Displays', 'Touch Pad'].includes(selectedCategory)
-	? selectedCategory
-	: 'Other';
+		? selectedCategory
+		: 'Other';
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -238,32 +234,34 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 							/>
 						</ChecksGroup>
 					</FormGroup>
-					{selectedCategory !== 'Battery Cell' && selectedCategory !== 'Displays' && selectedCategory !== 'Touch Pad' && (
-						<FormGroup
-							id='categorySelectDropdown'
-							label='Select Category'
-							className='col-md-6'>
-							<Select
-								ariaLabel='Select category'
-								onChange={handleCategoryChange}
-								value={formik.values.category}
-								onBlur={formik.handleBlur}>
-								<Option value=''>Select Category</Option>
-								{categories
-									?.filter(
-										(category: any) =>
-											category.name !== 'Battery Cell' &&
-											category.name !== 'Displays' &&
-											category.name !== 'Touch Pad',
-									)
-									.map((category: any) => (
-										<Option key={category.id} value={category.name}>
-											{category.name}
-										</Option>
-									))}
-							</Select>
-						</FormGroup>
-					)}
+					{selectedCategory !== 'Battery Cell' &&
+						selectedCategory !== 'Displays' &&
+						selectedCategory !== 'Touch Pad' && (
+							<FormGroup
+								id='categorySelectDropdown'
+								label='Select Category'
+								className='col-md-6'>
+								<Select
+									ariaLabel='Select category'
+									onChange={handleCategoryChange}
+									value={formik.values.category}
+									onBlur={formik.handleBlur}>
+									<Option value=''>Select Category</Option>
+									{categories
+										?.filter(
+											(category: any) =>
+												category.name !== 'Battery Cell' &&
+												category.name !== 'Displays' &&
+												category.name !== 'Touch Pad',
+										)
+										.map((category: any) => (
+											<Option key={category.id} value={category.name}>
+												{category.name}
+											</Option>
+										))}
+								</Select>
+							</FormGroup>
+						)}
 					{selectedCategory && (
 						<FormGroup id='brandSelect' label='Brand' className='col-md-6'>
 							<Select
@@ -332,20 +330,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
-							{selectedCategory === 'Displays' && (
-								<FormGroup
-									id='displaySNumber'
-									label='Display Serial Number'
-									className='col-md-6'>
-									<Input
-										type='text'
-										onChange={formik.handleChange}
-										value={formik.values.displaySNumber}
-										onBlur={formik.handleBlur}
-										name='displaySNumber'
-									/>
-								</FormGroup>
-							)}
+
 							{selectedCategory === 'Battery Cell' && (
 								<FormGroup
 									id='batteryCellNumber'
@@ -360,13 +345,32 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									/>
 								</FormGroup>
 							)}
+
+							<FormGroup id='warranty' label='Warranty' className='col-md-6'>
+								<Select
+									id='warranty'
+									name='warranty'
+									ariaLabel='warranty'
+									onChange={formik.handleChange}
+									value={formik.values.warranty}
+									onBlur={formik.handleBlur}
+								>
+									<option value='One Month'>One Month</option>
+									<option value='Two Month'>Two Month</option>
+									<option value='Three Month'>Three Month</option>
+									<option value='Six Month'>Six Month</option>
+									<option value='One Year'>One Year</option>
+									<option value='Two Year'>Two Year</option>
+									<option value='Five Year'>Five Year</option>
+								</Select>
+							</FormGroup>
 						</>
 					)}
 				</div>
 			</ModalBody>
 			<ModalFooter className='p-4'>
 				<Button color='success' onClick={() => formik.handleSubmit()} isDisable={isLoading}>
-				Create Item
+					Create Item
 				</Button>
 			</ModalFooter>
 		</Modal>

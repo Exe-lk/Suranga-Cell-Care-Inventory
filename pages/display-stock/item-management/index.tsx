@@ -18,6 +18,7 @@ import ItemEditModal from '../../../components/custom/ItemEditEleModal';
 import { doc, deleteDoc, collection, getDocs, updateDoc, query, where } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import StockAddModal from '../../../components/custom/StockAddModal';
+import StockReturnModal from '../../../components/custom/StockReturnModal';
 import StockOutModal from '../../../components/custom/StockOutElecModal';
 import Dropdown, { DropdownToggle, DropdownMenu } from '../../../components/bootstrap/Dropdown';
 import Swal from 'sweetalert2';
@@ -39,6 +40,7 @@ const Index: NextPage = () => {
 	const { darkModeStatus } = useDarkMode();
 	const [searchTerm, setSearchTerm] = useState('');
 	const [addModalStatus, setAddModalStatus] = useState<boolean>(false);
+	const [returnModalStatus, setReturnModalStatus] = useState<boolean>(false);
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false);
 	const [addstockModalStatus, setAddstockModalStatus] = useState<boolean>(false);
 	const [editstockModalStatus, setEditstockModalStatus] = useState<boolean>(false);
@@ -358,6 +360,13 @@ const Index: NextPage = () => {
 					/>
 				</SubHeaderLeft>
 				<SubHeaderRight>
+				<Button
+						icon='AddCircleOutline'
+						color='warning'
+						isLight
+						onClick={() => setReturnModalStatus(true)}>
+						Return
+					</Button>
 					<Button
 						icon='AddCircleOutline'
 						color='success'
@@ -545,6 +554,12 @@ const Index: NextPage = () => {
 			<StockAddModal
 				setIsOpen={setAddstockModalStatus}
 				isOpen={addstockModalStatus}
+				id={id}
+				quantity={quantity}
+			/>
+			<StockReturnModal
+				setIsOpen={setReturnModalStatus}
+				isOpen={returnModalStatus}
 				id={id}
 				quantity={quantity}
 			/>
