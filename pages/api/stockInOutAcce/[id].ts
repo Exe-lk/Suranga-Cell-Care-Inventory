@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         //   res.status(400).json({ error: 'Dealer name is required' });
         //   return;
         // }
+        console.log(quantity)
         await updatestockIn(id as string, quantity);
         res.status(200).json({ message: 'Dealer updated' });
         break;
