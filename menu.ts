@@ -72,12 +72,28 @@ export const stockAccPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
-	Stockkeeperbar1: {
+	singlePages: {
 		id: 'stock keeper bar1',
 		text: 'Barcode Printing',
 		path: 'accessory-stock/barcode',
 		icon: 'FormatAlignCenter',
-
+		subMenu: {
+			Display: {
+				id: 'barcode1',
+				text: 'Mobile',
+				path: 'accessory-stock/barcode/mobile',
+				icon: 'LaptopMac',
+		
+			},
+			Model: {
+				id: 'barcode2',
+				text: 'Accessories',
+				path: 'accessory-stock/barcode/accessories',
+				icon: 'SupervisedUserCircle',
+		
+			},
+			
+		}
 	},
 }
 export const CashierPagesMenu = {
