@@ -430,7 +430,7 @@ function index() {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
-	const printbill = async (e: any) => {
+	const printbill = async () => {
 		if (
 			amount >= Number(calculateSubTotal()) &&
 			amount > 0 &&
@@ -482,14 +482,14 @@ function index() {
 							...orderedItems.map(
 								({ name, quantity, sellingPrice, category, model, brand }) => {
 									const netValue = sellingPrice * quantity;
-									const truncatedName =
-										brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+									// const truncatedName =
+									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
 
 									// Define receipt width (e.g., 42 characters for typical printers)
 									const receiptWidth = 42;
 
 									// Create the line dynamically
-									const line = `${category} ${model} ${truncatedName}`;
+									const line = `${category} ${model}`;
 									const quantityStr = `${quantity}`;
 									const priceStr = `${sellingPrice.toFixed(2)}`;
 									const netValueStr = `${netValue.toFixed(2)}`;

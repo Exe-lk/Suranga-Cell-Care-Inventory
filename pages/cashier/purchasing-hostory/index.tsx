@@ -256,6 +256,7 @@ const Index: React.FC = () => {
 													return val;
 												}
 											})
+											.sort((a:any, b:any) => b.id - a.id) 
 											.map((order, index) => (
 												<React.Fragment key={index}>
 													<tr
