@@ -88,7 +88,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 		try {
 			const { value: inputText } = await Swal.fire({
 				title: 'Are you sure?',
-				text: 'Please type "DELETE ALL" to confirm deleting all dealers',
+				text: 'Please type "DELETE ALL" to confirm deleting all items.',
 				input: 'text',
 				icon: 'warning',
 				inputValidator: (value) => {
