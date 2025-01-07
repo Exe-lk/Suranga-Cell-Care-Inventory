@@ -317,6 +317,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 									value={formik.values.warranty}
 									onBlur={formik.handleBlur}
 								>
+									<option value=''>Select Warranty</option>
 									<option value='One Month'>One Month</option>
 									<option value='Two Month'>Two Month</option>
 									<option value='Three Month'>Three Month</option>
