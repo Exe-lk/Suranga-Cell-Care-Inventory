@@ -75,6 +75,7 @@ const Index: NextPage = () => {
 					description: itemAcce.description,
 					code: itemAcce.code,
 					status: false,
+					warranty: itemAcce.warranty
 				};
 				await updateItemAcce(values);
 				Swal.fire('Deleted!', 'The Item Accessory has been deleted.', 'success');
