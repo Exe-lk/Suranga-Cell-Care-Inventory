@@ -40,6 +40,7 @@ const Index: NextPage = () => {
 	const [editModalStatus, setEditModalStatus] = useState<boolean>(false); 
 	const [id, setId] = useState<string>(''); 
 	const { data: categories, error, isLoading, refetch } = useGetCategories1Query(undefined);
+	console.log(categories);
 	const [updateCategory] = useUpdateCategory1Mutation();
 	const [currentPage, setCurrentPage] = useState<number>(1);
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);

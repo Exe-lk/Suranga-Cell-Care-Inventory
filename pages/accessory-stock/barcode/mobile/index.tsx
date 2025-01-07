@@ -1,22 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { NextPage } from 'next';
-import PageWrapper from '../../../layout/PageWrapper/PageWrapper';
-import SubHeader, { SubHeaderLeft } from '../../../layout/SubHeader/SubHeader';
-import Icon from '../../../components/icon/Icon';
-import Input from '../../../components/bootstrap/forms/Input';
-import Button from '../../../components/bootstrap/Button';
-import Page from '../../../layout/Page/Page';
-import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
+import PageWrapper from '../../../../layout/PageWrapper/PageWrapper';
+import SubHeader, { SubHeaderLeft } from '../../../../layout/SubHeader/SubHeader';
+import Icon from '../../../../components/icon/Icon';
+import Input from '../../../../components/bootstrap/forms/Input';
+import Button from '../../../../components/bootstrap/Button';
+import Page from '../../../../layout/Page/Page';
+import Card, { CardBody, CardTitle } from '../../../../components/bootstrap/Card';
 import Barcode from 'react-barcode';
 import Swal from 'sweetalert2';
 import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
-} from '../../../components/PaginationButtons';
-import { useGetStockInOutsQuery } from '../../../redux/slices/stockInOutAcceApiSlice';
+} from '../../../../components/PaginationButtons';
+import { useGetStockInOutsQuery } from '../../../../redux/slices/stockInOutAcceApiSlice';
 
 const Index: NextPage = () => {
 	const { data: StockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
+	console.log('StockInOuts', StockInOuts);
 	const [searchTerm, setSearchTerm] = useState('');
 	const [startDate, setStartDate] = useState<string>('');
 	const [endDate, setEndDate] = useState<string>('');
@@ -255,7 +256,7 @@ const Index: NextPage = () => {
 						<Card stretch>
 							<CardTitle className='d-flex justify-content-between align-items-center m-4'>
 								<div className='flex-grow-1 text-center text-info'>
-									Barcode Print
+									Barcode Print for Mobile
 								</div>
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
@@ -332,6 +333,8 @@ const Index: NextPage = () => {
 														stockInOut.stock === 'stockIn',
 												)
 
+												.filter((brand: any) => brand.type === 'Mobile')
+
 												.map((brand: any, index: any) => (
 													<tr key={index}>
 														<td>{brand.date}</td>
@@ -343,7 +346,6 @@ const Index: NextPage = () => {
 														<td>{brand.sellingPrice}</td>
 
 														<td>{brand.quantity}</td>
-
 														<td>
 															<Barcode
 																value={brand.barcode}
