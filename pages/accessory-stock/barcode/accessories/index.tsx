@@ -315,13 +315,15 @@ const Index: NextPage = () => {
 													(StockInOut: any) => StockInOut.status === true,
 												)
 												.filter((brand: any) => {
-													if (
-														brand.barcode
-															?.toString()
-															.includes(searchTerm)
-													) {
-														return brand;
-													}
+													const search = searchTerm.toLowerCase();
+													return (
+														brand.barcode?.toString().toLowerCase().includes(search) ||
+														(brand.brand+" "+brand.model)?.toLowerCase().includes(search) ||
+													
+														brand.model?.toLowerCase().includes(search)||
+														brand.brand?.toLowerCase().includes(search)
+														
+													);
 												})
 												
 												.filter((brand: any) =>
@@ -339,8 +341,8 @@ const Index: NextPage = () => {
 														<td>{brand.date}</td>
 														<td>{brand.code}</td>
 														<td>
-															{brand.brand} {brand.category}{' '}
-															{brand.model}
+														{brand.brand} {brand.model}
+														
 														</td>
 														<td>{brand.sellingPrice}</td>
 
