@@ -24,6 +24,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json(ItemAcces);
         break;
       }
+      
       case 'PUT': {
         const { id,type, mobileType, category, model, quantity, brand, reorderLevel, description, code ,status,warranty } = req.body;
         if (!id || !model) {
