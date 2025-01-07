@@ -25,6 +25,8 @@ export const getstockInById = async (id: string) => {
   }
 };
 export const updatestockIn = async (id: string, quantity: string) => {
+  console.log(id)
+  console.log(quantity)
   const stockInRef = doc(firestore, 'ItemManagementAcce', id);
   await updateDoc(stockInRef, { quantity });
 };

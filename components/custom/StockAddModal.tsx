@@ -349,13 +349,17 @@ import Swal from 'sweetalert2';
 import FormGroup from '../bootstrap/forms/FormGroup';
 import Input from '../bootstrap/forms/Input';
 import Button from '../bootstrap/Button';
-import { useAddStockInMutation } from '../../redux/slices/stockInOutDissApiSlice';
+import {
+	useAddStockInMutation,
+	useUpdateSubStockInOutMutation,
+} from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetItemDisByIdQuery } from '../../redux/slices/itemManagementDisApiSlice';
 import { useGetItemDissQuery } from '../../redux/slices/itemManagementDisApiSlice';
 import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice';
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutDissApiSlice';
 import { useGetStockInOutsQuery } from '../../redux/slices/stockInOutDissApiSlice';
 import Select from '../bootstrap/forms/Select';
+import Checks, { ChecksGroup } from '../bootstrap/forms/Checks';
 
 interface StockAddModalProps {
 	id: string;
@@ -379,10 +383,10 @@ interface StockIn {
 	boxNumber: string;
 	description: string;
 	status: boolean;
-	printlable:number;
+	printlable: number;
 }
 
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantity}) => {
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
 	const [stockIn, setStockIn] = useState<StockIn>({
 		cid: '',
 		brand: '',
@@ -398,7 +402,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 		description: '',
 		status: true,
 		barcode: 0,
-		printlable:0
+		printlable: 0,
 	});
 	const { data: stockInData, isSuccess } = useGetItemDisByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
@@ -413,7 +417,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 	const [generatedCode, setGeneratedCode] = useState('');
 	const [generatedbarcode, setGeneratedBarcode] = useState<any>();
 	const nowQuantity = quantity;
-
+	const [selectedCategory, setSelectedCategory] = useState<string>('stock in');
+	const [updateSubStockInOut] = useUpdateSubStockInOutMutation();
 	useEffect(() => {
 		if (isSuccess && stockInData) {
 			setStockIn(stockInData);
@@ -455,12 +460,12 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 			cost: '',
 			code: generatedCode,
 			boxNumber: '',
-			description:'',
+			description: '',
 			stock: 'stockIn',
 			status: true,
 			barcode: generatedbarcode,
-			printlable:0
-
+			printlable: 0,
+			itemId: '',
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -498,14 +503,23 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 					showConfirmButton: false,
 				});
 				try {
-					const updatedQuantity =
-						parseInt(nowQuantity) + parseInt(values.quantity);
-					const response: any = await addstockIn({
-						...values,
-						code: generatedCode,
-						barcode: generatedbarcode,
-					}).unwrap();
-					await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+					const id = values.itemId.slice(0, 8); // Extract the first 8 characters
+					const subid = values.itemId;
+					if (selectedCategory == 'return') {
+						const values = {
+							status: false,
+						};
+						await updateSubStockInOut({ id, subid, values }).unwrap();
+					} else {
+						const updatedQuantity = parseInt(nowQuantity) + parseInt(values.quantity);
+						const response: any = await addstockIn({
+							...values,
+							code: generatedCode,
+							barcode: generatedbarcode,
+						}).unwrap();
+						await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+					}
+
 					refetch();
 					await Swal.fire({
 						icon: 'success',
@@ -528,6 +542,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 		},
 	});
 
+	const handleCategoryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSelectedCategory(e.target.value);
+	};
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
@@ -539,135 +557,175 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen , quantit
 				<ModalTitle id=''>{'New Stock'}</ModalTitle>
 			</ModalHeader>
 			<ModalBody className='px-4'>
-				<div className='row g-4'>
-					<FormGroup id='code' label='Generated Code' className='col-md-6'>
-						<Input
-							type='text'
-							value={generatedbarcode}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.code}
-						/>
-					</FormGroup>
-					<FormGroup id='brand' label='Brand' className='col-md-6'>
-						<Input
-							type='text'
-							value={formik.values.brand}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.brand}
-						/>
-					</FormGroup>
-					<FormGroup id='model' label='Model' className='col-md-6'>
-						<Input
-							type='text'
-							value={formik.values.model}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.model}
-						/>
-					</FormGroup>
-					<FormGroup id='category' label='Category' className='col-md-6'>
-						<Input
-							type='text'
-							value={formik.values.category}
-							readOnly
-							isValid={formik.isValid}
-							isTouched={formik.touched.category}
-						/>
-					</FormGroup>
-					<FormGroup id='quantity' label='Quantity' className='col-md-6'>
-						<Input
-							type='number'
-							placeholder='Enter Quantity'
-							value={formik.values.quantity}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.quantity}
-							invalidFeedback={formik.errors.quantity}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='date' label='Date In' className='col-md-6'>
-						<Input
-							type='date'
-							placeholder='Enter Date'
-							value={formik.values.date}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.date}
-							invalidFeedback={formik.errors.date}
-							validFeedback='Looks good!'
-							max={new Date().toISOString().split('T')[0]}
-						/>
-					</FormGroup>
-					<FormGroup id='suppName' label='Supplier Name' className='col-md-6'>
-						<Select
-							id='suppName'
-							name='suppName'
-							ariaLabel='suppName'
-							onChange={formik.handleChange}
-							value={formik.values.suppName}
-							onBlur={formik.handleBlur}
-							className={`form-control ${
-								formik.touched.suppName && formik.errors.suppName
-									? 'is-invalid'
-									: ''
-							}`}>
-							<option value=''>Select a Supp Name</option>
-							{supplierLoading && <option>Loading Supp Name...</option>}
-							{isError && <option>Error fetching Supp Names</option>}
-							{suppliers?.map((suppName: { id: string; name: string }) => (
-								<option key={suppName.id} value={suppName.name}>
-									{suppName.name}
-								</option>
-							))}
-						</Select>
-						{formik.touched.category && formik.errors.category ? (
-							<div className='invalid-feedback'>{formik.errors.category}</div>
-						) : (
-							<></>
-						)}
-					</FormGroup>
-					<FormGroup id='cost' label='Cost(lkr)' className='col-md-6'>
-						<Input
-							type='number'
-							placeholder='Enter Cost'
-							value={formik.values.cost}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.cost}
-							invalidFeedback={formik.errors.cost}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='boxNumber' label='Box Number' className='col-md-6'>
-						<Input
-							type='text'
-							placeholder='Enter Box Number'
-							value={formik.values.boxNumber}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.boxNumber}
-							invalidFeedback={formik.errors.boxNumber}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
-					<FormGroup id='description' label='Description' className='col-md-6'>
-						<Input
-							type='text'
-							placeholder='Enter Description'
-							value={formik.values.description}
-							onChange={formik.handleChange}
-							onBlur={formik.handleBlur}
-							isValid={formik.isValid}
-							isTouched={formik.touched.description}
-						/>
-					</FormGroup>
+				<ChecksGroup isInline>
+					<Checks
+						type='radio'
+						id='stock in'
+						label='Stock In'
+						name='stock in'
+						value='stock in'
+						onChange={handleCategoryChange}
+						checked={selectedCategory}
+					/>
+					<Checks
+						type='radio'
+						id='return'
+						label='Return '
+						name='return'
+						value='return'
+						onChange={handleCategoryChange}
+						checked={selectedCategory}
+					/>
+				</ChecksGroup>
+				<div className='row g-4 mt-2'>
+					{selectedCategory == 'return' ? (
+						<>
+							<FormGroup id='itemId' label='Item Id' className='col-md-6'>
+								<Input
+									type='number'
+									placeholder='Enter Quantity'
+									value={formik.values.itemId}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.itemId}
+									invalidFeedback={formik.errors.itemId}
+									validFeedback='Looks good!'
+								/>
+							</FormGroup>
+						</>
+					) : (
+						<>
+							<FormGroup id='code' label='Generated Code' className='col-md-6'>
+								<Input
+									type='text'
+									value={generatedbarcode}
+									readOnly
+									isValid={formik.isValid}
+									isTouched={formik.touched.code}
+								/>
+							</FormGroup>
+							<FormGroup id='brand' label='Brand' className='col-md-6'>
+								<Input
+									type='text'
+									value={formik.values.brand}
+									readOnly
+									isValid={formik.isValid}
+									isTouched={formik.touched.brand}
+								/>
+							</FormGroup>
+							<FormGroup id='model' label='Model' className='col-md-6'>
+								<Input
+									type='text'
+									value={formik.values.model}
+									readOnly
+									isValid={formik.isValid}
+									isTouched={formik.touched.model}
+								/>
+							</FormGroup>
+							<FormGroup id='category' label='Category' className='col-md-6'>
+								<Input
+									type='text'
+									value={formik.values.category}
+									readOnly
+									isValid={formik.isValid}
+									isTouched={formik.touched.category}
+								/>
+							</FormGroup>
+							<FormGroup id='quantity' label='Quantity' className='col-md-6'>
+								<Input
+									type='number'
+									placeholder='Enter Quantity'
+									value={formik.values.quantity}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.quantity}
+									invalidFeedback={formik.errors.quantity}
+									validFeedback='Looks good!'
+								/>
+							</FormGroup>
+							<FormGroup id='date' label='Date In' className='col-md-6'>
+								<Input
+									type='date'
+									placeholder='Enter Date'
+									value={formik.values.date}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.date}
+									invalidFeedback={formik.errors.date}
+									validFeedback='Looks good!'
+									max={new Date().toISOString().split('T')[0]}
+								/>
+							</FormGroup>
+							<FormGroup id='suppName' label='Supplier Name' className='col-md-6'>
+								<Select
+									id='suppName'
+									name='suppName'
+									ariaLabel='suppName'
+									onChange={formik.handleChange}
+									value={formik.values.suppName}
+									onBlur={formik.handleBlur}
+									className={`form-control ${
+										formik.touched.suppName && formik.errors.suppName
+											? 'is-invalid'
+											: ''
+									}`}>
+									<option value=''>Select a Supp Name</option>
+									{supplierLoading && <option>Loading Supp Name...</option>}
+									{isError && <option>Error fetching Supp Names</option>}
+									{suppliers?.map((suppName: { id: string; name: string }) => (
+										<option key={suppName.id} value={suppName.name}>
+											{suppName.name}
+										</option>
+									))}
+								</Select>
+								{formik.touched.category && formik.errors.category ? (
+									<div className='invalid-feedback'>{formik.errors.category}</div>
+								) : (
+									<></>
+								)}
+							</FormGroup>
+							<FormGroup id='cost' label='Cost(lkr)' className='col-md-6'>
+								<Input
+									type='number'
+									placeholder='Enter Cost'
+									value={formik.values.cost}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.cost}
+									invalidFeedback={formik.errors.cost}
+									validFeedback='Looks good!'
+								/>
+							</FormGroup>
+							<FormGroup id='boxNumber' label='Box Number' className='col-md-6'>
+								<Input
+									type='text'
+									placeholder='Enter Box Number'
+									value={formik.values.boxNumber}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.boxNumber}
+									invalidFeedback={formik.errors.boxNumber}
+									validFeedback='Looks good!'
+								/>
+							</FormGroup>
+							<FormGroup id='description' label='Description' className='col-md-6'>
+								<Input
+									type='text'
+									placeholder='Enter Description'
+									value={formik.values.description}
+									onChange={formik.handleChange}
+									onBlur={formik.handleBlur}
+									isValid={formik.isValid}
+									isTouched={formik.touched.description}
+								/>
+							</FormGroup>
+						</>
+					)}
 				</div>
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
