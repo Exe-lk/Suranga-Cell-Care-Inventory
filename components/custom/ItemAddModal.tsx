@@ -57,6 +57,7 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		}
 	}, [isOpen, itemAcces]);
 
+	
 	const incrementCode = (code: string) => {
 		const numericPart = parseInt(code.replace(/\D/g, ''), 10);
 		const incrementedNumericPart = (numericPart + 1).toString().padStart(4, '0');
