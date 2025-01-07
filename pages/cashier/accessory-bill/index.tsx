@@ -10,16 +10,21 @@ import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Input from '../../../components/bootstrap/forms/Input';
 import Button from '../../../components/bootstrap/Button';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
-import {  useGetStockInOutsQuery as useGetStockInOutsdisQuery, useUpdateStockInOutMutation } from '../../../redux/slices/stockInOutAcceApiSlice';
+import {
+	useGetStockInOutsQuery as useGetStockInOutsdisQuery,
+	useUpdateStockInOutMutation,
+} from '../../../redux/slices/stockInOutAcceApiSlice';
 import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
 import { Creatbill, Getbills } from '../../../service/accessoryService';
 import Page from '../../../layout/Page/Page';
 import Spinner from '../../../components/bootstrap/Spinner';
+import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
 
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
 	const { data: Accstock, error, isLoading } = useGetStockInOutsdisQuery(undefined);
 	const [updateStockInOut] = useUpdateStockInOutMutation();
+	const { data: itemAcces } = useGetItemAccesQuery(undefined);
 	const [items, setItems] = useState<any[]>([]);
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
 	const [selectedProduct, setSelectedProduct] = useState<string>('');
@@ -258,10 +263,10 @@ function index() {
 					...item,
 					currentQuantity: item.quantity, // Add currentQuantity field
 					// Optionally remove the old quantity field if not needed
-				  }));
-				  
-				  const result1 = updatedAccstock.filter((item: any) => item.stock === 'stockIn');
-				  const combinedResult = [...result1];
+				}));
+
+				const result1 = updatedAccstock.filter((item: any) => item.stock === 'stockIn');
+				const combinedResult = [...result1];
 				setItems(combinedResult);
 				console.log(combinedResult);
 			} catch (error) {
@@ -364,7 +369,7 @@ function index() {
 	};
 
 	const addbill = async () => {
-		console.log(orderedItems)
+		console.log(orderedItems);
 		if (
 			amount >= Number(calculateSubTotal()) &&
 			amount > 0 &&
@@ -401,17 +406,28 @@ function index() {
 					};
 					Creatbill(values);
 					for (const item of orderedItems) {
-						const { cid, currentQuantity, quantity } = item; // Destructure the fields from the current item
-						const updatedQuantity = currentQuantity - quantity; // Calculate the new quantity
-					  	const id=cid
-						try {
-						  // Call the updateStockInOut function to update the stock
-						  await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-						  console.log(`Stock updated for ID: ${id}, New Quantity: ${updatedQuantity}`);
-						} catch (error) {
-						  console.error(`Failed to update stock for ID: ${id}`, error);
+						const { cid, barcode, quantity } = item; // Destructure the fields from the current item
+						const id = cid;
+						const barcodePrefix = barcode.slice(0, 4);
+
+						const matchingItem = itemAcces?.find(
+							(accessItem: any) => accessItem.code === barcodePrefix,
+						);
+
+						if (matchingItem) {
+							const quantity1 = matchingItem.quantity;
+						
+							const updatedQuantity = quantity1 - quantity;
+							try {
+								// Call the updateStockInOut function to update the stock
+								await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+							} catch (error) {
+								console.error(`Failed to update stock for ID: ${id}`, error);
+							}
+						} else {
+							console.warn(`No matching item found for barcode: ${barcode}`);
 						}
-					  }
+					}
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
@@ -447,7 +463,6 @@ function index() {
 					confirmButtonText: 'Yes, Print Bill!',
 				});
 
-				
 				if (result.isConfirmed) {
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
