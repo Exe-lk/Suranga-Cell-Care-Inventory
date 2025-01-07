@@ -262,11 +262,18 @@ const Index: NextPage = () => {
 											/>
 										))}
 									</ChecksGroup>
-									<FormGroup label='Date' className='col-6'>
+									<FormGroup label='Start Date' className='col-6'>
 										<Input
 											type='date'
 											onChange={(e: any) => setStartDate(e.target.value)}
 											value={startDate}
+										/>
+									</FormGroup>
+									<FormGroup label='End Date' className='col-6'>
+										<Input
+											type='date'
+											onChange={(e: any) => setEndDate(e.target.value)}
+											value={endDate}
 										/>
 									</FormGroup>
 								</div>
