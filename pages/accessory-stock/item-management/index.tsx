@@ -461,12 +461,34 @@ const Index: NextPage = () => {
 														? selectedUsers.includes(itemAcces.type)
 														: true,
 												)
+												// .filter((brand: any) => {
+												// 	if (
+												// 		brand.code.includes(searchTerm.slice(0, 4))
+												// 	) {
+												// 		return brand;
+												// 	}
+												// })
 												.filter((brand: any) => {
-													if (
-														brand.code.includes(searchTerm.slice(0, 4))  
-													) {
-														return brand;
-													}
+													
+													const search = searchTerm.toLowerCase();
+													return (
+														brand.code
+															?.toString()
+															.toLowerCase()
+															.includes(searchTerm.slice(0, 4)) ||
+														(brand.brand + ' ' + brand.model)
+															?.toLowerCase()
+															.includes(search) ||
+														brand.model
+															?.toLowerCase()
+															.includes(search) ||
+														brand.brand
+															?.toLowerCase()
+															.includes(search) ||
+														brand.category
+															?.toLowerCase()
+															.includes(search)
+													);
 												})
 												.map((itemAcces: any, index: any) => (
 													<tr key={index}>
@@ -486,10 +508,8 @@ const Index: NextPage = () => {
 																color='success'
 																onClick={() => {
 																	setAddstockModalStatus(true),
-																	setId(itemAcces.id)
-																	setQuantity(
-																		itemAcces.quantity,
-																	);
+																		setId(itemAcces.id);
+																	setQuantity(itemAcces.quantity);
 																}}></Button>
 														</td>
 														<td>

@@ -26,7 +26,6 @@ interface IPaginationButtonsProps {
 	data: unknown[];
 	label: string;
 }
-
 const PaginationButtons: FC<IPaginationButtonsProps> = ({
 	setCurrentPage,
 	currentPage,
@@ -37,6 +36,7 @@ const PaginationButtons: FC<IPaginationButtonsProps> = ({
 }) => {
 	const totalItems = data?.length;
 	const totalPage = Math.ceil(totalItems / perPage);
+
 	const pagination = () => {
 		let items = [];
 
@@ -52,6 +52,7 @@ const PaginationButtons: FC<IPaginationButtonsProps> = ({
 		}
 
 		items = items.reverse();
+
 		items.push(
 			<PaginationItem key={currentPage} isActive onClick={() => setCurrentPage(currentPage)}>
 				{currentPage}
@@ -65,14 +66,18 @@ const PaginationButtons: FC<IPaginationButtonsProps> = ({
 					{i}
 				</PaginationItem>,
 			);
+
 			i += 1;
 		}
+
 		return items;
 	};
 
 	const getInfo = () => {
 		const start = perPage * (currentPage - 1) + 1;
+
 		const end = perPage * currentPage;
+
 		return (
 			<span className='pagination__desc'>
 				Showing {start} to {end > totalItems ? totalItems : end} of {totalItems} {label}
@@ -85,6 +90,7 @@ const PaginationButtons: FC<IPaginationButtonsProps> = ({
 			<CardFooterLeft>
 				<span className='text-muted'>{getInfo()}</span>
 			</CardFooterLeft>
+
 			<CardFooterRight className='d-flex'>
 				{totalPage > 1 && (
 					<Pagination ariaLabel={label}>
@@ -140,18 +146,14 @@ const PaginationButtons: FC<IPaginationButtonsProps> = ({
 		</CardFooter>
 	);
 };
-
 PaginationButtons.propTypes = {
 	setCurrentPage: PropTypes.func.isRequired,
 	currentPage: PropTypes.number.isRequired,
 	perPage: PropTypes.number.isRequired,
 	setPerPage: PropTypes.func.isRequired,
+	// eslint-disable-next-line react/forbid-prop-types
 	data: PropTypes.array.isRequired,
 	label: PropTypes.string.isRequired,
-};
-
-PaginationButtons.defaultProps = {
-	data: [],
 };
 
 export default PaginationButtons;
