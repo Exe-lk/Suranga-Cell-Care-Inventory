@@ -340,19 +340,15 @@ const Index: NextPage = () => {
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
+											
 												.filter((brand: any) => {
 													const search = searchTerm.toLowerCase();
 													return (
 														brand.barcode?.toString().toLowerCase().includes(search) ||
-														(brand.brand+" "+brand.model)?.toLowerCase().includes(search) ||
-													
-														brand.model?.toLowerCase().includes(search)||
-														brand.brand?.toLowerCase().includes(search)||
-														brand.category?.toLowerCase().includes(search)
-														
+														brand.brand?.toLowerCase().includes(search) ||
+														brand.model?.toLowerCase().includes(search)
 													);
 												})
-												
 												.filter((brand: any) =>
 													selectedUsers.length > 0
 														? selectedUsers.includes(brand.stock)

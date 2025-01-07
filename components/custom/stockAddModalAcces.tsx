@@ -11,6 +11,8 @@ import { useGetItemAcceByIdQuery } from '../../redux/slices/itemManagementAcceAp
 import { useGetItemAccesQuery } from '../../redux/slices/itemManagementAcceApiSlice';
 import { useUpdateStockInOutMutation } from '../../redux/slices/stockInOutAcceApiSlice';
 import { useGetStockInOutsQuery } from '../../redux/slices/stockInOutAcceApiSlice';
+import { useGetSuppliersQuery } from '../../redux/slices/supplierApiSlice';
+import Select from '../bootstrap/forms/Select';
 
 interface StockAddModalProps {
 	id: string;
@@ -63,6 +65,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 		barcode: 0,
 		imi: '',
 	});
+	const {
+			data: suppliers,
+			isLoading: supplierLoading,
+			isError,
+		} = useGetSuppliersQuery(undefined);
 	const { data: stockInData, isSuccess } = useGetItemAcceByIdQuery(id);
 	const [addstockIn, { isLoading }] = useAddStockInMutation();
 	const [updateStockInOut] = useUpdateStockInOutMutation();
@@ -123,18 +130,30 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 			barcode: generatedbarcode,
 			imi: '',
 			cid: stockIn.id || '',
+			suppName:''
 		},
 		enableReinitialize: true,
 		validate: (values) => {
 			const errors: Record<string, string> = {};
-			if (values.type === 'Accessory' && !values.quantity) {
-				errors.quantity = 'Quantity is required';
+			if (values.type === 'Accessory') {
+				if (!values.quantity) {
+					errors.quantity = 'Quantity is required';
+				} else if (parseInt(values.quantity) <= 0) {
+					errors.quantity = 'Quantity must be a positive number';
+				}
 			}
 			if (!values.sellingPrice) {
 				errors.sellingPrice = 'Selling Price is required';
+			} else if (parseInt(values.sellingPrice.toString()) <= 0) {
+				errors.sellingPrice = 'Selling Price must be a positive number';
 			}
 			if (!values.cost) {
 				errors.cost = 'Cost is required';
+			} else if (parseInt(values.cost) <= 0) {
+				errors.cost = 'Cost must be a positive number';
+			}
+			if (!values.suppName) {
+				errors.suppName = 'Cost is required';
 			}
 			if (!values.date) {
 				errors.date = 'Date In is required';
@@ -159,8 +178,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 					}
 				}
 			}
-			if (values.type === 'Mobile' && !values.imi)
-				errors.imi = 'Imi is required';
+			if (values.type === 'Mobile' && !values.imi) errors.imi = 'Imi is required';
 			if (!values.cost) {
 				errors.cost = 'Cost is required';
 			}
@@ -178,10 +196,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 
 				const finalValues = {
 					...values,
-					quantity: values.type === 'Mobile' ? '1' : values.quantity, 
+					quantity: values.type === 'Mobile' ? '1' : values.quantity,
 					cid: stockIn.id,
 				};
-				
+
 				try {
 					const updatedQuantity = parseInt(nowQuantity) + parseInt(finalValues.quantity);
 					const response: any = await addstockIn({
@@ -276,18 +294,18 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 					</FormGroup>
 					{formik.values.type === 'Mobile' && (
 						<FormGroup id='imi' label='IMEI' className='col-md-6'>
-						<Input
-							type='text'
-							onChange={formik.handleChange}
-							value={formik.values.imi}
-							name='imi'
-							placeholder='Enter IMEI'
-							isValid={formik.isValid}
-							isTouched={formik.touched.imi}
-							invalidFeedback={formik.errors.imi}
-							validFeedback='Looks good!'
-						/>
-					</FormGroup>
+							<Input
+								type='text'
+								onChange={formik.handleChange}
+								value={formik.values.imi}
+								name='imi'
+								placeholder='Enter IMEI'
+								isValid={formik.isValid}
+								isTouched={formik.touched.imi}
+								invalidFeedback={formik.errors.imi}
+								validFeedback='Looks good!'
+							/>
+						</FormGroup>
 					)}
 					{formik.values.type === 'Mobile' && (
 						<>
@@ -322,6 +340,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 											onBlur={formik.handleBlur}
 											isValid={formik.isValid}
 											isTouched={formik.touched.name}
+											invalidFeedback={formik.errors.name}
+											validFeedback='Looks good!'
 										/>
 									</FormGroup>
 									<FormGroup
@@ -353,6 +373,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 											onBlur={formik.handleBlur}
 											isValid={formik.isValid}
 											isTouched={formik.touched.nic}
+											invalidFeedback={formik.errors.nic}
+											validFeedback='Looks good!'
 										/>
 									</FormGroup>
 								</>
@@ -374,6 +396,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							validFeedback='Looks good!'
 							readOnly={formik.values.type === 'Mobile'}
 							className={formik.values.type === 'Mobile' ? 'd-none' : ''}
+							min={1}
 						/>
 					</FormGroup>
 
@@ -391,10 +414,10 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='cost' label='Cost(lkr)' className='col-md-6'>
+					<FormGroup id='cost' label='Cost (LKR)' className='col-md-6'>
 						<Input
 							type='number'
-							min={0}
+							min={1}
 							placeholder='Enter Cost'
 							value={formik.values.cost}
 							onChange={formik.handleChange}
@@ -404,11 +427,11 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							isTouched={formik.touched.cost}
 						/>
 					</FormGroup>
-					<FormGroup id='sellingPrice' label='Selling Price(lkr)' className='col-md-6'>
+					<FormGroup id='sellingPrice' label='Selling Price (LKR)' className='col-md-6'>
 						<Input
 							type='number'
-							min={0}
-							placeholder='Enter Cost'
+							min={1}
+							placeholder='Enter Selling Price'
 							value={formik.values.sellingPrice}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
@@ -417,6 +440,34 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.sellingPrice}
 							validFeedback='Looks good!'
 						/>
+					</FormGroup>
+					<FormGroup id='suppName' label='Supplier Name' className='col-md-6'>
+						<Select
+							id='suppName'
+							name='suppName'
+							ariaLabel='suppName'
+							onChange={formik.handleChange}
+							value={formik.values.suppName}
+							onBlur={formik.handleBlur}
+							className={`form-control ${
+								formik.touched.suppName && formik.errors.suppName
+									? 'is-invalid'
+									: ''
+							}`}>
+							<option value=''>Select a Supp Name</option>
+							{supplierLoading && <option>Loading Supp Name...</option>}
+							{isError && <option>Error fetching Supp Names</option>}
+							{suppliers?.map((suppName: { id: string; name: string }) => (
+								<option key={suppName.id} value={suppName.name}>
+									{suppName.name}
+								</option>
+							))}
+						</Select>
+						{formik.touched.category && formik.errors.category ? (
+							<div className='invalid-feedback'>{formik.errors.category}</div>
+						) : (
+							<></>
+						)}
 					</FormGroup>
 				</div>
 			</ModalBody>
