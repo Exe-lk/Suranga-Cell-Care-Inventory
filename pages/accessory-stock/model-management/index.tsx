@@ -61,7 +61,7 @@ const Index: NextPage = () => {
 	}, [models ]);
 
 	const handleClickDelete = async (model: any) => {
-		const isCategoryLinked = itemAcces.some((itemDis: any) => itemDis.model === model.name);
+		const isCategoryLinked = itemAcces.some((itemAcces: any) => itemAcces.model === model.name);
 		
 				if (isCategoryLinked) {
 					Swal.fire(
