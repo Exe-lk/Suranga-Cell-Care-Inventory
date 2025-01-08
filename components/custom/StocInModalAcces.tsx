@@ -124,7 +124,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
       </ModalHeader>
       <ModalBody className='px-4'>
         <div className='row g-4'>
-         
+
           <FormGroup id='brand' label='Brand' className='col-md-6'>
             <Input
               type='text'
@@ -135,7 +135,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
             />
           </FormGroup>
 
-          {/ Model Field - Read-Only /}
+          {/* Model Field - Read-Only */}
           <FormGroup id='model' label='Model' className='col-md-6'>
             <Input
               type='text'
@@ -146,7 +146,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
             />
           </FormGroup>
 
-          {/ Category Field - Read-Only /}
+          {/* Category Field - Read-Only */}
           <FormGroup id='category' label='Category' className='col-md-6'>
             <Input
               type='text'
@@ -157,7 +157,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
             />
           </FormGroup>
 
-          {/ Quantity Field /}
+          {/* Quantity Field */}
           <FormGroup id='quantity' label='Quantity' className='col-md-6'>
             <Input
               type='number'
@@ -172,7 +172,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
             />
           </FormGroup>
 
-          {/ Date In Field /}
+          {/* Date In Field */}
           <FormGroup id='date' label='Date In' className='col-md-6'>
             <Input
               type='date'
@@ -187,7 +187,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
             />
           </FormGroup>
 
-          {/ Supplier Name Field /}
+          {/* Supplier Name Field */}
           <FormGroup id='suppName' label='Supplier Name' className='col-md-6'>
             <Input
               type='text'
