@@ -452,6 +452,7 @@ function index() {
 			amount > 0 &&
 			Number(calculateSubTotal()) > 0
 		) {
+			console.log(orderedItems)
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -466,6 +467,7 @@ function index() {
 				if (result.isConfirmed) {
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
+					
 					if (!isQzReady || typeof window.qz === 'undefined') {
 						console.error('QZ Tray is not ready.');
 						alert('QZ Tray is not loaded yet. Please try again later.');
@@ -496,7 +498,7 @@ function index() {
 							'Product Qty  U/Price    Net Value\n',
 							'---------------------------------\n',
 							...orderedItems.map(
-								({ name, quantity, sellingPrice, category, model, brand }) => {
+								({ quantity, sellingPrice, category, model,  }) => {
 									const netValue = sellingPrice * quantity;
 									// const truncatedName =
 									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
@@ -517,7 +519,10 @@ function index() {
 										priceStr.length +
 										netValueStr.length +
 										6; // 6 spaces for fixed spacing
-									const remainingSpaces = receiptWidth - totalLineLength;
+										const remainingSpaces = Math.max(
+											0,
+											receiptWidth - totalLineLength
+										  );
 
 									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
 										remainingSpaces,
