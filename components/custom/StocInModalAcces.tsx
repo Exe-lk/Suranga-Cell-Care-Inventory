@@ -124,7 +124,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen }) => {
       </ModalHeader>
       <ModalBody className='px-4'>
         <div className='row g-4'>
-          {/ Brand Field - Read-Only /}
+         
           <FormGroup id='brand' label='Brand' className='col-md-6'>
             <Input
               type='text'
