@@ -416,7 +416,7 @@ function index() {
 
 						if (matchingItem) {
 							const quantity1 = matchingItem.quantity;
-						
+
 							const updatedQuantity = quantity1 - quantity;
 							try {
 								// Call the updateStockInOut function to update the stock
@@ -628,49 +628,68 @@ function index() {
 				/>
 				<div className='row m-4'>
 					<div className='col-8 mb-3 mb-sm-0'>
-						<Card stretch className='mt-4 ' style={{ height: '75vh' }}>
+						<Card stretch className='mt-4' style={{ height: '80vh' }}>
 							<CardBody isScrollable>
-								<table className='table table-hover table-bordered border-primary'>
-									<thead className={'table-dark border-primary'}>
-										<tr>
-											<th>Name</th>
-											<th>Qty</th>
-											<th>U/Price(LKR)</th>
-											<th>D/Amount(LKR)</th>
-											<th>Net Value(LKR)</th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody>
-										{orderedItems.map((val: any, index: any) => (
-											<tr>
-												<td>
-													{val.category} {val.model} {val.brand}
-												</td>
-												<td>{val.quantity}</td>
-												<td>{val.sellingPrice}</td>
-												<td>
-													{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
-												</td>
-												<td>{val.sellingPrice * val.quantity}</td>
-												<td>
-													<Button
-														icon='delete'
-														onClick={() =>
-															handleDeleteItem(val.barcode)
-														}></Button>
-												</td>
-											</tr>
-										))}
-										<tr>
-											<td colSpan={4} className='text fw-bold'>
-												Total
-											</td>
-											<td className='fw-bold'>{calculateSubTotal()}</td>
-											<td></td>
-										</tr>
-									</tbody>
-								</table>
+								<div
+									style={{
+										display: 'flex',
+										flexDirection: 'column',
+										height: '100%',
+									}}>
+									{/* Scrollable Table Content */}
+									<div style={{ flex: 1, overflowY: 'auto' }}>
+										<table className='table table-hover table-bordered border-primary'>
+											<thead className={'table-dark border-primary'}>
+												<tr>
+													<th>Name</th>
+													<th>Qty</th>
+													<th>U/Price(LKR)</th>
+													<th>D/Amount(LKR)</th>
+													<th>Net Value(LKR)</th>
+													<th></th>
+												</tr>
+											</thead>
+											<tbody>
+												{orderedItems.map((val: any, index: any) => (
+													<tr key={index}>
+														<td>
+															{val.category} {val.model} {val.brand}
+														</td>
+														<td>{val.quantity}</td>
+														<td>{val.sellingPrice}</td>
+														<td>
+															{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
+														</td>
+														<td>{val.sellingPrice * val.quantity}</td>
+														<td>
+															<Button
+																icon='delete'
+																onClick={() =>
+																	handleDeleteItem(val.barcode)
+																}></Button>
+														</td>
+													</tr>
+												))}
+											</tbody>
+										</table>
+									</div>
+									{/* Fixed Total Row */}
+									<div>
+										<table className='table table-bordered border-primary'>
+											<tbody>
+												<tr>
+													<td colSpan={4} className='text fw-bold'>
+														Total
+													</td>
+													<td className='fw-bold'>
+														{calculateSubTotal()}
+													</td>
+													<td></td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
 							</CardBody>
 							<CardFooter className='pb-1'>
 								{/* Two cards side by side occupying full width */}
@@ -806,7 +825,7 @@ function index() {
 					</div>
 					{/* Second Card */}
 					<div className='col-4'>
-						<Card stretch className='mt-4 p-4' style={{ height: '75vh' }}>
+						<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 							<CardBody isScrollable>
 								<div
 									// ref={printRef} // Attach the ref here
