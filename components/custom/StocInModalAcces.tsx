@@ -470,7 +470,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							<></>
 						)}
 					</FormGroup>
-					<FormGroup id='sellingPrice' label='Selling Price (LKR)' className='col-md-6'>
+					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							type='text'
 							min={1}
