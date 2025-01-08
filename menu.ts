@@ -121,8 +121,8 @@ export const CashierPagesMenu = {
 	},
 	Print: {
 		id: 'print',
-		text: 'Purchasing Hostory',
-		path: 'cashier/purchasing-hostory',
+		text: 'Purchasing History',
+		path: 'cashier/purchasing-history',
 		icon: 'AutoStories',
 		subMenu: null,
 	},
