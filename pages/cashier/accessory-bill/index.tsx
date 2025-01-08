@@ -681,9 +681,10 @@ function index() {
 													<td colSpan={4} className='text fw-bold'>
 														Total
 													</td>
-													<td className='fw-bold'>
+													<td className='fw-bold text-end'>
 														{calculateSubTotal()}
-													</td>
+													</td>{' '}
+													{/* Align to Net Value */}
 													<td></td>
 												</tr>
 											</tbody>
