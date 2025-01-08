@@ -452,7 +452,6 @@ function index() {
 			amount > 0 &&
 			Number(calculateSubTotal()) > 0
 		) {
-			console.log(orderedItems)
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -467,7 +466,6 @@ function index() {
 				if (result.isConfirmed) {
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
-					
 					if (!isQzReady || typeof window.qz === 'undefined') {
 						console.error('QZ Tray is not ready.');
 						alert('QZ Tray is not loaded yet. Please try again later.');
@@ -477,7 +475,7 @@ function index() {
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
-						const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 						const data = [
 							'\x1B\x40',
 							'\x1B\x61\x01',
@@ -498,7 +496,7 @@ function index() {
 							'Product Qty  U/Price    Net Value\n',
 							'---------------------------------\n',
 							...orderedItems.map(
-								({ quantity, sellingPrice, category, model,  }) => {
+								({ name, quantity, sellingPrice, category, model, brand }) => {
 									const netValue = sellingPrice * quantity;
 									// const truncatedName =
 									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
@@ -514,15 +512,12 @@ function index() {
 
 									// Calculate spacing to align `netValueStr` to the right
 									const totalLineLength =
-	
+										line.length +
 										quantityStr.length +
 										priceStr.length +
 										netValueStr.length +
 										6; // 6 spaces for fixed spacing
-										const remainingSpaces = Math.max(
-											0,
-											receiptWidth - totalLineLength
-										  );
+									const remainingSpaces = receiptWidth - totalLineLength;
 
 									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
 										remainingSpaces,
