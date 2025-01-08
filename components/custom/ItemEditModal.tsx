@@ -83,7 +83,6 @@ const ItemAddModal: FC<ItemAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			if (!values.category) errors.category = 'Category is required';
 			if (!values.model) errors.model = 'Model is required';
 			if (!values.brand) errors.brand = 'Brand is required';
-			if (!values.reorderLevel) errors.reorderLevel = 'Reorder Level is required';
 			if (!values.description) errors.description = 'Description is required';
 			return errors;
 		},
