@@ -637,8 +637,8 @@ function index() {
 										height: '100%',
 									}}>
 									{/* Scrollable Table Content */}
-									<div style={{ flex: 1, overflowY: 'auto' }}>
-										<table className='table table-hover table-bordered border-primary'>
+									<div style={{ flex: 1, overflowY: 'auto' , height: '100vh', }}>
+										<table className='table table-hover table-bordered border-primary' >
 											<thead className={'table-dark border-primary'}>
 												<tr>
 													<th>Name</th>
@@ -675,7 +675,7 @@ function index() {
 									</div>
 									{/* Fixed Total Row */}
 									<div>
-										<table className='table table-bordered border-primary'>
+										{/* <table className='table table-bordered border-primary'>
 											<tbody>
 												<tr>
 													<td colSpan={4} className='text fw-bold'>
@@ -684,11 +684,11 @@ function index() {
 													<td className='fw-bold text-end'>
 														{calculateSubTotal()}
 													</td>{' '}
-													{/* Align to Net Value */}
+													
 													<td></td>
 												</tr>
 											</tbody>
-										</table>
+										</table> */}
 									</div>
 								</div>
 							</CardBody>
