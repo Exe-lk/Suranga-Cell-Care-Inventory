@@ -344,7 +344,7 @@ const Index: NextPage = () => {
 														{brand.brand} {brand.model}
 														
 														</td>
-														<td>{brand.sellingPrice}</td>
+														<td>{brand.sellingPrice.toFixed(2)}</td>
 
 														<td>{brand.quantity}</td>
 
