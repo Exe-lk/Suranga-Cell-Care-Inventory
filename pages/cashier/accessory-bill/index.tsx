@@ -514,7 +514,7 @@ function index() {
 
 									// Calculate spacing to align `netValueStr` to the right
 									const totalLineLength =
-										line.length +
+	
 										quantityStr.length +
 										priceStr.length +
 										netValueStr.length +
