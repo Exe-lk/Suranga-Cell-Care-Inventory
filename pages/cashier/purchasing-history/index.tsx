@@ -198,7 +198,6 @@ const Index: React.FC = () => {
 			<PageWrapper>
 				<SubHeader>
 					<SubHeaderLeft>
-						{/* Search input */}
 						<label
 							className='border-0 bg-transparent cursor-pointer me-0'
 							htmlFor='searchInput'>
