@@ -19,7 +19,6 @@ import { Creatbill, Getbills } from '../../../service/accessoryService';
 import Page from '../../../layout/Page/Page';
 import Spinner from '../../../components/bootstrap/Spinner';
 import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
-import { number } from 'prop-types';
 
 function index() {
 	const [orderedItems, setOrderedItems] = useState<any[]>([]);
@@ -29,11 +28,10 @@ function index() {
 	const [items, setItems] = useState<any[]>([]);
 	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
 	const [selectedProduct, setSelectedProduct] = useState<string>('');
-	const [quantity, setQuantity] = useState<any>(1);
+	const [quantity, setQuantity] = useState<any>(null);
 	const [payment, setPayment] = useState(true);
 	const [amount, setAmount] = useState<number>(0);
 	const [id, setId] = useState<number>(0);
-	const [discount, setDiscount] = useState<number>(0);
 	const [casher, setCasher] = useState<any>({});
 	const currentDate = new Date().toLocaleDateString('en-CA');
 	const currentTime = new Date().toLocaleTimeString('en-GB', {
@@ -44,9 +42,10 @@ function index() {
 	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
 	const dropdownRef = useRef<Dropdown>(null);
 	const quantityRef = useRef<HTMLInputElement>(null);
-	const discountRef = useRef<HTMLInputElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const addRef = useRef<any>(null);
+	const cardRef = useRef<HTMLInputElement>(null);
+	const cashRef = useRef<HTMLInputElement>(null);
+	const printRef = useRef<any>(null);
 	const endRef = useRef<any>(null);
 
 	useEffect(() => {
@@ -113,32 +112,97 @@ function index() {
 			e.preventDefault();
 		}
 	};
-	const salechange = (e: React.KeyboardEvent) => {
+
+	const amountchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowLeft') {
+			if (dropdownRef.current) {
+				dropdownRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowDown') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+
+	const cashchange = (e: React.KeyboardEvent) => {
 		if (e.key === 'ArrowUp') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowRight') {
+			if (cardRef.current) {
+				cardRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'Enter') {
+			setPayment(true);
+		}
+		if (e.key === 'ArrowDown') {
+			if (printRef.current) {
+				printRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+	const cardchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (inputRef.current) {
+				inputRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowLeft') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'Enter') {
+			setPayment(false);
+		}
+		if (e.key === 'ArrowDown') {
+			if (printRef.current) {
+				printRef.current.focus();
+			}
+			e.preventDefault();
+		}
+	};
+	const printchange = (e: React.KeyboardEvent) => {
+		if (e.key === 'ArrowUp') {
+			if (cashRef.current) {
+				cashRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowDown') {
+			if (endRef.current) {
+				endRef.current.focus();
+			}
+			e.preventDefault();
+		}
+		if (e.key === 'ArrowLeft') {
 			if (quantityRef.current) {
 				quantityRef.current.focus();
 			}
 			e.preventDefault();
 		}
 	};
-	const handleaddKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			handlePopupOk();
-		}
-		if (e.key === 'ArrowDown') {
-			if (discountRef.current) {
-				discountRef.current.focus();
-			}
-			e.preventDefault();
-		}
+	const salechange = (e: React.KeyboardEvent) => {
 		if (e.key === 'ArrowUp') {
-			if (dropdownRef.current) {
-				dropdownRef.current.focus();
+			if (printRef.current) {
+				printRef.current.focus();
 			}
 			e.preventDefault();
 		}
 	};
-	const addchange = (e: React.KeyboardEvent) => {
+	const handleaddKeyPress = (e: React.KeyboardEvent) => {
 		if (e.key === 'Enter') {
 			handlePopupOk();
 		}
@@ -151,20 +215,6 @@ function index() {
 		if (e.key === 'ArrowUp') {
 			if (dropdownRef.current) {
 				dropdownRef.current.focus();
-			}
-			e.preventDefault();
-		}
-	};
-	const discountchange = (e: React.KeyboardEvent) => {
-		if (e.key === 'ArrowUp') {
-			if (quantityRef.current) {
-				quantityRef.current.focus();
-			}
-			e.preventDefault();
-		}
-		if (e.key === 'ArrowDown') {
-			if (addRef.current) {
-				addRef.current.focus();
 			}
 			e.preventDefault();
 		}
@@ -211,9 +261,7 @@ function index() {
 			try {
 				const updatedAccstock = Accstock.map((item: any) => ({
 					...item,
-					currentQuantity: item.quantity,
-					discount: 0,
-					// Add currentQuantity field
+					currentQuantity: item.quantity, // Add currentQuantity field
 					// Optionally remove the old quantity field if not needed
 				}));
 
@@ -266,7 +314,7 @@ function index() {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
 						...selectedItem,
-						quantity: updatedItems[existingItemIndex].quantity + quantity,
+						quantity,
 					};
 				} else {
 					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
@@ -274,7 +322,7 @@ function index() {
 				setOrderedItems(updatedItems);
 			}
 			setSelectedProduct('');
-			setQuantity(1);
+			setQuantity(0);
 			if (dropdownRef.current) {
 				dropdownRef.current.focus();
 			}
@@ -308,8 +356,25 @@ function index() {
 			.toFixed(2);
 	};
 
+	const calculateDiscount = () => {
+		return orderedItems
+			.reduce((sum, val) => sum + ((val.price * val.quantity) / 100) * val.discount, 0)
+			.toFixed(2);
+	};
+
+	const calculateTotal = () => {
+		return orderedItems
+			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
+			.toFixed(2);
+	};
+
 	const addbill = async () => {
-		if (orderedItems.length >= 1) {
+		console.log(orderedItems);
+		if (
+			amount >= Number(calculateSubTotal()) &&
+			amount > 0 &&
+			Number(calculateSubTotal()) > 0
+		) {
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -337,8 +402,6 @@ function index() {
 						// casheir: casher.email,
 						amount: Number(totalAmount),
 						type: payment ? 'cash' : 'card',
-						print: false,
-						discount: discount,
 						id: id,
 					};
 					Creatbill(values);
@@ -380,10 +443,132 @@ function index() {
 				alert('An error occurred. Please try again later.');
 			}
 		} else {
-			Swal.fire('Warning..!', 'Insufficient Item', 'error');
+			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
+	const printbill = async () => {
+		if (
+			amount >= Number(calculateSubTotal()) &&
+			amount > 0 &&
+			Number(calculateSubTotal()) > 0
+		) {
+			console.log(orderedItems)
+			try {
+				const result = await Swal.fire({
+					title: 'Are you sure?',
+					// text: 'You will not be able to recover this status!',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Print Bill!',
+				});
 
+				if (result.isConfirmed) {
+					const currentDate = new Date();
+					const formattedDate = currentDate.toLocaleDateString();
+					
+					if (!isQzReady || typeof window.qz === 'undefined') {
+						console.error('QZ Tray is not ready.');
+						alert('QZ Tray is not loaded yet. Please try again later.');
+						return;
+					}
+					try {
+						if (!window.qz.websocket.isActive()) {
+							await window.qz.websocket.connect();
+						}
+						const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+						const data = [
+							'\x1B\x40',
+							'\x1B\x61\x01',
+							'\x1D\x21\x11',
+							'\x1B\x45\x01', // ESC E 1 - Bold on
+							'Suranga Cell Care\n\n', // Store name
+							'\x1B\x45\x00', // ESC E 0 - Bold off
+							'\x1D\x21\x00',
+							'\x1B\x4D\x00',
+							'No.524/1/A,\nKandy Road,Kadawatha\n',
+							'011 292 6030/ 071 911 1144\n',
+							'\x1B\x61\x00',
+							`Date        : ${formattedDate}\n`,
+							`START TIME  : ${currentTime}\n`,
+							`INVOICE NO  : ${id}\n`,
+							'\x1B\x61\x00',
+							'---------------------------------\n',
+							'Product Qty  U/Price    Net Value\n',
+							'---------------------------------\n',
+							...orderedItems.map(
+								({ quantity, sellingPrice, category, model,  }) => {
+									const netValue = sellingPrice * quantity;
+									// const truncatedName =
+									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+
+									// Define receipt width (e.g., 42 characters for typical printers)
+									const receiptWidth = 42;
+
+									// Create the line dynamically
+									const line = `${category} ${model}`;
+									const quantityStr = `${quantity}`;
+									const priceStr = `${sellingPrice.toFixed(2)}`;
+									const netValueStr = `${netValue.toFixed(2)}`;
+
+									// Calculate spacing to align `netValueStr` to the right
+									const totalLineLength =
+	
+										quantityStr.length +
+										priceStr.length +
+										netValueStr.length +
+										6; // 6 spaces for fixed spacing
+										const remainingSpaces = Math.max(
+											0,
+											receiptWidth - totalLineLength
+										  );
+
+									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
+										remainingSpaces,
+									)}${netValueStr}\n`;
+								},
+							),
+
+							'---------------------------------\n',
+							'\x1B\x61\x01',
+							'\x1B\x45\x01',
+							'\x1D\x21\x10',
+							'\x1B\x45\x01',
+							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
+							'\x1B\x45\x00',
+							'\x1D\x21\x00',
+							'\x1B\x45\x00',
+							'\x1B\x61\x00',
+							'---------------------------------\n',
+							`Cash Received   : ${amount}.00\n`,
+							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
+								2,
+							)}\n`,
+							`No. of Pieces   : ${orderedItems.length}\n`,
+							'---------------------------------\n',
+							'\x1B\x61\x01',
+							'THANK YOU COME AGAIN !\n',
+							'---------------------------------\n',
+							'\x1B\x61\x01',
+							'Retail POS by EXE.lk\n',
+							'Call: 070 332 9900\n',
+							'---------------------------------\n',
+							'\x1D\x56\x41',
+						];
+						await window.qz.print(config, data);
+					} catch (error) {
+						console.error('Printing failed', error);
+					}
+				}
+			} catch (error) {
+				console.error('Error during handleUpload: ', error);
+				alert('An error occurred. Please try again later.');
+			}
+		} else {
+			Swal.fire('Warning..!', 'Insufficient amount', 'error');
+		}
+	};
 	const startbill = async () => {
 		if (orderedItems.length > 0) {
 			const result = await Swal.fire({
@@ -399,7 +584,7 @@ function index() {
 			if (result.isConfirmed) {
 				setOrderedItems([]);
 				setAmount(0);
-				setQuantity(1);
+				setQuantity(0);
 				setSelectedProduct('');
 				if (dropdownRef.current) {
 					dropdownRef.current.focus();
@@ -408,35 +593,12 @@ function index() {
 		} else {
 			setOrderedItems([]);
 			setAmount(0);
-			setQuantity(1);
+			setQuantity(0);
 			setSelectedProduct('');
 			if (dropdownRef.current) {
 				dropdownRef.current.focus();
 			}
 		}
-	};
-
-	const handleDiscountChange = (
-		price: number,
-		index: number,
-		discount: number,
-		quentity: number,
-	) => {
-		if (price * quentity < discount) {
-			Swal.fire('Warning..!', 'Insufficient Item', 'error');
-			discount = 0;
-		}
-		setOrderedItems((prevItems) =>
-			prevItems.map(
-				(item, i) => (i === index ? { ...item, discount } : item), // Update only the specific item
-			),
-		);
-	};
-	const getAllDiscounts = (): number => {
-		if (!orderedItems || orderedItems.length === 0) {
-			return 0;
-		}
-		return orderedItems.reduce((sum, item) => sum + (item.discount || 0), 0);
 	};
 	if (isLoading) {
 		console.log(isLoading);
@@ -468,12 +630,11 @@ function index() {
 					onSaveDraft={handleSaveDraft}
 					onLoadDraft={handleLoadDraft}
 					startBill={startbill}
-					count={orderedItems.length}
 				/>
 				<div className='row m-4'>
 					<div className='col-8 mb-3 mb-sm-0'>
 						<Card stretch className='mt-4' style={{ height: '80vh' }}>
-							<CardBody >
+							<CardBody isScrollable>
 								<div
 									style={{
 										display: 'flex',
@@ -481,13 +642,13 @@ function index() {
 										height: '100%',
 									}}>
 									{/* Scrollable Table Content */}
-									<div style={{ flex: 1, overflowY: 'auto', height: '100vh' }}>
-										<table className='table table-hover table-bordered border-primary'>
+									<div style={{ flex: 1, overflowY: 'auto' , height: '100vh', }}>
+										<table className='table table-hover table-bordered border-primary' >
 											<thead className={'table-dark border-primary'}>
 												<tr>
 													<th>Name</th>
-													<th>U/Price(LKR)</th>
 													<th>Qty</th>
+													<th>U/Price(LKR)</th>
 													<th>D/Amount(LKR)</th>
 													<th>Net Value(LKR)</th>
 													<th></th>
@@ -499,41 +660,12 @@ function index() {
 														<td>
 															{val.category} {val.model} {val.brand}
 														</td>
-
-														<td className='text-end'>
-															{val.sellingPrice.toFixed(2)}
-														</td>
-														<td className='text-end'>{val.quantity}</td>
+														<td>{val.quantity}</td>
+														<td>{val.sellingPrice}</td>
 														<td>
-															<FormGroup
-																id='quantity'
-																className='col-12'>
-																<Input
-																	type='number'
-																	onChange={(
-																		e: React.ChangeEvent<HTMLInputElement>,
-																	) =>
-																		handleDiscountChange(
-																			val.sellingPrice,
-																			index,
-																			parseFloat(
-																				e.target.value,
-																			),
-																			val.quantity,
-																		)
-																	}
-																	value={val.discount}
-																	min={0}
-																	validFeedback='Looks good!'
-																/>
-															</FormGroup>
+															{/* {((val.sellingPrice * val.quantity) / 100) * val.discount} */}
 														</td>
-														<td className='text-end'>
-															{(
-																val.sellingPrice * val.quantity -
-																val.discount
-															).toFixed(2)}
-														</td>
+														<td>{val.sellingPrice * val.quantity}</td>
 														<td>
 															<Button
 																icon='delete'
@@ -548,18 +680,8 @@ function index() {
 									</div>
 									{/* Fixed Total Row */}
 									<div>
-										<table className='table table-bordered border-primary'>
+										{/* <table className='table table-bordered border-primary'>
 											<tbody>
-												<tr>
-													<td colSpan={4} className='text fw-bold'>
-														Discount
-													</td>
-													<td className='fw-bold text-end'>
-														{Number(
-															getAllDiscounts() + discount,
-														).toFixed(2)}
-													</td>{' '}
-												</tr>
 												<tr>
 													<td colSpan={4} className='text fw-bold'>
 														Total
@@ -567,112 +689,152 @@ function index() {
 													<td className='fw-bold text-end'>
 														{calculateSubTotal()}
 													</td>{' '}
-												</tr>
-												<tr>
-													<td colSpan={4} className='text fw-bold'>
-														Net Value
-													</td>
-													<td className='fw-bold text-end'>
-														{(
-															calculateSubTotal() -
-															(getAllDiscounts() + discount)
-														).toFixed(2)}
-													</td>{' '}
+													
+													<td></td>
 												</tr>
 											</tbody>
-										</table>
+										</table> */}
 									</div>
 								</div>
 							</CardBody>
-						</Card>
-					</div>
-					{/* Second Card */}
+							<CardFooter className='pb-1'>
+								{/* Two cards side by side occupying full width */}
+								<div className='d-flex w-100'>
+									<Card className='col-4 flex-grow-1 me-2'>
+										<CardBody>
+											<FormGroup
+												id='product'
+												label='Barcode ID'
+												className='col-12'>
+												<Dropdown
+													aria-label='State'
+													editable
+													ref={dropdownRef}
+													placeholder='-- Select Product --'
+													className='selectpicker col-12'
+													options={
+														items
+															? items.map((type: any) => ({
+																	value: type.barcode,
+																	label: type.barcode,
+															  }))
+															: [{ value: '', label: 'No Data' }]
+													}
+													onChange={(e: any) =>
+														setSelectedProduct(e.target.value)
+													}
+													onKeyDown={handleDropdownKeyPress}
+													// onBlur={formik.handleBlur}
+													value={selectedProduct}
+												/>
+											</FormGroup>
+											<FormGroup
+												id='quantity'
+												label='Quantity'
+												className='col-12 mt-2'>
+												<Input
+													ref={quantityRef}
+													type='number'
+													onKeyDown={handleaddKeyPress}
+													onChange={(e: any) =>
+														setQuantity(Number(e.target.value))
+													}
+													value={quantity}
+													min={0}
+													validFeedback='Looks good!'
+												/>
+											</FormGroup>
+											<div className='d-flex justify-content-end mt-2'>
+												{/* <button className='btn btn-danger me-2'>Cancel</button> */}
+												<Button
+													color='success'
+													className=''
+													onClick={handlePopupOk}>
+													ADD
+												</Button>
+											</div>
+										</CardBody>
+									</Card>
+									<Card className='flex-grow-1 ms-2'>
+										<CardBody>
+											<>
+												<FormGroup
+													id='amount'
+													label='Amount (LKR)'
+													className='col-12 mt-2'>
+													<Input
+														type='number'
+														ref={inputRef} // Attach a ref to the input
+														onChange={(e: any) => {
+															let value = e.target.value;
+															if (
+																value.length > 1 &&
+																value.startsWith('0')
+															) {
+																value = value.substring(1);
+															}
+															setAmount(value);
+														}}
+														onKeyDown={amountchange}
+														value={amount}
+														min={0}
+														validFeedback='Looks good!'
+													/>
+												</FormGroup>
 
-					<div className='col-4'>
-						<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
-							<CardBody isScrollable>
-								<FormGroup id='product' label='Barcode ID' className='col-12'>
-									<Dropdown
-										aria-label='State'
-										editable
-										ref={dropdownRef}
-										placeholder='-- Select Product --'
-										className='selectpicker col-12'
-										options={
-											items
-												? items.map((type: any) => ({
-														value: type.barcode,
-														label: type.barcode,
-												  }))
-												: [{ value: '', label: 'No Data' }]
-										}
-										onChange={(e: any) => setSelectedProduct(e.target.value)}
-										onKeyDown={handleDropdownKeyPress}
-										// onBlur={formik.handleBlur}
-										value={selectedProduct}
-									/>
-								</FormGroup>
-								<FormGroup id='quantity' label='Quantity' className='col-12 mt-2'>
-									<Input
-										ref={quantityRef}
-										type='number'
-										onKeyDown={handleaddKeyPress}
-										onChange={(e: any) => setQuantity(Number(e.target.value))}
-										value={quantity}
-										min={1}
-										validFeedback='Looks good!'
-									/>
-								</FormGroup>
-
-								<Button
-									color='success'
-									className='mt-4 w-100 '
-									ref={addRef}
-									onKeyDown={addchange}
-									onClick={handlePopupOk}>
-									ADD
-								</Button>
-								<FormGroup id='discount' label='Discount' className='col-12 mt-2'>
-									<Input
-										ref={discountRef}
-										type='number'
-										onKeyDown={discountchange}
-										onChange={(e: any) => setDiscount(Number(e.target.value))}
-										value={discount}
-										min={1}
-										validFeedback='Looks good!'
-									/>
-								</FormGroup>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'center',
-										alignItems: 'center',
-										fontSize: '3.5rem',
-										marginTop: '50px',
-									}}>
-									{(calculateSubTotal() - discount).toFixed(2)} LKR
+												<ChecksGroup isInline className='pt-2'>
+													<Checks
+														ref={cashRef}
+														onKeyDown={cashchange}
+														id='inlineCheckOne'
+														label='Cash'
+														name='checkOne'
+														checked={payment}
+														onClick={(e) => {
+															setPayment(true);
+														}}
+													/>
+													<Checks
+														ref={cardRef}
+														onKeyDown={cardchange}
+														id='inlineCheckTwo'
+														label='Card'
+														name='checkOne'
+														checked={!payment}
+														onClick={(e) => {
+															setPayment(false);
+														}}
+													/>
+												</ChecksGroup>
+												<Button
+													ref={printRef}
+													color='info'
+													className='mt-4 w-100'
+													onClick={printbill}
+													onKeyDown={printchange}>
+													Print Bill
+												</Button>
+												<Button
+													ref={endRef}
+													color='success'
+													className='mt-4 w-100'
+													onClick={addbill}
+													onKeyDown={salechange}>
+													End Sale
+												</Button>
+											</>
+										</CardBody>
+									</Card>
 								</div>
-							</CardBody>
-							<CardFooter>
-								<Button
-									ref={endRef}
-									color='success'
-									className='mt-4 w-100 btn-lg'
-									style={{ padding: '1rem', fontSize: '1.25rem' }}
-									onClick={addbill}
-									onKeyDown={salechange}>
-									Send to Cashier
-								</Button>
 							</CardFooter>
 						</Card>
 					</div>
-
-					{/* <div className='col-4'>
+					{/* Second Card */}
+					<div className='col-4'>
 						<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 							<CardBody isScrollable>
 								<div
-								
+									// ref={printRef} // Attach the ref here
 									style={{
 										width: '300px',
 										fontSize: '12px',
@@ -681,7 +843,7 @@ function index() {
 									}}
 									className='p-3'>
 									<center>
-										
+										{/* <img src={Logo} style={{ height: 50, width: 100 }} alt='' /> */}
 										<p>
 											<b>Suranga Cell Care</b>
 											<br />
@@ -747,7 +909,10 @@ function index() {
 									<hr />
 
 									<div className='d-flex justify-content-between'>
-									
+										{/* <div>Discount</div>
+									<div>
+										<strong>{calculateDiscount()}</strong>
+									</div> */}
 									</div>
 									<div className='d-flex justify-content-between'>
 										<div>
@@ -779,7 +944,7 @@ function index() {
 								</div>
 							</CardBody>
 						</Card>
-					</div> */}
+					</div>
 				</div>
 			</PageWrapper>
 		</>

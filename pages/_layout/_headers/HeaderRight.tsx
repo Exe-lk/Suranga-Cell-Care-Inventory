@@ -98,52 +98,42 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-					const config = window.qz.configs.create('EPSON TM-U220 Receipt');
-					// const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
+					// const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 					const data = [
-						'\x1B\x40',
-						'\x1B\x61\x01',
-						'\x1D\x21\x11',
-						'\x1B\x45\x01', // ESC E 1 - Bold on
-						'Suranga Cell Care\n\n', // Store name
-						'\x1B\x45\x00', // ESC E 0 - Bold off
-						'\x1D\x21\x00',
-						'\x1B\x4D\x00',
-						'No.524/1/A,\nKandy Road,Kadawatha\n',
-						'011 292 6030/ 071 911 1144\n',
-						'\x1B\x61\x00',
-						`Date        : ${formattedDate}\n`,
-						`START TIME  : ${currentTime}\n`,
-						`INVOICE NO  : 00\n`,
-						'\x1B\x61\x00',
-						'---------------------------------\n',
-						'Product Qty  U/Price    Net Value\n',
-						'---------------------------------\n',
-						'Test Print\n',
-						'         2   500.00       1000.00\n',
-						'---------------------------------\n',
-						'\x1B\x61\x01',
-						'\x1B\x45\x01',
-						'\x1D\x21\x10',
-						'\x1B\x45\x01',
-						`SUB TOTAL\nRs 1000.00\n`,
-						'\x1B\x45\x00',
-						'\x1D\x21\x00',
-						'\x1B\x45\x00',
-						'\x1B\x61\x00',
-						'---------------------------------\n',
-						`Cash Received   : 1500.00\n`,
-						`Balance         : 500.00\n`,
-						`No. of Pieces   : 1\n`,
-						'---------------------------------\n',
-						'\x1B\x61\x01',
-						'THANK YOU COME AGAIN !\n',
-						'---------------------------------\n',
-						'\x1B\x61\x01',
-						'Retail POS by EXE.lk\n',
-						'Call: 070 332 9900\n',
-						'---------------------------------\n',
-						'\x1D\x56\x41',
+						'\x1B\x40', // Initialize printer
+						'\x1B\x61\x01', // Center alignment
+						'\x1D\x21\x11', // Double width and height
+						'\x1B\x45\x01', // Bold on
+						'Suranga Cell Care\n', // Store name
+						'\x1B\x45\x00', // Bold off
+						'\x1D\x21\x00', // Normal text size
+						'\x1B\x4D\x00', // Font A
+						'No. 524/1/A, Kandy Road, Kadawatha\n',
+						'Tel: 011 292 6030, Mobile: 071 911 1144\n\n',
+			
+						'\x1B\x61\x00', // Left alignment
+						`Invoice No   : 111506\n`,
+						`Invoice Date : ${formattedDate}\n`,
+						`Time         : ${currentTime}\n`,
+						'------------------------------------------\n',
+						'Description            Qty   Price   Amount\n',
+						'------------------------------------------\n',
+			
+						// Item details (use dynamic data here)
+						'Tempered Glass         1     500.00  500.00\n',
+						'Back Cover             1     600.00  600.00\n',
+			
+						'------------------------------------------\n',
+						'\x1B\x61\x02', // Right alignment
+						'Total: Rs 1100.00\n',
+						'\x1B\x61\x00', // Left alignment
+						'------------------------------------------\n',
+						'\x1B\x61\x01', // Center alignment
+						'Thank You! Come Again!\n',
+						'\x1B\x45\x00', // Bold off
+						'------------------------------------------\n',
+						'\x1D\x56\x41' // Cut paper
 					];
 					await window.qz.print(config, data);
 				} catch (error) {
