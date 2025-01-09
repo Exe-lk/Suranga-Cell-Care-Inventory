@@ -229,7 +229,7 @@ const BrandEditModal: FC<BrandEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 			</ModalBody>
 			<ModalFooter className='px-4 pb-4'>
 				<Button color='success' onClick={formik.handleSubmit}>
-					Edit Modal
+					Edit Brand
 				</Button>
 			</ModalFooter>
 		</Modal>
