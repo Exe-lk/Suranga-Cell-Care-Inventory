@@ -52,6 +52,7 @@ interface StockOut {
 	sellingPrice: string;
 	stock: string;
 	status: boolean;
+	description: string;
 }
 
 const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
@@ -71,6 +72,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		sellingPrice: '',
 		stock: 'stockOut',
 		status: true,
+		description: '',
 	});
 	const [selectedCost, setSelectedCost] = useState<string | null>(null);
 	const {
@@ -124,6 +126,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			sellingPrice: '',
 			stock: 'stockOut',
 			status: true,
+			description: '',
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -365,6 +368,20 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							isValid={formik.isValid}
 							isTouched={formik.touched.email}
 							invalidFeedback={formik.errors.email}
+							validFeedback='Looks good!'
+						/>
+					</FormGroup>
+					<FormGroup id='description' label='Description' className='col-md-6'>
+						<Input
+							type='text'
+							placeholder='Enter Description'
+							value={formik.values.description}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							name='description'
+							isValid={formik.isValid}
+							isTouched={formik.touched.description}
+							invalidFeedback={formik.errors.description}
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>

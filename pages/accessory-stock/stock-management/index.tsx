@@ -319,11 +319,11 @@ const Index: NextPage = () => {
 											<th>Date</th>
 											<th>Code</th>
 											<th>Category</th>
-											
 											<th>Brand</th>
 											<th>Model</th>
 											<th>Quantity</th>
 											<th>Selling Price</th>
+											<th>Description</th>
 											<th>Stock</th>
 										</tr>
 									</thead>
@@ -370,7 +370,8 @@ const Index: NextPage = () => {
 														<td>{brand.brand}</td>
 														<td>{brand.model}</td>
 														<td>{brand.quantity}</td>
-														<td>{brand.sellingPrice}</td>
+														<td>{brand.sellingPrice.toFixed(2)}</td>
+														<td>{brand.description}</td>
 														<td>{brand.stock}</td>
 													</tr>
 												))}

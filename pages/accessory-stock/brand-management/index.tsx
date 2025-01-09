@@ -26,6 +26,7 @@ import PaginationButtons, {
 	dataPagination,
 	PER_COUNT,
 } from '../../../components/PaginationButtons';
+import { useGetModels1Query } from '../../../redux/slices/model1ApiSlice';
 
 interface Category {
 	cid: string;
@@ -44,6 +45,8 @@ const Index: NextPage = () => {
 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
 	const [updateBrand] = useUpdateBrand1Mutation();
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { data: models } = useGetModels1Query(undefined);
+	
 
 	useEffect(() => {
 		if (inputRef.current) {
@@ -52,6 +55,13 @@ const Index: NextPage = () => {
 	}, [brands ]);
 
 	const handleClickDelete = async (brand: any) => {
+		const isCategoryLinked = models.some((model:any) => model.brand === brand.name);
+				
+						if (isCategoryLinked) {
+							
+							Swal.fire('Error', 'Failed to delete brand. please delete the models related to this.', 'error');
+							return; 
+						}
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',

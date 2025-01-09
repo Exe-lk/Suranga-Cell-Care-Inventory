@@ -11,7 +11,11 @@ import Dropdown, {
 	DropdownToggle,
 } from '../../../components/bootstrap/Dropdown';
 import Button from '../../../components/bootstrap/Button';
-import SubHeader, { SubHeaderLeft, SubHeaderRight, SubheaderSeparator } from '../../../layout/SubHeader/SubHeader';
+import SubHeader, {
+	SubHeaderLeft,
+	SubHeaderRight,
+	SubheaderSeparator,
+} from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
 
@@ -120,93 +124,104 @@ const Index: React.FC = () => {
 		const user1 = user.find((user: { email: string }) => user.email === email);
 		return user1 ? user1.name : 'Unknown';
 	};
-    const handleExport = (format:any) => {
-        if (format === 'csv') {
-          // Flatten data
-          const csvRows = [
-            ['Date', 'Start Time', 'End Time', 'Cashier', 'Bill No', 'Sub Total', 'Item Name', 'Unit Price', 'Discount', 'Quantity', 'Total Price'], // Header row
-          ];
-      
-          orders.forEach((order) => {
-            // Add the main order row
-            csvRows.push([
-              order.date,
-              order.time,
-              order.time,
-              getCashierName(order.casheir),
-              order.id,
-              order.amount,
-              '', // Empty columns for item details
-              '',
-              '',
-              '',
-              '',
-            ]);
-      
-            // Add rows for each item
-            order.orders.forEach((item:any) => {
-              csvRows.push([
-                '', // Empty columns for the order details
-                '',
-                '',
-                '',
-                '',
-                '',
-                item.name,
-                item.price,
-                item.discount,
-                item.quantity,
-                item.price * item.quantity,
-              ]);
-            });
-          });
-      
-          // Convert to CSV string
-          const csvContent =
-            'data:text/csv;charset=utf-8,' +
-            csvRows.map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
-      
-          // Download CSV
-          const encodedUri = encodeURI(csvContent);
-          const link = document.createElement('a');
-          link.setAttribute('href', encodedUri);
-          link.setAttribute('download', 'purchasing_history.csv');
-          document.body.appendChild(link); // Required for Firefox
-          link.click();
-          document.body.removeChild(link);
-        }
-      };
-      
+	const handleExport = (format: any) => {
+		if (format === 'csv') {
+			// Flatten data
+			const csvRows = [
+				[
+					'Date',
+					'Start Time',
+					'End Time',
+					'Cashier',
+					'Bill No',
+					'Sub Total',
+					'Item Name',
+					'Unit Price',
+					'Discount',
+					'Quantity',
+					'Total Price',
+				], // Header row
+			];
+
+			orders.forEach((order) => {
+				// Add the main order row
+				csvRows.push([
+					order.date,
+					order.time,
+					order.time,
+					getCashierName(order.casheir),
+					order.id,
+					order.amount,
+					'', // Empty columns for item details
+					'',
+					'',
+					'',
+					'',
+				]);
+
+				// Add rows for each item
+				order.orders.forEach((item: any) => {
+					csvRows.push([
+						'', // Empty columns for the order details
+						'',
+						'',
+						'',
+						'',
+						'',
+						item.name,
+						item.price,
+						item.discount,
+						item.quantity,
+						item.price * item.quantity,
+					]);
+				});
+			});
+
+			// Convert to CSV string
+			const csvContent =
+				'data:text/csv;charset=utf-8,' +
+				csvRows.map((row) => row.map((cell) => `"${cell}"`).join(',')).join('\n');
+
+			// Download CSV
+			const encodedUri = encodeURI(csvContent);
+			const link = document.createElement('a');
+			link.setAttribute('href', encodedUri);
+			link.setAttribute('download', 'purchasing_history.csv');
+			document.body.appendChild(link); // Required for Firefox
+			link.click();
+			document.body.removeChild(link);
+		}
+	};
+
 	return (
 		<>
 			<PageWrapper>
-			<SubHeader>
-				<SubHeaderLeft>
-					{/* Search input */}
-					<label
-						className='border-0 bg-transparent cursor-pointer me-0'
-						htmlFor='searchInput'>
-						<Icon icon='Search' size='2x' color='primary' />
-					</label>
-					<Input
-						id='searchInput'
-						type='search'
-						className='border-0 shadow-none bg-transparent'
-						placeholder='Search...'
-						onChange={(event: any) => {
-							setSearchTerm(event.target.value);
-						}}
-						value={searchTerm}
-					/>
-				</SubHeaderLeft>
-				
-			</SubHeader>
+				<SubHeader>
+					<SubHeaderLeft>
+						{/* Search input */}
+						<label
+							className='border-0 bg-transparent cursor-pointer me-0'
+							htmlFor='searchInput'>
+							<Icon icon='Search' size='2x' color='primary' />
+						</label>
+						<Input
+							id='searchInput'
+							type='search'
+							className='border-0 shadow-none bg-transparent'
+							placeholder='Search...'
+							onChange={(event: any) => {
+								setSearchTerm(event.target.value);
+							}}
+							value={searchTerm}
+						/>
+					</SubHeaderLeft>
+				</SubHeader>
 				<Page>
 					<div className='row h-100'>
 						<div className='col-12'>
 							<Card stretch>
 								<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-								<div className='mt-2 mb-4'>
+									<div className='mt-2 mb-4'>
 										Select date :
 										<input
 											type='date'
@@ -232,7 +247,6 @@ const Index: React.FC = () => {
 									</Dropdown>
 								</CardTitle>
 								<CardBody isScrollable className='table-responsive'>
-									
 									<table className='table table-hover table-bordered border-primary'>
 										<thead className={'table-dark border-primary'}>
 											<tr>
@@ -246,78 +260,114 @@ const Index: React.FC = () => {
 										</thead>
 										<tbody>
 											{filteredOrders
-											
-											.filter((val) => {
-												if (searchTerm === '') {
-													return val;
-												} else if (
-													val.id.toString().includes(searchTerm)
-												) {
-													return val;
-												}
-											})
-											.sort((a:any, b:any) => b.id - a.id) 
-											.map((order, index) => (
-												<React.Fragment key={index}>
-													<tr
-														onClick={() => toggleRow(index)}
-														style={{ cursor: 'pointer' }}>
-														<td>{order.date}</td>
-														<td>{order.time}</td>
-														<td>{order.time}</td>
-														<td>{getCashierName(order.casheir)}</td>
-														<td>{order.id}</td>
-														<td>{order.amount}</td>
-													</tr>
-													{expandedRow === index && (
-														<tr>
-															<td colSpan={6}>
-																<table className='table table-hover table-bordered border-warning'>
-																	<thead
-																		className={
-																			'table-dark border-warning'
-																		}>
-																		<tr>
-																			<th>Item</th>
-																			<th>Unit Price</th>
-																			
-																			<th>Quantity</th>
-																			<th>Total Price</th>
-																		</tr>
-																	</thead>
-																	<tbody>
-																		{order.orders.map(
-																			(
-																				data: any,
-																				dataIndex,
-																			) => (
-																				<tr key={dataIndex}>
-																					<td>
-																						{data.category} {data.model} {data.brand}
-																					</td>
-																					<td>
-																						{data.sellingPrice}
-																					</td>
-																					
-																					<td>
-																						{
-																							data.quantity
-																						}
-																					</td>
-																					<td>
-																						{data.sellingPrice *
-																							data.quantity}.00
-																					</td>
-																				</tr>
-																			),
-																		)}
-																	</tbody>
-																</table>
+
+												.filter((val) => {
+													if (searchTerm === '') {
+														return val;
+													} else if (
+														val.id.toString().includes(searchTerm)
+													) {
+														return val;
+													}
+												})
+												.sort((a: any, b: any) => b.id - a.id)
+												.map((order, index) => (
+													<React.Fragment key={index}>
+														<tr
+															onClick={() => toggleRow(index)}
+															style={{ cursor: 'pointer' }}>
+															<td>{order.date}</td>
+															<td>{order.time}</td>
+															<td>{order.time}</td>
+															<td>{getCashierName(order.casheir)}</td>
+															<td>{order.id}</td>
+															<td style={{ textAlign: 'right' }}>
+																{new Intl.NumberFormat('en-US',).format(Number(order.amount))}
 															</td>
 														</tr>
-													)}
-												</React.Fragment>
-											))}
+														{expandedRow === index && (
+															<tr>
+																<td colSpan={6}>
+																	<table className='table table-hover table-bordered border-warning'>
+																		<thead
+																			className={
+																				'table-dark border-warning'
+																			}>
+																			<tr>
+																				<th>Item</th>
+																				<th>Unit Price</th>
+
+																				<th>Quantity</th>
+																				<th>Total Price</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{order.orders.map(
+																				(
+																					data: any,
+																					dataIndex,
+																				) => (
+																					<tr
+																						key={
+																							dataIndex
+																						}>
+																						<td>
+																							{
+																								data.category
+																							}{' '}
+																							{
+																								data.model
+																							}{' '}
+																							{
+																								data.brand
+																							}
+																						</td>
+
+																						<td
+																							style={{
+																								textAlign:
+																									'right',
+																							}}>
+																							{new Intl.NumberFormat(
+																								'en-US',
+																								
+																							).format(
+																								Number(
+																									data.sellingPrice,
+																								),
+																							)}
+																						</td>
+
+																						<td>
+																							{
+																								data.quantity
+																							}
+																						</td>
+																						<td
+																							style={{
+																								textAlign:
+																									'right',
+																							}}>
+																							{new Intl.NumberFormat(
+																								'en-US',
+																								
+																							).format(
+																								Number(
+																									data.sellingPrice *
+																										data.quantity,
+																								),
+																							)}
+																						</td>
+																					</tr>
+																				),
+																			)}
+																		</tbody>
+																	</table>
+																</td>
+															</tr>
+														)}
+													</React.Fragment>
+												))}
 										</tbody>
 									</table>
 								</CardBody>

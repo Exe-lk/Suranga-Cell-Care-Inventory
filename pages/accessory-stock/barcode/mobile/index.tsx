@@ -251,7 +251,7 @@ const Index: NextPage = () => {
 									<thead className={'table-dark border-primary'}>
 										<tr>
 											<th>Date</th>
-											<th>Item Code</th>
+											<th>Stock Code</th>
 											<th>Item Name</th>
 											<th>Unit Selling Price</th>
 											<th>IMI</th>
@@ -327,7 +327,7 @@ const Index: NextPage = () => {
 														<td>
 														{brand.brand} {' '}	{brand.model}
 														</td>
-														<td>{brand.sellingPrice}</td>
+														<td>{brand.sellingPrice.toFixed(2)}</td>
 
 														<td>{brand.imi}</td>
 														<td>

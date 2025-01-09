@@ -28,6 +28,8 @@ import PaginationButtons, {
 } from '../../../components/PaginationButtons';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import Checks, { ChecksGroup } from '../../../components/bootstrap/forms/Checks';
+import { useGetItemAccesQuery } from '../../../redux/slices/itemManagementAcceApiSlice';
+
 
 const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState(''); 
@@ -49,6 +51,8 @@ const Index: NextPage = () => {
 		{ brand: 'Redmi' }
 		];
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+	const { data: itemAcces } = useGetItemAccesQuery(undefined);
+	
 
 	useEffect(() => {
 		if (inputRef.current) {
@@ -57,6 +61,16 @@ const Index: NextPage = () => {
 	}, [models ]);
 
 	const handleClickDelete = async (model: any) => {
+		const isCategoryLinked = itemAcces.some((itemAcces: any) => itemAcces.model === model.name);
+		
+				if (isCategoryLinked) {
+					Swal.fire(
+						'Error',
+						'Failed to delete model. please delete the items related to this.',
+						'error',
+					);
+					return;
+				}
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
