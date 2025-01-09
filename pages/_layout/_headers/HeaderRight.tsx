@@ -111,7 +111,7 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 	// 					'\x1B\x4D\x00', // Font A
 	// 					'No. 524/1/A, Kandy Road, Kadawatha\n',
 	// 					'Tel: 011 292 6030, Mobile: 071 911 1144\n\n',
-			
+
 	// 					'\x1B\x61\x00', // Left alignment
 	// 					`Invoice No   : 111506\n`,
 	// 					`Invoice Date : ${formattedDate}\n`,
@@ -119,11 +119,11 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 	// 					'------------------------------------------\n',
 	// 					'Description            Qty   Price   Amount\n',
 	// 					'------------------------------------------\n',
-			
+
 	// 					// Item details (use dynamic data here)
 	// 					'Tempered Glass         1     500.00  500.00\n',
 	// 					'Back Cover             1     600.00  600.00\n',
-			
+
 	// 					'------------------------------------------\n',
 	// 					'\x1B\x61\x02', // Right alignment
 	// 					'Total: Rs 1100.00\n',
@@ -156,52 +156,75 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 				cancelButtonColor: '#d33',
 				confirmButtonText: 'Yes, Print!',
 			});
-	
+
 			if (result.isConfirmed) {
 				const currentDate = new Date();
 				const formattedDate = currentDate.toLocaleDateString();
 				const currentTime = currentDate.toLocaleTimeString();
-	
+
 				if (!isQzReady || typeof window.qz === 'undefined') {
 					console.error('QZ Tray is not ready.');
 					alert('QZ Tray is not loaded yet. Please try again later.');
 					return;
 				}
-	
+
 				try {
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-	
+
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 					var opts = getUpdatedOptions(true);
 
-					const  printData:any = [
+					const printData: any = [
 						{
 							type: 'pixel',
 							format: 'html',
 							flavor: 'plain',
-							data: '<html>' +
+							data:
+								'<html>' +
 								'<body>' +
-								'  <table style="font-family: monospace; width: 100%">' +
-								'    <tr>' +
-								'      <td>' +
-								'        <h2>* QZ Tray HTML Sample Print *</h2>' +
-								'        <span style="color: #D00;">Version:</span>  <br/>' +
-								'        <span style="color: #D00;">Source:</span> https://qz.io/' +
-								'      </td>' +
-								'      <td align="right">' +
-								'      </td>' +
-								'    </tr>' +
-								'  </table>' +
-								'</body>' +
+								'<div style="text-align: center; font-size: 18px; font-weight: bold;">' +
+								'Suranga Cell Care' +
+								'</div>' +
+								'<div style="text-align: center; font-size: 14px;">' +
+								'No. 524/1/A, Kandy Road, Kadawatha<br>' +
+								'Tel: 011 292 6030, Mobile: 071 911 1144' +
+								'</div>' +
+								'<hr>' +
+								'<div style="text-align: left; font-size: 12px;">' +
+								'Invoice No: 111506<br>' +
+								'Invoice Date: ${formattedDate}<br>' +
+								'Time: ${currentTime}' +
+								'</div>' +
+								'<hr>' +
+								'<table style="width: 100%; font-size: 12px; border-collapse: collapse;">' +
+								'<tr>' +
+								'<th style="text-align: left;">Description</th>' +
+								'<th>Qty</th>' +
+								'<th>Price</th>' +
+								'<th>Amount</th>' +
+								'</tr>' +
+								'<tr>' +
+								'<td>Tempered Glass</td>' +
+								'<td style="text-align: center;">1</td>' +
+								'<td style="text-align: right;">500.00</td>' +
+								'<td style="text-align: right;">500.00</td>' +
+								'</tr>' +
+								'<tr>' +
+								'<td>Back Cover</td>' +
+								'<td style="text-align: center;">1</td>' +
+								'<td style="text-align: right;">600.00</td>' +
+								'<td style="text-align: right;">600.00</td>' +
+								'</tr>' +
+								'</table>' +
+								'<hr>' +
 								'</html>',
-							options: opts
-						}
+							options: opts,
+						},
 					];
-			
+
 					qz.print(config, printData);
-					
 				} catch (error) {
 					console.error('Printing failed', error);
 				}
@@ -211,30 +234,28 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 			alert('An error occurred. Please try again later.');
 		}
 	};
-	
-	function getUpdatedOptions(onlyPixel:any) {
-        if (onlyPixel) {
-            return {
-                pageWidth: $("#pPxlWidth").val(),
-                pageHeight: $("#pPxlHeight").val(),
-                pageRanges: $("#pPxlRange").val(),
-                ignoreTransparency: $("#pPxlTransparent").prop('checked'),
-                altFontRendering: $("#pPxlAltFontRendering").prop('checked')
-            };
-        } else {
-            return {
-                language: $("input[name='pLanguage']:checked").val(),
-                x: $("#pX").val(),
-                y: $("#pY").val(),
-                dotDensity: $("#pDotDensity").val(),
-                xmlTag: $("#pXml").val(),
-                pageWidth: $("#pRawWidth").val(),
-                pageHeight: $("#pRawHeight").val()
-            };
-        }
-    }
 
-	
+	function getUpdatedOptions(onlyPixel: any) {
+		if (onlyPixel) {
+			return {
+				pageWidth: $('#pPxlWidth').val(),
+				pageHeight: $('#pPxlHeight').val(),
+				pageRanges: $('#pPxlRange').val(),
+				ignoreTransparency: $('#pPxlTransparent').prop('checked'),
+				altFontRendering: $('#pPxlAltFontRendering').prop('checked'),
+			};
+		} else {
+			return {
+				language: $("input[name='pLanguage']:checked").val(),
+				x: $('#pX').val(),
+				y: $('#pY').val(),
+				dotDensity: $('#pDotDensity').val(),
+				xmlTag: $('#pXml').val(),
+				pageWidth: $('#pRawWidth').val(),
+				pageHeight: $('#pRawHeight').val(),
+			};
+		}
+	}
 
 	return (
 		<HeaderRight>
