@@ -19,7 +19,7 @@ interface BrandAddModalProps {
 
 const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addBrand, { isLoading }] = useAddBrand1Mutation();
-	const { refetch } = useGetBrands1Query(undefined);
+	const { data: BrandData,refetch } = useGetBrands1Query(undefined);
 	const {
 		data: categories,
 		isLoading: categoriesLoading,
@@ -47,6 +47,20 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+				await refetch();
+		
+				const existingBrand = BrandData?.find(
+					(brand: { name: string }) => brand.name.toLowerCase() === values.name.toLowerCase()
+				);
+		
+				if (existingBrand) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Duplicate Category',
+						text: 'A Brand with this name already exists.',
+					});
+					return;
+				}
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
