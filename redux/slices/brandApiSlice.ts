@@ -2,7 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const brandApiSlice = createApi({
   reducerPath: 'brandApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/'}),
+
+  baseQuery: fetchBaseQuery({ baseUrl: 'https://suranga-cellcare-inventory.netlify.app/api/' }),
+
   tagTypes: ['Brand'],
   endpoints: (builder) => ({
     getBrands: builder.query({

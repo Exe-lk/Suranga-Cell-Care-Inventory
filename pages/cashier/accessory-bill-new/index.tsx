@@ -198,7 +198,7 @@ const Index: React.FC = () => {
 			<PageWrapper>
 				<SubHeader>
 					<SubHeaderLeft>
-						{/ Search input /}
+						{/* Search input */}
 						<label
 							className='border-0 bg-transparent cursor-pointer me-0'
 							htmlFor='searchInput'>
@@ -231,7 +231,7 @@ const Index: React.FC = () => {
 										/>
 									</div>
 									<div className='flex-grow-1 text-center text-primary'>
-										Purchasing History
+										Orders
 									</div>
 									<Dropdown>
 										<DropdownToggle hasIcon={false}>
@@ -251,11 +251,11 @@ const Index: React.FC = () => {
 										<thead className={'table-dark border-primary'}>
 											<tr>
 												<th>Date</th>
-												<th>Start Time</th>
-												<th>End Time</th>
-												<th>Cashier</th>
+												<th>Time</th>
+
 												<th>Bill No</th>
 												<th>Sub Total (LKR)</th>
+												<th></th>
 											</tr>
 										</thead>
 										<tbody>
@@ -270,6 +270,11 @@ const Index: React.FC = () => {
 														return val;
 													}
 												})
+												.filter((val: any) => {
+													if (val.print === false) {
+														return val;
+													}
+												})
 												.sort((a: any, b: any) => b.id - a.id)
 												.map((order, index) => (
 													<React.Fragment key={index}>
@@ -278,11 +283,15 @@ const Index: React.FC = () => {
 															style={{ cursor: 'pointer' }}>
 															<td>{order.date}</td>
 															<td>{order.time}</td>
-															<td>{order.time}</td>
-															<td>{getCashierName(order.casheir)}</td>
+
 															<td>{order.id}</td>
-															<td style={{ textAlign: 'right' }}>
-																{new Intl.NumberFormat('en-US',).format(Number(order.amount))}
+															<td>{order.amount}</td>
+															<td>
+																<Button
+																	icon='Print'
+																	color='success'>
+																	Print
+																</Button>
 															</td>
 														</tr>
 														{expandedRow === index && (
@@ -322,20 +331,10 @@ const Index: React.FC = () => {
 																								data.brand
 																							}
 																						</td>
-
-																						<td
-																							style={{
-																								textAlign:
-																									'right',
-																							}}>
-																							{new Intl.NumberFormat(
-																								'en-US',
-																								
-																							).format(
-																								Number(
-																									data.sellingPrice,
-																								),
-																							)}
+																						<td>
+																							{
+																								data.sellingPrice
+																							}
 																						</td>
 
 																						<td>
@@ -343,20 +342,10 @@ const Index: React.FC = () => {
 																								data.quantity
 																							}
 																						</td>
-																						<td
-																							style={{
-																								textAlign:
-																									'right',
-																							}}>
-																							{new Intl.NumberFormat(
-																								'en-US',
-																								
-																							).format(
-																								Number(
-																									data.sellingPrice *
-																										data.quantity,
-																								),
-																							)}
+																						<td>
+																							{data.sellingPrice *
+																								data.quantity}
+																							.00
 																						</td>
 																					</tr>
 																				),

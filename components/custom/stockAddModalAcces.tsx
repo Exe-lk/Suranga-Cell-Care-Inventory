@@ -130,7 +130,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 			barcode: generatedbarcode,
 			imi: '',
 			cid: stockIn.id || '',
-			suppName:''
+			suppName:'',
+			description:''
 		},
 		enableReinitialize: true,
 		validate: (values) => {
@@ -468,6 +469,20 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 						) : (
 							<></>
 						)}
+					</FormGroup>
+					<FormGroup id='description' label='Description' className='col-md-6'>
+						<Input
+							type='text'
+							min={1}
+							placeholder='Enter Selling Price'
+							value={formik.values.description}
+							onChange={formik.handleChange}
+							onBlur={formik.handleBlur}
+							isValid={formik.isValid}
+							isTouched={formik.touched.description}
+							invalidFeedback={formik.errors.description}
+							validFeedback='Looks good!'
+						/>
 					</FormGroup>
 				</div>
 			</ModalBody>
