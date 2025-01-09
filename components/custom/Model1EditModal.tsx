@@ -106,10 +106,16 @@ const ModelEditModal: FC<ModelEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 				(brand: { category: string }) => brand.category === formik.values.category,
 			);
 			setFilteredBrands(categoryBrands);
+
+		// Reset the brand field if no brands are available for the selected category
+		if (categoryBrands?.length === 0) {
+			// Reset the brand field
+			formik.setFieldValue('brand', ''); 
+		  }
 		} else {
-			setFilteredBrands(brands);
+		  setFilteredBrands(brands);
 		}
-	}, [formik.values.category, brands]);
+	  }, [formik.values.category, brands]);
 
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
