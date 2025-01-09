@@ -21,11 +21,11 @@ const headers = [
 		path: `/admin/*`,
 		element: <AdminHeader />,
 	},
-	// {
-	// 	path: `/cashier/*`,
-	// 	element: <CasierHeader />,
+	{
+		path: `/cashier/*`,
+		element: <AdminHeader />,
 
-	// },
+	},
 	{
 		path: `/display-stock/*`,
 		element: <AdminHeader />,

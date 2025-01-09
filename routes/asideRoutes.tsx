@@ -10,6 +10,7 @@ const BillKeeperAside = dynamic(() => import('../pages/_layout/_asides/BillKeepe
 const ViewAside = dynamic(() => import('../pages/_layout/_asides/ViewAside'));
 const CashierAsider = dynamic(() => import('../pages/_layout/_asides/CashierAsider'));
 const RepairSalesAside = dynamic(() => import('../pages/_layout/_asides/RepairSalesAside'));
+const AccesoryAsider = dynamic(() => import('../pages/_layout/_asides/AccesoryAsider'));
 
 
 const asides = [
@@ -23,6 +24,7 @@ const asides = [
 	{ path: '/viewer/*', element: <ViewAside/>, exact: true },
 	{ path : '/repairSales/*', element: <RepairSalesAside/>, exact: true },
 	{ path: '/cashier/*', element: <CashierAsider/>, exact: true },
+	{path: '/accessory-bill-keeper/*', element: <AccesoryAsider/>, exact: true},
 
 ];
 

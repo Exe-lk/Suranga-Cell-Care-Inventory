@@ -134,6 +134,23 @@ export const CashierPagesMenu = {
 		subMenu: null,
 	},
 }
+export const AccessoryBillKeeper = {
+	billKeeper1: {
+		id: 'billKeeper',
+		text: 'Accessory Bill',
+		path: 'accessory-bill-keeper/accessory-bill',
+		icon: 'Description',
+		subMenu: null,
+	},
+	billKeeper2: {
+		id: 'billKeeper1',
+		text: 'Return',
+		path: 'accessory-bill-keeper/return',
+		icon: 'Description',
+		subMenu: null,
+	}
+	
+}
 export const stockElePagesMenu = {
 	dashboard: {
 		id: 'dashboard',
