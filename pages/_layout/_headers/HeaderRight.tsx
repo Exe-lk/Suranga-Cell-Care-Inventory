@@ -98,7 +98,8 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
+					const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+					// const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 					const data = [
 						'\x1B\x40',
 						'\x1B\x61\x01',

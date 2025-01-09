@@ -4,7 +4,7 @@ import Button from '../../../components/bootstrap/Button';
 import FormGroup from '../../../components/bootstrap/forms/FormGroup';
 import CommonHeaderRight from './HeaderRight';
 
-const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill }: any) => {
+const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill,count }: any) => {
 	const [drafts, setDrafts] = useState([]);
 
 	// Load drafts from localStorage
@@ -30,18 +30,19 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill }: any) => {
 			<HeaderLeft>
 				<div className='row g-3'>
 					<div className='col-auto '>
-						<Button color='success' className='mt-4' onClick={startBill}>
-							Start Bill
-						</Button>
+						{count >= 1?(<><Button color='success' className='mt-3' onClick={startBill}>
+							Cancel Bill
+						</Button></>):(<></>)}
+						
 						
 					</div>
 					<div className='col-auto  ms-auto'>
 						<div className='row g-3'>
 							<div className='col-auto '>
-								<FormGroup id='amount' label='' className='col-12 mt-2'>
+								<FormGroup id='amount' label='' className='col-12 mt-1'>
 									<select
 										placeholder='select draft'
-										className='form-select mt-4'
+										className='form-select mt-3'
 										onChange={(e) => handleSelectDraft(Number(e.target.value))}>
 										<option value=''>Drafts</option>
 										{drafts.map((draft, index) => (
@@ -53,7 +54,7 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill }: any) => {
 								</FormGroup>
 							</div>
 							<div className='col-auto  justify-content-end'>
-								<Button color='warning' className='mt-4 ' onClick={onSaveDraft}>
+								<Button color='warning' className='mt-3 ' onClick={onSaveDraft}>
 									Bill Later
 								</Button>
 							</div>
