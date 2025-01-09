@@ -26,11 +26,25 @@ interface CategoryEditModalProps {
 
 const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: categoryData, refetch } = useGetCategories1Query(undefined);
-	const { data: brandData } = useGetBrands1Query(undefined);
-	const { data: modelData } = useGetModels1Query(undefined);
+	const [brandData, setBrandData] = useState<any[]>([]);
+
+	useEffect(() => {
+		const fetchBrandData = async () => {
+			const data = await getBrand();
+			setBrandData(data);
+		};
+		fetchBrandData();
+	}, []);
+	const [modelData, setModelData] = useState<any[]>([]);
+
+	useEffect(() => {
+		const fetchModelData = async () => {
+			const data = await getModel();
+			setModelData(data);
+		};
+		fetchModelData();
+	}, []);
 	const [updateCategory, { isLoading }] = useUpdateCategory1Mutation();
-	const [updateBrand ] = useUpdateBrand1Mutation();
-	const [updateModel ] = useUpdateModel1Mutation();
 	// console.log("brand",brandData);
 	// console.log("model",modelData);
 	const categoryToEdit = categoryData?.find((category: any) => category.id === id);
@@ -111,7 +125,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					if (brandsToUpdate && brandsToUpdate.length > 0) {
 						await Promise.all(
 							brandsToUpdate.map((brand: any) =>
-								updateBrand({ id: brand.id, category: values.name }).unwrap()
+								updateBrand(brand.id, values.name, brand.name, brand.status)
 							)
 						);
 					}
@@ -124,7 +138,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					if (modelsToUpdate && modelsToUpdate.length > 0) {
 						await Promise.all(
 							modelsToUpdate.map((model: any) =>
-								updateModel({ id: model.id, category: values.name }).unwrap()
+								updateModel(model.id,model.name,model.description, model.brand,values.name, model.status)
 							)
 						);
 					}

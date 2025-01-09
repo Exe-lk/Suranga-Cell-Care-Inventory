@@ -138,7 +138,7 @@ function Index() {
 	return (
 		<PageWrapper>
 			<MyDefaultHeader />
-			<div className="row m-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+			<div className="row m-4" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
 				<div className='col-6'>
 				<Card stretch className="mt-4 p-4" style={{ height: '80vh' }}>
 						<CardBody>
