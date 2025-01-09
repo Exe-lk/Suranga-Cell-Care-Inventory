@@ -14,6 +14,9 @@ import {
 	useGetCategories1Query,
 	useUpdateCategory1Mutation,
 } from '../../redux/slices/category1ApiSlice';
+import {getBrand, updateBrand} from '../../service/brand1Service'
+import {getModel, updateModel} from '../../service/Model1Service'
+
 
 interface CategoryEditModalProps {
 	id: string;
@@ -23,7 +26,13 @@ interface CategoryEditModalProps {
 
 const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const { data: categoryData, refetch } = useGetCategories1Query(undefined);
+	const { data: brandData } = useGetBrands1Query(undefined);
+	const { data: modelData } = useGetModels1Query(undefined);
 	const [updateCategory, { isLoading }] = useUpdateCategory1Mutation();
+	const [updateBrand ] = useUpdateBrand1Mutation();
+	const [updateModel ] = useUpdateModel1Mutation();
+	// console.log("brand",brandData);
+	// console.log("model",modelData);
 	const categoryToEdit = categoryData?.find((category: any) => category.id === id);
 
 	const formik = useFormik({
@@ -40,6 +49,43 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 			}
 			return errors;
 		},
+		// onSubmit: async (values) => {
+		// 	try {
+		// 		const process = Swal.fire({
+		// 			title: 'Processing...',
+		// 			html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+		// 			allowOutsideClick: false,
+		// 			showCancelButton: false,
+		// 			showConfirmButton: false,
+		// 		});
+		// 		try {
+		// 			const data = {
+		// 				name: values.name,
+		// 				status: true,
+		// 				id: id,
+		// 			};
+		// 			await updateCategory(data).unwrap();
+		// 			refetch();
+		// 			await updateBrand({ id, quantity: updateBrand }).unwrap();
+		// 			await updateModel({ id, quantity: updateModel }).unwrap();
+		// 			await Swal.fire({
+		// 				icon: 'success',
+		// 				title: 'Category Updated Successfully',
+		// 			});
+		// 			formik.resetForm();
+		// 			setIsOpen(false);
+		// 		} catch (error) {
+		// 			await Swal.fire({
+		// 				icon: 'error',
+		// 				title: 'Error',
+		// 				text: 'Failed to update the category. Please try again.',
+		// 			});
+		// 		}
+		// 	} catch (error) {
+		// 		console.error('Error during handleUpload: ', error);
+		// 		alert('An error occurred during file upload. Please try again later.');
+		// 	}
+		// },
 		onSubmit: async (values) => {
 			try {
 				const process = Swal.fire({
@@ -56,6 +102,33 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 						id: id,
 					};
 					await updateCategory(data).unwrap();
+		
+					// Filter brands associated with the category name
+					const brandsToUpdate = brandData?.filter(
+						(brand: any) => brand.category === categoryToEdit?.name
+					);
+					console.log('brandsToUpdate', brandsToUpdate);
+					if (brandsToUpdate && brandsToUpdate.length > 0) {
+						await Promise.all(
+							brandsToUpdate.map((brand: any) =>
+								updateBrand({ id: brand.id, category: values.name }).unwrap()
+							)
+						);
+					}
+		
+					// Filter models associated with the category name
+					const modelsToUpdate = modelData?.filter(
+						(model: any) => model.category === categoryToEdit?.name
+					);
+					console.log('modelsToUpdate', modelsToUpdate);
+					if (modelsToUpdate && modelsToUpdate.length > 0) {
+						await Promise.all(
+							modelsToUpdate.map((model: any) =>
+								updateModel({ id: model.id, category: values.name }).unwrap()
+							)
+						);
+					}
+		
 					refetch();
 					await Swal.fire({
 						icon: 'success',
@@ -64,6 +137,7 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 					formik.resetForm();
 					setIsOpen(false);
 				} catch (error) {
+					console.error('Error during category update: ', error);
 					await Swal.fire({
 						icon: 'error',
 						title: 'Error',
@@ -74,7 +148,8 @@ const CategoryEditModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen }
 				console.error('Error during handleUpload: ', error);
 				alert('An error occurred during file upload. Please try again later.');
 			}
-		},
+		},	
+		
 	});
 
 	return (

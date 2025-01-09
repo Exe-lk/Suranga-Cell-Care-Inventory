@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const billdisplayApiSlice = createApi({
 	reducerPath: 'billdisplayApi',
-	baseQuery: fetchBaseQuery({ baseUrl: 'https://surangacellcaretesting.netlify.app/api/' }),
+	baseQuery: fetchBaseQuery({ baseUrl: 'api/' }),
 	tagTypes: ['billdisplayApi'],
 	endpoints: (builder) => ({
 		getBills: builder.query({
