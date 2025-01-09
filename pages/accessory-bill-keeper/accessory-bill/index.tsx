@@ -651,7 +651,7 @@ function index() {
 										fontSize: '4rem',
 										marginTop: '50px',
 									}}>
-									{(calculateSubTotal() - discount).toFixed(2)} 123LKR
+									{(calculateSubTotal() - discount).toFixed(2)} 400LKR
 								</div>
 							</CardBody>
 							<CardFooter>

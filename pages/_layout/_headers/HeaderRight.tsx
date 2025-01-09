@@ -27,7 +27,7 @@ import Spinner from '../../../components/bootstrap/Spinner';
 import useMounted from '../../../hooks/useMounted';
 import Avatar from '../../../components/Avatar';
 import UserImage2 from '../../../assets/img/wanna/wanna1.png';
-
+import $ from 'jquery';
 import axios from 'axios';
 import { collection, query, where, getDocs } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
@@ -174,58 +174,34 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					}
 	
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
-	
-					// HTML data to be converted to ESC/POS commands
-					const htmlContent = `
-						<div style="text-align: center; font-size: 18px; font-weight: bold;">
-							Suranga Cell Care
-						</div>
-						<div style="text-align: center; font-size: 14px;">
-							No. 524/1/A, Kandy Road, Kadawatha<br>
-							Tel: 011 292 6030, Mobile: 071 911 1144
-						</div>
-						<hr>
-						<div style="text-align: left; font-size: 12px;">
-							Invoice No: 111506<br>
-							Invoice Date: ${formattedDate}<br>
-							Time: ${currentTime}
-						</div>
-						<hr>
-						<table style="width: 100%; font-size: 12px; border-collapse: collapse;">
-							<tr>
-								<th style="text-align: left;">Description</th>
-								<th>Qty</th>
-								<th>Price</th>
-								<th>Amount</th>
-							</tr>
-							<tr>
-								<td>Tempered Glass</td>
-								<td style="text-align: center;">1</td>
-								<td style="text-align: right;">500.00</td>
-								<td style="text-align: right;">500.00</td>
-							</tr>
-							<tr>
-								<td>Back Cover</td>
-								<td style="text-align: center;">1</td>
-								<td style="text-align: right;">600.00</td>
-								<td style="text-align: right;">600.00</td>
-							</tr>
-						</table>
-						<hr>
-						<div style="text-align: right; font-size: 12px; font-weight: bold;">
-							Total: Rs 1100.00
-						</div>
-						<hr>
-						<div style="text-align: center; font-size: 12px;">
-							Thank You! Come Again!
-						</div>
-					`;
-	
-					// Convert HTML to ESC/POS commands
-					const data = convertHtmlToEscPos(htmlContent);
-	
-					// Print using QZ Tray
-					await window.qz.print(config, data);
+					var opts = getUpdatedOptions(true);
+
+					const  printData:any = [
+						{
+							type: 'pixel',
+							format: 'html',
+							flavor: 'plain',
+							data: '<html>' +
+								'<body>' +
+								'  <table style="font-family: monospace; width: 100%">' +
+								'    <tr>' +
+								'      <td>' +
+								'        <h2>* QZ Tray HTML Sample Print *</h2>' +
+								'        <span style="color: #D00;">Version:</span>  <br/>' +
+								'        <span style="color: #D00;">Source:</span> https://qz.io/' +
+								'      </td>' +
+								'      <td align="right">' +
+								'      </td>' +
+								'    </tr>' +
+								'  </table>' +
+								'</body>' +
+								'</html>',
+							options: opts
+						}
+					];
+			
+					qz.print(config, printData);
+					
 				} catch (error) {
 					console.error('Printing failed', error);
 				}
@@ -236,28 +212,28 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 		}
 	};
 	
-	// Function to convert HTML to ESC/POS commands
-	const convertHtmlToEscPos = (html:any) => {
-		// Basic implementation for demonstration purposes
-		const escPosCommands = [];
-	
-		// Replace <br> with line breaks and strip tags
-		const plainText = html
-			.replace(/<br>/g, '\n')
-			.replace(/<[^>]+>/g, '') // Remove HTML tags
-			.trim();
-	
-		// Split by lines and add each line to ESC/POS commands
-		plainText.split('\n').forEach((line:any) => {
-			escPosCommands.push(`${line}\n`);
-		});
-	
-		// Add ESC/POS formatting (e.g., alignment, bold)
-		escPosCommands.unshift('\x1B\x40'); // Initialize printer
-		escPosCommands.push('\x1D\x56\x41'); // Cut paper
-	
-		return escPosCommands;
-	};
+	function getUpdatedOptions(onlyPixel:any) {
+        if (onlyPixel) {
+            return {
+                pageWidth: $("#pPxlWidth").val(),
+                pageHeight: $("#pPxlHeight").val(),
+                pageRanges: $("#pPxlRange").val(),
+                ignoreTransparency: $("#pPxlTransparent").prop('checked'),
+                altFontRendering: $("#pPxlAltFontRendering").prop('checked')
+            };
+        } else {
+            return {
+                language: $("input[name='pLanguage']:checked").val(),
+                x: $("#pX").val(),
+                y: $("#pY").val(),
+                dotDensity: $("#pDotDensity").val(),
+                xmlTag: $("#pXml").val(),
+                pageWidth: $("#pRawWidth").val(),
+                pageHeight: $("#pRawHeight").val()
+            };
+        }
+    }
+
 	
 
 	return (
