@@ -266,7 +266,7 @@ function index() {
 					updatedItems = [...orderedItems];
 					updatedItems[existingItemIndex] = {
 						...selectedItem,
-						quantity: updatedItems[existingItemIndex].quantity + quantity
+						quantity: updatedItems[existingItemIndex].quantity + quantity,
 					};
 				} else {
 					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
@@ -416,8 +416,13 @@ function index() {
 		}
 	};
 
-	const handleDiscountChange = (price: number, index: number, discount: number,quentity:number) => {
-		if ((price*quentity) < discount) {
+	const handleDiscountChange = (
+		price: number,
+		index: number,
+		discount: number,
+		quentity: number,
+	) => {
+		if (price * quentity < discount) {
 			Swal.fire('Warning..!', 'Insufficient Item', 'error');
 			discount = 0;
 		}
@@ -429,10 +434,10 @@ function index() {
 	};
 	const getAllDiscounts = (): number => {
 		if (!orderedItems || orderedItems.length === 0) {
-		  return 0;
+			return 0;
 		}
 		return orderedItems.reduce((sum, item) => sum + (item.discount || 0), 0);
-	  };
+	};
 	if (isLoading) {
 		console.log(isLoading);
 		return (
@@ -514,7 +519,7 @@ function index() {
 																			parseFloat(
 																				e.target.value,
 																			),
-																			val.quantity
+																			val.quantity,
 																		)
 																	}
 																	value={val.discount}
@@ -550,7 +555,9 @@ function index() {
 														Discount
 													</td>
 													<td className='fw-bold text-end'>
-														{Number(getAllDiscounts()+discount).toFixed(2)}
+														{Number(
+															getAllDiscounts() + discount,
+														).toFixed(2)}
 													</td>{' '}
 												</tr>
 												<tr>
@@ -566,9 +573,10 @@ function index() {
 														Net Value
 													</td>
 													<td className='fw-bold text-end'>
-														{(calculateSubTotal() - (getAllDiscounts()+discount)).toFixed(
-															2,
-														)}
+														{(
+															calculateSubTotal() -
+															(getAllDiscounts() + discount)
+														).toFixed(2)}
 													</td>{' '}
 												</tr>
 											</tbody>
@@ -635,14 +643,23 @@ function index() {
 										validFeedback='Looks good!'
 									/>
 								</FormGroup>
-
-								<div> {(calculateSubTotal() - discount).toFixed(2)} LKR</div>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'center',
+										alignItems: 'center',
+										fontSize: '3.5rem',
+										marginTop: '50px',
+									}}>
+									{(calculateSubTotal() - discount).toFixed(2)} LKR
+								</div>
 							</CardBody>
 							<CardFooter>
 								<Button
 									ref={endRef}
 									color='success'
-									className='mt-4 w-100 '
+									className='mt-4 w-100 btn-lg'
+									style={{ padding: '1rem', fontSize: '1.25rem' }}
 									onClick={addbill}
 									onKeyDown={salechange}>
 									Send to Cashier

@@ -53,6 +53,11 @@ const Index: NextPage = () => {
 	}, [itemAcces]);
 
 	const handleClickDelete = async (itemAcce: any) => {
+		if (itemAcce.quantity > 0) {
+					Swal.fire('Error', 'Failed to delete stock item. stock quantity must be zero', 'error');
+		
+					return;
+				}
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',
