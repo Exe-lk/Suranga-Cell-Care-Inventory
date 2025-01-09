@@ -552,7 +552,7 @@ function index() {
 											<tbody>
 												<tr>
 													<td colSpan={4} className='text fw-bold'>
-														Discount
+														Discount(LKR)
 													</td>
 													<td className='fw-bold text-end'>
 														{Number(
@@ -562,7 +562,7 @@ function index() {
 												</tr>
 												<tr>
 													<td colSpan={4} className='text fw-bold'>
-														Total
+														Total(LKR)
 													</td>
 													<td className='fw-bold text-end'>
 														{calculateSubTotal()}
@@ -570,7 +570,7 @@ function index() {
 												</tr>
 												<tr>
 													<td colSpan={4} className='text fw-bold'>
-														Net Value
+														Net Value(LKR)
 													</td>
 													<td className='fw-bold text-end'>
 														{(
@@ -648,7 +648,7 @@ function index() {
 										display: 'flex',
 										justifyContent: 'center',
 										alignItems: 'center',
-										fontSize: '3.5rem',
+										fontSize: '4rem',
 										marginTop: '50px',
 									}}>
 									{(calculateSubTotal() - discount).toFixed(2)} LKR
