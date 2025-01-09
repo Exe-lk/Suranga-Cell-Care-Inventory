@@ -438,6 +438,7 @@ export const addminPagesMenu = {
 		icon: 'Person',
 
 	},
+	
 	singlePages: {
 		id: 'singlePages',
 		text: 'Display Stock Management',
@@ -499,6 +500,13 @@ export const addminPagesMenu = {
 			},
 			
 		}
+	},
+	StockAdmin: {
+		id: 'stockAd',
+		text: 'Stock ',
+		path: 'admin/stock',
+		icon: 'Category',
+
 	},
 	
 	
