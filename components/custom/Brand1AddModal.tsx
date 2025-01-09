@@ -56,7 +56,7 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				if (existingBrand) {
 					await Swal.fire({
 						icon: 'error',
-						title: 'Duplicate Category',
+						title: 'Duplicate Brand',
 						text: 'A Brand with this name already exists.',
 					});
 					return;

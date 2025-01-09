@@ -66,7 +66,7 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 				if (existingModel) {
 					await Swal.fire({
 						icon: 'error',
-						title: 'Duplicate Category',
+						title: 'Duplicate Model',
 						text: 'A model with this name already exists.',
 					});
 					return;
