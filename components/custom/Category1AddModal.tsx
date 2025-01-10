@@ -38,18 +38,18 @@ const CategoryAddModal: FC<CategoryEditModalProps> = ({ id, isOpen, setIsOpen })
 			try {
 				await refetch();
 		
-				// const existingCategory = categoryData?.find(
-				// 	(category: { name: string }) => category.name.toLowerCase() === values.name.toLowerCase()
-				// );
+				const existingCategory = categoryData?.find(
+					(category: { name: string }) => category.name.toLowerCase() === values.name.toLowerCase()
+				);
 		
-				// if (existingCategory) {
-				// 	await Swal.fire({
-				// 		icon: 'error',
-				// 		title: 'Duplicate Category',
-				// 		text: 'A category with this name already exists.',
-				// 	});
-				// 	return;
-				// }
+				if (existingCategory) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Duplicate Category',
+						text: 'A category with this name already exists.',
+					});
+					return;
+				}
 		
 				Swal.fire({
 					title: 'Processing...',
