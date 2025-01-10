@@ -49,18 +49,18 @@ const BrandAddModal: FC<BrandAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			try {
 				await refetch();
 		
-				const existingBrand = BrandData?.find(
-					(brand: { name: string }) => brand.name.toLowerCase() === values.name.toLowerCase()
-				);
+				// const existingBrand = BrandData?.find(
+				// 	(brand: { name: string }) => brand.name.toLowerCase() === values.name.toLowerCase()
+				// );
 		
-				if (existingBrand) {
-					await Swal.fire({
-						icon: 'error',
-						title: 'Duplicate Brand',
-						text: 'A Brand with this name already exists.',
-					});
-					return;
-				}
+				// if (existingBrand) {
+				// 	await Swal.fire({
+				// 		icon: 'error',
+				// 		title: 'Duplicate Brand',
+				// 		text: 'A Brand with this name already exists.',
+				// 	});
+				// 	return;
+				// }
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
