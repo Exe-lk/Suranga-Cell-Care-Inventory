@@ -14,7 +14,7 @@ import {
 	useGetStockInOutsQuery as useGetStockInOutsdisQuery,
 	useUpdateStockInOutMutation,
 } from '../../../redux/slices/stockInOutAcceApiSlice';
-import MyDefaultHeader from '../../_layout/_headers/CashierHeader';
+import MyDefaultHeader from '../../_layout/_headers/AccessoryBillHeader';
 import { Creatbill, Getbills } from '../../../service/accessoryService';
 import Page from '../../../layout/Page/Page';
 import Spinner from '../../../components/bootstrap/Spinner';
@@ -339,6 +339,8 @@ function index() {
 						type: payment ? 'cash' : 'card',
 						print: false,
 						discount: discount,
+						totalDiscount: Number(getAllDiscounts() + discount),
+						netValue: calculateSubTotal() - (getAllDiscounts() + discount),
 						id: id,
 					};
 					Creatbill(values);
@@ -374,6 +376,7 @@ function index() {
 					});
 					setOrderedItems([]);
 					setAmount(0);
+					setDiscount(0);
 				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
@@ -473,7 +476,7 @@ function index() {
 				<div className='row m-4'>
 					<div className='col-8 mb-3 mb-sm-0'>
 						<Card stretch className='mt-4' style={{ height: '80vh' }}>
-							<CardBody >
+							<CardBody>
 								<div
 									style={{
 										display: 'flex',
@@ -590,7 +593,7 @@ function index() {
 
 					<div className='col-4'>
 						<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
-							<CardBody isScrollable>
+							<CardBody>
 								<FormGroup id='product' label='Barcode ID' className='col-12'>
 									<Dropdown
 										aria-label='State'
@@ -617,7 +620,13 @@ function index() {
 										ref={quantityRef}
 										type='number'
 										onKeyDown={handleaddKeyPress}
-										onChange={(e: any) => setQuantity(Number(e.target.value))}
+										onChange={(e: any) => {
+											let value = e.target.value;
+											if (value.length > 1 && value.startsWith('1')) {
+												value = value.substring(1);
+											}
+											setQuantity(value);
+										}}
 										value={quantity}
 										min={1}
 										validFeedback='Looks good!'
@@ -637,7 +646,13 @@ function index() {
 										ref={discountRef}
 										type='number'
 										onKeyDown={discountchange}
-										onChange={(e: any) => setDiscount(Number(e.target.value))}
+										onChange={(e: any) => {
+											let value = e.target.value;
+											if (value.length > 1 && value.startsWith('0')) {
+												value = value.substring(1);
+											}
+											setDiscount(value);
+										}}
 										value={discount}
 										min={1}
 										validFeedback='Looks good!'
@@ -651,7 +666,7 @@ function index() {
 										fontSize: '4rem',
 										marginTop: '50px',
 									}}>
-									{(calculateSubTotal() - discount).toFixed(2)} 5800LKR
+									{(calculateSubTotal() - discount).toFixed(2)}LKR
 								</div>
 							</CardBody>
 							<CardFooter>

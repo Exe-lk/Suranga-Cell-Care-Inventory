@@ -182,44 +182,81 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 							format: 'html',
 							flavor: 'plain',
 							data:
-								'<html>' +
-								'<body>' +
-								'<div style="text-align: center; font-size: 18px; font-weight: bold;">' +
+								'<div' +
+								'style={{' +
+								'display: "flex",' +
+								'justifyContent: "center",' +
+								'backgroundColor: "#fff",' +
+								'color: "black",' +
+								'}}>' +
+								'<div' +
+								'style={{' +
+								'width: "140mm",' +
+								'height: "140mm",' +
+								'background: "#fff",' +
+								'border: "1px dashed #ccc",' +
+								'padding: "20px",' +
+								'fontFamily: "Arial, sans-serif",' +
+								'fontSize: "14px",' +
+								'}}>' +
+								'<div className="text-center mb-3">' +
+								'<h1 style={{ fontSize: "18px", marginBottom: "5px" }}>' +
 								'Suranga Cell Care' +
+								'</h1>' +
+								'<p style={{ marginBottom: "2px" }}>' +
+								'No. 524/1A, Kandy Road, Kadawatha.' +
+								'</p>' +
+								'<p style={{ marginBottom: "0" }}>' +
+								'Tel: +94 11 292 60 30 | Mobile: +94 719 111 144' +
+								'</p>' +
 								'</div>' +
-								'<div style="text-align: center; font-size: 14px;">' +
-								'No. 524/1/A, Kandy Road, Kadawatha<br>' +
-								'Tel: 011 292 6030, Mobile: 071 911 1144' +
-								'</div>' +
-								'<hr>' +
-								'<div style="text-align: left; font-size: 12px;">' +
-								'Invoice No: 111506<br>' +
-								'Invoice Date: ${formattedDate}<br>' +
-								'Time: ${currentTime}' +
-								'</div>' +
-								'<hr>' +
-								'<table style="width: 100%; font-size: 12px; border-collapse: collapse;">' +
+								'<hr />' +
+								'<table' +
+								'className="table table-borderless"style={{' +
+								'marginBottom: "5px",' +
+								'lineHeight: "1.2", ' +
+								'}}>' +
+								'<tbody style={{ color: "black" }}>' +
 								'<tr>' +
-								'<th style="text-align: left;">Description</th>' +
-								'<th>Qty</th>' +
-								'<th>Price</th>' +
-								'<th>Amount</th>' +
+								'<td' +
+								'style={{' +
+								'width: "50%",' +
+								'color: "black",' +
+								'padding: "2px 0",' +
+								'}}>' +
+								'Invoice No : 111506' +
+								'</td>' +
+								'<td style={{ color: "black", padding: "2px 0" }}>' +
+								'Invoice Date : 2025-01-08' +
+								'</td>' +
 								'</tr>' +
 								'<tr>' +
-								'<td>Tempered Glass</td>' +
-								'<td style="text-align: center;">1</td>' +
-								'<td style="text-align: right;">500.00</td>' +
-								'<td style="text-align: right;">500.00</td>' +
+								'<td' +
+								'style={{' +
+								'color: "black",' +
+								'padding: "2px 0",' +
+								'}}></td>' +
+								'<td style={{ color: "black", padding: "2px 0" }}>' +
+								'Invoiced Time : 2:36 PM' +
+								'</td>' +
 								'</tr>' +
-								'<tr>' +
-								'<td>Back Cover</td>' +
-								'<td style="text-align: center;">1</td>' +
-								'<td style="text-align: right;">600.00</td>' +
-								'<td style="text-align: right;">600.00</td>' +
-								'</tr>' +
+								'</tbody>' +
 								'</table>' +
-								'<hr>' +
-								'</html>',
+								'<hr style={{ margin: "5px 0" }} />' +
+								'<p' +
+								'style={{' +
+								'marginBottom: "0",' +
+								'lineHeight: "1.2", ' +
+								'fontSize: "14px", ' +
+								'}}>' +
+								'Description' +
+								'&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;' +
+								'Price &nbsp;&emsp;&emsp;&emsp;&emsp; Qty' +
+								'&nbsp;&emsp;&emsp;&emsp;&emsp; Amount' +
+								'</p>' +
+								'<hr style={{ margin: "5px 0" }} />' +
+								'</div>' +
+								'</div>',
 							options: opts,
 						},
 					];

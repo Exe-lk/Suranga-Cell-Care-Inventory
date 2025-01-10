@@ -23,7 +23,7 @@ const headers = [
 	},
 	{
 		path: `/cashier/*`,
-		element: <AdminHeader />,
+		element: <CasierHeader />,
 
 	},
 	{

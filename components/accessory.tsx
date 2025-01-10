@@ -1,10 +1,20 @@
 import React, { FC, useEffect, useRef, useState } from 'react';
 import PageWrapper from '../layout/PageWrapper/PageWrapper';
-import { collection, getDocs } from 'firebase/firestore';
+import {
+	addDoc,
+	collection,
+	getDocs,
+	doc,
+	updateDoc,
+	deleteDoc,
+	getDoc,
+	query,
+	where,
+} from 'firebase/firestore';
 import { firestore } from '../firebaseConfig';
 import 'react-simple-keyboard/build/css/index.css';
 import Swal from 'sweetalert2';
-import Card, { CardBody, CardFooter } from '../components/bootstrap/Card';
+import Card, { CardBody } from '../components/bootstrap/Card';
 import { Dropdown } from 'primereact/dropdown';
 import FormGroup from '../components/bootstrap/forms/FormGroup';
 import Input from '../components/bootstrap/forms/Input';
@@ -14,11 +24,12 @@ import {
 	useGetStockInOutsQuery as useGetStockInOutsdisQuery,
 	useUpdateStockInOutMutation,
 } from '../redux/slices/stockInOutAcceApiSlice';
-import MyDefaultHeader from '../pages/_layout/_headers/CashierHeader';
 import { Creatbill, Getbills } from '../service/accessoryService';
 import Page from '../layout/Page/Page';
 import Spinner from '../components/bootstrap/Spinner';
 import { useGetItemAccesQuery } from '../redux/slices/itemManagementAcceApiSlice';
+import SubHeader, { SubHeaderLeft } from '../layout/SubHeader/SubHeader';
+import router from 'next/router';
 
 interface CategoryEditModalProps {
 	data: any;
@@ -32,20 +43,19 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	const [updateStockInOut] = useUpdateStockInOutMutation();
 	const { data: itemAcces } = useGetItemAccesQuery(undefined);
 	const [items, setItems] = useState<any[]>([]);
-	const [selectedBarcode, setSelectedBarcode] = useState<any[]>([]);
-	const [selectedProduct, setSelectedProduct] = useState<string>('');
-	const [quantity, setQuantity] = useState<any>(null);
+	const [customer, setCustomer] = useState<any[]>([]);
 	const [payment, setPayment] = useState(true);
+	const [contact, setContact] = useState<number>(0);
+	const [name, setName] = useState<string>('');
 	const [amount, setAmount] = useState<number>(0);
 	const [id, setId] = useState<number>(0);
-	const [casher, setCasher] = useState<any>({});
+	const [status, setStaus] = useState<boolean>(true);
 	const currentDate = new Date().toLocaleDateString('en-CA');
 	const currentTime = new Date().toLocaleTimeString('en-GB', {
 		hour: '2-digit',
 		minute: '2-digit',
 	});
 	const [isQzReady, setIsQzReady] = useState(false);
-	const [currentDraftId, setCurrentDraftId] = useState<number | null>(null);
 	const dropdownRef = useRef<Dropdown>(null);
 	const quantityRef = useRef<HTMLInputElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -90,6 +100,23 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				);
 				console.log('Largest ID:', largestId);
 				setId(largestId + 1);
+			} catch (error) {
+				console.error('Error fetching data: ', error);
+			}
+		};
+
+		fetchData();
+	}, [orderedItems]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const querySnapshot = await getDocs(collection(firestore, 'customer'));
+				const dataList = querySnapshot.docs.map((doc) => ({
+					...doc.data(),
+				}));
+				setCustomer(dataList);
+				console.log(dataList);
 			} catch (error) {
 				console.error('Error fetching data: ', error);
 			}
@@ -208,23 +235,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			e.preventDefault();
 		}
 	};
-	const handleaddKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			handlePopupOk();
-		}
-		if (e.key === 'ArrowRight') {
-			if (inputRef.current) {
-				inputRef.current.focus();
-			}
-			e.preventDefault();
-		}
-		if (e.key === 'ArrowUp') {
-			if (dropdownRef.current) {
-				dropdownRef.current.focus();
-			}
-			e.preventDefault();
-		}
-	};
 
 	// useEffect(() => {
 	// 	const cashier = localStorage.getItem('user');
@@ -236,32 +246,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	// }, []);
 
 	// Save current orderedItems as a draft
-	const handleSaveDraft = () => {
-		if (orderedItems.length === 0) {
-			Swal.fire('Error', 'No items to save as draft.', 'error');
-			return;
-		}
 
-		const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
-		const newDraft = {
-			draftId: new Date().getTime(), // Unique identifier
-			orders: orderedItems,
-		};
-		localStorage.setItem('drafts', JSON.stringify([...savedDrafts, newDraft]));
-		setOrderedItems([]);
-		Swal.fire('Success', 'Draft saved successfully.', 'success');
-	};
-
-	// Load a selected draft into orderedItems
-	const handleLoadDraft = (draft: any) => {
-		if (draft && draft.orders) {
-			setOrderedItems(draft.orders);
-			setCurrentDraftId(draft.draftId); // Set the orders part of the draft
-			Swal.fire('Success', 'Draft loaded successfully.', 'success');
-		} else {
-			Swal.fire('Error', 'Invalid draft data.', 'error');
-		}
-	};
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
@@ -283,104 +268,15 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 		fetchData();
 	}, [isLoading]);
 
-	const handlePopupOk = async () => {
-		if (!selectedProduct || quantity <= 0) {
-			Swal.fire('Error', 'Please select a product and enter a valid quantity.', 'error');
-			return;
-		}
-		const selectedItem = items.find((item) => item.barcode === selectedProduct);
-		if (selectedItem) {
-			console.log(selectedItem);
-			if (selectedItem.type == 'displaystock') {
-				const existingItemIndex = orderedItems.findIndex(
-					(item) => item.barcode.slice(0, 4) === selectedProduct.slice(0, 4),
-				);
-				const existingItem = orderedItems.find((item) => item.barcode === selectedProduct);
-				if (!existingItem) {
-					const barcode = [...selectedBarcode, selectedProduct];
-					setSelectedBarcode(barcode);
-				}
-				let updatedItems;
-				if (existingItemIndex !== -1) {
-					updatedItems = [...orderedItems];
-					updatedItems[existingItemIndex] = {
-						...selectedItem,
-						quantity: updatedItems[existingItemIndex].quantity + 1,
-					};
-				} else {
-					updatedItems = [...orderedItems, { ...selectedItem, quantity: 1 }];
-				}
-				setOrderedItems(updatedItems);
-			} else {
-				const existingItemIndex = orderedItems.findIndex(
-					(item) => item.barcode === selectedProduct,
-				);
-				let updatedItems;
-				if (existingItemIndex !== -1) {
-					updatedItems = [...orderedItems];
-					updatedItems[existingItemIndex] = {
-						...selectedItem,
-						quantity,
-					};
-				} else {
-					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
-				}
-				setOrderedItems(updatedItems);
-			}
-			setSelectedProduct('');
-			setQuantity(0);
-			if (dropdownRef.current) {
-				dropdownRef.current.focus();
-			}
-			Swal.fire({
-				title: 'Success',
-				text: 'Product added/replaced successfully.',
-				icon: 'success',
-				showConfirmButton: false,
-				timer: 1000,
-			});
-		} else {
-			Swal.fire('Error', 'Selected item not found.', 'error');
-		}
-	};
-
-	const handleDeleteItem = (code: string) => {
-		const updatedItems = orderedItems.filter((item) => item.barcode !== code);
-		setOrderedItems(updatedItems);
-		Swal.fire({
-			title: 'Success',
-			text: 'Item removed successfully.',
-			icon: 'success',
-			showConfirmButton: false,
-			timer: 1000,
-		});
-	};
-
 	const calculateSubTotal = () => {
 		return orderedItems
 			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
 			.toFixed(2);
 	};
 
-	const calculateDiscount = () => {
-		return orderedItems
-			.reduce((sum, val) => sum + ((val.price * val.quantity) / 100) * val.discount, 0)
-			.toFixed(2);
-	};
-
-	const calculateTotal = () => {
-		return orderedItems
-			.reduce((sum, val) => sum + val.sellingPrice * val.quantity, 0)
-			.toFixed(2);
-	};
-
 	const addbill = async () => {
-		console.log(orderedItems);
-		if (
-			amount >= Number(calculateSubTotal()) &&
-			amount > 0 &&
-			Number(calculateSubTotal()) > 0
-		) {
+		console.log(data);
+		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			try {
 				const result = await Swal.fire({
 					title: 'Are you sure?',
@@ -396,21 +292,16 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					const totalAmount = calculateSubTotal();
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
-					const savedDrafts = JSON.parse(localStorage.getItem('drafts') || '[]');
-					const updatedDrafts = savedDrafts.filter(
-						(draft: any) => draft.draftId !== currentDraftId,
-					);
-					localStorage.setItem('drafts', JSON.stringify(updatedDrafts));
-					const values = {
-						orders: orderedItems,
-						time: currentTime,
-						date: formattedDate,
-						// casheir: casher.email,
-						amount: Number(totalAmount),
-						type: payment ? 'cash' : 'card',
-						id: id,
-					};
-					Creatbill(values);
+
+					if (!status) {
+						await addDoc(collection(firestore, 'customer'), { name, contact });
+					}
+					data.contact = contact;
+					data.print = true;
+					console.log(data);
+					const supplierRef = doc(firestore, 'accessorybill', data.cid);
+					await updateDoc(supplierRef, data);
+
 					for (const item of orderedItems) {
 						const { cid, barcode, quantity } = item; // Destructure the fields from the current item
 						const id = cid;
@@ -443,6 +334,9 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					});
 					setOrderedItems([]);
 					setAmount(0);
+					setContact(0);
+					setName('');
+					setIsOpen(false);
 				}
 			} catch (error) {
 				console.error('Error during handleUpload: ', error);
@@ -453,11 +347,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 		}
 	};
 	const printbill = async () => {
-		if (
-			amount >= Number(calculateSubTotal()) &&
-			amount > 0 &&
-			Number(calculateSubTotal()) > 0
-		) {
+		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
 			try {
 				const result = await Swal.fire({
@@ -566,34 +456,22 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
-	const startbill = async () => {
-		if (orderedItems.length > 0) {
-			const result = await Swal.fire({
-				title: 'Are you sure?',
-				// text: 'You will not be able to recover this status!',
-				icon: 'warning',
-				showCancelButton: true,
-				confirmButtonColor: '#3085d6',
-				cancelButtonColor: '#d33',
-				confirmButtonText: 'Yes, Print Bill!',
-			});
 
-			if (result.isConfirmed) {
-				setOrderedItems([]);
-				setAmount(0);
-				setQuantity(0);
-				setSelectedProduct('');
-				if (dropdownRef.current) {
-					dropdownRef.current.focus();
-				}
-			}
-		} else {
-			setOrderedItems([]);
-			setAmount(0);
-			setQuantity(0);
-			setSelectedProduct('');
-			if (dropdownRef.current) {
-				dropdownRef.current.focus();
+	const contactchanget = async (value: any) => {
+		if (value.length > 1 && value.startsWith('0')) {
+			value = value.substring(1);
+		}
+		setContact(value);
+		if (value.length === 9) {
+			const matchingCustomer = customer.find((customer) => customer.contact === value);
+
+			if (matchingCustomer) {
+				const { customer: customerId, contact, name } = matchingCustomer; // Extract specific fields
+				setName(name);
+				setStaus(true);
+			} else {
+				console.log('No matching customer found for the contact:', value);
+				setStaus(false);
 			}
 		}
 	};
@@ -622,200 +500,248 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	}
 	return (
 		<>
+			<SubHeader>
+				<SubHeaderLeft>
+					<Button
+						icon=''
+						onClick={() => {
+							setIsOpen(false);
+						}}>
+						Back Page
+					</Button>
+				</SubHeaderLeft>
+			</SubHeader>
+
 			<div className='row '>
 				<div className='col-5 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 						<CardBody isScrollable>
 							<div
-								// ref={printRef} // Attach the ref here
 								style={{
-									width: '300px',
-									fontSize: '12px',
-									backgroundColor: 'white',
+									display: 'flex',
+									justifyContent: 'center',
+
+									backgroundColor: '#fff',
 									color: 'black',
-								}}
-								className='p-3'>
-								<center>
-									{/* <img src={Logo} style={{ height: 50, width: 100 }} alt='' /> */}
-									<p>
-										<b>Suranga Cell Care</b>
-										<br />
-										No.524/1/A,
-										<br />
-										Kandy Road,
-										<br />
-										Kadawatha
-										<br />
-										TEL : 011 292 6030/ 071 911 1144
-									</p>
-								</center>
-								<div className='d-flex justify-content-between align-items-center mt-4'>
-									<div className='text-start'>
-										<p className='mb-0'>
-											DATE &nbsp;&emsp; &emsp; &emsp;:&emsp;{currentDate}
+								}}>
+								<div
+									style={{
+										width: '140mm',
+										height: '140mm',
+										background: '#fff',
+										border: '1px dashed #ccc',
+										padding: '20px',
+
+										fontFamily: 'Arial, sans-serif',
+										fontSize: '14px',
+									}}>
+									{/* Header */}
+									<div className='text-center mb-3'>
+										<h1 style={{ fontSize: '18px', marginBottom: '5px' }}>
+											Suranga Cell Care
+										</h1>
+										<p style={{ marginBottom: '2px' }}>
+											No. 524/1A, Kandy Road, Kadawatha.
 										</p>
-										<p className='mb-0'>START TIME&emsp;:&emsp;{currentTime}</p>
-										<p className='mb-0'> INVOICE NO&nbsp; &nbsp;:&emsp;{id}</p>
+										<p style={{ marginBottom: '0' }}>
+											Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
+										</p>
 									</div>
-								</div>
+									<hr />
 
-								<hr />
-								<hr />
-								<p>
-									Product &emsp;Qty&emsp;&emsp; U/Price&emsp;&emsp;&emsp; Net
-									Value
-								</p>
+									{/* Invoice Details */}
+									<table
+										className='table table-borderless'
+										style={{
+											marginBottom: '5px', // Reduced margin
+											lineHeight: '1.2', // Reduced line height
+										}}>
+										<tbody style={{ color: 'black' }}>
+											<tr>
+												<td
+													style={{
+														width: '50%',
+														color: 'black',
+														padding: '2px 0',
+													}}>
+													Invoice No : 111506
+												</td>
+												<td style={{ color: 'black', padding: '2px 0' }}>
+													Invoice Date : 2025-01-08
+												</td>
+											</tr>
+											<tr>
+												<td
+													style={{
+														color: 'black',
+														padding: '2px 0',
+													}}></td>
+												<td style={{ color: 'black', padding: '2px 0' }}>
+													Invoiced Time : 2:36 PM
+												</td>
+											</tr>
+										</tbody>
+									</table>
 
-								<hr />
+									{/* Item Table */}
+									<hr style={{ margin: '5px 0' }} />
+									<p
+										style={{
+											marginBottom: '0',
+											lineHeight: '1.2', // Adjusted for reduced spacing
+											fontSize: '14px', // Optional for compact view
+										}}>
+										Description
+										&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;
+										Price &nbsp;&emsp;&emsp;&emsp;&emsp; Qty
+										&nbsp;&emsp;&emsp;&emsp;&emsp; Amount
+									</p>
+									<hr style={{ margin: '5px 0' }} />
 
-								{orderedItems.map(
-									(
-										{
-											cid,
-											category,
-											model,
-											brand,
-											quantity,
-											price,
-											discount,
-											barcode,
-											sellingPrice,
-										}: any,
-										index: any,
-									) => (
-										<p>
-											{index + 1}. {category} {model} {brand}
-											<br />
-											{barcode}&emsp;
-											{quantity}&emsp;&emsp;&emsp;
-											{sellingPrice}.00&emsp;&emsp;&emsp;&emsp;
-											{(sellingPrice * quantity).toFixed(2)}
-										</p>
-									),
-								)}
-
-								<hr />
-
-								<div className='d-flex justify-content-between'>
-									{/* <div>Discount</div>
-									<div>
-										<strong>{calculateDiscount()}</strong>
+									{/* <table>
+										<tbody>
+											<tr>
+												<td>TEMPERED GLASS (Warranty 0 days)</td>
+												<td>500.00</td>
+												<td>1</td>
+												<td>500.00</td>
+											</tr>
+											<tr>
+												<td>BACK COVER (Warranty 0 days)</td>
+												<td>600.00</td>
+												<td>1</td>
+												<td>600.00</td>
+											</tr>
+										</tbody>
+									</table>
+									<div
+										style={{
+											display: 'flex',
+											justifyContent: 'space-between',
+											fontSize: '14px',
+										}}>
+										<p>Cashier Signature ____________________</p>
+										<p>Salesperson Signature _______________</p>
+									</div>
+									<div className='text-center' style={{ marginTop: '20px' }}>
+										<strong style={{ fontSize: '16px' }}>Total: 1100.00</strong>
+									</div>
+									<div
+										className='text-center'
+										style={{ fontSize: '12px', marginTop: '10px' }}>
+										<p>Thank You ... Come Again</p>
 									</div> */}
 								</div>
-								<div className='d-flex justify-content-between'>
-									<div>
-										<strong>Sub Total</strong>
-									</div>
-									<div>
-										<strong>{calculateSubTotal()}</strong>
-									</div>
-								</div>
-								<hr />
-								<div className='d-flex justify-content-between'>
-									<div>Cash Received</div>
-									<div>{amount}.00</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>Balance</div>
-									<div>{amount - Number(calculateSubTotal())}</div>
-								</div>
-								<div className='d-flex justify-content-between'>
-									<div>No.Of Pieces</div>
-									<div>{orderedItems.length}</div>
-								</div>
-
-								<hr />
-								<center>THANK YOU COME AGAIN</center>
-								<hr />
-
-								<center style={{ fontSize: '11px' }}></center>
 							</div>
 						</CardBody>
 					</Card>
 				</div>
 				{/* Second Card */}
 				<div className='col-7'>
-					<Card stretch className='mt-4' style={{ height: '80vh' }}>
-						
-							
-						
-						<CardBody isScrollable>
-							{/* Two cards side by side occupying full width */}
-							<div className='d-flex w-100'>
-								
-								<Card className='flex-grow-1 ms-2'>
-									<CardBody>
-										<>
-											<FormGroup
-												id='amount'
-												label='Amount (LKR)'
-												className='col-12 mt-2'>
-												<Input
-													type='number'
-													ref={inputRef} // Attach a ref to the input
-													onChange={(e: any) => {
-														let value = e.target.value;
-														if (
-															value.length > 1 &&
-															value.startsWith('0')
-														) {
-															value = value.substring(1);
-														}
-														setAmount(value);
-													}}
-													onKeyDown={amountchange}
-													value={amount}
-													min={0}
-													validFeedback='Looks good!'
-												/>
-											</FormGroup>
-
-											<ChecksGroup isInline className='pt-2'>
-												<Checks
-													ref={cashRef}
-													onKeyDown={cashchange}
-													id='inlineCheckOne'
-													label='Cash'
-													name='checkOne'
-													checked={payment}
-													onClick={(e: any) => {
-														setPayment(true);
-													}}
-												/>
-												<Checks
-													ref={cardRef}
-													onKeyDown={cardchange}
-													id='inlineCheckTwo'
-													label='Card'
-													name='checkOne'
-													checked={!payment}
-													onClick={(e: any) => {
-														setPayment(false);
-													}}
-												/>
-											</ChecksGroup>
-											<Button
-												ref={printRef}
-												color='info'
-												className='mt-4 w-100'
-												onClick={printbill}
-												onKeyDown={printchange}>
-												Print Bill
-											</Button>
-											<Button
-												ref={endRef}
-												color='success'
-												className='mt-4 w-100'
-												onClick={addbill}
-												onKeyDown={salechange}>
-												End Sale
-											</Button>
-										</>
-									</CardBody>
-								</Card>
-							</div>
+					{/* Two cards side by side occupying full width */}
+					<div className='d-flex w-100 mt-4'>
+						<Card className='flex-grow-1 ms-2' style={{ height: '80vh' }}>
+							<CardBody>
+								<>
+									{' '}
+									<div style={{ fontSize: '18px' }}>
+										Net Value : {data.netValue.toFixed(2)} LKR
+									</div>
+									<FormGroup
+										id='amount'
+										label='Amount (LKR)'
+										className='col-12 mt-2'>
+										<Input
+											type='number'
+											ref={inputRef} // Attach a ref to the input
+											onChange={(e: any) => {
+												let value = e.target.value;
+												if (value.length > 1 && value.startsWith('0')) {
+													value = value.substring(1);
+												}
+												setAmount(value);
+											}}
+											onKeyDown={amountchange}
+											value={amount}
+											min={0}
+											validFeedback='Looks good!'
+										/>
+									</FormGroup>
+									<FormGroup
+										id='amount'
+										label='Payment method'
+										className='col-12 mt-2'>
+										<ChecksGroup isInline className='pt-2'>
+											<Checks
+												ref={cashRef}
+												onKeyDown={cashchange}
+												id='inlineCheckOne'
+												label='Cash'
+												name='checkOne'
+												checked={payment}
+												onClick={(e: any) => {
+													setPayment(true);
+												}}
+											/>
+											<Checks
+												ref={cardRef}
+												onKeyDown={cardchange}
+												id='inlineCheckTwo'
+												label='Card'
+												name='checkOne'
+												checked={!payment}
+												onClick={(e: any) => {
+													setPayment(false);
+												}}
+											/>
+										</ChecksGroup>
+									</FormGroup>
+									<FormGroup label='Contact Number' className='col-12 mt-3'>
+										<Input
+											type='number'
+											value={contact}
+											min={0}
+											onChange={(e: any) => {
+												const value = e.target.value.slice(0, 9);
+												contactchanget(value);
+											}}
+											validFeedback='Looks good!'
+										/>
+									</FormGroup>
+									<FormGroup label='Customer Name' className='col-12 mt-3'>
+										<Input
+											disabled={status}
+											type='text'
+											value={name}
+											min={0}
+											onChange={(e: any) => {
+												setName(e.target.value);
+											}}
+											validFeedback='Looks good!'
+										/>
+									</FormGroup>
+									<Button
+										ref={printRef}
+										color='info'
+										className='mt-4 p-4 w-100'
+										style={{ fontSize: '1.25rem' }}
+										onClick={printbill}
+										onKeyDown={printchange}>
+										Print Bill
+									</Button>
+									<Button
+										ref={endRef}
+										color='success'
+										className='mt-4 p-4 w-100'
+										style={{ fontSize: '1.25rem' }}
+										onClick={addbill}
+										onKeyDown={salechange}>
+										End Sale
+									</Button>
+								</>
 							</CardBody>
-					</Card>
+						</Card>
+					</div>
 				</div>
 			</div>
 		</>
