@@ -496,26 +496,35 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				if (result.isConfirmed) {
 					const invoiceElement = document.getElementById('invoice');
 					if (!invoiceElement) {
-					  throw new Error('Invoice element not found');
+						throw new Error('Invoice element not found');
 					}
-			  
+
 					// Generate image from the invoice element
 					const image = await toPng(invoiceElement, { width: 531, height: 531 }); // 140mm = 531px
-			  
+					toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
+						.then((dataUrl) => {
+							const link = document.createElement('a');
+							link.download = 'invoice.png';
+							link.href = dataUrl;
+							link.click();
+						})
+						.catch((error) => {
+							console.error('Failed to generate image:', error);
+						});
 					// Ensure QZ Tray WebSocket is active
 					if (!window.qz.websocket.isActive()) {
-					  await window.qz.websocket.connect();
+						await window.qz.websocket.connect();
 					}
-			  
+
 					// Configure QZ printing
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
-					const printData:any = [
-					  { type: 'pixel', format: 'image', flavor: 'file', data: image },
+					const printData: any = [
+						{ type: 'pixel', format: 'image', flavor: 'file', data: image },
 					];
-			  
+
 					// Print the image
 					await window.qz.print(config, printData);
-			  
+
 					// Show success message
 					Swal.fire('Printed!', 'The bill has been printed.', 'success');
 				}
@@ -549,6 +558,17 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			};
 		}
 	}
+
+	const chunkItems = (array: any[], chunkSize: number) => {
+		const chunks = [];
+		for (let i = 0; i < array.length; i += chunkSize) {
+			chunks.push(array.slice(i, i + chunkSize));
+		}
+		return chunks;
+	};
+
+	// Split orderedItems into chunks of 5
+	const chunks = chunkItems(orderedItems, 5);
 
 	if (isLoading) {
 		console.log(isLoading);
@@ -596,83 +616,233 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 								style={{
 									display: 'flex',
 									justifyContent: 'center',
-
-									backgroundColor: '#fff',
 									color: 'black',
 								}}>
-								<div
-									style={{
-										width: '140mm',
-										height: '140mm',
-										background: '#fff',
-										border: '1px dashed #ccc',
-										padding: '20px',
-
-										fontFamily: 'Arial, sans-serif',
-										fontSize: '14px',
-									}}>
-									{/* Header */}
-									<div className='text-center mb-3'>
-										<h1 style={{ fontSize: '18px', marginBottom: '5px' }}>
-											Suranga Cell Care
-										</h1>
-										<p style={{ marginBottom: '2px' }}>
-											No. 524/1A, Kandy Road, Kadawatha.
-										</p>
-										<p style={{ marginBottom: '0' }}>
-											Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
-										</p>
-									</div>
-									<hr />
-
-									{/* Invoice Details */}
-									<table
-										className='table table-borderless'
-										style={{
-											marginBottom: '5px', // Reduced margin
-											lineHeight: '1.2', // Reduced line height
-										}}>
-										<tbody style={{ color: 'black' }}>
-											<tr>
-												<td
+								<div>
+									{chunks.map((chunk, chunkIndex) => (
+										<div
+											key={chunkIndex}
+											style={{
+												width: '140mm',
+												height: '140mm',
+												background: '#fff',
+												border: '1px dashed #ccc',
+												padding: '20px',
+												fontFamily: 'Arial, sans-serif',
+												fontSize: '14px',
+												position: 'relative', // Enables absolute positioning inside
+												marginBottom: '10px',
+											}}>
+											{/* Header */}
+											<div className='text-left mb-3'>
+												<h1
 													style={{
-														width: '50%',
-														color: 'black',
-														padding: '2px 0',
+														fontSize: '30px',
+														marginBottom: '5px',
+														fontFamily: 'initial',
 													}}>
-													Invoice No : 111506
-												</td>
-												<td style={{ color: 'black', padding: '2px 0' }}>
-													Invoice Date : 2025-01-08
-												</td>
-											</tr>
-											<tr>
-												<td
-													style={{
-														color: 'black',
-														padding: '2px 0',
-													}}></td>
-												<td style={{ color: 'black', padding: '2px 0' }}>
-													Invoiced Time : 2:36 PM
-												</td>
-											</tr>
-										</tbody>
-									</table>
+													Suranga Cell Care
+												</h1>
+												<p style={{ marginBottom: '2px' }}>
+													No. 524/1A, Kandy Road, Kadawatha.
+												</p>
+												<p style={{ marginBottom: '0' }}>
+													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
+												</p>
+											</div>
+											<hr style={{ margin: '0 0 5px 0 ' }} />
 
-									{/* Item Table */}
-									<hr style={{ margin: '5px 0' }} />
-									<p
-										style={{
-											marginBottom: '0',
-											lineHeight: '1.2', // Adjusted for reduced spacing
-											fontSize: '14px', // Optional for compact view
-										}}>
-										Description
-										&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;
-										Price &nbsp;&emsp;&emsp;&emsp;&emsp; Qty
-										&nbsp;&emsp;&emsp;&emsp;&emsp; Amount
-									</p>
-									<hr style={{ margin: '5px 0' }} />
+											{/* Invoice Details */}
+											<table
+												className='table table-borderless'
+												style={{
+													marginBottom: '5px',
+													lineHeight: '1.2',
+												}}>
+												<tbody style={{ color: 'black' }}>
+													<tr>
+														<td
+															style={{
+																width: '50%',
+																color: 'black',
+																padding: '2px 0 0 ',
+															}}>
+															Invoice No : 111506
+														</td>
+														<td
+															style={{
+																color: 'black',
+																padding: '2px 0',
+															}}>
+															Invoice Date : 2025-01-08
+														</td>
+													</tr>
+													<tr>
+														<td
+															style={{
+																color: 'black',
+																padding: '2px 0',
+															}}></td>
+														<td
+															style={{
+																color: 'black',
+																padding: '2px 0',
+															}}>
+															Invoiced Time : 2:36 PM
+														</td>
+													</tr>
+												</tbody>
+											</table>
+											<hr style={{ margin: '5px 0' }} />
+
+											{/* Items Header */}
+											<p
+												style={{
+													marginBottom: '0',
+													lineHeight: '1.2',
+													fontSize: '14px',
+												}}>
+												Description
+												&nbsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+												Price &nbsp;&emsp;&emsp;&emsp; Qty
+												&nbsp;&emsp;&emsp; Amount
+											</p>
+											<hr style={{ margin: '5px 0' }} />
+
+											{/* Items List */}
+											{chunk.map(
+												(
+													{
+														category,
+														model,
+														brand,
+														quantity,
+														sellingPrice,
+													}: any,
+													index: number,
+												) => (
+													<table
+														key={index}
+														style={{
+															color: 'black',
+															width: '130mm',
+															borderCollapse: 'collapse',
+															fontSize: '14px',
+															marginBottom: '10px',
+														}}>
+														<tbody>
+															<tr>
+																<td
+																	style={{
+																		color: 'black',
+																		width: '52%',
+																		padding: '5px',
+																	}}>
+																	{index + 1}. {category} {model}{' '}
+																	{brand}
+																</td>
+																<td
+																	style={{
+																		color: 'black',
+																		width: '20%',
+																		textAlign: 'right',
+																		padding: '5px',
+																		paddingRight: '20px',
+																	}}>
+																	{sellingPrice.toFixed(2)}
+																</td>
+																<td
+																	style={{
+																		color: 'black',
+																		width: '8%',
+																		textAlign: 'right',
+																		padding: '5px',
+																	}}>
+																	{quantity}
+																</td>
+																<td
+																	style={{
+																		color: 'black',
+																		width: '20%',
+																		textAlign: 'right',
+																		padding: '5px',
+																	}}>
+																	{(
+																		sellingPrice * quantity
+																	).toFixed(2)}
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												),
+											)}
+
+											{/* Footer Content */}
+											<div
+												style={{
+													position: 'absolute',
+													top: '110mm', // Footer starts at 110mm
+													left: '0',
+													width: '100%',
+													padding: '0 20px',
+												}}>
+												{/* Total Section */}
+												<div
+													style={{
+														display: 'flex',
+														justifyContent: 'flex-end',
+														marginBottom: '10px',
+													}}>
+													<div
+														style={{
+															border: '1px solid black',
+															padding: '5px 10px',
+															fontSize: '14px',
+															fontWeight: 'bold',
+														}}>
+														Total: {data.netValue}
+													</div>
+												</div>
+
+												{/* Signature Section */}
+												<div
+													style={{
+														display: 'flex',
+														marginBottom: '10px',
+													}}>
+													<div>
+														<span
+															style={{
+																display: 'block',
+																borderTop: '1px solid black',
+																width: '110px',
+															}}></span>
+														Cashier Signature
+													</div>
+													&nbsp;&emsp;&nbsp;&emsp;&emsp;
+													<div>
+														<span
+															style={{
+																display: 'block',
+																borderTop: '1px solid black',
+																width: '150px',
+															}}></span>
+														Sales Person Signature
+													</div>
+												</div>
+
+												{/* Thank You Section */}
+												<div
+													style={{
+														textAlign: 'center',
+														fontSize: '12px',
+													}}>
+													...........................Thank You ... Come
+													Again...........................
+												</div>
+											</div>
+										</div>
+									))}
 								</div>
 							</div>
 						</CardBody>
