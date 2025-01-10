@@ -20,7 +20,7 @@ interface ModelAddModalProps {
 
 const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 	const [addModel, { isLoading }] = useAddModel1Mutation();
-	const { refetch } = useGetModels1Query(undefined);
+	const { data: ModelData,refetch } = useGetModels1Query(undefined);
 	const [filteredBrands, setFilteredBrands] = useState([]);
 	const { data: brands, isLoading: brandsLoading, isError } = useGetBrands1Query(undefined);
 	const {
@@ -57,6 +57,20 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 		},
 		onSubmit: async (values) => {
 			try {
+				await refetch();
+		
+				const existingModel = ModelData?.find(
+					(model: { name: string }) => model.name.toLowerCase() === values.name.toLowerCase()
+				);
+		
+				if (existingModel) {
+					await Swal.fire({
+						icon: 'error',
+						title: 'Duplicate Model',
+						text: 'A model with this name already exists.',
+					});
+					return;
+				}
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',

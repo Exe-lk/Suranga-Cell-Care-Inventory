@@ -1,5 +1,5 @@
 import { firestore } from '../firebaseConfig';
-import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where, Timestamp } from 'firebase/firestore';
+import { addDoc, collection, getDocs, doc, updateDoc, deleteDoc, getDoc, query, where, Timestamp ,serverTimestamp} from 'firebase/firestore';
 
 export const createstockIn = async (values: any) => {
   values.status = true;
@@ -31,11 +31,17 @@ export const updatestockIn = async (id: string, quantity: string) => {
   await updateDoc(stockInRef, { quantity });
 };
 
-export const createstockOut = async (model: string, brand: string, category: string, quantity: string, date: string, customerName: string, mobile: string, nic: string, email: string, dateIn: string, cost: string, sellingPrice: string, stock: string,description:string) => {
+export const createstockOut = async (model: string, brand: string, category: string, quantity: string, date: string, customerName: string, mobile: string, nic: string, email: string, barcode: string, cost: string, sellingPrice: string, stock: string,description:string) => {
   const status = true;
   const timestamp = Timestamp.now();
-  const docRef = await addDoc(collection(firestore, 'StockAcce'), { model, brand, category, quantity, date, customerName, mobile, nic, email, dateIn, cost, sellingPrice, stock, status,description, timestamp: timestamp});
+  const docRef = await addDoc(collection(firestore, 'StockAcce'), { model, brand, category, quantity, date, customerName, mobile, nic, email, barcode, cost, sellingPrice, stock, status,description, timestamp: timestamp});
   console.log(docRef.id);
   return docRef.id;
 };
 
+export const createstockDelete = async (values: any) => {
+  values.status = false;
+  values.timestamp = Timestamp.now();
+  const docRef = await addDoc(collection(firestore, 'StockAcce'), values);
+  return docRef.id;
+};

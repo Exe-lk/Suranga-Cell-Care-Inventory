@@ -47,7 +47,7 @@ interface StockOut {
 	mobile: string;
 	nic: string;
 	email: string;
-	dateIn: string;
+	barcode: string;
 	cost: string;
 	sellingPrice: string;
 	stock: string;
@@ -55,7 +55,7 @@ interface StockOut {
 	description: string;
 }
 
-const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity}) => {
+const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity }) => {
 	const [stockOut, setStockOut] = useState<StockOut>({
 		cid: '',
 		model: '',
@@ -67,7 +67,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		mobile: '',
 		nic: '',
 		email: '',
-		dateIn: '',
+		barcode: '',
 		cost: '',
 		sellingPrice: '',
 		stock: 'stockOut',
@@ -95,19 +95,14 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 		(item: { stock: string }) => item.stock === 'stockIn',
 	);
 	const handleDateInChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const selectedTimestamp = e.target.value;
-		formik.setFieldValue('dateIn', selectedTimestamp);
-		const selectedStock = filteredStockIn?.find(
-			(item: { timestamp: { seconds: number; nanoseconds: number } }) => {
-				const formattedDate = formatTimestamp(
-					item.timestamp.seconds,
-					item.timestamp.nanoseconds,
-				);
-				return formattedDate === selectedTimestamp;
-			},
-		);
-		setSelectedCost(selectedStock ? selectedStock.cost : null);
-	};
+	const selectedBarcode = e.target.value;
+	formik.setFieldValue("barcode", selectedBarcode);
+	const selectedStock = filteredStockIn?.find(
+		(item: { barcode: string }) => item.barcode === selectedBarcode
+	);
+	setSelectedCost(selectedStock ? selectedStock.cost : null);
+};
+
 	const stockInQuantity = quantity;
 
 	const formik = useFormik({
@@ -121,7 +116,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			mobile: '',
 			nic: '',
 			email: '',
-			dateIn: '',
+			barcode: '',
 			cost: '',
 			sellingPrice: '',
 			stock: 'stockOut',
@@ -133,7 +128,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 			const errors: any = {};
 			if (!values.quantity) errors.quantity = 'Quantity is required';
 			if (!values.date) errors.date = 'Date Out is required';
-			if (!values.dateIn) errors.dateIn = 'Date In is required';
+			if (!values.barcode) errors.barcode = 'Date In is required';
 			if (!values.sellingPrice) errors.sellingPrice = 'Selling Price is required';
 			if (!values.customerName) errors.customerName = 'Customer Name is required';
 			if (!values.mobile) {
@@ -152,9 +147,9 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 				errors.email = 'Invalid email format.';
 			} else if (values.email.includes(' ')) {
 				errors.email = 'Email should not contain spaces.';
-			}else if (/[A-Z]/.test(values.email)) {
+			} else if (/[A-Z]/.test(values.email)) {
 				errors.email = 'Email should be in lowercase only.';
-			}	
+			}
 			return errors;
 		},
 		onSubmit: async (values) => {
@@ -174,7 +169,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						title: 'Invalid Quantity',
 						text: 'Quantity must be a valid number.',
 					});
-					return; 
+					return;
 				}
 				const updatedQuantity = stockInQuantity - stockOutQuantity;
 				if (updatedQuantity < 0) {
@@ -183,7 +178,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						title: 'Insufficient Stock',
 						text: 'The stock out quantity exceeds available stock.',
 					});
-					return; 
+					return;
 				}
 				const response = await addstockOut(values).unwrap();
 				await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
@@ -198,25 +193,27 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 					text: 'Failed to add the item. Please try again.',
 				});
 			}
-		}
+		},
 	});
 
 	const formatMobileNumber = (value: string) => {
-		let sanitized = value.replace(/\D/g, ''); 
-		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized; 
-		return sanitized.slice(0, 10); 
+		let sanitized = value.replace(/\D/g, '');
+		if (!sanitized.startsWith('0')) sanitized = '0' + sanitized;
+		return sanitized.slice(0, 10);
 	};
-	
+
 	return (
 		<Modal isOpen={isOpen} aria-hidden={!isOpen} setIsOpen={setIsOpen} size='xl' titleId={id}>
 			<ModalHeader
 				setIsOpen={() => {
 					setIsOpen(false);
+					setSelectedCost(null);
 					formik.resetForm();
 				}}
 				className='p-4'>
 				<ModalTitle id=''>{'Stock Out'}</ModalTitle>
 			</ModalHeader>
+
 			<ModalBody className='px-4'>
 				<div className='row g-4'>
 					<FormGroup id='model' label='Model' className='col-md-6'>
@@ -258,43 +255,39 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='dateIn' label='Date In' className='col-md-6'>
+					<FormGroup id='barcode' label='Barcode' className='col-md-6'>
 						<Select
-							id='dateIn'
-							name='dateIn'
-							ariaLabel='dateIn'
+							id='barcode'
+							name='barcode'
+							ariaLabel='barcode'
 							onChange={handleDateInChange}
-							value={formik.values.dateIn}
+							value={formik.values.barcode}
 							onBlur={formik.handleBlur}
 							className={`form-control ${
-								formik.touched.dateIn && formik.errors.dateIn ? 'is-invalid' : ''
+								formik.touched.barcode && formik.errors.barcode ? 'is-invalid' : ''
 							}`}>
-							<option value=''>Select a Time Stamp</option>
-							{stockInLoading && <option>Loading time stamps...</option>}
-							{stockInError && <option>Error fetching timestamps</option>}
+							<option value=''>Select a Barcode</option>
+							{stockInLoading && <option>Loading barcodes...</option>}
+							{stockInError && <option>Error fetching barcodes</option>}
 							{filteredStockIn?.map(
-								(item: {
-									id: string;
-									timestamp: { seconds: number; nanoseconds: number };
-								}, index: any) => (
-									<option
-										key={index}
-										value={formatTimestamp(
-											item.timestamp.seconds,
-											item.timestamp.nanoseconds,
-										)}>
-										{formatTimestamp(
-											item.timestamp.seconds,
-											item.timestamp.nanoseconds,
-										)}
+								(
+									item: {
+										id: string;
+										barcode: string;
+									},
+									index: any,
+								) => (
+									<option key={index} value={item.barcode}>
+										{item.barcode}
 									</option>
 								),
 							)}
-							{formik.touched.dateIn && formik.errors.dateIn && (
-								<div className='invalid-feedback'>{formik.errors.dateIn}</div>
+							{formik.touched.barcode && formik.errors.barcode && (
+								<div className='invalid-feedback'>{formik.errors.barcode}</div>
 							)}
 						</Select>
 					</FormGroup>
+
 					{selectedCost && (
 						<FormGroup id='cost' label='Cost(Per Unit)' className='col-md-6'>
 							<Input type='text' value={selectedCost} readOnly />
@@ -329,7 +322,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen ,quantity
 						/>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile' className='col-md-6'>
-					<Input
+						<Input
 							type='text'
 							value={formik.values.mobile}
 							onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

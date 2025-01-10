@@ -474,7 +474,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 						<Input
 							type='text'
 							min={1}
-							placeholder='Enter Selling Price'
+							placeholder='Enter Decsription'
 							value={formik.values.description}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
