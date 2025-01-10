@@ -28,62 +28,8 @@ const MyDefaultHeader = ({ onSaveDraft, onLoadDraft, startBill,count }: any) => 
 	return (
 		<Header>
 			<HeaderLeft>
-				<div className='row g-3'>
-					<div className='col-auto '>
-						{count >= 1?(<><Button color='success' className='mt-3' onClick={startBill}>
-							Cancel Bill
-						</Button></>):(<></>)}
-						
-						
-					</div>
-					<div className='col-auto  ms-auto'>
-						<div className='row g-3'>
-							<div className='col-auto '>
-								<FormGroup id='amount' label='' className='col-12 mt-1'>
-									<select
-										placeholder='select draft'
-										className='form-select mt-3'
-										onChange={(e) => handleSelectDraft(Number(e.target.value))}>
-										<option value=''>Drafts</option>
-										{drafts.map((draft, index) => (
-											<option key={index} value={index}>
-												Draft {index + 1}
-											</option>
-										))}
-									</select>
-								</FormGroup>
-							</div>
-							<div className='col-auto  justify-content-end'>
-								<Button color='warning' className='mt-3 ' onClick={onSaveDraft}>
-									Bill Later
-								</Button>
-							</div>
-						</div>
-					</div>
-				</div>
-				{/* <div>
-					<div className='col-auto m-4'>
-						<FormGroup id='amount' label='' className='col-12 mt-2'>
-							<select
-								placeholder='select draft'
-								className='form-select mt-4'
-								onChange={(e) => handleSelectDraft(Number(e.target.value))}>
-								<option value=''>Drafts</option>
-								{drafts.map((draft, index) => (
-									<option key={index} value={index}>
-										Draft {index + 1}
-									</option>
-								))}
-							</select>
-						</FormGroup>
-					</div>
-					<div className='col-auto mt-4 justify-content-end'>
-						<Button color='warning' className='mt-4 ' onClick={onSaveDraft}>
-							Bill Later
-						</Button>
-					</div>
-					</div> */}
-				{/* </div> */}
+				<></>
+
 			</HeaderLeft>
 
 			<CommonHeaderRight />
