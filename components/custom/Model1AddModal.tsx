@@ -59,18 +59,18 @@ const ModelAddModal: FC<ModelAddModalProps> = ({ id, isOpen, setIsOpen }) => {
 			try {
 				await refetch();
 		
-				const existingModel = ModelData?.find(
-					(model: { name: string }) => model.name.toLowerCase() === values.name.toLowerCase()
-				);
+				// const existingModel = ModelData?.find(
+				// 	(model: { name: string }) => model.name.toLowerCase() === values.name.toLowerCase()
+				// );
 		
-				if (existingModel) {
-					await Swal.fire({
-						icon: 'error',
-						title: 'Duplicate Model',
-						text: 'A model with this name already exists.',
-					});
-					return;
-				}
+				// if (existingModel) {
+				// 	await Swal.fire({
+				// 		icon: 'error',
+				// 		title: 'Duplicate Model',
+				// 		text: 'A model with this name already exists.',
+				// 	});
+				// 	return;
+				// }
 				const process = Swal.fire({
 					title: 'Processing...',
 					html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
