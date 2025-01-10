@@ -495,13 +495,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				if (result.isConfirmed) {
 					// Select the HTML element you want to convert to PDF
 					const invoiceElement:any = document.querySelector('#invoice');
-					
+	
 					if (invoiceElement) {
 						// Convert HTML to canvas
 						const canvas = await html2canvas(invoiceElement, {
 							scale: 2, // Higher scale for better resolution
 						});
-						
+	
 						const imgData = canvas.toDataURL('image/png');
 	
 						// Create a jsPDF instance
@@ -514,29 +514,28 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						// Add the image to PDF
 						pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 	
-						// Save the PDF
-						const pdfBlob = pdf.output('blob');
-
-						// Create a new Blob URL
-						const blobUrl = URL.createObjectURL(pdfBlob);
+						// Get PDF as binary
+						const pdfData = pdf.output('arraybuffer');
+	
 						if (!isQzReady || typeof window.qz === 'undefined') {
 							console.error('QZ Tray is not ready.');
 							alert('QZ Tray is not loaded yet. Please try again later.');
 							return;
 						}
+	
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
 	
 						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 						const opts = getUpdatedOptions(true);
-
-						const printData:any= [
-							{ type: 'pixel', format: 'pdf', flavor: 'file', data: blobUrl, options: opts }
+	
+						const printData:any = [
+							{ type: 'pixel', format: 'pdf', flavor: 'file', data: pdfData, options: opts }
 						];
-
+	
 						qz.print(config, printData);
-
+	
 						Swal.fire('Printed!', 'The bill has been printed.', 'success');
 					} else {
 						console.error('Invoice element not found.');
@@ -550,7 +549,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Validation Error', 'Please check the amount and net value.', 'warning');
 		}
 	};
-
+	
 
 
 	function getUpdatedOptions(onlyPixel: any) {
