@@ -33,6 +33,7 @@ import router from 'next/router';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import $ from 'jquery';
+
 interface CategoryEditModalProps {
 	data: any;
 	isOpen: boolean;
@@ -505,7 +506,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						const imgData = canvas.toDataURL('image/png');
 	
 						// Create a jsPDF instance
-						const pdf = new jsPDF('p', 'mm', 'a4');
+						const pdf = new jsPDF('p', 'mm', 'a5');
 	
 						// Adjust dimensions
 						const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -513,7 +514,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	
 						// Add the image to PDF
 						pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-	
+						pdf.save('invoice.pdf');
 						// Get PDF as binary
 						const pdfData = pdf.output('arraybuffer');
 	
@@ -531,7 +532,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						const opts = getUpdatedOptions(true);
 	
 						const printData:any = [
-							{ type: 'pixel', format: 'pdf', flavor: 'file', data: pdfData, options: opts }
+							{ type: 'pixel', format: 'pdf', flavor: 'file', data: '../assets/img/invoice.pdf', options: opts }
 						];
 	
 						qz.print(config, printData);
