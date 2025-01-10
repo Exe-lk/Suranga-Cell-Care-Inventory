@@ -308,7 +308,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							validFeedback='Looks good!'
 						/>
 					</FormGroup>
-					<FormGroup id='customerName' label='Customer Name' className='col-md-6'>
+					{/* <FormGroup id='customerName' label='Customer Name' className='col-md-6'>
 						<Input
 							type='text'
 							placeholder='Enter Customer Name'
@@ -320,8 +320,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.customerName}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
-					<FormGroup id='mobile' label='Mobile' className='col-md-6'>
+					</FormGroup> */}
+					{/* <FormGroup id='mobile' label='Mobile' className='col-md-6'>
 						<Input
 							type='text'
 							value={formik.values.mobile}
@@ -335,8 +335,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.mobile}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
-					<FormGroup id='nic' label='NIC' className='col-md-6'>
+					</FormGroup> */}
+					{/* <FormGroup id='nic' label='NIC' className='col-md-6'>
 						<Input
 							type='text'
 							placeholder='Enter NIC'
@@ -349,8 +349,8 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.nic}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
-					<FormGroup id='email' label='Email' className='col-md-6'>
+					</FormGroup> */}
+					{/* <FormGroup id='email' label='Email' className='col-md-6'>
 						<Input
 							type='text'
 							placeholder='Enter Email'
@@ -363,7 +363,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							invalidFeedback={formik.errors.email}
 							validFeedback='Looks good!'
 						/>
-					</FormGroup>
+					</FormGroup> */}
 					<FormGroup id='description' label='Description' className='col-md-6'>
 						<Input
 							type='text'
