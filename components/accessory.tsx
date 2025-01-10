@@ -33,7 +33,7 @@ import router from 'next/router';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import $ from 'jquery';
-
+import image from '../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
 interface CategoryEditModalProps {
 	data: any;
 	isOpen: boolean;
@@ -479,7 +479,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 		}
 	};
 
-
 	const printbill1 = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
@@ -492,51 +491,51 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					cancelButtonColor: '#d33',
 					confirmButtonText: 'Yes, Print Bill!',
 				});
-	
+
 				if (result.isConfirmed) {
 					// Select the HTML element you want to convert to PDF
-					const invoiceElement:any = document.querySelector('#invoice');
-	
+					const invoiceElement: any = document.querySelector('#invoice');
+
 					if (invoiceElement) {
 						// Convert HTML to canvas
 						const canvas = await html2canvas(invoiceElement, {
 							scale: 2, // Higher scale for better resolution
 						});
-	
+
 						const imgData = canvas.toDataURL('image/png');
-	
+
 						// Create a jsPDF instance
 						const pdf = new jsPDF('p', 'mm', 'a5');
-	
+
 						// Adjust dimensions
 						const pdfWidth = pdf.internal.pageSize.getWidth();
 						const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-	
+
 						// Add the image to PDF
 						pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
 						pdf.save('invoice.pdf');
 						// Get PDF as binary
 						const pdfData = pdf.output('arraybuffer');
-	
+
 						if (!isQzReady || typeof window.qz === 'undefined') {
 							console.error('QZ Tray is not ready.');
 							alert('QZ Tray is not loaded yet. Please try again later.');
 							return;
 						}
-	
+
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
-	
+
 						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
 						const opts = getUpdatedOptions(true);
-	
-						const printData:any = [
-							{ type: 'pixel', format: 'pdf', flavor: 'file', data: '../assets/img/invoice.pdf', options: opts }
+
+						var printData: any = [
+							{ type: 'pixel', format: 'image', flavor: 'file', data: image },
 						];
-	
+
 						qz.print(config, printData);
-	
+
 						Swal.fire('Printed!', 'The bill has been printed.', 'success');
 					} else {
 						console.error('Invoice element not found.');
@@ -550,8 +549,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Validation Error', 'Please check the amount and net value.', 'warning');
 		}
 	};
-	
-
 
 	function getUpdatedOptions(onlyPixel: any) {
 		if (onlyPixel) {
@@ -574,17 +571,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			};
 		}
 	}
-
-
-
-
-
-
-
-
-
-
-
 
 	if (isLoading) {
 		console.log(isLoading);
@@ -627,8 +613,8 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				<div className='col-5 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 						<CardBody isScrollable>
-							<div 
-							 id="invoice"
+							<div
+								id='invoice'
 								style={{
 									display: 'flex',
 									justifyContent: 'center',
@@ -709,8 +695,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										&nbsp;&emsp;&emsp;&emsp;&emsp; Amount
 									</p>
 									<hr style={{ margin: '5px 0' }} />
-
-								
 								</div>
 							</div>
 						</CardBody>
