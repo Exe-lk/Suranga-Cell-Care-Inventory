@@ -30,7 +30,9 @@ import Spinner from '../components/bootstrap/Spinner';
 import { useGetItemAccesQuery } from '../redux/slices/itemManagementAcceApiSlice';
 import SubHeader, { SubHeaderLeft } from '../layout/SubHeader/SubHeader';
 import router from 'next/router';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import $ from 'jquery';
 interface CategoryEditModalProps {
 	data: any;
 	isOpen: boolean;
@@ -475,6 +477,115 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			}
 		}
 	};
+
+
+	const printbill1 = async () => {
+		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
+			console.log(orderedItems);
+			try {
+				const result = await Swal.fire({
+					title: 'Are you sure?',
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonColor: '#3085d6',
+					cancelButtonColor: '#d33',
+					confirmButtonText: 'Yes, Print Bill!',
+				});
+	
+				if (result.isConfirmed) {
+					// Select the HTML element you want to convert to PDF
+					const invoiceElement:any = document.querySelector('#invoice');
+					
+					if (invoiceElement) {
+						// Convert HTML to canvas
+						const canvas = await html2canvas(invoiceElement, {
+							scale: 2, // Higher scale for better resolution
+						});
+						
+						const imgData = canvas.toDataURL('image/png');
+	
+						// Create a jsPDF instance
+						const pdf = new jsPDF('p', 'mm', 'a4');
+	
+						// Adjust dimensions
+						const pdfWidth = pdf.internal.pageSize.getWidth();
+						const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+	
+						// Add the image to PDF
+						pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+	
+						// Save the PDF
+						const pdfBlob = pdf.output('blob');
+
+						// Create a new Blob URL
+						const blobUrl = URL.createObjectURL(pdfBlob);
+						if (!isQzReady || typeof window.qz === 'undefined') {
+							console.error('QZ Tray is not ready.');
+							alert('QZ Tray is not loaded yet. Please try again later.');
+							return;
+						}
+						if (!window.qz.websocket.isActive()) {
+							await window.qz.websocket.connect();
+						}
+	
+						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
+						const opts = getUpdatedOptions(true);
+
+						const printData:any= [
+							{ type: 'pixel', format: 'pdf', flavor: 'file', data: blobUrl, options: opts }
+						];
+
+						qz.print(config, printData);
+
+						Swal.fire('Printed!', 'The bill has been printed.', 'success');
+					} else {
+						console.error('Invoice element not found.');
+					}
+				}
+			} catch (error) {
+				console.error('Error printing bill:', error);
+				Swal.fire('Error', 'An error occurred while printing the bill.', 'error');
+			}
+		} else {
+			Swal.fire('Validation Error', 'Please check the amount and net value.', 'warning');
+		}
+	};
+
+
+
+	function getUpdatedOptions(onlyPixel: any) {
+		if (onlyPixel) {
+			return {
+				pageWidth: $('#pPxlWidth').val(),
+				pageHeight: $('#pPxlHeight').val(),
+				pageRanges: $('#pPxlRange').val(),
+				ignoreTransparency: $('#pPxlTransparent').prop('checked'),
+				altFontRendering: $('#pPxlAltFontRendering').prop('checked'),
+			};
+		} else {
+			return {
+				language: $("input[name='pLanguage']:checked").val(),
+				x: $('#pX').val(),
+				y: $('#pY').val(),
+				dotDensity: $('#pDotDensity').val(),
+				xmlTag: $('#pXml').val(),
+				pageWidth: $('#pRawWidth').val(),
+				pageHeight: $('#pRawHeight').val(),
+			};
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 	if (isLoading) {
 		console.log(isLoading);
 		return (
@@ -516,7 +627,8 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				<div className='col-5 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 						<CardBody isScrollable>
-							<div
+							<div 
+							 id="invoice"
 								style={{
 									display: 'flex',
 									justifyContent: 'center',
@@ -598,39 +710,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 									</p>
 									<hr style={{ margin: '5px 0' }} />
 
-									{/* <table>
-										<tbody>
-											<tr>
-												<td>TEMPERED GLASS (Warranty 0 days)</td>
-												<td>500.00</td>
-												<td>1</td>
-												<td>500.00</td>
-											</tr>
-											<tr>
-												<td>BACK COVER (Warranty 0 days)</td>
-												<td>600.00</td>
-												<td>1</td>
-												<td>600.00</td>
-											</tr>
-										</tbody>
-									</table>
-									<div
-										style={{
-											display: 'flex',
-											justifyContent: 'space-between',
-											fontSize: '14px',
-										}}>
-										<p>Cashier Signature ____________________</p>
-										<p>Salesperson Signature _______________</p>
-									</div>
-									<div className='text-center' style={{ marginTop: '20px' }}>
-										<strong style={{ fontSize: '16px' }}>Total: 1100.00</strong>
-									</div>
-									<div
-										className='text-center'
-										style={{ fontSize: '12px', marginTop: '10px' }}>
-										<p>Thank You ... Come Again</p>
-									</div> */}
+								
 								</div>
 							</div>
 						</CardBody>
@@ -725,7 +805,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										color='info'
 										className='mt-4 p-4 w-100'
 										style={{ fontSize: '1.25rem' }}
-										onClick={printbill}
+										onClick={printbill1}
 										onKeyDown={printchange}>
 										Print Bill
 									</Button>
