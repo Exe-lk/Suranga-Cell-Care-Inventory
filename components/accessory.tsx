@@ -34,6 +34,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import $ from 'jquery';
 import image from '../assets/img/bill/WhatsApp_Image_2024-09-12_at_12.26.10_50606195-removebg-preview (1).png';
+import { toPng } from 'html-to-image';
 interface CategoryEditModalProps {
 	data: any;
 	isOpen: boolean;
@@ -493,53 +494,30 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				});
 
 				if (result.isConfirmed) {
-					// Select the HTML element you want to convert to PDF
-					const invoiceElement: any = document.querySelector('#invoice');
-
-					if (invoiceElement) {
-						// Convert HTML to canvas
-						const canvas = await html2canvas(invoiceElement, {
-							scale: 2, // Higher scale for better resolution
-						});
-
-						const imgData = canvas.toDataURL('image/png');
-
-						// Create a jsPDF instance
-						const pdf = new jsPDF('p', 'mm', 'a5');
-
-						// Adjust dimensions
-						const pdfWidth = pdf.internal.pageSize.getWidth();
-						const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
-						// Add the image to PDF
-						pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-						pdf.save('invoice.pdf');
-						// Get PDF as binary
-						const pdfData = pdf.output('arraybuffer');
-
-						if (!isQzReady || typeof window.qz === 'undefined') {
-							console.error('QZ Tray is not ready.');
-							alert('QZ Tray is not loaded yet. Please try again later.');
-							return;
-						}
-
-						if (!window.qz.websocket.isActive()) {
-							await window.qz.websocket.connect();
-						}
-
-						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
-						const opts = getUpdatedOptions(true);
-
-						var printData: any = [
-							{ type: 'pixel', format: 'image', flavor: 'file', data: image },
-						];
-
-						qz.print(config, printData);
-
-						Swal.fire('Printed!', 'The bill has been printed.', 'success');
-					} else {
-						console.error('Invoice element not found.');
+					const invoiceElement = document.getElementById('invoice');
+					if (!invoiceElement) {
+					  throw new Error('Invoice element not found');
 					}
+			  
+					// Generate image from the invoice element
+					const image = await toPng(invoiceElement, { width: 531, height: 531 }); // 140mm = 531px
+			  
+					// Ensure QZ Tray WebSocket is active
+					if (!window.qz.websocket.isActive()) {
+					  await window.qz.websocket.connect();
+					}
+			  
+					// Configure QZ printing
+					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
+					const printData:any = [
+					  { type: 'pixel', format: 'image', flavor: 'file', data: image },
+					];
+			  
+					// Print the image
+					await window.qz.print(config, printData);
+			  
+					// Show success message
+					Swal.fire('Printed!', 'The bill has been printed.', 'success');
 				}
 			} catch (error) {
 				console.error('Error printing bill:', error);
