@@ -501,7 +501,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 
 					// Generate image from the invoice element
 					const image = await toPng(invoiceElement, { width: 531, height: 531 }); // 140mm = 531px
-					toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
+					toPng(invoiceElement, { width: 1000, height: 1000 }) // 140mm = 531px (1mm = 3.779528px)
 						.then((dataUrl) => {
 							const link = document.createElement('a');
 							link.download = 'invoice.png';
@@ -623,7 +623,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										<div
 											key={chunkIndex}
 											style={{
-												width: '140mm',
+												width: '130mm',
 												height: '140mm',
 												background: '#fff',
 												border: '1px dashed #ccc',
@@ -631,14 +631,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												fontFamily: 'Arial, sans-serif',
 												fontSize: '12px',
 												position: 'relative', // Enables absolute positioning inside
-												marginBottom: '10px',
 											}}>
 											{/* Header */}
 											<div className='text-left mb-3'>
 												<h1
 													style={{
 														fontSize: '25px',
-														marginBottom: '5px',
 														fontFamily: 'initial',
 													}}>
 													Suranga Cell Care
@@ -792,6 +790,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														justifyContent: 'flex-end',
 														marginBottom: '10px',
+														marginRight:'10px'
 													}}>
 													<div
 														style={{
