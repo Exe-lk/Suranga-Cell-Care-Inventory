@@ -500,7 +500,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					}
 
 					// Generate image from the invoice element
-					const image = await toPng(invoiceElement, { width: 531, height: 531 }); // 140mm = 531px
+					const image = await toPng(invoiceElement, { width: 1000, height: 1000 }); // 140mm = 531px
 					toPng(invoiceElement, { width: 1000, height: 1000 }) // 140mm = 531px (1mm = 3.779528px)
 						.then((dataUrl) => {
 							const link = document.createElement('a');
@@ -602,7 +602,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page
+						Back Page 1
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -799,7 +799,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															fontSize: '14px',
 															fontWeight: 'bold',
 														}}>
-														Total: {data.netValue}
+														Total: {data.netValue.toFixed(2)}
 													</div>
 												</div>
 
