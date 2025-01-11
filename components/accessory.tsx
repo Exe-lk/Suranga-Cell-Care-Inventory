@@ -419,30 +419,25 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										quantityStr.length +
 										priceStr.length +
 										netValueStr.length +
-										6; // 6 spaces for fixed spacing
+										21; // 6 spaces for fixed spacing
 									const remainingSpaces = receiptWidth - totalLineLength;
 
-									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
-										remainingSpaces,
-									)}${netValueStr}\n`;
+									return `${line}\n                      ${priceStr}${' '.repeat(remainingSpaces,)} ${quantityStr}  ${netValueStr}\n`;
 								},
 							),
 							'------------------------------------------\n',
-
-							'\x1B\x61\x32', // Right alignment
-							'Total: 1000.00\n\n',
-							
-							'\x1B\x61\x30', // Left alignment
+							'------------------------------------------\n',
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
 							'\x1D\x21\x10',
 							'\x1B\x45\x01',
-							`SUB TOTAL\nRs ${data.netValue}\n`,
+							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
 							'\x1B\x45\x00',
 							'\x1D\x21\x00',
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
-							'\x1B\x61\x01', // Center alignment
+							'------------------------------------------\n',
+							
 							'Thank You ... Come Again\n\n',
 
 							'\x1D\x56\x41', // Cut paper
