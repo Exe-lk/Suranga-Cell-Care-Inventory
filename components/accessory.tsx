@@ -377,75 +377,42 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
-						const config = window.qz.configs.create('EPSON TM-U220 Receipt');
+						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
+						// Define raw ESC/POS commands
 						const data = [
-							'\x1B\x40',
-							'\x1B\x61\x01',
-							'\x1D\x21\x11',
-							'\x1B\x45\x01', // ESC E 1 - Bold on
-							'Suranga Cell Care\n\n', // Store name
-							'\x1B\x45\x00', // ESC E 0 - Bold off
-							'\x1D\x21\x00',
-							'\x1B\x4D\x00',
-							'No.524/1/A,\nKandy Road,Kadawatha\n',
-							'011 292 6030/ 071 911 1144\n',
-							'\x1B\x61\x00',
-							`Date        : ${formattedDate}\n`,
-							`START TIME  : ${currentTime}\n`,
-							`INVOICE NO  : ${id}\n`,
-							'\x1B\x61\x00',
-							'---------------------------------\n',
-							'Product Qty  U/Price    Net Value\n',
-							'---------------------------------\n',
-							...orderedItems.map(({ quantity, sellingPrice, category, model }) => {
-								const netValue = sellingPrice * quantity;
-								// const truncatedName =
-								// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+							'\x1B\x40', // Initialize printer
+							'\x1B\x61\x31', // Center alignment
 
-								// Define receipt width (e.g., 42 characters for typical printers)
-								const receiptWidth = 42;
+							'\x1B\x21\x30', // Double size font
+							'Suranga Cell Care\n', // Header
+							'\x1B\x21\x00', // Reset to normal font
 
-								// Create the line dynamically
-								const line = `${category} ${model}`;
-								const quantityStr = `${quantity}`;
-								const priceStr = `${sellingPrice.toFixed(2)}`;
-								const netValueStr = `${netValue.toFixed(2)}`;
+							'No. 524/1/A, Kandy Road, Kadawatha\n',
+							'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n\n',
 
-								// Calculate spacing to align `netValueStr` to the right
-								const totalLineLength =
-									quantityStr.length + priceStr.length + netValueStr.length + 6; // 6 spaces for fixed spacing
-								const remainingSpaces = Math.max(0, receiptWidth - totalLineLength);
+							'\x1B\x61\x30', // Left alignment
+							'Invoice No     : 111726\n',
+							'Invoice Date   : 2025-01-11\n',
+							'Invoiced Time  : 2.47 PM\n\n',
 
-								return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
-									remainingSpaces,
-								)}${netValueStr}\n`;
-							}),
+							'------------------------------------------\n',
+							'Description           Price     Qty  Amount\n',
+							'------------------------------------------\n',
+							'TEMPERED GLASS        1000.00    1   1000.00\n',
+							'------------------------------------------\n',
 
-							'---------------------------------\n',
-							'\x1B\x61\x01',
-							'\x1B\x45\x01',
-							'\x1D\x21\x10',
-							'\x1B\x45\x01',
-							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
-							'\x1B\x45\x00',
-							'\x1D\x21\x00',
-							'\x1B\x45\x00',
-							'\x1B\x61\x00',
-							'---------------------------------\n',
-							`Cash Received   : ${amount}.00\n`,
-							`Balance         : ${(amount - Number(calculateSubTotal())).toFixed(
-								2,
-							)}\n`,
-							`No. of Pieces   : ${orderedItems.length}\n`,
-							'---------------------------------\n',
-							'\x1B\x61\x01',
-							'THANK YOU COME AGAIN !\n',
-							'---------------------------------\n',
-							'\x1B\x61\x01',
-							'Retail POS by EXE.lk\n',
-							'Call: 070 332 9900\n',
-							'---------------------------------\n',
-							'\x1D\x56\x41',
+							'\x1B\x61\x32', // Right alignment
+							'Total: 1000.00\n\n',
+
+							'\x1B\x61\x31', // Center alignment
+							'Cashier Signature: ___________\n',
+							'Salesperson Signature: ___________\n\n',
+							'Thank You ... Come Again\n\n',
+
+							'\x1B\x61\x30', // Left alignment
+							'System by ITMind.lk    +94 767 622 922\n\n',
+
+							'\x1D\x56\x41', // Cut paper
 						];
 						await window.qz.print(config, data);
 					} catch (error) {
@@ -791,7 +758,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														justifyContent: 'flex-end',
 														marginBottom: '10px',
-														marginRight:'10px'
+														marginRight: '10px',
 													}}>
 													<div
 														style={{
