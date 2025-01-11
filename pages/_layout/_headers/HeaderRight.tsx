@@ -33,6 +33,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { firestore } from '../../../firebaseConfig';
 import Swal from 'sweetalert2';
 
+
 interface ICommonHeaderRightProps {
 	beforeChildren?: ReactNode;
 	afterChildren?: ReactNode;
@@ -145,8 +146,13 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 	// 		alert('An error occurred. Please try again later.');
 	// 	}
 	// };
-
 	const printbill = async () => {
+
+
+
+	}
+
+	const printbill1 = async () => {
 		try {
 			const result = await Swal.fire({
 				title: 'Are you sure?',

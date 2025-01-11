@@ -350,7 +350,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
-	const printbill = async () => {
+	const printbill1 = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
 			try {
@@ -480,7 +480,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 		}
 	};
 
-	const printbill1 = async () => {
+	const printbill = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
 			try {
@@ -519,8 +519,8 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					// Configure QZ printing
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
 					const printData: any = [
-						// { type: 'pixel', format: 'image', flavor: 'file', data: image },
-						{ type: 'raw', format: 'image', data: image, options: opts },
+						{ type: 'pixel', format: 'image', flavor: 'file', data: image },
+						// { type: 'raw', format: 'image', data: image, options: opts },
 					];
 
 					// Print the image
