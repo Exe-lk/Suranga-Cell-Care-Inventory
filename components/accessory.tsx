@@ -515,11 +515,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-
+					var opts = getUpdatedOptions(true);
 					// Configure QZ printing
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
 					const printData: any = [
-						{ type: 'pixel', format: 'image', flavor: 'file', data: image },
+						// { type: 'pixel', format: 'image', flavor: 'file', data: image },
+						{ type: 'raw', format: 'image', data: image, options: opts },
 					];
 
 					// Print the image
@@ -602,7 +603,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 2
+						Back Page 1
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
