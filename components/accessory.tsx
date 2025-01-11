@@ -419,7 +419,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										quantityStr.length +
 										priceStr.length +
 										netValueStr.length +
-										21; // 6 spaces for fixed spacing
+										6; // 6 spaces for fixed spacing
 									const remainingSpaces = receiptWidth - totalLineLength;
 
 									return `${line}\n                      ${priceStr}${' '.repeat(remainingSpaces,)} ${quantityStr}  ${netValueStr}\n`;
@@ -624,7 +624,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 6
+						Back Page 7
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
