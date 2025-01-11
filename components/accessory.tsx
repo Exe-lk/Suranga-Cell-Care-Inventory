@@ -501,7 +501,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 
 					// Generate image from the invoice element
 					const image = await toPng(invoiceElement, { width: 1000, height: 1000 }); // 140mm = 531px
-					toPng(invoiceElement, { width: 1000, height: 1000 }) // 140mm = 531px (1mm = 3.779528px)
+					toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
 						.then((dataUrl) => {
 							const link = document.createElement('a');
 							link.download = 'invoice.png';
