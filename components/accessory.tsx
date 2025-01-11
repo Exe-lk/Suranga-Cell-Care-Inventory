@@ -407,17 +407,17 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 							const amount = sellingPrice * quantity;
 						  
 							// Add formatted item line
-							escPosCommands.push(
-							  `${description.padEnd(20)} ${price.padStart(8)} ${quantity
-								.toString()
-								.padStart(5)} ${amount.toString().padStart(10)}\n`
-							);
+							// escPosCommands.push(
+							//   `${description.padEnd(20)} ${price.padStart(8)} ${quantity
+							// 	.toString()
+							// 	.padStart(5)} ${amount.toString().padStart(10)}\n`
+							// );
 						  });
 						  
 						  // Add footer content
 						  escPosCommands.push(
 							'------------------------------------------\n', // Divider
-							`Total: ${data.netValue.padStart(35)}\n\n`, // Total
+							// `Total: ${data.netValue.padStart(35)}\n\n`, // Total
 							'Cashier Signature: _____________________\n\n', // Cashier signature
 							'Sales Person Signature: ________________\n\n', // Salesperson signature
 							'\x1B\x61\x01', // Center alignment
@@ -580,7 +580,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 3
+						Back Page 4
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
