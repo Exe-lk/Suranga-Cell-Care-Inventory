@@ -640,7 +640,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 12
+						Back Page 14
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -817,7 +817,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div
 												style={{
 													position: 'absolute',
-													top: '110mm', // Footer starts at 110mm
+													top: '105mm', // Footer starts at 110mm
 													left: '0',
 													width: '100%',
 													padding: '0 20px',
