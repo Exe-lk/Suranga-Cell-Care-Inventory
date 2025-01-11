@@ -654,7 +654,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 								id='invoice'
 								style={{
 									display: 'flex',
-									justifyContent: 'center',
 									color: 'black',
 								}}>
 								<div>
@@ -663,7 +662,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											key={chunkIndex}
 											style={{
 												width: '130mm',
-												height: '140mm',
+												height: '130mm',
 												background: '#fff',
 												border: '1px dashed #ccc',
 												padding: '20px',
@@ -829,7 +828,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														justifyContent: 'flex-end',
 														marginBottom: '10px',
-														marginRight: '10px',
+														marginRight: '35px',
 													}}>
 													<div
 														style={{
