@@ -500,7 +500,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					}
 
 					// Generate image from the invoice element
-					const image = await toPng(invoiceElement, { width: 531, height: 531 }); // 140mm = 531px
+					const image = await toPng(invoiceElement, { width: 513, height: 513 }); // 140mm = 531px
 					toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
 						.then((dataUrl) => {
 							const link = document.createElement('a');
@@ -515,11 +515,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-
+					var opts = getUpdatedOptions(false);
 					// Configure QZ printing
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
 					const printData: any = [
-						{ type: 'pixel', format: 'image', flavor: 'file', data: image },
+						// { type: 'pixel', format: 'image', flavor: 'file', data: image },
+						{ type: 'raw', format: 'image', data: image, options: opts },
 					];
 
 					// Print the image
@@ -602,7 +603,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page
+						Back Page 2
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -623,7 +624,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										<div
 											key={chunkIndex}
 											style={{
-												width: '140mm',
+												width: '130mm',
 												height: '140mm',
 												background: '#fff',
 												border: '1px dashed #ccc',
@@ -631,14 +632,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												fontFamily: 'Arial, sans-serif',
 												fontSize: '12px',
 												position: 'relative', // Enables absolute positioning inside
-												marginBottom: '10px',
 											}}>
 											{/* Header */}
 											<div className='text-left mb-3'>
 												<h1
 													style={{
 														fontSize: '25px',
-														marginBottom: '5px',
 														fontFamily: 'initial',
 													}}>
 													Suranga Cell Care
@@ -792,6 +791,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														justifyContent: 'flex-end',
 														marginBottom: '10px',
+														marginRight:'10px'
 													}}>
 													<div
 														style={{
@@ -800,7 +800,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															fontSize: '14px',
 															fontWeight: 'bold',
 														}}>
-														Total: {data.netValue}
+														Total: {data.netValue.toFixed(2)}
 													</div>
 												</div>
 
