@@ -374,47 +374,57 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						return;
 					}
 					try {
+						const chunks = chunkItems(orderedItems, 5);
 						if (!window.qz.websocket.isActive()) {
 							await window.qz.websocket.connect();
 						}
 						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
-						// Define raw ESC/POS commands
-						const data = [
+						const escPosCommands = [
 							'\x1B\x40', // Initialize printer
-							'\x1B\x61\x31', // Center alignment
-
-							'\x1B\x21\x30', // Double size font
-							'Suranga Cell Care\n', // Header
-							'\x1B\x21\x00', // Reset to normal font
-
-							'No. 524/1/A, Kandy Road, Kadawatha\n',
-							'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n\n',
-
-							'\x1B\x61\x30', // Left alignment
-							'Invoice No     : 111726\n',
-							'Invoice Date   : 2025-01-11\n',
-							'Invoiced Time  : 2.47 PM\n\n',
-
-							'------------------------------------------\n',
-							'Description           Price     Qty  Amount\n',
-							'------------------------------------------\n',
-							'TEMPERED GLASS        1000.00    1   1000.00\n',
-							'------------------------------------------\n',
-
-							'\x1B\x61\x32', // Right alignment
-							'Total: 1000.00\n\n',
-
-							'\x1B\x61\x31', // Center alignment
-							'Cashier Signature: ___________\n',
-							'Salesperson Signature: ___________\n\n',
-							'Thank You ... Come Again\n\n',
-
-							'\x1B\x61\x30', // Left alignment
-							'System by ITMind.lk    +94 767 622 922\n\n',
-
-							'\x1D\x56\x41', // Cut paper
-						];
-						await window.qz.print(config, data);
+							'\x1B\x61\x01', // Center alignment
+							'\x1D\x21\x11', // Double size font
+							'\x1B\x45\x01', // Bold on
+							'Suranga Cell Care\n', // Store name
+							'\x1B\x45\x00', // Bold off
+							'\x1D\x21\x00', // Normal font size
+							'No. 524/1A, Kandy Road, Kadawatha.\n', // Address
+							'Tel: +94 11 292 60 30 | Mobile: +94 719 111 144\n\n', // Contact
+							'\x1B\x61\x00', // Left alignment
+							'Invoice No: 111506\n', // Invoice number
+							'Invoice Date: 2025-01-08\n', // Invoice date
+							'Invoiced Time: 2:36 PM\n', // Invoiced time
+							'\x1D\x56\x42', // Partial cut
+							'------------------------------------------\n', // Divider
+							'Description         Price      Qty   Amount\n', // Column headers
+							'------------------------------------------\n', // Divider
+						  ];
+						  
+						  // Iterate over the items and append them to the commands
+						  chunks.forEach((item:any, index) => {
+							const { category, model, brand, sellingPrice, quantity } = item;
+							const description = `${index + 1}. ${category} ${model} ${brand}`;
+							const price = sellingPrice.toFixed(2);
+							const amount = (sellingPrice * quantity).toFixed(2);
+						  
+							// Add formatted item line
+							escPosCommands.push(
+							  `${description.padEnd(20)} ${price.padStart(8)} ${quantity
+								.toString()
+								.padStart(5)} ${amount.padStart(10)}\n`
+							);
+						  });
+						  
+						  // Add footer content
+						  escPosCommands.push(
+							'------------------------------------------\n', // Divider
+							`Total: ${data.netValue.toFixed(2).padStart(35)}\n\n`, // Total
+							'Cashier Signature: _____________________\n\n', // Cashier signature
+							'Sales Person Signature: ________________\n\n', // Salesperson signature
+							'\x1B\x61\x01', // Center alignment
+							'...Thank You ... Come Again...\n', // Thank you message
+							'\x1D\x56\x42' // Partial cut
+						  );
+						await window.qz.print(config, escPosCommands);
 					} catch (error) {
 						console.error('Printing failed', error);
 					}
