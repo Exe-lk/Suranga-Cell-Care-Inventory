@@ -515,7 +515,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					if (!window.qz.websocket.isActive()) {
 						await window.qz.websocket.connect();
 					}
-					var opts = getUpdatedOptions(true);
+					var opts = getUpdatedOptions(false);
 					// Configure QZ printing
 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
 					const printData: any = [
@@ -603,7 +603,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 1
+						Back Page 2
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
