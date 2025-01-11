@@ -394,30 +394,30 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 							'Invoice Date: 2025-01-08\n', // Invoice date
 							'Invoiced Time: 2:36 PM\n', // Invoiced time
 							'\x1D\x56\x42', // Partial cut
-							'------------------------------------------\n', // Divider
-							'Description         Price      Qty   Amount\n', // Column headers
-							'------------------------------------------\n', // Divider
+							'--------------------------------------------\n', // Divider
+							'Description         Price      Qty    Amount\n', // Column headers
+							'--------------------------------------------\n', // Divider
 						  ];
 						  
 						  // Iterate over the items and append them to the commands
 						  chunks.forEach((item:any, index) => {
 							const { category, model, brand, sellingPrice, quantity } = item;
 							const description = `${index + 1}. ${category} ${model} ${brand}`;
-							const price = sellingPrice.toFixed(2);
-							const amount = (sellingPrice * quantity).toFixed(2);
+							const price = sellingPrice;
+							const amount = sellingPrice * quantity;
 						  
 							// Add formatted item line
 							escPosCommands.push(
 							  `${description.padEnd(20)} ${price.padStart(8)} ${quantity
 								.toString()
-								.padStart(5)} ${amount.padStart(10)}\n`
+								.padStart(5)} ${amount.toString().padStart(10)}\n`
 							);
 						  });
 						  
 						  // Add footer content
 						  escPosCommands.push(
 							'------------------------------------------\n', // Divider
-							`Total: ${data.netValue.toFixed(2).padStart(35)}\n\n`, // Total
+							`Total: ${data.netValue.padStart(35)}\n\n`, // Total
 							'Cashier Signature: _____________________\n\n', // Cashier signature
 							'Sales Person Signature: ________________\n\n', // Salesperson signature
 							'\x1B\x61\x01', // Center alignment
