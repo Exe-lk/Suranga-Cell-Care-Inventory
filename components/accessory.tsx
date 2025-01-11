@@ -640,7 +640,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 14
+						Back Page 15
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -676,13 +676,14 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													style={{
 														fontSize: '25px',
 														fontFamily: 'initial',
+														color: 'black',
 													}}>
 													Suranga Cell Care
 												</h1>
-												<p style={{ marginBottom: '2px' }}>
+												<p style={{ marginBottom: '2px' ,color: 'black',}}>
 													No. 524/1A, Kandy Road, Kadawatha.
 												</p>
-												<p style={{ marginBottom: '0' }}>
+												<p style={{ marginBottom: '0',color: 'black', }}>
 													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
 												</p>
 											</div>
@@ -737,6 +738,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													marginBottom: '0',
 													lineHeight: '1.2',
 													fontSize: '12px',
+													color: 'black',
 												}}>
 												Description
 												&nbsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
@@ -836,6 +838,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															padding: '5px 10px',
 															fontSize: '14px',
 															fontWeight: 'bold',
+															color: 'black',
 														}}>
 														Total: {data.netValue.toFixed(2)}
 													</div>
@@ -847,22 +850,24 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														marginBottom: '10px',
 													}}>
-													<div>
+													<div style={{color: 'black',}}>
 														<span
 															style={{
 																display: 'block',
 																borderTop: '1px solid black',
 																width: '110px',
+																color: 'black',
 															}}></span>
 														Cashier Signature
 													</div>
 													&nbsp;&emsp;&nbsp;&emsp;&emsp;
-													<div>
+													<div style={{color: 'black',}}>
 														<span
 															style={{
 																display: 'block',
 																borderTop: '1px solid black',
 																width: '150px',
+																color: 'black',
 															}}></span>
 														Sales Person Signature
 													</div>
@@ -873,6 +878,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													style={{
 														textAlign: 'center',
 														fontSize: '12px',
+														color: 'black',
 													}}>
 													...........................Thank You ... Come
 													Again...........................
