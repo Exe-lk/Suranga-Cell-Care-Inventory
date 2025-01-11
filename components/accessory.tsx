@@ -502,9 +502,21 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			}
 		}
 	};
-	const printbill2 = async () => {
+	const invoiceRef:any = useRef();
+	const handlePrint = () => {
+		// Save the current body content to restore after printing
+		const printContent:any = invoiceRef.current.innerHTML;
+	
+		// Temporarily hide other content on the page
+		const originalContent = document.body.innerHTML;
+		document.body.innerHTML = printContent;
+	
+		// Trigger the print dialog
 		window.print();
-	};
+	
+		// Restore the original content after printing
+		document.body.innerHTML = originalContent;
+	  };
 	const printbill = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
@@ -628,7 +640,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 11
+						Back Page 12
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
@@ -638,6 +650,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 					<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
 						<CardBody isScrollable>
 							<div
+							 ref={invoiceRef}
 								id='invoice'
 								style={{
 									display: 'flex',
@@ -962,7 +975,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										color='info'
 										className='mt-4 p-4 w-100'
 										style={{ fontSize: '1.25rem' }}
-										onClick={printbill1}
+										onClick={handlePrint}
 										onKeyDown={printchange}>
 										Print Bill
 									</Button>
