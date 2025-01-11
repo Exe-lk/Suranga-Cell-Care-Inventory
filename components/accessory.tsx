@@ -431,7 +431,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 
 							'\x1B\x61\x32', // Right alignment
 							'Total: 1000.00\n\n',
-							`Total: ${data.netValue.padStart(35)}\n`,
+							
 							'\x1B\x61\x30', // Left alignment
 							'\x1B\x61\x01',
 							'\x1B\x45\x01',
