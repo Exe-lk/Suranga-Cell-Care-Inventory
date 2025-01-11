@@ -386,8 +386,10 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 							'\x1B\x21\x20', // Double-width font
 							'Suranga Cell Care\n', // Header
 							'\x1B\x21\x00', // Reset font to normal
+							'\x1B\x4D\x01', // Select Font B
 
 							'No. 524/1/A, Kandy Road, Kadawatha\n',
+							'\x1B\x4D\x00', // Switch back to Font A
 							'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n',
 							'------------------------------------------\n',
 							'\x1B\x61\x30', // Left alignment
@@ -422,7 +424,9 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										6; // 6 spaces for fixed spacing
 									const remainingSpaces = receiptWidth - totalLineLength;
 
-									return `${line}\n                      ${priceStr}${' '.repeat(remainingSpaces,)} ${quantityStr}  ${netValueStr}\n`;
+									return `${line}\n(warranty 0 days)           ${priceStr}${' '.repeat(
+										remainingSpaces,
+									)}    ${quantityStr}  ${netValueStr}\n`;
 								},
 							),
 							'------------------------------------------\n',
@@ -437,7 +441,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 							'\x1B\x45\x00',
 							'\x1B\x61\x00',
 							'------------------------------------------\n',
-							
+
 							'Thank You ... Come Again\n\n',
 
 							'\x1D\x56\x41', // Cut paper
@@ -624,7 +628,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 7
+						Back Page 10
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
