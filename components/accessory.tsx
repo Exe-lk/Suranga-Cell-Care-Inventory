@@ -629,7 +629,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												border: '1px dashed #ccc',
 												padding: '20px',
 												fontFamily: 'Arial, sans-serif',
-												fontSize: '14px',
+												fontSize: '12px',
 												position: 'relative', // Enables absolute positioning inside
 												marginBottom: '10px',
 											}}>
@@ -637,7 +637,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div className='text-left mb-3'>
 												<h1
 													style={{
-														fontSize: '30px',
+														fontSize: '25px',
 														marginBottom: '5px',
 														fontFamily: 'initial',
 													}}>
@@ -700,7 +700,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												style={{
 													marginBottom: '0',
 													lineHeight: '1.2',
-													fontSize: '14px',
+													fontSize: '12px',
 												}}>
 												Description
 												&nbsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
@@ -725,9 +725,9 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														key={index}
 														style={{
 															color: 'black',
-															width: '130mm',
+															width: '110mm',
 															borderCollapse: 'collapse',
-															fontSize: '14px',
+															fontSize: '12px',
 															marginBottom: '10px',
 														}}>
 														<tbody>
