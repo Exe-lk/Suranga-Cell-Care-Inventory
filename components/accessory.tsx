@@ -580,7 +580,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 2
+						Back Page 3
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
