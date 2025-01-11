@@ -379,52 +379,101 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 							await window.qz.websocket.connect();
 						}
 						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
-						const escPosCommands = [
+						const data1 = [
 							'\x1B\x40', // Initialize printer
+							'\x1B\x61\x31', // Center alignment
+
+							'\x1B\x21\x20', // Double-width font
+							'Suranga Cell Care\n', // Header
+							'\x1B\x21\x00', // Reset font to normal
+
+							'No. 524/1/A, Kandy Road, Kadawatha\n',
+							'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n',
+							'------------------------------------------\n',
+							'\x1B\x61\x30', // Left alignment
+							'Invoice No     : 111726\n',
+							'Invoice Date   : 2025-01-11\n',
+							'Invoiced Time  : 2.47 PM\n',
+
+							'------------------------------------------\n',
+							'Description           Price     Qty  Amount\n',
+							'------------------------------------------\n',
+							...orderedItems.map(
+								({ name, quantity, sellingPrice, category, model, brand }) => {
+									const netValue = sellingPrice * quantity;
+									// const truncatedName =
+									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+
+									// Define receipt width (e.g., 42 characters for typical printers)
+									const receiptWidth = 42;
+
+									// Create the line dynamically
+									const line = `${category} ${model}`;
+									const quantityStr = `${quantity}`;
+									const priceStr = `${sellingPrice.toFixed(2)}`;
+									const netValueStr = `${netValue.toFixed(2)}`;
+
+									// Calculate spacing to align `netValueStr` to the right
+									const totalLineLength =
+										line.length +
+										quantityStr.length +
+										priceStr.length +
+										netValueStr.length +
+										6; // 6 spaces for fixed spacing
+									const remainingSpaces = receiptWidth - totalLineLength;
+
+									return `${line}\n         ${quantityStr}    ${priceStr}${' '.repeat(
+										remainingSpaces,
+									)}${netValueStr}\n`;
+								},
+							),
+							'------------------------------------------\n',
+
+							'\x1B\x61\x32', // Right alignment
+							'Total: 1000.00\n\n',
+							
+							'\x1B\x61\x30', // Left alignment
+							'\x1B\x61\x01',
+							'\x1B\x45\x01',
+							'\x1D\x21\x10',
+							'\x1B\x45\x01',
+							`SUB TOTAL\nRs ${data.netValue}\n`,
+							'\x1B\x45\x00',
+							'\x1D\x21\x00',
+							'\x1B\x45\x00',
+							'\x1B\x61\x00',
 							'\x1B\x61\x01', // Center alignment
-							'\x1D\x21\x11', // Double size font
-							'\x1B\x45\x01', // Bold on
-							'Suranga Cell Care\n', // Store name
-							'\x1B\x45\x00', // Bold off
-							'\x1D\x21\x00', // Normal font size
-							'No. 524/1A, Kandy Road, Kadawatha.\n', // Address
-							'Tel: +94 11 292 60 30 | Mobile: +94 719 111 144\n\n', // Contact
-							'\x1B\x61\x00', // Left alignment
-							'Invoice No: 111506\n', // Invoice number
-							'Invoice Date: 2025-01-08\n', // Invoice date
-							'Invoiced Time: 2:36 PM\n', // Invoiced time
-							'\x1D\x56\x42', // Partial cut
-							'--------------------------------------------\n', // Divider
-							'Description         Price      Qty    Amount\n', // Column headers
-							'--------------------------------------------\n', // Divider
-						  ];
-						  
-						  // Iterate over the items and append them to the commands
-						  chunks.forEach((item:any, index) => {
+							'Thank You ... Come Again\n\n',
+
+							'\x1D\x56\x41', // Cut paper
+						];
+
+						// Iterate over the items and append them to the commands
+						chunks.forEach((item: any, index) => {
 							const { category, model, brand, sellingPrice, quantity } = item;
 							const description = `${index + 1}. ${category} ${model} ${brand}`;
 							const price = sellingPrice;
 							const amount = sellingPrice * quantity;
-						  
+
 							// Add formatted item line
 							// escPosCommands.push(
 							//   `${description.padEnd(20)} ${price.padStart(8)} ${quantity
 							// 	.toString()
 							// 	.padStart(5)} ${amount.toString().padStart(10)}\n`
 							// );
-						  });
-						  
-						  // Add footer content
-						  escPosCommands.push(
-							'------------------------------------------\n', // Divider
-							// `Total: ${data.netValue.padStart(35)}\n\n`, // Total
-							'Cashier Signature: _____________________\n\n', // Cashier signature
-							'Sales Person Signature: ________________\n\n', // Salesperson signature
-							'\x1B\x61\x01', // Center alignment
-							'...Thank You ... Come Again...\n', // Thank you message
-							'\x1D\x56\x42' // Partial cut
-						  );
-						await window.qz.print(config, escPosCommands);
+						});
+
+						// Add footer content
+						//   escPosCommands.push(
+						// 	'------------------------------------------\n', // Divider
+						// 	// `Total: ${data.netValue.padStart(35)}\n\n`, // Total
+						// 	'Cashier Signature: _____________________\n\n', // Cashier signature
+						// 	'Sales Person Signature: ________________\n\n', // Salesperson signature
+						// 	'\x1B\x61\x01', // Center alignment
+						// 	'...Thank You ... Come Again...\n', // Thank you message
+						// 	'\x1D\x56\x42' // Partial cut
+						//   );
+						await window.qz.print(config, data1);
 					} catch (error) {
 						console.error('Printing failed', error);
 					}
@@ -580,7 +629,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 4
+						Back Page 6
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
