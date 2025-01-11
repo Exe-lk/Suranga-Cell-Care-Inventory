@@ -452,13 +452,6 @@ export const addminPagesMenu = {
 				icon: 'LaptopMac',
 		
 			},
-			Model: {
-				id: 'model',
-				text: 'Model Management',
-				path: 'admin/display/model',
-				icon: 'LaptopMac',
-		
-			},
 			Brand: {
 				id: 'brand',
 				text: 'Brand Management',
@@ -466,6 +459,14 @@ export const addminPagesMenu = {
 				icon: 'LaptopMac',
 		
 			},
+			Model: {
+				id: 'model',
+				text: 'Model Management',
+				path: 'admin/display/model',
+				icon: 'LaptopMac',
+		
+			},
+			
 
 			
 			
