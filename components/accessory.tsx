@@ -424,22 +424,20 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										6; // 6 spaces for fixed spacing
 									const remainingSpaces = receiptWidth - totalLineLength;
 
-									return `${line}\n(warranty 0 days)           ${priceStr}${' '.repeat(
+									return `${line}\n(warranty 0  days  )     ${priceStr}${' '.repeat(
 										remainingSpaces,
 									)}    ${quantityStr}  ${netValueStr}\n`;
 								},
 							),
 							'------------------------------------------\n',
 							'------------------------------------------\n',
-							'\x1B\x61\x01',
-							'\x1B\x45\x01',
-							'\x1D\x21\x10',
-							'\x1B\x45\x01',
-							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
-							'\x1B\x45\x00',
-							'\x1D\x21\x00',
-							'\x1B\x45\x00',
-							'\x1B\x61\x00',
+							'\x1B\x61\x01', // Center alignment
+							'\x1B\x45\x01', // Bold text ON
+							'\x1D\x21\x11', // Double width and double height
+							`SUB TOTAL\nRs ${calculateSubTotal()}\n`, // Print Sub Total and value
+							'\x1B\x45\x00', // Bold text OFF
+							'\x1D\x21\x00', // Reset to normal text size
+							'\x1B\x61\x00', // Left alignment
 							'------------------------------------------\n',
 
 							'Thank You ... Come Again\n\n',
@@ -504,7 +502,9 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			}
 		}
 	};
-
+	const printbill2 = async () => {
+		window.print();
+	};
 	const printbill = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
@@ -628,7 +628,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						onClick={() => {
 							setIsOpen(false);
 						}}>
-						Back Page 10
+						Back Page 11
 					</Button>
 				</SubHeaderLeft>
 			</SubHeader>
