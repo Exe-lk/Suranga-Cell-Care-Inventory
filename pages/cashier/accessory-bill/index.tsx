@@ -18,7 +18,7 @@ import SubHeader, {
 } from '../../../layout/SubHeader/SubHeader';
 import Icon from '../../../components/icon/Icon';
 import Input from '../../../components/bootstrap/forms/Input';
-import Accessory from '../../../components/accessory'
+import Accessory from '../../../components/accessory';
 
 interface Orders {
 	id: string;
@@ -96,7 +96,7 @@ const Index: React.FC = () => {
 
 	useEffect(() => {
 		const filterOrdersByDate = () => {
-			return orders?.filter((order:any) => {
+			return orders?.filter((order: any) => {
 				const orderDate = new Date(order.date);
 				const orderYear = orderDate.getFullYear();
 				const orderMonth = orderDate.toLocaleString('default', { month: 'short' });
@@ -146,7 +146,7 @@ const Index: React.FC = () => {
 				], // Header row
 			];
 
-			orders.forEach((order:any) => {
+			orders.forEach((order: any) => {
 				// Add the main order row
 				csvRows.push([
 					order.date,
@@ -199,189 +199,215 @@ const Index: React.FC = () => {
 	return (
 		<>
 			<PageWrapper>
-			{
-              formStatus?(
-                <Accessory setIsOpen={setFormStatus} isOpen={formStatus}  data={data} />
-              ):(<>
-				<SubHeader>
-					<SubHeaderLeft>
-						{/* Search input */}
-						<label
-							className='border-0 bg-transparent cursor-pointer me-0'
-							htmlFor='searchInput'>
-							<Icon icon='Search' size='2x' color='primary' />
-						</label>
-						<Input
-							id='searchInput'
-							type='search'
-							className='border-0 shadow-none bg-transparent'
-							placeholder='Search...'
-							onChange={(event: any) => {
-								setSearchTerm(event.target.value);
-							}}
-							value={searchTerm}
-						/>
-					</SubHeaderLeft>
-					<SubHeaderRight>
-						<Dropdown>
-							<DropdownToggle hasIcon={false}>
-								<Button icon='UploadFile' color='warning'>
-									Export
-								</Button>
-							</DropdownToggle>
-							<DropdownMenu isAlignmentEnd>
-								<DropdownItem onClick={() => handleExport('csv')}>
-									Download CSV
-								</DropdownItem>
-							</DropdownMenu>
-						</Dropdown>
-					</SubHeaderRight>
-				</SubHeader>
-				<Page>
-
-			
-					<div className='row h-100'>
-						<div className='col-12'>
-							<Card stretch>
-								<CardTitle className='d-flex justify-content-between align-items-center m-4'>
-									<div className='mt-2 mb-4'>
-										Select date :
-										<input
-											type='date'
-											onChange={(e: any) => setSearchDate(e.target.value)}
-											value={searchDate}
-											className='px-3 py-2 ms-4 border border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
-										/>
-									</div>
-									<div className='flex-grow-1 text-center text-primary'>
-										Orders
-									</div>
-								</CardTitle>
-								<CardBody isScrollable className='table-responsive'>
-									<table className='table table-hover table-bordered border-primary'>
-										<thead className={'table-dark border-primary'}>
-											<tr>
-												<th>Date</th>
-												<th>Time</th>
-												<th>Bill No</th>
-												<th>Sub Total (LKR)</th>
-												<th></th>
-											</tr>
-										</thead>
-										<tbody>
-											{filteredOrders?.filter((val) => {
-													if (searchTerm === '') {
-														return val;
-													} else if (
-														val.id.toString().includes(searchTerm)
-													) {
-														return val;
+				{formStatus ? (
+					<Accessory setIsOpen={setFormStatus} isOpen={formStatus} data={data} />
+				) : (
+					<>
+						<SubHeader>
+							<SubHeaderLeft>
+								{/* Search input */}
+								<label
+									className='border-0 bg-transparent cursor-pointer me-0'
+									htmlFor='searchInput'>
+									<Icon icon='Search' size='2x' color='primary' />
+								</label>
+								<Input
+									id='searchInput'
+									type='search'
+									className='border-0 shadow-none bg-transparent'
+									placeholder='Search...'
+									onChange={(event: any) => {
+										setSearchTerm(event.target.value);
+									}}
+									value={searchTerm}
+								/>
+							</SubHeaderLeft>
+							<SubHeaderRight>
+								<Dropdown>
+									<DropdownToggle hasIcon={false}>
+										<Button icon='UploadFile' color='warning'>
+											Export
+										</Button>
+									</DropdownToggle>
+									<DropdownMenu isAlignmentEnd>
+										<DropdownItem onClick={() => handleExport('csv')}>
+											Download CSV
+										</DropdownItem>
+									</DropdownMenu>
+								</Dropdown>
+							</SubHeaderRight>
+						</SubHeader>
+						<Page>
+							<div className='row h-100'>
+								<div className='col-12'>
+									<Card stretch>
+										<CardTitle className='d-flex justify-content-between align-items-center m-4'>
+											<div className='mt-2 mb-4'>
+												Select date :
+												<input
+													type='date'
+													onChange={(e: any) =>
+														setSearchDate(e.target.value)
 													}
-												})
-												.filter((val: any) => {
-													if (val.print === false) {
-														return val;
-													}
-												})
-												.sort((a: any, b: any) => b.id - a.id)
-												.map((order, index) => (
-													<React.Fragment key={index}>
-														<tr style={{ cursor: 'pointer' }}>
-															<td onClick={() => toggleRow(index)}>
-																{order.date}
-															</td>
-															<td onClick={() => toggleRow(index)}>
-																{order.time}
-															</td>
-															<td onClick={() => toggleRow(index)}>
-																{order.id}
-															</td>
-															<td onClick={() => toggleRow(index)}>
-																{order.amount}.00
-															</td>
-															<td>
-																<Button
-																	icon='Print'
-																	color='success'
-																	onClick={()=>{setFormStatus(true),setData(order)}}>
-																	Print
-																</Button>
-															</td>
-														</tr>
-														{expandedRow === index && (
-															<tr>
-																<td colSpan={6}>
-																	<table className='table table-hover table-bordered border-warning'>
-																		<thead
-																			className={
-																				'table-dark border-warning'
-																			}>
-																			<tr>
-																				<th>Item</th>
-																				<th>Unit Price</th>
+													value={searchDate}
+													className='px-3 py-2 ms-4 border border-blue-500 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500'
+												/>
+											</div>
+											<div className='flex-grow-1 text-center text-primary'>
+												Orders
+											</div>
+										</CardTitle>
+										<CardBody isScrollable className='table-responsive'>
+											<table className='table table-hover table-bordered border-primary'>
+												<thead className={'table-dark border-primary'}>
+													<tr>
+														<th>Date</th>
+														<th>Time</th>
+														<th>Bill No</th>
+														<th>Sub Total (LKR)</th>
+														<th></th>
+													</tr>
+												</thead>
+												<tbody>
+													{filteredOrders
+														?.filter((val) => {
+															if (searchTerm === '') {
+																return val;
+															} else if (
+																val.id
+																	.toString()
+																	.includes(searchTerm)
+															) {
+																return val;
+															}
+														})
+														.filter((val: any) => {
+															if (val.print === false) {
+																return val;
+															}
+														})
+														.sort((a: any, b: any) => b.id - a.id)
+														.map((order, index) => (
+															<React.Fragment key={index}>
+																<tr style={{ cursor: 'pointer' }}>
+																	<td
+																		onClick={() =>
+																			toggleRow(index)
+																		}>
+																		{order.date}
+																	</td>
+																	<td
+																		onClick={() =>
+																			toggleRow(index)
+																		}>
+																		{order.time}
+																	</td>
+																	<td
+																		onClick={() =>
+																			toggleRow(index)
+																		}>
+																		{order.id}
+																	</td>
+																	<td
+																		onClick={() =>
+																			toggleRow(index)
+																		}>
+																		{order.amount}.00
+																	</td>
+																	<td>
+																		<Button
+																			icon='Print'
+																			color='success'
+																			onClick={() => {
+																				setFormStatus(true),
+																					setData(order);
+																			}}>
+																			Print
+																		</Button>
+																	</td>
+																</tr>
+																{expandedRow === index && (
+																	<tr>
+																		<td colSpan={6}>
+																			<table className='table table-hover table-bordered border-warning'>
+																				<thead
+																					className={
+																						'table-dark border-warning'
+																					}>
+																					<tr>
+																						<th>
+																							Item
+																						</th>
+																						<th>
+																							Unit
+																							Price
+																						</th>
 
-																				<th>Quantity</th>
-																				<th>Total Price</th>
-																			</tr>
-																		</thead>
-																		<tbody>
-																			{order.orders.map(
-																				(
-																					data: any,
-																					dataIndex:any,
-																				) => (
-																					<tr
-																						key={
-																							dataIndex
-																						}>
-																						<td>
-																							{
-																								data.category
-																							}{' '}
-																							{
-																								data.model
-																							}{' '}
-																							{
-																								data.brand
-																							}
-																						</td>
-																						<td>
-																							{
-																								data.sellingPrice
-																							}
-																						</td>
-
-																						<td>
-																							{
-																								data.quantity
-																							}
-																						</td>
-																						<td>
-																							{data.sellingPrice *
-																								data.quantity}
-																							.00
-																						</td>
+																						<th>
+																							Quantity
+																						</th>
+																						<th>
+																							Total
+																							Price
+																						</th>
 																					</tr>
-																				),
-																			)}
-																		</tbody>
-																	</table>
-																</td>
-															</tr>
-														)}
-													</React.Fragment>
-												))}
-										</tbody>
-									</table>
-								</CardBody>
-							</Card>
-						</div>
-					</div>
-					
-			 
-				</Page>
-				</>
-				 )}
+																				</thead>
+																				<tbody>
+																					{order.orders.map(
+																						(
+																							data: any,
+																							dataIndex: any,
+																						) => (
+																							<tr
+																								key={
+																									dataIndex
+																								}>
+																								<td>
+																									{
+																										data.category
+																									}{' '}
+																									{
+																										data.model
+																									}{' '}
+																									{
+																										data.brand
+																									}
+																								</td>
+																								<td>
+																									{
+																										data.sellingPrice
+																									}
+																								</td>
+
+																								<td>
+																									{
+																										data.quantity
+																									}
+																								</td>
+																								<td>
+																									{data.sellingPrice *
+																										data.quantity}
+																									.00
+																								</td>
+																							</tr>
+																						),
+																					)}
+																				</tbody>
+																			</table>
+																		</td>
+																	</tr>
+																)}
+															</React.Fragment>
+														))}
+												</tbody>
+											</table>
+										</CardBody>
+									</Card>
+								</div>
+							</div>
+						</Page>
+					</>
+				)}
 			</PageWrapper>
 		</>
 	);
