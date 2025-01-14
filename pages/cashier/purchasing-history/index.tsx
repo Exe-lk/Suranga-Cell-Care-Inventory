@@ -253,6 +253,7 @@ const Index: React.FC = () => {
 												<th>Start Time</th>
 												<th>End Time</th>
 												<th>Cashier</th>
+												<th>Customer </th>
 												<th>Bill No</th>
 												<th>Sub Total (LKR)</th>
 											</tr>
@@ -270,7 +271,7 @@ const Index: React.FC = () => {
 													}
 												})
 												.sort((a: any, b: any) => b.id - a.id)
-												.map((order, index) => (
+												.map((order:any, index) => (
 													<React.Fragment key={index}>
 														<tr
 															onClick={() => toggleRow(index)}
@@ -279,6 +280,7 @@ const Index: React.FC = () => {
 															<td>{order.time}</td>
 															<td>{order.time}</td>
 															<td>{getCashierName(order.casheir)}</td>
+															<td>{order.name}</td>
 															<td>{order.id}</td>
 															<td style={{ textAlign: 'right' }}>
 																{new Intl.NumberFormat('en-US',).format(Number(order.amount))}
@@ -304,7 +306,7 @@ const Index: React.FC = () => {
 																			{order.orders.map(
 																				(
 																					data: any,
-																					dataIndex,
+																					dataIndex:any,
 																				) => (
 																					<tr
 																						key={

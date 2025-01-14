@@ -636,7 +636,7 @@ function index() {
 	}
 	return (
 		<PageWrapper className=''>
-			<MyDefaultHeader1 onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} />
+			{/* <MyDefaultHeader1 onSaveDraft={handleSaveDraft} onLoadDraft={handleLoadDraft} /> */}
 			<div className='row m-4'>
 				<div className='col-8 mb-3 mb-sm-0'>
 					<Card stretch className='mt-4 ' style={{ height: '75vh' }}>

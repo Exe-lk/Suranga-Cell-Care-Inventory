@@ -293,6 +293,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				});
 
 				if (result.isConfirmed) {
+					Swal.fire({
+						title: "Processing...",
+						html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
+						allowOutsideClick: false,
+						showCancelButton: false,
+						showConfirmButton: false,
+					});
 					const totalAmount = calculateSubTotal();
 					const currentDate = new Date();
 					const formattedDate = currentDate.toLocaleDateString();
@@ -301,7 +308,9 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						await addDoc(collection(firestore, 'customer'), { name, contact });
 					}
 					data.contact = contact;
+					data.name=name
 					data.print = true;
+					data.amount = amount;
 					console.log(data);
 					const supplierRef = doc(firestore, 'accessorybill', data.cid);
 					await updateDoc(supplierRef, data);
@@ -350,141 +359,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Warning..!', 'Insufficient amount', 'error');
 		}
 	};
-	const printbill1 = async () => {
-		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
-			console.log(orderedItems);
-			try {
-				const result = await Swal.fire({
-					title: 'Are you sure?',
-					// text: 'You will not be able to recover this status!',
-					icon: 'warning',
-					showCancelButton: true,
-					confirmButtonColor: '#3085d6',
-					cancelButtonColor: '#d33',
-					confirmButtonText: 'Yes, Print Bill!',
-				});
-
-				if (result.isConfirmed) {
-					const currentDate = new Date();
-					const formattedDate = currentDate.toLocaleDateString();
-
-					if (!isQzReady || typeof window.qz === 'undefined') {
-						console.error('QZ Tray is not ready.');
-						alert('QZ Tray is not loaded yet. Please try again later.');
-						return;
-					}
-					try {
-						const chunks = chunkItems(orderedItems, 5);
-						if (!window.qz.websocket.isActive()) {
-							await window.qz.websocket.connect();
-						}
-						const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
-						const data1 = [
-							'\x1B\x40', // Initialize printer
-							'\x1B\x61\x31', // Center alignment
-
-							'\x1B\x21\x20', // Double-width font
-							'Suranga Cell Care\n', // Header
-							'\x1B\x21\x00', // Reset font to normal
-							'\x1B\x4D\x01', // Select Font B
-
-							'No. 524/1/A, Kandy Road, Kadawatha\n',
-							'\x1B\x4D\x00', // Switch back to Font A
-							'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n',
-							'------------------------------------------\n',
-							'\x1B\x61\x30', // Left alignment
-							'Invoice No     : 111726\n',
-							'Invoice Date   : 2025-01-11\n',
-							'Invoiced Time  : 2.47 PM\n',
-
-							'------------------------------------------\n',
-							'Description           Price     Qty  Amount\n',
-							'------------------------------------------\n',
-							...orderedItems.map(
-								({ name, quantity, sellingPrice, category, model, brand }) => {
-									const netValue = sellingPrice * quantity;
-									// const truncatedName =
-									// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
-
-									// Define receipt width (e.g., 42 characters for typical printers)
-									const receiptWidth = 42;
-
-									// Create the line dynamically
-									const line = `${category} ${model}`;
-									const quantityStr = `${quantity}`;
-									const priceStr = `${sellingPrice.toFixed(2)}`;
-									const netValueStr = `${netValue.toFixed(2)}`;
-
-									// Calculate spacing to align `netValueStr` to the right
-									const totalLineLength =
-										line.length +
-										quantityStr.length +
-										priceStr.length +
-										netValueStr.length +
-										6; // 6 spaces for fixed spacing
-									const remainingSpaces = receiptWidth - totalLineLength;
-
-									return `${line}\n(warranty 0 days)           ${priceStr}${' '.repeat(
-										remainingSpaces,
-									)}    ${quantityStr}  ${netValueStr}\n`;
-								},
-							),
-							'------------------------------------------\n',
-							'------------------------------------------\n',
-							'\x1B\x61\x01',
-							'\x1B\x45\x01',
-							'\x1D\x21\x10',
-							'\x1B\x45\x01',
-							`SUB TOTAL\nRs ${calculateSubTotal()}\n`,
-							'\x1B\x45\x00',
-							'\x1D\x21\x00',
-							'\x1B\x45\x00',
-							'\x1B\x61\x00',
-							'------------------------------------------\n',
-
-							'Thank You ... Come Again\n\n',
-
-							'\x1D\x56\x41', // Cut paper
-						];
-
-						// Iterate over the items and append them to the commands
-						chunks.forEach((item: any, index) => {
-							const { category, model, brand, sellingPrice, quantity } = item;
-							const description = `${index + 1}. ${category} ${model} ${brand}`;
-							const price = sellingPrice;
-							const amount = sellingPrice * quantity;
-
-							// Add formatted item line
-							// escPosCommands.push(
-							//   `${description.padEnd(20)} ${price.padStart(8)} ${quantity
-							// 	.toString()
-							// 	.padStart(5)} ${amount.toString().padStart(10)}\n`
-							// );
-						});
-
-						// Add footer content
-						//   escPosCommands.push(
-						// 	'------------------------------------------\n', // Divider
-						// 	// `Total: ${data.netValue.padStart(35)}\n\n`, // Total
-						// 	'Cashier Signature: _____________________\n\n', // Cashier signature
-						// 	'Sales Person Signature: ________________\n\n', // Salesperson signature
-						// 	'\x1B\x61\x01', // Center alignment
-						// 	'...Thank You ... Come Again...\n', // Thank you message
-						// 	'\x1D\x56\x42' // Partial cut
-						//   );
-						await window.qz.print(config, data1);
-					} catch (error) {
-						console.error('Printing failed', error);
-					}
-				}
-			} catch (error) {
-				console.error('Error during handleUpload: ', error);
-				alert('An error occurred. Please try again later.');
-			}
-		} else {
-			Swal.fire('Warning..!', 'Insufficient amount', 'error');
-		}
-	};
 
 	const contactchanget = async (value: any) => {
 		if (value.length > 1 && value.startsWith('0')) {
@@ -504,8 +378,8 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			}
 		}
 	};
-
-	const printbill = async () => {
+	const invoiceRef: any = useRef();
+	const handlePrint = async () => {
 		if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
 			console.log(orderedItems);
 			try {
@@ -519,40 +393,18 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 				});
 
 				if (result.isConfirmed) {
-					const invoiceElement = document.getElementById('invoice');
-					if (!invoiceElement) {
-						throw new Error('Invoice element not found');
-					}
+					// Save the current body content to restore after printing
+					const printContent: any = invoiceRef.current.innerHTML;
 
-					// Generate image from the invoice element
-					const image = await toPng(invoiceElement, { width: 513, height: 513 }); // 140mm = 531px
-					toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
-						.then((dataUrl) => {
-							const link = document.createElement('a');
-							link.download = 'invoice.png';
-							link.href = dataUrl;
-							link.click();
-						})
-						.catch((error) => {
-							console.error('Failed to generate image:', error);
-						});
-					// Ensure QZ Tray WebSocket is active
-					if (!window.qz.websocket.isActive()) {
-						await window.qz.websocket.connect();
-					}
-					var opts = getUpdatedOptions(false);
-					// Configure QZ printing
-					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
-					const printData: any = [
-						{ type: 'pixel', format: 'image', flavor: 'file', data: image },
-						// { type: 'raw', format: 'image', data: image, options: opts },
-					];
+					// Temporarily hide other content on the page
+					const originalContent = document.body.innerHTML;
+					document.body.innerHTML = printContent;
 
-					// Print the image
-					await window.qz.print(config, printData);
+					// Trigger the print dialog
+					window.print();
 
-					// Show success message
-					Swal.fire('Printed!', 'The bill has been printed.', 'success');
+					// Restore the original content after printing
+					document.body.innerHTML = originalContent;
 				}
 			} catch (error) {
 				console.error('Error printing bill:', error);
@@ -562,28 +414,6 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 			Swal.fire('Validation Error', 'Please check the amount and net value.', 'warning');
 		}
 	};
-
-	function getUpdatedOptions(onlyPixel: any) {
-		if (onlyPixel) {
-			return {
-				pageWidth: $('#pPxlWidth').val(),
-				pageHeight: $('#pPxlHeight').val(),
-				pageRanges: $('#pPxlRange').val(),
-				ignoreTransparency: $('#pPxlTransparent').prop('checked'),
-				altFontRendering: $('#pPxlAltFontRendering').prop('checked'),
-			};
-		} else {
-			return {
-				language: $("input[name='pLanguage']:checked").val(),
-				x: $('#pX').val(),
-				y: $('#pY').val(),
-				dotDensity: $('#pDotDensity').val(),
-				xmlTag: $('#pXml').val(),
-				pageWidth: $('#pRawWidth').val(),
-				pageHeight: $('#pRawHeight').val(),
-			};
-		}
-	}
 
 	const chunkItems = (array: any[], chunkSize: number) => {
 		const chunks = [];
@@ -621,27 +451,27 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	}
 	return (
 		<>
-			<SubHeader>
-				<SubHeaderLeft>
-					<Button
-						icon=''
-						onClick={() => {
-							setIsOpen(false);
-						}}>
-						Back Page 10
-					</Button>
-				</SubHeaderLeft>
-			</SubHeader>
+			
 
 			<div className='row '>
 				<div className='col-5 mb-3 mb-sm-0'>
-					<Card stretch className='mt-4 p-4' style={{ height: '80vh' }}>
+				
+					<Card stretch className='mt-4' style={{ height: '80vh' }}>
+					
 						<CardBody isScrollable>
+						<Button
+						icon='ArrowBack'
+						onClick={() => {
+							setIsOpen(false);
+						}}>
+						Back Page
+					</Button>
 							<div
+							className='ms-4 ps-3'
+								ref={invoiceRef}
 								id='invoice'
 								style={{
 									display: 'flex',
-									justifyContent: 'center',
 									color: 'black',
 								}}>
 								<div>
@@ -650,7 +480,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											key={chunkIndex}
 											style={{
 												width: '130mm',
-												height: '140mm',
+												height: '130mm',
 												background: '#fff',
 												border: '1px dashed #ccc',
 												padding: '20px',
@@ -664,13 +494,14 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													style={{
 														fontSize: '25px',
 														fontFamily: 'initial',
+														color: 'black',
 													}}>
 													Suranga Cell Care
 												</h1>
-												<p style={{ marginBottom: '2px' }}>
+												<p style={{ marginBottom: '2px', color: 'black' }}>
 													No. 524/1A, Kandy Road, Kadawatha.
 												</p>
-												<p style={{ marginBottom: '0' }}>
+												<p style={{ marginBottom: '0', color: 'black' }}>
 													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
 												</p>
 											</div>
@@ -691,14 +522,14 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																color: 'black',
 																padding: '2px 0 0 ',
 															}}>
-															Invoice No : 111506
+															Invoice No : {data.id}
 														</td>
 														<td
 															style={{
 																color: 'black',
 																padding: '2px 0',
 															}}>
-															Invoice Date : 2025-01-08
+															Invoice Date : {data.date}
 														</td>
 													</tr>
 													<tr>
@@ -712,7 +543,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																color: 'black',
 																padding: '2px 0',
 															}}>
-															Invoiced Time : 2:36 PM
+															Invoiced Time : {data.time}
 														</td>
 													</tr>
 												</tbody>
@@ -725,6 +556,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													marginBottom: '0',
 													lineHeight: '1.2',
 													fontSize: '12px',
+													color: 'black',
 												}}>
 												Description
 												&nbsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
@@ -805,7 +637,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div
 												style={{
 													position: 'absolute',
-													top: '110mm', // Footer starts at 110mm
+													top: '105mm', // Footer starts at 110mm
 													left: '0',
 													width: '100%',
 													padding: '0 20px',
@@ -816,7 +648,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														justifyContent: 'flex-end',
 														marginBottom: '10px',
-														marginRight: '10px',
+														marginRight: '35px',
 													}}>
 													<div
 														style={{
@@ -824,6 +656,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															padding: '5px 10px',
 															fontSize: '14px',
 															fontWeight: 'bold',
+															color: 'black',
 														}}>
 														Total: {data.netValue.toFixed(2)}
 													</div>
@@ -835,22 +668,24 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														display: 'flex',
 														marginBottom: '10px',
 													}}>
-													<div>
+													<div style={{ color: 'black' }}>
 														<span
 															style={{
 																display: 'block',
 																borderTop: '1px solid black',
 																width: '110px',
+																color: 'black',
 															}}></span>
 														Cashier Signature
 													</div>
 													&nbsp;&emsp;&nbsp;&emsp;&emsp;
-													<div>
+													<div style={{ color: 'black' }}>
 														<span
 															style={{
 																display: 'block',
 																borderTop: '1px solid black',
 																width: '150px',
+																color: 'black',
 															}}></span>
 														Sales Person Signature
 													</div>
@@ -861,6 +696,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													style={{
 														textAlign: 'center',
 														fontSize: '12px',
+														color: 'black',
 													}}>
 													...........................Thank You ... Come
 													Again...........................
@@ -904,6 +740,10 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											validFeedback='Looks good!'
 										/>
 									</FormGroup>
+									<div style={{ fontSize: '18px', marginTop: '5px' }}>
+										Balance: {Math.max(0, (amount - data.netValue)).toFixed(2)}
+										LKR
+									</div>
 									<FormGroup
 										id='amount'
 										label='Payment method'
@@ -962,7 +802,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										color='info'
 										className='mt-4 p-4 w-100'
 										style={{ fontSize: '1.25rem' }}
-										onClick={printbill1}
+										onClick={handlePrint}
 										onKeyDown={printchange}>
 										Print Bill
 									</Button>
@@ -986,3 +826,216 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 };
 
 export default Print;
+
+// const printbill1 = async () => {
+// 	if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
+// 		console.log(orderedItems);
+// 		try {
+// 			const result = await Swal.fire({
+// 				title: 'Are you sure?',
+// 				// text: 'You will not be able to recover this status!',
+// 				icon: 'warning',
+// 				showCancelButton: true,
+// 				confirmButtonColor: '#3085d6',
+// 				cancelButtonColor: '#d33',
+// 				confirmButtonText: 'Yes, Print Bill!',
+// 			});
+
+// 			if (result.isConfirmed) {
+// 				const currentDate = new Date();
+// 				const formattedDate = currentDate.toLocaleDateString();
+
+// 				if (!isQzReady || typeof window.qz === 'undefined') {
+// 					console.error('QZ Tray is not ready.');
+// 					alert('QZ Tray is not loaded yet. Please try again later.');
+// 					return;
+// 				}
+// 				try {
+// 					const chunks = chunkItems(orderedItems, 5);
+// 					if (!window.qz.websocket.isActive()) {
+// 						await window.qz.websocket.connect();
+// 					}
+// 					const config = window.qz.configs.create('EPSON LQ-310 ESC/P2');
+// 					const data1 = [
+// 						'\x1B\x40', // Initialize printer
+// 						'\x1B\x61\x31', // Center alignment
+
+// 						'\x1B\x21\x20', // Double-width font
+// 						'Suranga Cell Care\n', // Header
+// 						'\x1B\x21\x00', // Reset font to normal
+// 						'\x1B\x4D\x01', // Select Font B
+
+// 						'No. 524/1/A, Kandy Road, Kadawatha\n',
+// 						'\x1B\x4D\x00', // Switch back to Font A
+// 						'Tel: +94 11 292 60 30  Mobile: +94 719 111 144\n',
+// 						'------------------------------------------\n',
+// 						'\x1B\x61\x30', // Left alignment
+// 						'Invoice No     : 111726\n',
+// 						'Invoice Date   : 2025-01-11\n',
+// 						'Invoiced Time  : 2.47 PM\n',
+
+// 						'------------------------------------------\n',
+// 						'Description           Price     Qty  Amount\n',
+// 						'------------------------------------------\n',
+// 						...orderedItems.map(
+// 							({ name, quantity, sellingPrice, category, model, brand }) => {
+// 								const netValue = sellingPrice * quantity;
+// 								// const truncatedName =
+// 								// 	brand.length > 10 ? brand.substring(0, 10) + '...' : brand;
+
+// 								// Define receipt width (e.g., 42 characters for typical printers)
+// 								const receiptWidth = 42;
+
+// 								// Create the line dynamically
+// 								const line = `${category} ${model}`;
+// 								const quantityStr = `${quantity}`;
+// 								const priceStr = `${sellingPrice.toFixed(2)}`;
+// 								const netValueStr = `${netValue.toFixed(2)}`;
+
+// 								// Calculate spacing to align `netValueStr` to the right
+// 								const totalLineLength =
+// 									line.length +
+// 									quantityStr.length +
+// 									priceStr.length +
+// 									netValueStr.length +
+// 									6; // 6 spaces for fixed spacing
+// 								const remainingSpaces = receiptWidth - totalLineLength;
+
+// 								return `${line}\n(warranty 0  days  )     ${priceStr}${' '.repeat(
+// 									remainingSpaces,
+// 								)}    ${quantityStr}  ${netValueStr}\n`;
+// 							},
+// 						),
+// 						'------------------------------------------\n',
+// 						'------------------------------------------\n',
+// 						'\x1B\x61\x01', // Center alignment
+// 						'\x1B\x45\x01', // Bold text ON
+// 						'\x1D\x21\x11', // Double width and double height
+// 						`SUB TOTAL\nRs ${calculateSubTotal()}\n`, // Print Sub Total and value
+// 						'\x1B\x45\x00', // Bold text OFF
+// 						'\x1D\x21\x00', // Reset to normal text size
+// 						'\x1B\x61\x00', // Left alignment
+// 						'------------------------------------------\n',
+
+// 						'Thank You ... Come Again\n\n',
+
+// 						'\x1D\x56\x41', // Cut paper
+// 					];
+
+// 					// Iterate over the items and append them to the commands
+// 					chunks.forEach((item: any, index) => {
+// 						const { category, model, brand, sellingPrice, quantity } = item;
+// 						const description = `${index + 1}. ${category} ${model} ${brand}`;
+// 						const price = sellingPrice;
+// 						const amount = sellingPrice * quantity;
+
+// 						// Add formatted item line
+// 						// escPosCommands.push(
+// 						//   `${description.padEnd(20)} ${price.padStart(8)} ${quantity
+// 						// 	.toString()
+// 						// 	.padStart(5)} ${amount.toString().padStart(10)}\n`
+// 						// );
+// 					});
+
+// 					// Add footer content
+// 					//   escPosCommands.push(
+// 					// 	'------------------------------------------\n', // Divider
+// 					// 	// `Total: ${data.netValue.padStart(35)}\n\n`, // Total
+// 					// 	'Cashier Signature: _____________________\n\n', // Cashier signature
+// 					// 	'Sales Person Signature: ________________\n\n', // Salesperson signature
+// 					// 	'\x1B\x61\x01', // Center alignment
+// 					// 	'...Thank You ... Come Again...\n', // Thank you message
+// 					// 	'\x1D\x56\x42' // Partial cut
+// 					//   );
+// 					await window.qz.print(config, data1);
+// 				} catch (error) {
+// 					console.error('Printing failed', error);
+// 				}
+// 			}
+// 		} catch (error) {
+// 			console.error('Error during handleUpload: ', error);
+// 			alert('An error occurred. Please try again later.');
+// 		}
+// 	} else {
+// 		Swal.fire('Warning..!', 'Insufficient amount', 'error');
+// 	}
+// };
+// const printbill = async () => {
+// 	if (amount >= data.netValue && amount > 0 && Number(data.netValue) > 0) {
+// 		console.log(orderedItems);
+// 		try {
+// 			const result = await Swal.fire({
+// 				title: 'Are you sure?',
+// 				icon: 'warning',
+// 				showCancelButton: true,
+// 				confirmButtonColor: '#3085d6',
+// 				cancelButtonColor: '#d33',
+// 				confirmButtonText: 'Yes, Print Bill!',
+// 			});
+
+// 			if (result.isConfirmed) {
+// 				const invoiceElement = document.getElementById('invoice');
+// 				if (!invoiceElement) {
+// 					throw new Error('Invoice element not found');
+// 				}
+
+// 				// Generate image from the invoice element
+// 				const image = await toPng(invoiceElement, { width: 513, height: 513 }); // 140mm = 531px
+// 				toPng(invoiceElement, { width: 531, height: 531 }) // 140mm = 531px (1mm = 3.779528px)
+// 					.then((dataUrl) => {
+// 						const link = document.createElement('a');
+// 						link.download = 'invoice.png';
+// 						link.href = dataUrl;
+// 						link.click();
+// 					})
+// 					.catch((error) => {
+// 						console.error('Failed to generate image:', error);
+// 					});
+// 				// Ensure QZ Tray WebSocket is active
+// 				if (!window.qz.websocket.isActive()) {
+// 					await window.qz.websocket.connect();
+// 				}
+// 				var opts = getUpdatedOptions(false);
+// 				// Configure QZ printing
+// 				const config = window.qz.configs.create('EPSON LQ-310 ESC/P2'); // Replace with your printer name
+// 				const printData: any = [
+// 					{ type: 'pixel', format: 'image', flavor: 'file', data: image },
+// 					// { type: 'raw', format: 'image', data: image, options: opts },
+// 				];
+
+// 				// Print the image
+// 				await window.qz.print(config, printData);
+
+// 				// Show success message
+// 				Swal.fire('Printed!', 'The bill has been printed.', 'success');
+// 			}
+// 		} catch (error) {
+// 			console.error('Error printing bill:', error);
+// 			Swal.fire('Error', 'An error occurred while printing the bill.', 'error');
+// 		}
+// 	} else {
+// 		Swal.fire('Validation Error', 'Please check the amount and net value.', 'warning');
+// 	}
+// };
+
+// function getUpdatedOptions(onlyPixel: any) {
+// 	if (onlyPixel) {
+// 		return {
+// 			pageWidth: $('#pPxlWidth').val(),
+// 			pageHeight: $('#pPxlHeight').val(),
+// 			pageRanges: $('#pPxlRange').val(),
+// 			ignoreTransparency: $('#pPxlTransparent').prop('checked'),
+// 			altFontRendering: $('#pPxlAltFontRendering').prop('checked'),
+// 		};
+// 	} else {
+// 		return {
+// 			language: $("input[name='pLanguage']:checked").val(),
+// 			x: $('#pX').val(),
+// 			y: $('#pY').val(),
+// 			dotDensity: $('#pDotDensity').val(),
+// 			xmlTag: $('#pXml').val(),
+// 			pageWidth: $('#pRawWidth').val(),
+// 			pageHeight: $('#pRawHeight').val(),
+// 		};
+// 	}
+// }
