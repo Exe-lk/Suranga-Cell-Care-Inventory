@@ -116,7 +116,7 @@ export const CashierPagesMenu = {
 		id: 'stock',
 		text: 'Repaired Phone',
 		path: 'cashier/rapaired-phone',
-		icon: 'AutoStories',
+		icon: 'HeadphonesBattery',
 		subMenu: null,
 	},
 	Print: {
@@ -126,13 +126,13 @@ export const CashierPagesMenu = {
 		icon: 'AutoStories',
 		subMenu: null,
 	},
-	print1: {
-		id: 'bill',
-		text: ' Accessory Bill test',
-		path: 'cashier/accessory-bill-test',
-		icon: 'Description',
-		subMenu: null,
-	},
+	// print1: {
+	// 	id: 'bill',
+	// 	text: ' Accessory Bill test',
+	// 	path: 'cashier/accessory-bill-test',
+	// 	icon: 'Description',
+	// 	subMenu: null,
+	// },
 }
 export const AccessoryBillKeeper = {
 	billKeeper1: {
