@@ -387,7 +387,7 @@ const Index: NextPage = () => {
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table table-bordered border-primary table-hover text-center'>
 									<thead className={'table-dark border-primary sticky-header'}>
-										<tr style={{ paddingTop: '10px' }}>
+										<tr>
 											<th>Category</th>
 											<th>Brand name</th>
 											<th></th>

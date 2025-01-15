@@ -312,7 +312,7 @@ const Index: React.FC = () => {
 																		onClick={() =>
 																			toggleRow(index)
 																		}>
-																		{order.amount}.00
+																		{order.amount-order.totalDiscount}.00
 																	</td>
 																	<td>
 																		<Button

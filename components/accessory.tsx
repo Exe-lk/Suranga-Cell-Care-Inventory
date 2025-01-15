@@ -294,7 +294,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 
 				if (result.isConfirmed) {
 					Swal.fire({
-						title: "Processing...",
+						title: 'Processing...',
 						html: 'Please wait while the data is being processed.<br><div class="spinner-border" role="status"></div>',
 						allowOutsideClick: false,
 						showCancelButton: false,
@@ -308,7 +308,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 						await addDoc(collection(firestore, 'customer'), { name, contact });
 					}
 					data.contact = contact;
-					data.name=name
+					data.name = name;
 					data.print = true;
 					data.amount = amount;
 					console.log(data);
@@ -451,23 +451,19 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 	}
 	return (
 		<>
-			
-
 			<div className='row '>
 				<div className='col-5 mb-3 mb-sm-0'>
-				
 					<Card stretch className='mt-4' style={{ height: '80vh' }}>
-					
 						<CardBody isScrollable>
-						<Button
-						icon='ArrowBack'
-						onClick={() => {
-							setIsOpen(false);
-						}}>
-						Back Page
-					</Button>
+							<Button
+								icon='ArrowBack'
+								onClick={() => {
+									setIsOpen(false);
+								}}>
+								Back Page
+							</Button>
 							<div
-							className='ms-4 ps-3'
+								className='ms-4 ps-3'
 								ref={invoiceRef}
 								id='invoice'
 								style={{
@@ -492,7 +488,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div className='text-left mb-3'>
 												<h1
 													style={{
-														fontSize: '25px',
+														fontSize: '29px',
 														fontFamily: 'initial',
 														color: 'black',
 													}}>
@@ -505,8 +501,14 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
 												</p>
 											</div>
-											<hr style={{ margin: '0 0 5px 0 ' ,color:"black"}} />
-
+											{/* <hr style={{ margin: '0 0 5px 0 ' ,color:"black"}} /> */}
+											<span
+												style={{
+													marginBottom: '1px',
+													display: 'block',
+													borderTop: '1px solid black',
+													color: 'black',
+												}}></span>
 											{/* Invoice Details */}
 											<table
 												className='table table-borderless'
@@ -548,9 +550,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													</tr>
 												</tbody>
 											</table>
-											<hr style={{ margin: '5px 0' ,color:"black"}} />
-
-											{/* Items Header */}
+											<span
+												style={{
+													marginBottom: '3px',
+													display: 'block',
+													borderTop: '1px solid black',
+													color: 'black',
+												}}></span>
 											<p
 												style={{
 													marginBottom: '0',
@@ -563,9 +569,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												Price &nbsp;&emsp;&emsp;&emsp; Qty
 												&nbsp;&emsp;&emsp; Amount
 											</p>
-											<hr style={{ margin: '5px 0' ,color:"black"}} />
-
-											{/* Items List */}
+											<span
+												style={{
+													marginTop: '3px',
+													display: 'block',
+													borderTop: '1px solid black',
+													color: 'black',
+												}}></span>
 											{chunk.map(
 												(
 													{
@@ -707,7 +717,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														fontSize: '10px',
 														color: 'black',
 													}}>
-													System by EXE.LK -+94 703 329 900
+													System by EXE.LK +94 70 332 9900
 												</div>
 											</div>
 										</div>
@@ -749,7 +759,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 										/>
 									</FormGroup>
 									<div style={{ fontSize: '18px', marginTop: '5px' }}>
-										Balance: {Math.max(0, (amount - data.netValue)).toFixed(2)}
+										Balance: {Math.max(0, amount - data.netValue).toFixed(2)}
 										LKR
 									</div>
 									<FormGroup
