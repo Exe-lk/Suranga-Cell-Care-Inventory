@@ -45,7 +45,7 @@ const Index: NextPage = () => {
 	const [updateCategory] = useUpdateCategory1Mutation();
 	const { data: brands } = useGetBrands1Query(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	useEffect(() => {

@@ -73,7 +73,7 @@ const CommonUpcomingEvents: FC<ICommonUpcomingEventsProps> = ({ isFluid }) => {
 	});
 
 	const [currentPage, setCurrentPage] = useState(1);
-	const [perPage, setPerPage] = useState(PER_COUNT['5']);
+	const [perPage, setPerPage] = useState(PER_COUNT['10000']);
 	const { items, requestSort, getClassNamesFor } = useSortableData(data);
 
 	return (

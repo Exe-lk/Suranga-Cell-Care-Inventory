@@ -51,7 +51,7 @@ const Index: NextPage = () => {
 		isLoading: stockInOutsLoading,
 	} = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [startDate, setStartDate] = useState<string>('');
 	const [endDate, setEndDate] = useState<string>('');
 	const inputRef = useRef<HTMLInputElement>(null);

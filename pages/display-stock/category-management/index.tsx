@@ -51,7 +51,7 @@ const Index: NextPage = () => {
 	const { data: categories, error, isLoading, refetch } = useGetCategoriesQuery(undefined);
 	const { data: brands } = useGetBrandsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateCategory] = useUpdateCategoryMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	

@@ -27,7 +27,7 @@ const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const { data: stockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const filteredStockInOuts = stockInOuts?.filter((item: any) => item.stock === 'stockOut');
 	

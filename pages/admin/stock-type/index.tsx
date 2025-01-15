@@ -40,7 +40,7 @@ const Index: NextPage = () => {
 	const [updateStockKeeper] = useUpdateStockKeeperMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 
 	useEffect(() => {
 		if (inputRef.current) {

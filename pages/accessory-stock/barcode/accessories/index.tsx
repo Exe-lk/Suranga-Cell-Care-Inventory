@@ -24,7 +24,7 @@ const Index: NextPage = () => {
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 	const [isBrowserPrintLoaded, setIsBrowserPrintLoaded] = useState(false);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [selectedDevice, setSelectedDevice] = useState<any>(null);
 	const [devices, setDevices] = useState<any>([]);
 	const inputRef = useRef<HTMLInputElement>(null);

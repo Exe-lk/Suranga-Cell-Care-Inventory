@@ -48,7 +48,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const { data: itemDiss, error, isLoading, refetch } = useGetItemDissQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateItemDis] = useUpdateItemDisMutation();
 	const [quantity, setQuantity] = useState<any>();
 	const inputRef = useRef<HTMLInputElement>(null);

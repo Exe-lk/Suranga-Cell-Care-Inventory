@@ -40,7 +40,7 @@ const Index: NextPage = () => {
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [updateModel] = useUpdateModel1Mutation();
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const brand = [
 		{ brand: 'Samsung' },

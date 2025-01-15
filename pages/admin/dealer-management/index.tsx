@@ -36,7 +36,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const { data: dealers, error, isLoading } = useGetDealersQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateDealer] = useUpdateDealerMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 

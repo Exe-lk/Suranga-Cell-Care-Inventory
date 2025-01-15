@@ -24,7 +24,7 @@ const Index: NextPage = () => {
 	const [searchTerm, setSearchTerm] = useState('');
 	const { data: StockInOuts, error, isLoading } = useGetStockInOutsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [startDate, setStartDate] = useState<string>('');
 	const [endDate, setEndDate] = useState<string>('');
 	const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
