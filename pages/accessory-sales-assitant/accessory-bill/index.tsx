@@ -339,8 +339,8 @@ function index() {
 						type: payment ? 'cash' : 'card',
 						print: false,
 						discount: discount,
-						totalDiscount: Number(getAllDiscounts() + discount),
-						netValue: calculateSubTotal() - (getAllDiscounts() + discount),
+						totalDiscount: Number(getAllDiscounts() + Number(discount)),
+						netValue: calculateSubTotal() - (getAllDiscounts() + Number(discount)),
 						id: id,
 					};
 					Creatbill(values);
@@ -559,7 +559,7 @@ function index() {
 													</td>
 													<td className='fw-bold text-end'>
 														{Number(
-															getAllDiscounts() + discount,
+															getAllDiscounts() + Number(discount),
 														).toFixed(2)}
 													</td>{' '}
 												</tr>
@@ -578,7 +578,7 @@ function index() {
 													<td className='fw-bold text-end'>
 														{(
 															calculateSubTotal() -
-															(getAllDiscounts() + discount)
+															(getAllDiscounts() + Number(discount))
 														).toFixed(2)}
 													</td>{' '}
 												</tr>
@@ -666,7 +666,11 @@ function index() {
 										fontSize: '4rem',
 										marginTop: '50px',
 									}}>
-									{(calculateSubTotal() - discount).toFixed(2)}LKR
+									{(
+										calculateSubTotal() -
+										(getAllDiscounts() + Number(discount))
+									).toFixed(2)}
+									LKR
 								</div>
 							</CardBody>
 							<CardFooter>
