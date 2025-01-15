@@ -505,7 +505,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
 												</p>
 											</div>
-											<hr style={{ margin: '0 0 5px 0 ' }} />
+											<hr style={{ margin: '0 0 5px 0 ' ,color:"black"}} />
 
 											{/* Invoice Details */}
 											<table
@@ -529,7 +529,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																color: 'black',
 																padding: '2px 0',
 															}}>
-															Invoice Date : {data.date}
+															Invoice Date : {currentDate}
 														</td>
 													</tr>
 													<tr>
@@ -543,12 +543,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																color: 'black',
 																padding: '2px 0',
 															}}>
-															Invoiced Time : {data.time}
+															Invoiced Time : {currentTime}
 														</td>
 													</tr>
 												</tbody>
 											</table>
-											<hr style={{ margin: '5px 0' }} />
+											<hr style={{ margin: '5px 0' ,color:"black"}} />
 
 											{/* Items Header */}
 											<p
@@ -563,7 +563,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												Price &nbsp;&emsp;&emsp;&emsp; Qty
 												&nbsp;&emsp;&emsp; Amount
 											</p>
-											<hr style={{ margin: '5px 0' }} />
+											<hr style={{ margin: '5px 0' ,color:"black"}} />
 
 											{/* Items List */}
 											{chunk.map(
@@ -637,7 +637,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div
 												style={{
 													position: 'absolute',
-													top: '105mm', // Footer starts at 110mm
+													top: '100mm', // Footer starts at 110mm
 													left: '0',
 													width: '100%',
 													padding: '0 20px',
@@ -700,6 +700,14 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													}}>
 													...........................Thank You ... Come
 													Again...........................
+												</div>
+												<div
+													style={{
+														textAlign: 'right',
+														fontSize: '10px',
+														color: 'black',
+													}}>
+													System by EXE.LK -+94 703 329 900
 												</div>
 											</div>
 										</div>

@@ -138,14 +138,14 @@ export const AccessoryBillKeeper = {
 	billKeeper1: {
 		id: 'billKeeper',
 		text: 'Accessory Bill',
-		path: 'accessory-bill-keeper/accessory-bill',
+		path: 'accessory-sales-assitant/accessory-bill',
 		icon: 'Description',
 		subMenu: null,
 	},
 	billKeeper2: {
 		id: 'billKeeper1',
 		text: 'Return',
-		path: 'accessory-bill-keeper/return',
+		path: 'accessory-sales-assitant/return',
 		icon: 'Description',
 		subMenu: null,
 	}

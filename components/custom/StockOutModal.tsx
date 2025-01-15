@@ -364,7 +364,7 @@ const StockAddModal: FC<StockAddModalProps> = ({ id, isOpen, setIsOpen, quantity
 							validFeedback='Looks good!'
 						/>
 					</FormGroup> */}
-					<FormGroup id='description' label='Description' className='col-md-6'>
+					<FormGroup id='description' label='Description (Rason)' className='col-md-6'>
 						<Input
 							type='text'
 							placeholder='Enter Description'

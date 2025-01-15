@@ -314,9 +314,9 @@ const Index: NextPage = () => {
 							</CardTitle>
 							<CardBody isScrollable className='table-responsive'>
 								<table className='table  table-bordered border-primary table-hover text-center'>
-									<thead className={'table-dark border-primary'}>
+									<thead className={'table-dark border-primary sticky-header'}>
 										<tr>
-											<th>Date</th>
+											<th>Date / Time</th>
 											<th>Code</th>
 											<th>Category</th>
 											<th>Brand</th>
@@ -347,12 +347,17 @@ const Index: NextPage = () => {
 												.filter(
 													(StockInOut: any) => StockInOut.status === true,
 												)
-											
+
 												.filter((brand: any) => {
 													const search = searchTerm.toLowerCase();
 													return (
-														brand.barcode?.toString().toLowerCase().includes(search) ||
-														brand.brand?.toLowerCase().includes(search) ||
+														brand.barcode
+															?.toString()
+															.toLowerCase()
+															.includes(search) ||
+														brand.brand
+															?.toLowerCase()
+															.includes(search) ||
 														brand.model?.toLowerCase().includes(search)
 													);
 												})
@@ -361,20 +366,29 @@ const Index: NextPage = () => {
 														? selectedUsers.includes(brand.stock)
 														: true,
 												)
-												.sort((a:any, b:any) => a.code - b.code) 
-												.map((brand: any, index: any) => (
-													<tr key={index}>
-														<td>{brand.date}</td>
-														<th>{brand.barcode}</th>
-														<td>{brand.category}</td>
-														<td>{brand.brand}</td>
-														<td>{brand.model}</td>
-														<td>{brand.quantity}</td>
-														<td>{brand.sellingPrice.toFixed(2)}</td>
-														<td>{brand.description}</td>
-														<td>{brand.stock}</td>
-													</tr>
-												))}
+												.sort((a: any, b: any) => a.code - b.code)
+												.map((brand: any, index: any) => {
+													const formattedTimestamp = brand.timestamp
+														?.toDate
+														? brand.timestamp.toDate().toLocaleString() // Firestore Timestamp
+														: new Date(
+																brand.timestamp.seconds * 1000,
+														  ).toLocaleString(); // Handle raw seconds & nanoseconds
+
+													return (
+														<tr key={index}>
+															<td>{formattedTimestamp}</td>
+															<th>{brand.barcode}</th>
+															<td>{brand.category}</td>
+															<td>{brand.brand}</td>
+															<td>{brand.model}</td>
+															<td>{brand.quantity}</td>
+															<td>{brand.sellingPrice.toFixed(2)}</td>
+															<td>{brand.description}</td>
+															<td>{brand.stock}</td>
+														</tr>
+													);
+												})}
 									</tbody>
 								</table>
 							</CardBody>
