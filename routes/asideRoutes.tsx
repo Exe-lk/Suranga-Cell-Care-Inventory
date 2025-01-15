@@ -24,7 +24,7 @@ const asides = [
 	{ path: '/viewer/*', element: <ViewAside/>, exact: true },
 	{ path : '/repairSales/*', element: <RepairSalesAside/>, exact: true },
 	{ path: '/cashier/*', element: <CashierAsider/>, exact: true },
-	{path: '/accessory-bill-keeper/*', element: <AccesoryAsider/>, exact: true},
+	{path: '/accessory-sales-assitant/*', element: <AccesoryAsider/>, exact: true},
 
 ];
 

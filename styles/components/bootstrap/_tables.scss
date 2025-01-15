@@ -42,7 +42,14 @@ thead > tr > th svg.ascending {
 //  Modern-design
 //
 //  Rounded corners
-
+.sticky-header th {
+	position: sticky;
+	top: 0; /* Sticks to the top of the table */
+	z-index: 2; /* Ensures it stays above the table rows */
+	background-color: #343a40; /* Matches your `table-dark` style */
+	color: white; /* Ensures text is visible */
+	// border: 1px solid #dee2e6; /* Matches your table borders */
+  }
 .table-modern {
 	//  stylelint-disable scss/at-extend-no-missing-placeholder
 	//  stylelint-disable  at-rule-disallowed-list
