@@ -95,6 +95,9 @@ const Login: NextPage<ILoginProps> = ({ isSignUp }) => {
 						case 'Repair Sales':
 							router.push('repairSales/Waiting');
 							break;
+						case 'Accessory sales assitant':
+							router.push('accessory-sales-assitant/accessory-bill');
+							break;
 						default:
 							break;
 					}

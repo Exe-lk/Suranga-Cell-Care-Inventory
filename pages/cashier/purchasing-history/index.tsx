@@ -299,7 +299,7 @@ const Index: React.FC = () => {
 																				<th>Unit Price</th>
 
 																				<th>Quantity</th>
-																				<th>Total Price</th>
+																				<th>Amount</th>
 																			</tr>
 																		</thead>
 																		<tbody>

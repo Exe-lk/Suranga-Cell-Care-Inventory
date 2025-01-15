@@ -6,11 +6,17 @@ import Select from './bootstrap/forms/Select';
 import Option from './bootstrap/Option';
 
 export const PER_COUNT = {
-	3: 3,
-	5: 5,
-	10: 10,
-	25: 25,
-	50: 50,
+	// 3: 3,
+	// 5: 5,
+	// 10: 10,
+	// 25: 25,
+	// 50: 50,
+	1000: 1000,
+	2000: 2000,
+	4000: 4000,
+	6000: 6000,
+	8000: 8000,
+	10000: 10000,
 };
 
 export const dataPagination = (data: any[], currentPage: number, perPage: number) =>

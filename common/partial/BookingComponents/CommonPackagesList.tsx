@@ -60,7 +60,7 @@ const CommonPackagesList = () => {
 	];
 
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['3']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const { items, requestSort, getClassNamesFor } = useSortableData(dataPackages);
 	return (
 		<>

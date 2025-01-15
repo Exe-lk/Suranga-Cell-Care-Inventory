@@ -160,6 +160,7 @@ const UserEditModal: FC<UserEditModalProps> = ({ id, isOpen, setIsOpen }) => {
 							<Option value={'cashier'}>cashier</Option>
 							<Option value={'Repair Sales'}>Repair Sales</Option>
 							<Option value={'Viewer'}>Viewer</Option>
+							<Option value={'Accessory sales assitant'}>Accessory sales assitant</Option>
 						</Select>
 					</FormGroup>
 					<FormGroup id='mobile' label='Mobile number' className='col-md-6'>

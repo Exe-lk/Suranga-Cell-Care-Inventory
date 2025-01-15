@@ -25,12 +25,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         break;
       }
       case 'PUT': {
-        const { id, status, name, brand, category } = req.body;
+        const { id, status, name, description, brand, category } = req.body;
         if (!id || !name) {
           res.status(400).json({ error: 'Model ID and name are required' });
           return;
         }
-        await updateModel(id, status, name, brand, category);
+        await updateModel(id, status, name, description, brand, category);
         res.status(200).json({ message: 'Model updated' });
         break;
       }

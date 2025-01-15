@@ -45,7 +45,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const { data: brands, error, isLoading, refetch } = useGetBrands1Query(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateBrand] = useUpdateBrand1Mutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 

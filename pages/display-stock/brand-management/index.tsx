@@ -47,7 +47,7 @@
 // 	const [status, setStatus] = useState(true);
 // 	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
 // 	const [currentPage, setCurrentPage] = useState<number>(1);
-// 	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+// 	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 // 	const [updateBrand] = useUpdateBrandMutation();
 // 	const inputRef = useRef<HTMLInputElement>(null);
 
@@ -525,7 +525,7 @@ const Index: NextPage = () => {
 	const { data: brands, error, isLoading, refetch } = useGetBrandsQuery(undefined);
 	const { data: models } = useGetModelsQuery(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateBrand] = useUpdateBrandMutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 

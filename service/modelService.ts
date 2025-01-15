@@ -30,9 +30,9 @@ export const getModelById = async (id: string) => {
   }
 };
 
-export const updateModel = async (id: string, name: string, brand: string, category: string, status: boolean) => {
+export const updateModel = async (id: string, name: string,description:string, brand: string, category: string, status: boolean) => {
   const ModelRef = doc(firestore, 'ModelDisplay', id);
-  await updateDoc(ModelRef, { name, brand, category, status });
+  await updateDoc(ModelRef, { name, description, brand, category, status });
 };
 
 export const deleteModel = async (id: string) => {

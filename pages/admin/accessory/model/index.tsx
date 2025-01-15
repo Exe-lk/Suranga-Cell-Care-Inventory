@@ -42,7 +42,7 @@ const Index: NextPage = () => {
 	const [id, setId] = useState<string>('');
 	const { data: models, error, isLoading, refetch } = useGetModels1Query(undefined);
 	const [currentPage, setCurrentPage] = useState<number>(1);
-	const [perPage, setPerPage] = useState<number>(PER_COUNT['50']);
+	const [perPage, setPerPage] = useState<number>(PER_COUNT['10000']);
 	const [updateModel] = useUpdateModel1Mutation();
 	const inputRef = useRef<HTMLInputElement>(null);
 	useEffect(() => {
