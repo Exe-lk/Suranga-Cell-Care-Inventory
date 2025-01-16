@@ -682,7 +682,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														borderTop: '1px solid black',
 														color: 'black',
 													}}></span>
-												<div className='position-relative me-4' >
+												<div className='position-relative me-4' style={{color:"black"}} >
 													<div className='position-absolute start-60'>
 														Total
 													</div>
@@ -700,7 +700,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														color: 'black',
 														width:190,
 													}}></span>
-													<div className='position-relative me-4'>
+													<div className='position-relative me-4' style={{color:"black"}}>
 													<div className='position-absolute top-0 start-60'>
 														Discount
 													</div>
@@ -718,7 +718,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														color: 'black',
 														width:190,
 													}}></span>
-													<div className='position-relative me-4'>
+													<div className='position-relative me-4' style={{color:"black"}}>
 													<div className='position-absolute top-0 start-60 fw-bold'>
 														SUB TOTAL
 													</div>
@@ -736,7 +736,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														color: 'black',
 														width:190,
 													}}></span>
-													<div className='position-relative me-4'>
+													<div className='position-relative me-4' style={{color:"black"}}>
 													<div className='position-absolute top-0 start-60'>
 														Cash
 													</div>
@@ -754,7 +754,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														color: 'black',
 														width:190,
 													}}></span>
-													<div className='position-relative me-4'>
+													<div className='position-relative me-4' style={{color:"black"}}>
 													<div className='position-absolute top-0 start-60'>
 														Balance
 													</div>
