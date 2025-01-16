@@ -348,29 +348,29 @@ function index() {
 						id: id,
 					};
 					Creatbill(values);
-					for (const item of orderedItems) {
-						const { cid, barcode, quantity } = item; // Destructure the fields from the current item
-						const id = cid;
-						const barcodePrefix = barcode.slice(0, 4);
+					// for (const item of orderedItems) {
+					// 	const { cid, barcode, quantity } = item; // Destructure the fields from the current item
+					// 	const id = cid;
+					// 	const barcodePrefix = barcode.slice(0, 4);
 
-						const matchingItem = itemAcces?.find(
-							(accessItem: any) => accessItem.code === barcodePrefix,
-						);
+					// 	const matchingItem = itemAcces?.find(
+					// 		(accessItem: any) => accessItem.code === barcodePrefix,
+					// 	);
 
-						if (matchingItem) {
-							const quantity1 = matchingItem.quantity;
+					// 	if (matchingItem) {
+					// 		const quantity1 = matchingItem.quantity;
 
-							const updatedQuantity = quantity1 - quantity;
-							try {
-								// Call the updateStockInOut function to update the stock
-								await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
-							} catch (error) {
-								console.error(`Failed to update stock for ID: ${id}`, error);
-							}
-						} else {
-							console.warn(`No matching item found for barcode: ${barcode}`);
-						}
-					}
+					// 		const updatedQuantity = quantity1 - quantity;
+					// 		try {
+					// 			// Call the updateStockInOut function to update the stock
+					// 			await updateStockInOut({ id, quantity: updatedQuantity }).unwrap();
+					// 		} catch (error) {
+					// 			console.error(`Failed to update stock for ID: ${id}`, error);
+					// 		}
+					// 	} else {
+					// 		console.warn(`No matching item found for barcode: ${barcode}`);
+					// 	}
+					// }
 					Swal.fire({
 						title: 'Success',
 						text: 'Bill has been added successfully.',
