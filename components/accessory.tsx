@@ -745,10 +745,10 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															amount - data.netValue,
 														).toFixed(2)}
 													</div>
-													<div className='position-absolute top-0 start-60 fw-bold'>
+													<div className='position-absolute top-0 start-60 fw-bold' style={{fontSize: '14px'}}>
 														SUB TOTAL
 													</div>
-													<div className='position-absolute top-0 end-5 fw-bold'>
+													<div className='position-absolute top-0 end-5 fw-bold' style={{fontSize: '14px'}}>
 														{data.netValue.toFixed(2)}
 													</div>
 												</div>
