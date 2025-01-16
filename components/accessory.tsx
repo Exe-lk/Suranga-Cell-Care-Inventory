@@ -485,7 +485,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												position: 'relative', // Enables absolute positioning inside
 											}}>
 											{/* Header */}
-											<div className='text-left mb-3'>
+											<div className='text-left '>
 												<h1
 													style={{
 														fontSize: '29px',
@@ -498,7 +498,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													No. 524/1A, Kandy Road, Kadawatha.
 												</p>
 												<p style={{ marginBottom: '0', color: 'black' }}>
-													Tel: +94 11 292 60 30 | Mobile: +94 719 111 144
+													Tel: +94 11 292 60 30 | Mobile: +94 76 401 77 28
 												</p>
 											</div>
 											{/* <hr style={{ margin: '0 0 5px 0 ' ,color:"black"}} /> */}
@@ -584,17 +584,19 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														brand,
 														quantity,
 														sellingPrice,
+														warranty
 													}: any,
 													index: number,
 												) => (
 													<table
+													// border={1}
 														key={index}
 														style={{
 															color: 'black',
 															width: '110mm',
 															borderCollapse: 'collapse',
 															fontSize: '12px',
-															marginBottom: '10px',
+															// marginBottom: '10px',
 														}}>
 														<tbody>
 															<tr>
@@ -605,7 +607,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																		padding: '5px',
 																	}}>
 																	{index + 1}. {category} {model}{' '}
-																	{brand}
+																	{brand} <label  style={{fontSize:"10px"}}>({warranty} warranty)</label>
 																</td>
 																<td
 																	style={{
@@ -647,13 +649,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div
 												style={{
 													position: 'absolute',
-													top: '100mm', // Footer starts at 110mm
+													top: '90mm', // Footer starts at 110mm
 													left: '0',
 													width: '100%',
 													padding: '0 20px',
 												}}>
 												{/* Total Section */}
-												<div
+												{/* <div
 													style={{
 														display: 'flex',
 														justifyContent: 'flex-end',
@@ -670,10 +672,110 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														}}>
 														Total: {data.netValue.toFixed(2)}
 													</div>
+												</div> */}
+												<span
+												className='position-absolute  start-55'
+													style={{
+														marginTop: '0px',
+														display: 'block',
+														width:190,
+														borderTop: '1px solid black',
+														color: 'black',
+													}}></span>
+												<div className='position-relative me-4' >
+													<div className='position-absolute start-60'>
+														Total
+													</div>
+													<div className='position-absolute top-0 end-5'>
+														{data.amount.toFixed(2)}
+													</div>
 												</div>
-
+												<br />
+												<span
+												className='position-absolute start-55'
+													style={{
+														marginTop: '1px',
+														display: 'block',
+														borderTop: '1px solid black',
+														color: 'black',
+														width:190,
+													}}></span>
+													<div className='position-relative me-4'>
+													<div className='position-absolute top-0 start-60'>
+														Discount
+													</div>
+													<div className='position-absolute top-0 end-5'>
+														{Number(data.totalDiscount).toFixed(2)}
+													</div>
+												</div>
+												<br />
+												<span
+												className='position-absolute start-55'
+													style={{
+														marginTop: '1px',
+														display: 'block',
+														borderTop: '1px solid black',
+														color: 'black',
+														width:190,
+													}}></span>
+													<div className='position-relative me-4'>
+													<div className='position-absolute top-0 start-60 fw-bold'>
+														SUB TOTAL
+													</div>
+													<div className='position-absolute top-0 end-5 fw-bold'>
+													{data.netValue.toFixed(2)}
+													</div>
+												</div>
+												<br />
+												<span
+												className='position-absolute  start-55'
+													style={{
+														marginTop: '1px',
+														display: 'block',
+														borderTop: '1px solid black',
+														color: 'black',
+														width:190,
+													}}></span>
+													<div className='position-relative me-4'>
+													<div className='position-absolute top-0 start-60'>
+														Cash
+													</div>
+													<div className='position-absolute top-0 end-5'>
+														{amount}.00
+													</div>
+												</div>
+												<br />
+												<span
+												className='position-absolute start-55'
+													style={{
+														marginTop: '1px',
+														display: 'block',
+														borderTop: '1px solid black',
+														color: 'black',
+														width:190,
+													}}></span>
+													<div className='position-relative me-4'>
+													<div className='position-absolute top-0 start-60'>
+														Balance
+													</div>
+													<div className='position-absolute top-0 end-5'>
+													{Math.max(0, amount - data.netValue).toFixed(2)}
+													</div>
+												</div>
+												
+												<br />
+												<span
+												className='position-absolute start-55'
+													style={{
+														marginTop: '1px',
+														display: 'block',
+														borderTop: '1px solid black',
+														color: 'black',
+														width:190,
+													}}></span>
+													
 												{/* Signature Section */}
-												<div
+												{/* <div
 													style={{
 														display: 'flex',
 														marginBottom: '10px',
@@ -699,7 +801,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 															}}></span>
 														Sales Person Signature
 													</div>
-												</div>
+												</div> */}
 
 												{/* Thank You Section */}
 												<div
@@ -707,6 +809,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														textAlign: 'center',
 														fontSize: '12px',
 														color: 'black',
+														marginTop:"3px"
 													}}>
 													...........................Thank You ... Come
 													Again...........................

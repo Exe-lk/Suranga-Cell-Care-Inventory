@@ -258,6 +258,10 @@ function index() {
 				}
 				setOrderedItems(updatedItems);
 			} else {
+				const matchingItem = itemAcces?.find(
+					(accessItem: any) => accessItem.code === selectedProduct.substring(0, 4),
+				);
+				
 				const existingItemIndex = orderedItems.findIndex(
 					(item) => item.barcode === selectedProduct,
 				);
@@ -269,7 +273,7 @@ function index() {
 						quantity: updatedItems[existingItemIndex].quantity + quantity,
 					};
 				} else {
-					updatedItems = [...orderedItems, { ...selectedItem, quantity }];
+					updatedItems = [...orderedItems, { ...selectedItem, quantity, warranty:matchingItem.warranty }];
 				}
 				setOrderedItems(updatedItems);
 			}
