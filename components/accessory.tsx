@@ -584,12 +584,12 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														brand,
 														quantity,
 														sellingPrice,
-														warranty
+														warranty,
 													}: any,
 													index: number,
 												) => (
 													<table
-													// border={1}
+														// border={1}
 														key={index}
 														style={{
 															color: 'black',
@@ -607,7 +607,13 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 																		padding: '5px',
 																	}}>
 																	{index + 1}. {category} {model}{' '}
-																	{brand} <label  style={{fontSize:"10px"}}>({warranty} warranty)</label>
+																	{brand}{' '}
+																	<label
+																		style={{
+																			fontSize: '10px',
+																		}}>
+																		({warranty} warranty)
+																	</label>
 																</td>
 																<td
 																	style={{
@@ -649,7 +655,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 											<div
 												style={{
 													position: 'absolute',
-													top: '90mm', // Footer starts at 110mm
+													top: '100mm', // Footer starts at 110mm
 													left: '0',
 													width: '100%',
 													padding: '0 20px',
@@ -674,15 +680,17 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 													</div>
 												</div> */}
 												<span
-												className='position-absolute  start-55'
+													className='position-absolute  start-55'
 													style={{
 														marginTop: '0px',
 														display: 'block',
-														width:190,
+														width: 190,
 														borderTop: '1px solid black',
 														color: 'black',
 													}}></span>
-												<div className='position-relative me-4' style={{color:"black"}} >
+												<div
+													className='position-relative me-4'
+													style={{ color: 'black' }}>
 													<div className='position-absolute start-60'>
 														Total
 													</div>
@@ -692,15 +700,22 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												</div>
 												<br />
 												<span
-												className='position-absolute start-55'
 													style={{
-														marginTop: '1px',
+														marginBottom: '1px',
 														display: 'block',
 														borderTop: '1px solid black',
 														color: 'black',
-														width:190,
+														width: 440,
 													}}></span>
-													<div className='position-relative me-4' style={{color:"black"}}>
+												<div
+													className='position-relative me-4'
+													style={{ color: 'black' }}>
+													<div className='position-absolute top-0 start-0'>
+														Cash
+													</div>
+													<div className='position-absolute top-0 end-50'>
+													{amount}.00
+													</div>
 													<div className='position-absolute top-0 start-60'>
 														Discount
 													</div>
@@ -710,33 +725,46 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												</div>
 												<br />
 												<span
-												className='position-absolute start-55'
+													className='position-absolute '
 													style={{
-														marginTop: '1px',
+														marginTop: '0px',
 														display: 'block',
 														borderTop: '1px solid black',
 														color: 'black',
-														width:190,
+														width: 440,
 													}}></span>
-													<div className='position-relative me-4' style={{color:"black"}}>
+												<div
+													className='position-relative me-4'
+													style={{ color: 'black' }}>
+														<div className='position-absolute top-0 start-0'>
+														Balance
+													</div>
+													<div className='position-absolute top-0 end-50'>
+													{Math.max(
+															0,
+															amount - data.netValue,
+														).toFixed(2)}
+													</div>
 													<div className='position-absolute top-0 start-60 fw-bold'>
 														SUB TOTAL
 													</div>
 													<div className='position-absolute top-0 end-5 fw-bold'>
-													{data.netValue.toFixed(2)}
+														{data.netValue.toFixed(2)}
 													</div>
 												</div>
 												<br />
 												<span
-												className='position-absolute  start-55'
+													className='position-absolute '
 													style={{
 														marginTop: '1px',
 														display: 'block',
 														borderTop: '1px solid black',
 														color: 'black',
-														width:190,
+														width: 440,
 													}}></span>
-													<div className='position-relative me-4' style={{color:"black"}}>
+												{/* <div
+													className='position-relative me-4'
+													style={{ color: 'black' }}>
 													<div className='position-absolute top-0 start-60'>
 														Cash
 													</div>
@@ -746,34 +774,39 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 												</div>
 												<br />
 												<span
-												className='position-absolute start-55'
+													className='position-absolute start-55'
 													style={{
 														marginTop: '1px',
 														display: 'block',
 														borderTop: '1px solid black',
 														color: 'black',
-														width:190,
+														width: 190,
 													}}></span>
-													<div className='position-relative me-4' style={{color:"black"}}>
+												<div
+													className='position-relative me-4'
+													style={{ color: 'black' }}>
 													<div className='position-absolute top-0 start-60'>
 														Balance
 													</div>
 													<div className='position-absolute top-0 end-5'>
-													{Math.max(0, amount - data.netValue).toFixed(2)}
+														{Math.max(
+															0,
+															amount - data.netValue,
+														).toFixed(2)}
 													</div>
 												</div>
-												
+
 												<br />
 												<span
-												className='position-absolute start-55'
+													className='position-absolute start-55'
 													style={{
 														marginTop: '1px',
 														display: 'block',
 														borderTop: '1px solid black',
 														color: 'black',
-														width:190,
-													}}></span>
-													
+														width: 190,
+													}}></span> */}
+
 												{/* Signature Section */}
 												{/* <div
 													style={{
@@ -809,7 +842,7 @@ const Print: FC<CategoryEditModalProps> = ({ data, isOpen, setIsOpen }) => {
 														textAlign: 'center',
 														fontSize: '12px',
 														color: 'black',
-														marginTop:"3px"
+														marginTop: '3px',
 													}}>
 													...........................Thank You ... Come
 													Again...........................
